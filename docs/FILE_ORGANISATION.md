@@ -46,6 +46,11 @@ Scripts (scripts/)
     - --textWeight <0..1> (default: 0.6) Weight for text vs vector
     - --reset (boolean) TRUNCATE entities
 
+Local PostgreSQL Runtime
+- This project includes the pg-embedded dependency to enable running a self-contained PostgreSQL instance without relying on external services.
+- SQL files under docs/sql/ continue to be the single source of truth for schema and queries (loaded at runtime by utility functions, e.g., readSql).
+- Consumers will be able to configure the database data directory path (with sensible defaults) in higher-level features building on this capability.
+
 Usage in Other Projects
 - Add as a local dependency or install from your registry. Provide a Postgres connection string.
 - Example:

@@ -6,7 +6,7 @@
   "features": [
     {
       "id": "c0c67b20-2454-4fbc-9fa8-99f3b5c33d0a",
-      "status": "-",
+      "status": "+",
       "title": "Install `pg-embedded` dependency",
       "description": "Add the `pg-embedded` npm package as a dependency to the project to manage a local PostgreSQL instance.",
       "context": []
