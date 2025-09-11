@@ -2,7 +2,7 @@
   "id": "b844d9b3-3981-43d3-ba34-2039f31f5a53",
   "status": "-",
   "title": "This project needs to run the postgresql database",
-  "description": "We don't want to rely on a external dependency to run the database, this project should be self sufficient and run the database itself.\nMake it possible - the user should only need to provide a path (which could also be defaulted) where the database will be stored.",
+  "description": "We don't want to rely on a external dependency to run the database, this project should be self sufficient and run the database itself.\nMake it possible - the user should only need to provide a path (which could also be defaulted) where the database will be stored.\nWe need to maintain the idea of using the sql files from `docs/sql` that is used in `src/utilsts.ts` inside the function 'readSql'.",
   "features": [],
   "featureIdToDisplayIndex": {}
 }
