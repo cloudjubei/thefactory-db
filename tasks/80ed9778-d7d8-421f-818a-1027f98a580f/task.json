@@ -1,0 +1,8 @@
+{
+  "id": "80ed9778-d7d8-421f-818a-1027f98a580f",
+  "status": "-",
+  "title": "Cleanup",
+  "description": "Currently @src/index.ts is completely overloaded. It has all the crucial database operations defined - those should be handled in a separate file - so that index.ts can remain thin (just an entry point - exporting all the necessary functions and types).",
+  "features": [],
+  "featureIdToDisplayIndex": {}
+}
