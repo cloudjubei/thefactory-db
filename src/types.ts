@@ -30,3 +30,7 @@ export interface EntityWithScore extends Entity {
   vec_score: number | null;
   total_score: number;
 }
+
+export interface OpenDbOptions {
+    connectionString: string;
+}

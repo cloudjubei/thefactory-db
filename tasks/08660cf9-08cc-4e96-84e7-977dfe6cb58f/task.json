@@ -13,7 +13,7 @@
     },
     {
       "id": "faa878f1-c357-4d73-a97f-8c878fb5a3f5",
-      "status": "-",
+      "status": "+",
       "title": "Remove pg-embedded dependency and associated code",
       "description": "Remove the `pg-embedded` dependency from `package.json`. Then, refactor `src/connection.ts` to remove all code related to `pg-embedded`, including the `ensureEmbeddedPostgres` function. The `openPostgres` function should now only accept a connection string. Update `src/types.ts` to remove the `databaseDir` option from `OpenDbOptions`.",
       "context": []

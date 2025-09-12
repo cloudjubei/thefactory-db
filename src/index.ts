@@ -1,5 +1,5 @@
-import { openPostgres, closePostgres, shutdownEmbeddedPostgres } from './connection.js';
-import type { SearchParams, Entity, EntityWithScore, EntityInput } from './types.js';
+import { openPostgres } from './connection.js';
+import type { SearchParams, Entity, EntityWithScore, EntityInput, OpenDbOptions } from './types.js';
 import type { DB } from './connection.js';
 import { v4 as uuidv4 } from 'uuid';
 import { createLocalEmbeddingProvider } from './utils/embeddings.js';
@@ -34,8 +34,8 @@ export interface TheFactoryDb {
   close(): Promise<void>;
 }
 
-export async function openDatabase(databaseDir: string): Promise<TheFactoryDb> {
-  const db = await openPostgres(databaseDir);
+export async function openDatabase({ connectionString }: OpenDbOptions): Promise<TheFactoryDb> {
+  const db = await openPostgres(connectionString);
 
   async function addEntity(e: EntityInput): Promise<Entity> {
     const createdAt = nowIso();
@@ -114,17 +114,7 @@ export async function openDatabase(databaseDir: string): Promise<TheFactoryDb> {
     // Prefer hybrid search SQL function for correct FTS + vector blending
     const typesArray = params.types && params.types.length > 0 ? params.types : null;
     const sql = `
-      SELECT id, type, content,
-             to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS "createdAt",
-             to_char(updated_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS "updatedAt",
-             to_jsonb(metadata) AS metadata,
-             NULL::text as tokenized_content,
-             NULL::text as embedding,
-             keyword_score as text_score,
-             cosine_similarity as vec_score,
-             similarity as total_score
-      FROM public.hybrid_search_entities($1, $2::vector, $3::int, $4::text[], $5::float, $6::float, $7::int)
-    `;
+      SELECT id, type, content,\n             to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') AS \"createdAt\",\n             to_char(updated_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') AS \"updatedAt\",\n             to_jsonb(metadata) AS metadata,\n             NULL::text as tokenized_content,\n             NULL::text as embedding,\n             keyword_score as text_score,\n             cosine_similarity as vec_score,\n             similarity as total_score\n      FROM public.hybrid_search_entities($1, $2::vector, $3::int, $4::text[], $5::float, $6::float, $7::int)\n    `;
 
     const r = await db.query(sql, [
       query,
@@ -152,10 +142,7 @@ export async function openDatabase(databaseDir: string): Promise<TheFactoryDb> {
   }
 
   async function close(): Promise<void> {
-    // Close client pool connections first
-    await closePostgres(db, databaseDir);
-    // Then shutdown embedded server if we started one
-    await shutdownEmbeddedPostgres(databaseDir);
+    await db.end();
   }
 
   return {
