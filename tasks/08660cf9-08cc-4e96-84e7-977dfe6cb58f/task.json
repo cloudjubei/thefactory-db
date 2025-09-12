@@ -6,7 +6,7 @@
   "features": [
     {
       "id": "6a9e96d4-5abe-4777-84e9-db952ed87c0b",
-      "status": "-",
+      "status": "+",
       "title": "Update README.md with PostgreSQL setup instructions",
       "description": "Modify the README.md to provide two clear options for setting up a PostgreSQL database: 1. Installing and running PostgreSQL locally. 2. Running PostgreSQL using Docker. For option 2, provide a `docker-compose.yml` file and instructions on how to use it. These instructions should replace the existing setup guide that relies on an embedded database.",
       "context": []

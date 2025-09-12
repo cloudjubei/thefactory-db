@@ -1,31 +1,110 @@
 # thefactory-db
 
-Local PostgreSQL DB with hybrid full-text (tsvector) + vector search (pgvector). Embeddings are computed locally using Transformers.js.
+`thefactory-db` is a standalone, local-first PostgreSQL package with FTS text search (tsvector) and vector similarity (pgvector) for hybrid search across files and documents.
 
-## Embeddings
+It is designed to be reusable across projects. You can depend on it as a local file dependency (`"thefactory-db": "file:../thefactory-db"`) or publish it to a private registry.
 
-We use @xenova/transformers with the model Xenova/all-MiniLM-L6-v2 to generate sentence embeddings via mean pooling. This runs entirely on-device (Node.js, browsers, Electron, and React Native with a compatible backend).
+Database connection is provided via a Postgres connection string.
 
-Notes:
-- First run downloads the model weights to a cache. You can control cache directory via environment variables documented in transformers.js.
-- Outputs are L2-normalized Float32Array vectors.
+## Setup
 
-## Requirements
+To use `thefactory-db`, you need a running PostgreSQL instance with the `pgvector` extension enabled. You have two options:
 
-- PostgreSQL 15+ (recommended) with the pgvector extension installed
-  - CREATE EXTENSION IF NOT EXISTS vector;
-  - Optionally: CREATE EXTENSION IF NOT EXISTS pgcrypto; (used by schema defaults)
+### Option 1: Local PostgreSQL Installation
 
-## Build
+1.  **Install PostgreSQL**: Follow the official guides for your operating system:
+    *   [macOS](https://www.postgresql.org/docs/current/tutorial-install.html) (e.g., via `brew install postgresql`)
+    *   [Windows](https://www.postgresql.org/docs/current/tutorial-install.html) (use the installer)
+    *   [Linux](https://www.postgresql.org/docs/current/tutorial-install.html) (e.g., `sudo apt-get install postgresql postgresql-contrib`)
 
+2.  **Start PostgreSQL**: Ensure the PostgreSQL service is running.
+
+3.  **Create a database and user**:
+    *   Open the PostgreSQL command-line tool (`psql`).
+    *   Run the following SQL commands:
+
+    ```sql
+    CREATE DATABASE thefactorydb;
+    CREATE USER "user" WITH ENCRYPTED PASSWORD 'password';
+    GRANT ALL PRIVILEGES ON DATABASE thefactorydb TO "user";
+    ```
+    *   Connect to your new database: `\c thefactorydb`
+
+4.  **Enable the vector extension**:
+    *   You need to install `pgvector`. Follow the instructions for your OS from the [pgvector GitHub repository](https://github.com/pgvector/pgvector).
+    *   Once installed, connect to your database (`psql -d thefactorydb`) and run:
+
+    ```sql
+    CREATE EXTENSION IF NOT EXISTS vector;
+    ```
+
+5.  **Set your connection URL**: Your database connection string will be:
+    `postgresql://user:password@localhost:5432/thefactorydb`
+
+### Option 2: Docker
+
+If you have Docker and Docker Compose installed, you can easily set up a PostgreSQL instance with `pgvector`.
+
+1.  **Use the `docker-compose.yml` file**: This repository includes a `docker-compose.yml` file for your convenience.
+
+2.  **Start the container**:
+    Run the following command in the same directory as your `docker-compose.yml` file:
+
+    ```bash
+    docker-compose up -d
+    ```
+    This will start a PostgreSQL container in the background. The `pgvector` extension is automatically available in the `pgvector/pgvector` image.
+
+3.  **Connection URL**: The database will be available at:
+    `postgresql://user:password@localhost:5432/thefactorydb`
+
+## Populating the Database
+
+Once your database is running, you can use the populate script to initialize the schema and ingest files.
+
+1.  **Install dependencies:** `npm install`
+2.  **Set the `DATABASE_URL` environment variable**:
+
+    ```bash
+    export DATABASE_URL="postgresql://user:password@localhost:5432/thefactorydb"
+    ```
+
+3.  **Run the populate script:** This will initialize the database, ingest files from `src/` and `docs/`, and run a sample hybrid search query.
+
+    ```bash
+    npm run populate -- --root . --reset
+    ```
+
+See `scripts/populate.ts` for details on command-line flags. The script uses the `DATABASE_URL` by default.
+
+## Usage
+
+```typescript
+import { openDatabase } from 'thefactory-db'
+
+// Set DATABASE_URL in your environment or provide it directly
+const db = await openDatabase({ connectionString: process.env.DATABASE_URL });
+
+// Add an entity
+const entity = await db.addEntity({
+  type: 'internal_document',
+  content: 'This is a test document about hybrid search.',
+  metadata: { author: 'dev' }
+});
+
+// Perform a hybrid search
+const results = await db.searchEntities({
+  query: 'hybrid search test',
+  textWeight: 0.6, // Blend text and vector scores
+  limit: 5
+});
+
+console.log(results);
 ```
-npm run build
-```
 
-## Populate example
+The `openDatabase` function will:
+1.  Connect to your PostgreSQL database.
+2.  Apply the latest schema from `docs/sql/schema.pg.sql`.
+3.  Ensure the `vector` extension is enabled.
 
-Build the package, then run the populate script against your Postgres database (DATABASE_URL or --url):
-
-```
-node dist/scripts/populate.js --root . --url postgres://user:pass@localhost:5432/thefactory --textWeight 0.6 --reset
-```
+The returned `db` object provides an API for adding and searching entities, as well as a `raw()` method for direct `pg.Pool` access.
