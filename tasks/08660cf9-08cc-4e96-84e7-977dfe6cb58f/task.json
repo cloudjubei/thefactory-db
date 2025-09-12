@@ -20,7 +20,7 @@
     },
     {
       "id": "91efa563-0b29-4a73-b470-0e6321d95c93",
-      "status": "-",
+      "status": "+",
       "title": "Update populate script to rely on DATABASE_URL",
       "description": "Modify `scripts/populate.ts` to remove any logic that depends on the embedded database. The script should now exclusively use a PostgreSQL connection URL, which can be provided via the `--url` flag or the `DATABASE_URL` environment variable. Ensure the script's documentation and argument parsing are updated accordingly.",
       "context": []

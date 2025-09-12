@@ -1,13 +1,14 @@
 /*
   Populate and test script for thefactory-db (PostgreSQL)
-  - Initializes/opens a Postgres DB using provided connection string
+  - Initializes/opens a Postgres DB using a provided connection string.
   - Scans the given project root for src/ and docs/ files
   - Computes embeddings locally
   - Inserts into entities table
   - Runs a sample hybrid search
 
   Usage examples:
-    node --env-file=.env dist/scripts/populate.js --root . --url postgres://user:pass@localhost:5432/thefactory --textWeight 0.6 --reset
+    DATABASE_URL="postgres://user:pass@localhost:5432/thefactory" node dist/scripts/populate.js --root . --textWeight 0.6 --reset
+    node dist/scripts/populate.js --root . --url "postgres://user:pass@localhost:5432/thefactory"
 */
 
 import path from 'node:path';
@@ -53,7 +54,7 @@ function walkFiles(dir: string, ignoreDirs: Set<string>): string[] {
 }
 
 function inferType(root: string, filePath: string): EntityType | null {
-  const rel = path.relative(root, filePath).replace(/\\\\/g, '/');
+  const rel = path.relative(root, filePath).replace(/\\/g, '/');
   if (rel.startsWith('src/')) return 'project_file';
   if (rel.startsWith('docs/')) return 'internal_document';
   return null;
@@ -63,9 +64,15 @@ async function main() {
   const args = parseArgs(process.argv.slice(2));
   const rootArg = (args.root as string) || process.cwd();
   const root = path.resolve(rootArg);
-  const url = (args.url as string) || process.env.DATABASE_URL || 'postgres://postgres:postgres@localhost:5432/thefactory';
+  const url = (args.url as string) || process.env.DATABASE_URL;
   const textWeight = Math.max(0, Math.min(1, Number(args.textWeight ?? 0.6)));
   const reset = Boolean(args.reset);
+
+  if (!url) {
+    console.error('[thefactory-db] Error: Database URL is required.');
+    console.error('[thefactory-db] Please provide it via the --url flag or DATABASE_URL environment variable.');
+    process.exit(1);
+  }
 
   console.log(`[thefactory-db] Root: ${root}`);
   console.log(`[thefactory-db] URL:  ${url}`);
@@ -99,7 +106,7 @@ async function main() {
       if (!type) continue;
 
       const content = fs.readFileSync(file, 'utf8');
-      const rel = path.relative(root, file).replace(/\\\\/g, '/');
+      const rel = path.relative(root, file).replace(/\\/g, '/');
       const metadata = {
         path: rel,
         size: stat.size,
@@ -120,7 +127,7 @@ async function main() {
   console.log(`[thefactory-db] Inserted ${inserted} entities.`);
 
   const sampleQuery = 'database vector hybrid search';
-  console.log(`[thefactory-db] Running sample search: "${sampleQuery}" (textWeight=${textWeight})`);
+  console.log(`[thefactory-db] Running sample search: \"${sampleQuery}\" (textWeight=${textWeight})`);
   const results = await db.searchEntities({
     query: sampleQuery,
     textWeight,
@@ -133,7 +140,7 @@ async function main() {
     let metaPath = '';
     try {
       if (r.metadata) {
-        const obj = JSON.parse(r.metadata);
+        const obj = JSON.parse(r.metadata as string);
         metaPath = obj?.path || '';
       }
     } catch {}
