@@ -23,7 +23,7 @@
     },
     {
       "id": "243aee2b-d1dc-41ac-b906-c9ad28a6e4ab",
-      "status": "-",
+      "status": "+",
       "title": "Implement Local PostgreSQL Server Management",
       "description": "In @src/connection.ts  create a new function to manage the lifecycle of an embedded PostgreSQL server using `pg-embedded`. This function should handle initialization, starting the server, and returning a connection string for the local instance. The `openPostgres` function should be updated to use this new logic when `databaseDir` is provided.",
       "context": [

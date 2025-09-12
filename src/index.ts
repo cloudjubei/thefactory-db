@@ -34,7 +34,7 @@ export interface TheFactoryDb {
 }
 
 export async function openDatabase(opts: OpenDbOptions): Promise<TheFactoryDb> {
-  const pool = await openPostgres({ connectionString: opts.connectionString });
+  const pool = await openPostgres({ connectionString: opts.connectionString, databaseDir: opts.databaseDir });
 
   async function addEntity(e: EntityInput): Promise<Entity> {
     const createdAt = nowIso();

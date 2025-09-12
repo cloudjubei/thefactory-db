@@ -23,7 +23,7 @@ Key Source Modules (src/)
   - Entity shape for insertion and retrieval
   - Search options and result row types
   - OpenDbOptions: now supports either an external connection string or a local data directory for an embedded Postgres runtime.
-- src/connection.ts: Connection factory and schema init. Loads SQL from docs/sql/schema.pg.sql and ensures pgvector extension.
+- src/connection.ts: Connection factory and schema init. Loads SQL from docs/sql/schema.pg.sql and ensures pgvector extension. Includes ensureEmbeddedPostgres() which boots a local Postgres using pg-embedded given a data directory and returns a connection string. openPostgres() accepts either a connectionString or databaseDir and will start the embedded server when needed.
 
 Database Schema
 - entities table fields:
@@ -48,9 +48,9 @@ Scripts (scripts/)
     - --reset (boolean) TRUNCATE entities
 
 Local PostgreSQL Runtime
-- This project includes the pg-embedded dependency to enable running a self-contained PostgreSQL instance without relying on external services. (Note: the dependency pg was removed)
+- This project includes the pg-embedded dependency to enable running a self-contained PostgreSQL instance without relying on external services.
 - SQL files under docs/sql/ continue to be the single source of truth for schema and queries (loaded at runtime by utility functions, e.g., readSql).
-- Consumers can now configure the database data directory path with OpenDbOptions.databaseDir. If not provided, the implementation will choose a sensible default directory (for example, ./.thefactory-db/pgdata within the current working directory). Alternatively, provide OpenDbOptions.connectionString to connect to an existing PostgreSQL instance.
+- Consumers can configure the database data directory path with OpenDbOptions.databaseDir. If not provided, the implementation uses a default directory ./.thefactory-db/pgdata within the current working directory. Alternatively, provide OpenDbOptions.connectionString to connect to an existing PostgreSQL instance.
 
 Usage in Other Projects
 - Add as a local dependency or install from your registry. Provide either a Postgres connection string or rely on the embedded runtime with a default data directory.
