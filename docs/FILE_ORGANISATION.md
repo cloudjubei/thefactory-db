@@ -47,7 +47,7 @@ Scripts (scripts/)
     - --reset (boolean) TRUNCATE entities
 
 Local PostgreSQL Runtime
-- This project includes the pg-embedded dependency to enable running a self-contained PostgreSQL instance without relying on external services.
+- This project includes the pg-embedded dependency to enable running a self-contained PostgreSQL instance without relying on external services. (Note: the dependency pg was removed)
 - SQL files under docs/sql/ continue to be the single source of truth for schema and queries (loaded at runtime by utility functions, e.g., readSql).
 - Consumers will be able to configure the database data directory path (with sensible defaults) in higher-level features building on this capability.
 
