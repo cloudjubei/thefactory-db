@@ -1,7 +1,7 @@
 # File and Tooling Organisation
 
 Overview
-- thefactory-db is a standalone, local-first PostgreSQL package with FTS text search (tsvector) and vector similarity (pgvector) for hybrid search across files and documents.
+- thefactory-db is a PostgreSQL wrapper that provides FTS text search (tsvector) and vector similarity (pgvector) for hybrid search across files and documents.
 - It is designed to be reusable across projects. You can depend on it as a local file dependency ("thefactory-db": "file:../thefactory-db") or publish it to a private registry.
 - Database connection is provided via a Postgres connection string so multiple projects can access the same DB (ensure access strategy avoids concurrency hazards at the application layer).
 
@@ -22,8 +22,8 @@ Key Source Modules (src/)
   - EntityType = 'project_file' | 'internal_document' | 'external_blob'
   - Entity shape for insertion and retrieval
   - Search options and result row types
-  - OpenDbOptions: now supports either an external connection string or a local data directory for an embedded Postgres runtime.
-- src/connection.ts: Connection factory and schema init. Loads SQL from docs/sql/schema.pg.sql and ensures pgvector extension. Includes ensureEmbeddedPostgres() which boots a local Postgres using pg-embedded given a data directory and returns a connection string. openPostgres() accepts either a connectionString or databaseDir and will start the embedded server when needed.
+  - OpenDbOptions: requires an external connection string to connect to a PostgreSQL instance.
+- src/connection.ts: Connection factory and schema init. Loads SQL from docs/sql/schema.pg.sql and ensures the pgvector extension is available. It uses the provided connection string to establish a connection to the database.
 
 Database Schema
 - entities table fields:
@@ -47,15 +47,9 @@ Scripts (scripts/)
     - --textWeight <0..1> (default: 0.6) Weight for text vs vector
     - --reset (boolean) TRUNCATE entities
 
-Local PostgreSQL Runtime
-- This project includes the pg-embedded dependency to enable running a self-contained PostgreSQL instance without relying on external services.
-- SQL files under docs/sql/ continue to be the single source of truth for schema and queries (loaded at runtime by utility functions, e.g., readSql).
-- Consumers can configure the database data directory path with OpenDbOptions.databaseDir. If not provided, the implementation uses a default directory ./.thefactory-db/pgdata within the current working directory. Alternatively, provide OpenDbOptions.connectionString to connect to an existing PostgreSQL instance.
-
 Usage in Other Projects
-- Add as a local dependency or install from your registry. Provide either a Postgres connection string or rely on the embedded runtime with a default data directory.
+- Add as a local dependency or install from your registry. Provide a Postgres connection string.
 - Example:
   - import { openDatabase } from 'thefactory-db'
-  - const db = await openDatabase({ databaseDir: ".thefactory-db/pgdata" }) // or omit for default
-  - // or: const db = await openDatabase({ connectionString: process.env.DATABASE_URL })
+  - const db = await openDatabase({ connectionString: process.env.DATABASE_URL })
   - await db.addEntity(...); const rows = await db.searchEntities(...);
