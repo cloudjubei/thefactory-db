@@ -1,5 +1,5 @@
 import { openPostgres, closePostgres, shutdownEmbeddedPostgres } from './connection.js';
-import type { OpenDbOptions, SearchParams, Entity, EntityWithScore, EntityInput } from './types.js';
+import type { SearchParams, Entity, EntityWithScore, EntityInput } from './types.js';
 import type { DB } from './connection.js';
 import { v4 as uuidv4 } from 'uuid';
 import { createLocalEmbeddingProvider } from './utils/embeddings.js';
@@ -34,17 +34,8 @@ export interface TheFactoryDb {
   close(): Promise<void>;
 }
 
-export async function openDatabase(opts: OpenDbOptions): Promise<TheFactoryDb> {
-  // Pass through both connectionString and databaseDir so callers can
-  // either connect to an external DB or start/use a managed local instance.
-  const pool = await openPostgres({
-    connectionString: opts.connectionString,
-    databaseDir: opts.databaseDir,
-  });
-
-  // If no connection string provided, we started an embedded instance
-  const usingEmbedded = !opts.connectionString;
-  const embeddedDir = opts.databaseDir; // may be undefined => default dir in shutdown
+export async function openDatabase(databaseDir: string): Promise<TheFactoryDb> {
+  const db = await openPostgres(databaseDir);
 
   async function addEntity(e: EntityInput): Promise<Entity> {
     const createdAt = nowIso();
@@ -52,7 +43,7 @@ export async function openDatabase(opts: OpenDbOptions): Promise<TheFactoryDb> {
     const embedding = await embeddingProvider.embed(content);
 
     const id = uuidv4();
-    await pool.query(SQL.insert, [
+    await db.query(SQL.insert, [
       id,
       e.type,
       content,
@@ -66,7 +57,7 @@ export async function openDatabase(opts: OpenDbOptions): Promise<TheFactoryDb> {
   }
 
   async function getEntityById(id: string): Promise<Entity | undefined> {
-    const r = await pool.query(SQL.getById, [id]);
+    const r = await db.query(SQL.getById, [id]);
     const row = r.rows[0];
     if (!row) return undefined;
     return {
@@ -95,7 +86,7 @@ export async function openDatabase(opts: OpenDbOptions): Promise<TheFactoryDb> {
       embeddingLiteral = toVectorLiteral(emb);
     }
 
-    await pool.query(SQL.update, [
+    await db.query(SQL.update, [
       id,
       patch.type ?? null,
       newContent ?? null,
@@ -107,7 +98,7 @@ export async function openDatabase(opts: OpenDbOptions): Promise<TheFactoryDb> {
   }
 
   async function deleteEntity(id: string): Promise<boolean> {
-    const r = await pool.query(SQL.deleteById, [id]);
+    const r = await db.query(SQL.deleteById, [id]);
     return (r.rowCount ?? 0) > 0;
   }
 
@@ -135,7 +126,7 @@ export async function openDatabase(opts: OpenDbOptions): Promise<TheFactoryDb> {
       FROM public.hybrid_search_entities($1, $2::vector, $3::int, $4::text[], $5::float, $6::float, $7::int)
     `;
 
-    const r = await pool.query(sql, [
+    const r = await db.query(sql, [
       query,
       qvec,
       limit,
@@ -162,11 +153,9 @@ export async function openDatabase(opts: OpenDbOptions): Promise<TheFactoryDb> {
 
   async function close(): Promise<void> {
     // Close client pool connections first
-    await closePostgres(pool);
+    await closePostgres(db, databaseDir);
     // Then shutdown embedded server if we started one
-    if (usingEmbedded) {
-      await shutdownEmbeddedPostgres(embeddedDir);
-    }
+    await shutdownEmbeddedPostgres(databaseDir);
   }
 
   return {
@@ -175,7 +164,7 @@ export async function openDatabase(opts: OpenDbOptions): Promise<TheFactoryDb> {
     updateEntity,
     deleteEntity,
     searchEntities,
-    raw: () => pool,
+    raw: () => db,
     close,
   };
 }

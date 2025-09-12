@@ -4,13 +4,13 @@ export type InitEntitiesOptions = {
   embeddingDimension?: number // default 1536
 }
 
-export function initEntitiesSchema(db: DB, opts: InitEntitiesOptions = {}): void {
+export async function initEntitiesSchema(db: DB, opts: InitEntitiesOptions = {}): Promise<void> {
   const dim = opts.embeddingDimension ?? 1536
   const hasVSS = false //TODO:
 
-  const init = db.transaction(() => {
+  // const init = db.transaction(() => {
     // Base table
-    db.exec(`
+    await db.query(`
       CREATE TABLE IF NOT EXISTS entities (
         id TEXT PRIMARY KEY,
         type TEXT NOT NULL,
@@ -24,7 +24,7 @@ export function initEntitiesSchema(db: DB, opts: InitEntitiesOptions = {}): void
     `)
 
     // Keep updatedAt fresh on updates (avoid recursion with WHEN clause)
-    db.exec(`
+    await db.query(`
       CREATE TRIGGER IF NOT EXISTS trg_entities_updatedAt
       AFTER UPDATE ON entities
       FOR EACH ROW
@@ -35,7 +35,7 @@ export function initEntitiesSchema(db: DB, opts: InitEntitiesOptions = {}): void
     `)
 
     // FTS5 index over tokenized_content using external content linking to entities by rowid
-    db.exec(`
+    await db.query(`
       CREATE VIRTUAL TABLE IF NOT EXISTS entities_fts
       USING fts5(
         tokenized_content,
@@ -45,7 +45,7 @@ export function initEntitiesSchema(db: DB, opts: InitEntitiesOptions = {}): void
     `)
 
     // Triggers to sync FTS with entities
-    db.exec(`
+    await db.query(`
       CREATE TRIGGER IF NOT EXISTS trg_entities_ai_fts
       AFTER INSERT ON entities
       BEGIN
@@ -53,7 +53,7 @@ export function initEntitiesSchema(db: DB, opts: InitEntitiesOptions = {}): void
       END;
     `)
 
-    db.exec(`
+    await db.query(`
       CREATE TRIGGER IF NOT EXISTS trg_entities_ad_fts
       AFTER DELETE ON entities
       BEGIN
@@ -62,7 +62,7 @@ export function initEntitiesSchema(db: DB, opts: InitEntitiesOptions = {}): void
       END;
     `)
 
-    db.exec(`
+    await db.query(`
       CREATE TRIGGER IF NOT EXISTS trg_entities_au_fts
       AFTER UPDATE OF tokenized_content ON entities
       BEGIN
@@ -75,12 +75,12 @@ export function initEntitiesSchema(db: DB, opts: InitEntitiesOptions = {}): void
 
     // Vector index via sqlite-vss (if loaded)
     if (hasVSS) {
-      db.exec(`
+      await db.query(`
         CREATE VIRTUAL TABLE IF NOT EXISTS entities_vss
         USING vss0(embedding(${dim}));
       `)
 
-      db.exec(`
+      await db.query(`
         CREATE TRIGGER IF NOT EXISTS trg_entities_ai_vss
         AFTER INSERT ON entities
         WHEN NEW.embedding IS NOT NULL
@@ -89,7 +89,7 @@ export function initEntitiesSchema(db: DB, opts: InitEntitiesOptions = {}): void
         END;
       `)
 
-      db.exec(`
+      await db.query(`
         CREATE TRIGGER IF NOT EXISTS trg_entities_ad_vss
         AFTER DELETE ON entities
         BEGIN
@@ -97,7 +97,7 @@ export function initEntitiesSchema(db: DB, opts: InitEntitiesOptions = {}): void
         END;
       `)
 
-      db.exec(`
+      await db.query(`
         CREATE TRIGGER IF NOT EXISTS trg_entities_au_vss
         AFTER UPDATE OF embedding ON entities
         BEGIN
@@ -106,7 +106,6 @@ export function initEntitiesSchema(db: DB, opts: InitEntitiesOptions = {}): void
         END;
       `)
     }
-  })
-
-  init()
+  // })
+  // init()
 }

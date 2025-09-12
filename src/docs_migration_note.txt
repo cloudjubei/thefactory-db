@@ -1,1 +1,0 @@
-Note: This package has been migrated from SQLite to PostgreSQL with pgvector. If you previously used the SQLite API (path/pragmas), switch to providing a Postgres connection string: openDatabase({ connectionString: process.env.DATABASE_URL }).
