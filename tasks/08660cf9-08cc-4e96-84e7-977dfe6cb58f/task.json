@@ -1,0 +1,8 @@
+{
+  "id": "08660cf9-08cc-4e96-84e7-977dfe6cb58f",
+  "status": "-",
+  "title": "This project needs to rely on an PostgreSQL database that is provided via url",
+  "description": "Currently we were relying on having a local embedded PostgresSQL database running. But these don't have all the latest functionality that we require (CREATE EXTENSION vector) . We need to modify all the code and especially the README.md to walk a user through 2 options:\n1) having a local PostgresSQL running and providing access to it via url\n2) running PostgresSQL in docker.\nBoth options need to be explained from scratch - for option 2 assuming the user has docker installed, but for option 1 assuming they have nothing.",
+  "features": [],
+  "featureIdToDisplayIndex": {}
+}
