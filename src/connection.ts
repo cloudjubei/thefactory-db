@@ -9,6 +9,8 @@ let poolCache: Map<string, Pool> = new Map();
 
 // Embedded server cache keyed by data dir to avoid multiple instances
 const embeddedUrlByDir = new Map<string, string>();
+// Track embedded instance objects to allow graceful shutdown
+const embeddedInstanceByDir = new Map<string, any>();
 
 export interface OpenOptions {
   connectionString?: string;
@@ -91,6 +93,7 @@ export async function ensureEmbeddedPostgres(databaseDir?: string): Promise<stri
   }
 
   embeddedUrlByDir.set(baseDir, url);
+  embeddedInstanceByDir.set(baseDir, pg);
   return url;
 }
 
@@ -110,4 +113,47 @@ export async function openPostgres({ connectionString, databaseDir }: OpenOption
   await initSchema(pool);
   poolCache.set(key, pool);
   return pool;
+}
+
+// Close a pg.Pool and remove it from cache
+export async function closePostgres(pool: Pool): Promise<void> {
+  try {
+    await pool.end();
+  } finally {
+    // Remove from cache by identity
+    for (const [key, value] of poolCache.entries()) {
+      if (value === pool) {
+        poolCache.delete(key);
+        break;
+      }
+    }
+  }
+}
+
+// Gracefully shut down an embedded Postgres instance for the given data dir (or default)
+export async function shutdownEmbeddedPostgres(databaseDir?: string): Promise<void> {
+  const baseDir = path.resolve(databaseDir || defaultDataDir());
+  const instance = embeddedInstanceByDir.get(baseDir);
+  if (!instance) {
+    // Nothing to do
+    embeddedUrlByDir.delete(baseDir);
+    return;
+  }
+  try {
+    if (typeof instance.stop === 'function') {
+      await instance.stop();
+    } else if (typeof instance.down === 'function') {
+      // some versions may use down()
+      await instance.down();
+    }
+  } catch {}
+  try {
+    if (typeof instance.cleanup === 'function') {
+      await instance.cleanup();
+    } else if (typeof instance.clean === 'function') {
+      await instance.clean();
+    }
+  } catch {}
+  embeddedInstanceByDir.delete(baseDir);
+  embeddedUrlByDir.delete(baseDir);
 }

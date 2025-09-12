@@ -1,4 +1,4 @@
-import { openPostgres } from './connection.js';
+import { openPostgres, closePostgres, shutdownEmbeddedPostgres } from './connection.js';
 import type { OpenDbOptions, SearchParams, Entity, EntityWithScore, EntityInput } from './types.js';
 import type { DB } from './connection.js';
 import { v4 as uuidv4 } from 'uuid';
@@ -31,6 +31,7 @@ export interface TheFactoryDb {
   deleteEntity(id: string): Promise<boolean>;
   searchEntities(params: SearchParams): Promise<EntityWithScore[]>;
   raw(): DB;
+  close(): Promise<void>;
 }
 
 export async function openDatabase(opts: OpenDbOptions): Promise<TheFactoryDb> {
@@ -40,6 +41,10 @@ export async function openDatabase(opts: OpenDbOptions): Promise<TheFactoryDb> {
     connectionString: opts.connectionString,
     databaseDir: opts.databaseDir,
   });
+
+  // If no connection string provided, we started an embedded instance
+  const usingEmbedded = !opts.connectionString;
+  const embeddedDir = opts.databaseDir; // may be undefined => default dir in shutdown
 
   async function addEntity(e: EntityInput): Promise<Entity> {
     const createdAt = nowIso();
@@ -155,6 +160,15 @@ export async function openDatabase(opts: OpenDbOptions): Promise<TheFactoryDb> {
     }));
   }
 
+  async function close(): Promise<void> {
+    // Close client pool connections first
+    await closePostgres(pool);
+    // Then shutdown embedded server if we started one
+    if (usingEmbedded) {
+      await shutdownEmbeddedPostgres(embeddedDir);
+    }
+  }
+
   return {
     addEntity,
     getEntityById,
@@ -162,6 +176,7 @@ export async function openDatabase(opts: OpenDbOptions): Promise<TheFactoryDb> {
     deleteEntity,
     searchEntities,
     raw: () => pool,
+    close,
   };
 }
 

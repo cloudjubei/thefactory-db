@@ -1,6 +1,6 @@
 {
   "id": "b844d9b3-3981-43d3-ba34-2039f31f5a53",
-  "status": "~",
+  "status": "+",
   "title": "This project needs to run the postgresql database",
   "description": "We don't want to rely on a external dependency to run the database, this project should be self sufficient and run the database itself.\nMake it possible - the user should only need to provide a path (which could also be defaulted) where the database will be stored.\nWe need to maintain the idea of using the sql files from `docs/sql` that is used in `src/utilsts.ts` inside the function 'readSql'.",
   "features": [
@@ -43,7 +43,7 @@
     },
     {
       "id": "afd5dac4-c305-4889-b023-f37463b52934",
-      "status": "-",
+      "status": "+",
       "title": "Add Graceful Shutdown for Local DB",
       "description": "Implement a `close()` method in the `TheFactoryDb` interface and its implementation in @src/index.ts . This method will gracefully shut down the embedded PostgreSQL server if one was started.",
       "context": [
