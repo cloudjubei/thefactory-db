@@ -33,7 +33,7 @@
     },
     {
       "id": "0849b72f-2728-4db2-a88e-feafbe527ddc",
-      "status": "-",
+      "status": "+",
       "title": "Adapt `openDatabase` for Local DB",
       "description": "Update the `openDatabase` function in @src/index.ts  to handle the new `databaseDir` option. It should pass the options to the modified `openPostgres` function to establish a connection to either an external or a local, managed PostgreSQL instance.",
       "context": [
