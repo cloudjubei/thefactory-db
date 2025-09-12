@@ -27,7 +27,7 @@
     },
     {
       "id": "a16dcb52-9df8-40d3-82bf-c2600c8df0ac",
-      "status": "-",
+      "status": "+",
       "title": "Create docker-compose.yml for local development",
       "description": "Create a `docker-compose.yml` file in the root of the project. This file should define a PostgreSQL service with the `pgvector` extension enabled. Include environment variables for the user, password, and database name. Ensure the port is mapped to the host machine.",
       "context": []
