@@ -13,7 +13,7 @@
     },
     {
       "id": "718c503d-16d7-49eb-90fa-5355546d7bc8",
-      "status": "-",
+      "status": "+",
       "title": "Update Database Options",
       "description": "Modify the `OpenDbOptions` type in @src/types.ts  to accept an optional `databaseDir` string. The `connectionString` property should also become optional. If `databaseDir` is provided, a local PostgreSQL instance will be started in that directory. Provide a default path if not provided.",
       "context": [
