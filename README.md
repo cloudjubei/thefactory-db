@@ -113,6 +113,12 @@ node scripts/populate.ts -- --root . --reset --url postgresql://user:password@lo
 
 The script will initialize the schema (including `CREATE EXTENSION IF NOT EXISTS vector`) and ingest files from `src/` and `docs/`, then run a sample hybrid search. You can also set `DATABASE_URL` instead of supplying `--url`.
 
+3) Clear the database
+
+```bash
+node scripts/clear.ts -- --root . --reset --url postgresql://user:password@localhost:5432/thefactory-db
+```
+
 ## Usage
 
 ```typescript

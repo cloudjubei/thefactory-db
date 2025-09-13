@@ -21,7 +21,7 @@ const SQL = {
   getById: readSql('get_entity_by_id')!,
   deleteById: readSql('delete_entity')!,
   update: readSql('update_entity')!,
-  searchBase: readSql('search_entities')!,
+  searchEntities: readSql('search_entities_query')!,
 }
 
 export interface TheFactoryDb {
@@ -64,8 +64,6 @@ export async function openDatabase({ connectionString }: OpenDbOptions): Promise
       id: row.id,
       type: row.type,
       content: row.content ?? null,
-      tokenized_content: row.tokenized_content ?? null,
-      embedding: row.embedding ?? null,
       createdAt: row.createdAt ?? row.created_at ?? nowIso(),
       updatedAt: row.updatedAt ?? row.updated_at ?? nowIso(),
       metadata: row.metadata ?? null,
@@ -114,12 +112,8 @@ export async function openDatabase({ connectionString }: OpenDbOptions): Promise
     const semWeight = 1 - textWeight
     const limit = Math.max(1, Math.min(1000, params.limit ?? 20))
 
-    // Prefer hybrid search SQL function for correct FTS + vector blending
     const typesArray = params.types && params.types.length > 0 ? params.types : null
-    const sql = `
-      SELECT id, type, content,\n             to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') AS \"createdAt\",\n             to_char(updated_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') AS \"updatedAt\",\n             to_jsonb(metadata) AS metadata,\n             NULL::text as tokenized_content,\n             NULL::text as embedding,\n             keyword_score as text_score,\n             cosine_similarity as vec_score,\n             similarity as total_score\n      FROM public.hybrid_search_entities($1, $2::vector, $3::int, $4::text[], $5::float, $6::float, $7::int)\n    `
-
-    const r = await db.query(sql, [query, qvec, limit, typesArray, textWeight, semWeight, 50])
+    const r = await db.query(SQL.searchEntities, [query, qvec, limit, typesArray, textWeight, semWeight, 50])
 
     return r.rows.map((row: any) => ({
       id: row.id,

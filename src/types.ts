@@ -4,13 +4,13 @@ export interface Entity {
   id: string
   type: EntityType
   content: string | null
-  // tokenized_content is not stored in Postgres schema; return null for compatibility
-  tokenized_content: string | null
-  // embedding is stored as pgvector on DB; we return null or a string representation if needed
-  embedding: string | null
   createdAt: string // ISO
   updatedAt: string // ISO
   metadata?: string | null // JSON-encoded object
+}
+export interface EntityFull extends Entity {
+  fts: string | null
+  embedding: string | null
 }
 export type EntityInput = {
   type: EntityType
