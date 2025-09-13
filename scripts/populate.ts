@@ -3,8 +3,8 @@
   - Initializes/opens a Postgres DB using a provided connection string.
   - Scans the given project root for src/ and docs/ files
   - Computes embeddings locally
-  - Inserts into entities table
-  - Runs a sample hybrid search
+  - Inserts into documents table (text content)
+  - Runs a sample hybrid search over documents
 
   Usage examples:
     DATABASE_URL="postgres://user:pass@localhost:5432/thefactory" node dist/scripts/populate.js --root . --textWeight 0.6 --reset
@@ -14,7 +14,6 @@
 import path from 'node:path'
 import fs from 'node:fs'
 import { openDatabase } from '../dist/index.js'
-import type { EntityType } from '../dist/types.js'
 
 function parseArgs(argv: string[]) {
   const out: Record<string, string | boolean> = {}
@@ -53,7 +52,7 @@ function walkFiles(dir: string, ignoreDirs: Set<string>): string[] {
   return results
 }
 
-function inferType(root: string, filePath: string): EntityType | null {
+function inferType(root: string, filePath: string): string | null {
   const rel = path.relative(root, filePath).replace(/\\/g, '/')
   if (rel.startsWith('src/')) return 'project_file'
   if (rel.startsWith('docs/')) return 'internal_document'
@@ -81,8 +80,8 @@ async function main() {
   const db = await openDatabase({ connectionString: url })
 
   if (reset) {
-    console.log('[thefactory-db] Resetting entities table...')
-    await db.raw().query('TRUNCATE TABLE entities RESTART IDENTITY')
+    console.log('[thefactory-db] Resetting documents table...')
+    await db.raw().query('TRUNCATE TABLE documents RESTART IDENTITY')
   }
 
   const targets = [path.join(root, 'src'), path.join(root, 'docs')]
@@ -115,7 +114,7 @@ async function main() {
         ext: path.extname(file),
       }
 
-      await db.addEntity({
+      await db.addDocument({
         type,
         content,
         metadata: JSON.stringify(metadata),
@@ -126,13 +125,13 @@ async function main() {
     }
   }
 
-  console.log(`[thefactory-db] Inserted ${inserted} entities.`)
+  console.log(`[thefactory-db] Inserted ${inserted} documents.`)
 
   const sampleQuery = 'database vector hybrid search'
   console.log(
-    `[thefactory-db] Running sample search: \"${sampleQuery}\" (textWeight=${textWeight})`,
+    `[thefactory-db] Running sample search: "${sampleQuery}" (textWeight=${textWeight})`,
   )
-  const results = await db.searchEntities({
+  const results = await db.searchDocuments({
     query: sampleQuery,
     textWeight,
     limit: 10,

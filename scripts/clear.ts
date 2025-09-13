@@ -1,4 +1,3 @@
-
 import path from 'node:path'
 import { openDatabase } from '../dist/index.js'
 
@@ -26,15 +25,19 @@ async function main() {
   const root = path.resolve(rootArg)
   const url = (args.url as string) || process.env.DATABASE_URL
 
+  if (!url) {
+    console.error('[thefactory-db] Error: Database URL is required. Use --url or set DATABASE_URL')
+    process.exit(1)
+  }
+
   const db = await openDatabase({ connectionString: url })
 
   const pool = db.raw()
-  const res = await pool.query('TRUNCATE TABLE entities')
-  console.log(res)
+  await pool.query('TRUNCATE TABLE documents, entities RESTART IDENTITY')
+  console.log('[thefactory-db] Truncated tables: documents, entities')
 }
 
 main().catch((err) => {
   console.error('[thefactory-db] Error:', err)
   process.exit(1)
 })
-

@@ -1,8 +1,4 @@
-
-import path from 'node:path'
-import fs from 'node:fs'
 import { openDatabase } from '../dist/index.js'
-import type { EntityType } from '../dist/types.js'
 
 function parseArgs(argv: string[]) {
   const out: Record<string, string | boolean> = {}
@@ -24,41 +20,82 @@ function parseArgs(argv: string[]) {
 
 async function main() {
   const args = parseArgs(process.argv.slice(2))
-  const rootArg = (args.root as string) || process.cwd()
-  const root = path.resolve(rootArg)
   const url = (args.url as string) || process.env.DATABASE_URL
+  if (!url) {
+    console.error('[thefactory-db] Error: Database URL is required. Use --url or set DATABASE_URL')
+    process.exit(1)
+  }
 
   const db = await openDatabase({ connectionString: url })
 
-  const pool = db.raw()
-  const countRes = await pool.query('SELECT COUNT(*)::int AS c FROM entities')
-  const count = (countRes.rows[0]?.c as number) || 0
-  if (count === 0) {
-    await db.addEntity({
-      type: 'internal_document',
-      content: 'This is a test document about vectors and tokens',
-    })
-    await db.addEntity({
-      type: 'project_file',
-      content: 'Another file focusing on full text search using Postgres tsvector',
-    })
-    await db.addEntity({
-      type: 'external_blob',
-      content: 'Another file focusing on embedding search using pgvector',
-    })
-  }
+  // Seed a couple of documents (text content)
+  const d1 = await db.addDocument({
+    type: 'note',
+    content: 'This is a test document about vectors and tokens',
+    metadata: JSON.stringify({ author: 'alice' }),
+  })
+  const d2 = await db.addDocument({
+    type: 'note',
+    content: 'Another file focusing on full text search using Postgres tsvector',
+    metadata: JSON.stringify({ author: 'bob' }),
+  })
 
-  const results = await db.searchEntities({
+  // Seed a couple of entities (JSON content)
+  const e1 = await db.addEntity({
+    type: 'note_meta',
+    content: {
+      info: { category: 'text', tags: ['pgvector', 'fts'] },
+      title: 'Hybrid search intro',
+      author: 'carol',
+    },
+    metadata: JSON.stringify({ source: 'example' }),
+  })
+  const e2 = await db.addEntity({
+    type: 'note_meta',
+    content: {
+      info: { category: 'howto', tags: ['entities', 'json'] },
+      title: 'Working with JSON entities',
+      author: 'dave',
+    },
+    metadata: JSON.stringify({ source: 'example' }),
+  })
+
+  console.log('Inserted:')
+  console.log({ d1: d1.id, d2: d2.id, e1: e1.id, e2: e2.id })
+
+  // Run document search
+  const docResults = await db.searchDocuments({
     query: 'vectors OR tokens',
     textWeight: 0.6,
     limit: 10,
+    types: ['note'],
   })
+  console.log('\nDocument search results:')
+  for (const r of docResults) {
+    console.log({ id: r.id, type: r.type, score: r.total_score.toFixed(4) })
+  }
 
-  console.log('Results:', results)
+  // Run entity search (hybrid search over JSON values)
+  const entResults = await db.searchEntities({
+    query: 'pgvector OR json',
+    textWeight: 0.5,
+    limit: 10,
+    types: ['note_meta'],
+  })
+  console.log('\nEntity search results:')
+  for (const r of entResults) {
+    console.log({ id: r.id, type: r.type, score: r.total_score?.toFixed?.(4) ?? r.total_score })
+  }
+
+  // JSON match demonstration
+  const matched = await db.matchEntities({ info: { category: 'text' } }, { types: ['note_meta'] })
+  console.log('\nEntity match (content @> { info: { category: "text" } }):')
+  for (const r of matched) {
+    console.log({ id: r.id, type: r.type })
+  }
 }
 
 main().catch((err) => {
   console.error('[thefactory-db] Error:', err)
   process.exit(1)
 })
-
