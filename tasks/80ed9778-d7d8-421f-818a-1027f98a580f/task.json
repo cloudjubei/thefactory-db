@@ -41,7 +41,7 @@
     },
     {
       "id": "5c60e0ba-d0b7-4ff5-ba6f-591c1f3839be",
-      "status": "-",
+      "status": "+",
       "title": "Database API for Documents",
       "description": "Refactor src/index.ts to implement Document operations using the new documents table and search_documents_query:\n- addDocument(d: DocumentInput): Promise<Document> — compute embedding from d.content ('' if undefined), insert into documents via new insert_document SQL, return normalized Document.\n- getDocumentById(id: string): Promise<Document | undefined> — use new get_document_by_id SQL.\n- updateDocument(id: string, patch: Partial<DocumentInput>): Promise<Document | undefined> — update content/type/metadata and re-embed if content changed.\n- deleteDocument(id: string): Promise<boolean> — delete by id.\n- searchDocuments(params: SearchParams): Promise<DocumentWithScore[]> — build embedding from params.query, build filter jsonb from params.ids/types and call search_documents_query.\nAdd corresponding SQL constants: insert_document, get_document_by_id, update_document, delete_document, as well as mapping in SQLS and usage in index.ts. Remove dependence on the old single-table 'entities' for document operations.",
       "context": []

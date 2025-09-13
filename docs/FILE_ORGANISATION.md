@@ -17,15 +17,22 @@ Top-level Layout
 Key Source Modules (src/)
 
 - src/index.ts: Public entry point. Exports openDatabase(options) which returns a Database API instance. The instance provides:
-  - addEntity({ type, content?, metadata? }): Promise<Entity> — Inserts an entity with embedding.
-  - searchEntities({ query, textWeight?, limit?, types? }): Promise<EntityWithScore[]> — Hybrid search combining ts_rank and vector cosine similarity.
-  - raw(): pg.Pool — Gives low-level access for advanced SQL.
-- src/types.ts: Shared TypeScript types:
-  - EntityType = 'project_file' | 'internal_document' | 'external_blob'
-  - Entity shape for insertion and retrieval
-  - Search options and result row types
-  - OpenDbOptions: requires an external connection string to connect to a PostgreSQL instance.
-- src/connection.ts: Connection factory and schema init. Loads SQL from docs/sql/schema.pg.sql and ensures the pgvector extension is available. It uses the provided connection string to establish a connection to the database.
+  - Documents API (text content)
+    - addDocument({ type, content?, metadata? }): Promise<Document> — Inserts a document with embedding using the documents table.
+    - getDocumentById(id: string): Promise<Document | undefined>
+    - updateDocument(id: string, patch: Partial<DocumentInput>): Promise<Document | undefined>
+    - deleteDocument(id: string): Promise<boolean>
+    - searchDocuments({ query, textWeight?, limit?, ids?, types? }): Promise<DocumentWithScore[]> — Hybrid search over documents via search_documents_query.
+  - Entities API (json content)
+    - addEntity({ type, content, metadata? }): Promise<Entity> — Inserts an entity with embedding.
+    - getEntityById(id: string): Promise<Entity | undefined>
+    - updateEntity(id: string, patch: Partial<EntityInput>): Promise<Entity | undefined>
+    - deleteEntity(id: string): Promise<boolean>
+    - searchEntities({ query, textWeight?, limit?, ids?, types? }): Promise<EntityWithScore[]> — Hybrid search over entities via search_entities_query.
+  - raw(): pg.Client — Gives low-level access for advanced SQL.
+
+- src/types.ts: Shared TypeScript types for Documents and Entities, Search options and result row types, and OpenDbOptions.
+- src/connection.ts: Connection factory and schema init. Loads SQL from docs/sql/schema.pg.sql and installs hybrid_search functions. Ensures pgvector extension is available. It uses the provided connection string to establish a connection to the database.
 
 Database Schema
 
@@ -49,12 +56,14 @@ Database Schema
 
 Hybrid Search
 
-- searchEntities merges text rank (ts_rank_cd over tsvector using websearch_to_tsquery) and vector cosine similarity using a weight factor (textWeight in [0,1]).
-- The SQL for hybrid search is defined in docs/sql/search_entities.pg.sql and composed dynamically with optional id/type filters.
+- searchDocuments and searchEntities merge text rank (ts_rank_cd over tsvector using websearch_to_tsquery) and vector cosine similarity using a weight factor (textWeight in [0,1]). Filters (ids/types) are passed via a jsonb argument.
+- SQL wrappers are defined as:
+  - docs/sql/search_documents_query.pg.sql -> calls hybrid_search_documents
+  - docs/sql/search_entities_query.pg.sql -> calls hybrid_search_entities
 
 Scripts (scripts/)
 
-- scripts/populate.ts: CLI tool to scan a project and ingest src/ and docs/ into the DB, then run a sample hybrid search.
+- scripts/populate.ts: CLI tool to scan a project and ingest src/ and docs/ into the DB, then run a sample hybrid search. Currently uses Entities API for ingestion.
   - Flags:
     - --root <path> (default: cwd) Project root to scan
     - --url <postgres-url> (default: DATABASE_URL or localhost)

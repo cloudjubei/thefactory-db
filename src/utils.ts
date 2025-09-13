@@ -28,8 +28,8 @@ SELECT
   id,
   type,
   content,
-  to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') AS \"createdAt\",
-  to_char(updated_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') AS \"updatedAt\",
+  to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') AS "createdAt",
+  to_char(updated_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') AS "updatedAt",
   to_jsonb(metadata) AS metadata
 FROM entities
 WHERE id = $1;
@@ -79,8 +79,8 @@ SELECT
   e.content,
   null::text as tokenized_content,
   null::text as embedding,
-  to_char(e.created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') AS \"createdAt\",
-  to_char(e.updated_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') AS \"updatedAt\",
+  to_char(e.created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') AS "createdAt",
+  to_char(e.updated_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') AS "updatedAt",
   to_jsonb(e.metadata) AS metadata,
   ts_rank_cd(e.fts, (SELECT tsq FROM params)) AS text_score,
   (1 - (e.embedding <=> $4)::float / 2.0) AS vec_score,
@@ -94,6 +94,31 @@ LIMIT (SELECT lim FROM params);
 `
 const update_entity_pg = `
 UPDATE entities SET
+  type = COALESCE($2, type),
+  content = COALESCE($3, content),
+  embedding = COALESCE($4, embedding),
+  updated_at = $5::timestamptz,
+  metadata = COALESCE($6::jsonb, metadata)
+WHERE id = $1;
+`
+
+// Document SQL
+const delete_document_pg = `DELETE FROM documents WHERE id = $1;`
+const get_document_by_id_pg = `
+SELECT 
+  id,
+  type,
+  content,
+  to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') AS "createdAt",
+  to_char(updated_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') AS "updatedAt",
+  to_jsonb(metadata) AS metadata
+FROM documents
+WHERE id = $1;
+`
+const insert_document_pg = `INSERT INTO documents (id, type, content, embedding, created_at, updated_at, metadata)
+VALUES ($1, $2, $3, $4, $5::timestamptz, $6::timestamptz, $7::jsonb);`
+const update_document_pg = `
+UPDATE documents SET
   type = COALESCE($2, type),
   content = COALESCE($3, content),
   embedding = COALESCE($4, embedding),
@@ -268,8 +293,8 @@ SELECT
   id,
   type,
   content,
-  to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') AS \"createdAt\",
-  to_char(updated_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') AS \"updatedAt\",
+  to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') AS "createdAt",
+  to_char(updated_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') AS "updatedAt",
   to_jsonb(metadata) AS metadata,
   keyword_score as text_score,
   cosine_similarity as vec_score,
@@ -282,8 +307,8 @@ SELECT
   id,
   type,
   content,
-  to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') AS \"createdAt\",
-  to_char(updated_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') AS \"updatedAt\",
+  to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') AS "createdAt",
+  to_char(updated_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') AS "updatedAt",
   to_jsonb(metadata) AS metadata,
   keyword_score as text_score,
   cosine_similarity as vec_score,
@@ -292,6 +317,7 @@ FROM hybrid_search_documents($1, $2::vector, $3::int, $4::jsonb, $5::float, $6::
 `
 
 const SQLS: Record<string, string> = {
+  // Entities
   delete_entity: delete_entity_pg,
   get_entity_by_id: get_entity_by_id_pg,
   insert_entity: insert_entity_pg,
@@ -300,5 +326,10 @@ const SQLS: Record<string, string> = {
   update_entity: update_entity_pg,
   hybrid_search: hybrid_search_pg,
   search_entities_query: search_entities_query,
+  // Documents
+  delete_document: delete_document_pg,
+  get_document_by_id: get_document_by_id_pg,
+  insert_document: insert_document_pg,
+  update_document: update_document_pg,
   search_documents_query: search_documents_query,
 }
