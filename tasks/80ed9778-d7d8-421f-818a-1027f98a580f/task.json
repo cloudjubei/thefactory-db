@@ -48,10 +48,11 @@
     },
     {
       "id": "ce59e0a3-a9bb-4b0e-aa45-d0e6d79250c3",
-      "status": "-",
+      "status": "?",
       "title": "Database API for Entities (json content) including matchEntities",
       "description": "Extend src/index.ts with JSON Entities operations using the new entities table:\n- addEntity(e: EntityInput): Promise<Entity> — compute embedding using stringifyJsonValues(e.content), insert into entities via insert_entity_json SQL, return normalized Entity.\n- getEntityById(id: string): Promise<Entity | undefined> — from entities table.\n- updateEntity(id: string, patch: Partial<EntityInput>): Promise<Entity | undefined> — if content changed, recompute embedding string from values and update.\n- deleteEntity(id: string): Promise<boolean>\n- searchEntities(params: SearchParams): Promise<EntityWithScore[]> — same pattern as documents, but uses search_entities_query and filter jsonb.\n- matchEntities(criteria: unknown, options?: { types?: string[]; ids?: string[]; limit?: number }): Promise<Entity[]> — selects from entities where content @> $1::jsonb, with optional type and ids filters and limit.\nAdd SQL constants: insert_entity_json, get_entity_json_by_id, update_entity_json, delete_entity_json, search_entities_query, match_entities_json. Update readSql mapping accordingly.",
-      "context": []
+      "context": [],
+      "rejection": "Blocked: Agent loop failed: TypeError: pathsRel is not iterable"
     },
     {
       "id": "ec1dae9e-5076-4fcf-969e-20766cdb87eb",
