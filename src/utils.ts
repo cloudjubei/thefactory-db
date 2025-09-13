@@ -28,8 +28,8 @@ SELECT
   id,
   type,
   content,
-  to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS "createdAt",
-  to_char(updated_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS "updatedAt",
+  to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') AS \"createdAt\",
+  to_char(updated_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') AS \"updatedAt\",
   to_jsonb(metadata) AS metadata
 FROM entities
 WHERE id = $1;
@@ -77,6 +77,8 @@ SELECT
   e.id,
   e.type,
   e.content,
+  null::text as tokenized_content,
+  null::text as embedding,
   to_char(e.created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') AS \"createdAt\",
   to_char(e.updated_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') AS \"updatedAt\",
   to_jsonb(e.metadata) AS metadata,
@@ -275,6 +277,20 @@ SELECT
 FROM hybrid_search_entities($1, $2::vector, $3::int, $4::jsonb, $5::float, $6::float, $7::int)
 `
 
+const search_documents_query = `
+SELECT
+  id,
+  type,
+  content,
+  to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') AS \"createdAt\",
+  to_char(updated_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') AS \"updatedAt\",
+  to_jsonb(metadata) AS metadata,
+  keyword_score as text_score,
+  cosine_similarity as vec_score,
+  similarity as total_score
+FROM hybrid_search_documents($1, $2::vector, $3::int, $4::jsonb, $5::float, $6::float, $7::int)
+`
+
 const SQLS: Record<string, string> = {
   delete_entity: delete_entity_pg,
   get_entity_by_id: get_entity_by_id_pg,
@@ -283,5 +299,6 @@ const SQLS: Record<string, string> = {
   search_entities: search_entities_pg,
   update_entity: update_entity_pg,
   hybrid_search: hybrid_search_pg,
-  search_entities_query: search_entities_query
+  search_entities_query: search_entities_query,
+  search_documents_query: search_documents_query,
 }

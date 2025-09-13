@@ -20,7 +20,7 @@
     },
     {
       "id": "ef86e5a2-1b8e-4617-9341-682da7085a32",
-      "status": "-",
+      "status": "+",
       "title": "Search query wrappers for documents and entities",
       "description": "Add SQL wrapper queries in src/utils.ts and docs/sql to call the hybrid functions:\n- search_documents_query: SELECT normalized columns id, type, content, createdAt, updatedAt, metadata, keyword_score as text_score, cosine_similarity as vec_score, similarity as total_score FROM hybrid_search_documents($1, $2::vector, $3::int, $4::jsonb, $5::float, $6::float, $7::int)\n- search_entities_query: similar, but for hybrid_search_entities.\nAdjust readSql mapping (SQLS) to export 'search_documents_query' and 'search_entities_query'.",
       "context": []
