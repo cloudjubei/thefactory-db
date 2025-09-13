@@ -1,8 +1,8 @@
 {
   "id": "80ed9778-d7d8-421f-818a-1027f98a580f",
   "status": "-",
-  "title": "Cleanup",
-  "description": "Currently @src/index.ts is completely overloaded. It has all the crucial database operations defined - those should be handled in a separate file - so that index.ts can remain thin (just an entry point - exporting all the necessary functions and types).",
+  "title": "Separate Entities from Documents",
+  "description": "For the database to work as intended for the required use, we actually need two types of tables:\nEntities and Documents.\nDocuments will always assume that their content is a string.\nEntities will have their content as json.\nFor tokens and embeddings - Entities should have their content stringified, but if possible, only based on values and not on keys or json schema characters like braces or colons - as those only pollute the tokenization/embedding.\nBoth will have a type string associated with them. This means, that we need functions to get Documents and Entities of a specific type.\nIt also means that we must be able to filter inside search based on a list of ids or type - an example of how this is done is in the reference hybrid_search @docs/hybrid_search.sql .\nFor Entities, as their content is json, we also want a function matchEntities - that will allow to get entities whose content matches a specific json value, for instance `{ 'info': { 'category' : 'text' } }`.\n\nEssentially, the current Entities that are implemented right now become Documents with a few improvements, and we need a completely new schema for the new Entities. \nThere's no need for any backward-compatibility.",
   "features": [],
   "featureIdToDisplayIndex": {}
 }
