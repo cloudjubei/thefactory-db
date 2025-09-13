@@ -1,36 +1,55 @@
-export type EntityType = 'project_file' | 'internal_document' | 'external_blob'
+export type OpenDbOptions = {
+  connectionString: string
+}
 
-export interface Entity {
+// Documents (text)
+export type Document = {
   id: string
-  type: EntityType
+  type: string
   content: string | null
-  createdAt: string // ISO
-  updatedAt: string // ISO
-  metadata?: string | null // JSON-encoded object
+  createdAt: string
+  updatedAt: string
+  metadata?: string | null
 }
-export interface EntityFull extends Entity {
-  fts: string | null
-  embedding: string | null
-}
-export type EntityInput = {
-  type: EntityType
+
+export type DocumentInput = {
+  type: string
   content?: string
   metadata?: string | null
 }
 
-export interface SearchParams {
-  query: string
-  textWeight?: number // 0..1 (weight for text score)
-  limit?: number
-  types?: EntityType[]
-}
-
-export interface EntityWithScore extends Entity {
+export type DocumentWithScore = Document & {
   text_score: number | null
   vec_score: number | null
   total_score: number
 }
 
-export interface OpenDbOptions {
-  connectionString: string
+// Entities (json)
+export type Entity = {
+  id: string
+  type: string
+  content: unknown
+  createdAt: string
+  updatedAt: string
+  metadata?: string | null
+}
+
+export type EntityInput = {
+  type: string
+  content: unknown
+  metadata?: string | null
+}
+
+export type EntityWithScore = Entity & {
+  text_score: number | null
+  vec_score: number | null
+  total_score: number
+}
+
+export type SearchParams = {
+  query: string
+  textWeight?: number
+  limit?: number
+  types?: string[]
+  ids?: string[]
 }

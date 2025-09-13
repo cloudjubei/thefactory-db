@@ -27,7 +27,7 @@
     },
     {
       "id": "53c0dc7c-ac26-4f34-8ac4-660a60a36cd4",
-      "status": "-",
+      "status": "+",
       "title": "TypeScript types split: Documents (text) and Entities (json)",
       "description": "Refactor src/types.ts to introduce separate types:\n- Document: { id: string; type: string; content: string | null; createdAt: string; updatedAt: string; metadata?: string | null }\n- DocumentInput: { type: string; content?: string; metadata?: string | null }\n- DocumentWithScore extends Document with { text_score: number | null; vec_score: number | null; total_score: number }\n- Entity: { id: string; type: string; content: unknown; createdAt: string; updatedAt: string; metadata?: string | null } (content represents JSON object)\n- EntityInput: { type: string; content: unknown; metadata?: string | null }\n- EntityWithScore extends Entity with score fields as above.\n- SearchParams: { query: string; textWeight?: number; limit?: number; types?: string[]; ids?: string[] }\nKeep OpenDbOptions unchanged. Remove the old EntityType union and the previous single Entity shape.",
       "context": []
