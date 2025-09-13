@@ -6,7 +6,7 @@
   "features": [
     {
       "id": "89ac4172-ba1a-451d-a590-50aa53350d3e",
-      "status": "-",
+      "status": "+",
       "title": "Dual-table Postgres schema: documents (text) and entities (jsonb) with FTS and vector indexes",
       "description": "Create a new schema that defines two tables:\n- documents: id uuid primary key, type text not null, content text, fts tsvector generated from content, embedding vector(384), created_at timestamptz default now(), updated_at timestamptz default now(), metadata jsonb. Indexes: GIN on fts, HNSW/IVFFLAT on embedding, btree on type.\n- entities: id uuid primary key, type text not null, content jsonb not null, fts tsvector generated from json values only (use jsonb_to_tsvector('english', content, 'values') if available; fallback: string_agg of jsonb_each_text values), embedding vector(384), created_at/updated_at timestamptz, metadata jsonb. Indexes similar to documents.\nEnsure required extensions vector and pgcrypto are created. Update the schema SQL loaded by init to create both tables and indexes. There is no need to keep the previous single-table 'entities' definition; replace it by the new two-table design named exactly 'documents' and 'entities'. Update src/utils.ts schema_pg string accordingly so src/connection.ts initializes the new schema.",
       "context": []

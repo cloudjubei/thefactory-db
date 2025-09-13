@@ -13,7 +13,6 @@ Top-level Layout
 - src/: Source code for the database wrapper and types.
 - docs/: Human-facing documentation for this package (this file).
   - docs/sql/: SQL files for schema, DML and search queries (PostgreSQL flavor).
-- scripts/: Development/utility scripts (e.g., populate.ts to ingest files and test search).
 
 Key Source Modules (src/)
 
@@ -30,19 +29,28 @@ Key Source Modules (src/)
 
 Database Schema
 
-- entities table fields:
-  - id (uuid primary key)
-  - type (text: 'project_file' | 'internal_document' | 'external_blob')
-  - content (text, optional)
-  - fts (tsvector, generated from content)
-  - embedding (vector(1536))
-  - created_at, updated_at (timestamptz)
-  - metadata (jsonb, optional)
+- Two tables: documents (text content) and entities (jsonb content)
+  - documents fields:
+    - id (uuid primary key)
+    - type (text)
+    - content (text)
+    - fts (tsvector generated from content)
+    - embedding (vector(384))
+    - created_at, updated_at (timestamptz)
+    - metadata (jsonb)
+  - entities fields:
+    - id (uuid primary key)
+    - type (text)
+    - content (jsonb not null)
+    - fts (tsvector generated/triggered from JSON values only)
+    - embedding (vector(384))
+    - created_at, updated_at (timestamptz)
+    - metadata (jsonb)
 
 Hybrid Search
 
 - searchEntities merges text rank (ts_rank_cd over tsvector using websearch_to_tsquery) and vector cosine similarity using a weight factor (textWeight in [0,1]).
-- The SQL for hybrid search is defined in docs/sql/search_entities.pg.sql and composed dynamically with optional type filters.
+- The SQL for hybrid search is defined in docs/sql/search_entities.pg.sql and composed dynamically with optional id/type filters.
 
 Scripts (scripts/)
 
@@ -51,12 +59,9 @@ Scripts (scripts/)
     - --root <path> (default: cwd) Project root to scan
     - --url <postgres-url> (default: DATABASE_URL or localhost)
     - --textWeight <0..1> (default: 0.6) Weight for text vs vector
-    - --reset (boolean) TRUNCATE entities
+    - --reset (boolean) TRUNCATE entities/documents
 
-Usage in Other Projects
+Notes
 
-- Add as a local dependency or install from your registry. Provide a Postgres connection string.
-- Example:
-  - import { openDatabase } from 'thefactory-db'
-  - const db = await openDatabase({ connectionString: process.env.DATABASE_URL })
-  - await db.addEntity(...); const rows = await db.searchEntities(...);
+- Required extensions: pgcrypto and pgvector are created in schema.pg.sql.
+- Vector dimension has been updated to 384.
