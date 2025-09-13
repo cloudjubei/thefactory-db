@@ -1,9 +1,9 @@
-import { openDatabase } from './index.js'
+import { openDatabase } from '../dist/index.js'
 
 async function main() {
   console.log('RUNNING ExAMPLE')
   const url = process.env.DATABASE_URL || './database-example'
-  const db = await openDatabase(url)
+  const db = await openDatabase({ connectionString: url })
 
   const pool = db.raw()
   const countRes = await pool.query('SELECT COUNT(*)::int AS c FROM entities')

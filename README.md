@@ -24,23 +24,23 @@ To use `thefactory-db`, you need a running PostgreSQL instance with the `pgvecto
     - Run the following SQL commands:
 
     ```sql
-    CREATE DATABASE thefactorydb;
+    CREATE DATABASE thefactory-db;
     CREATE USER "user" WITH ENCRYPTED PASSWORD 'password';
-    GRANT ALL PRIVILEGES ON DATABASE thefactorydb TO "user";
+    GRANT ALL PRIVILEGES ON DATABASE thefactory-db TO "user";
     ```
 
-    - Connect to your new database: `\c thefactorydb`
+    - Connect to your new database: `\c thefactory-db`
 
 4.  **Enable the vector extension**:
     - You need to install `pgvector`. Follow the instructions for your OS from the [pgvector GitHub repository](https://github.com/pgvector/pgvector).
-    - Once installed, connect to your database (`psql -d thefactorydb`) and run:
+    - Once installed, connect to your database (`psql -d thefactory-db`) and run:
 
     ```sql
     CREATE EXTENSION IF NOT EXISTS vector;
     ```
 
 5.  **Set your connection URL**: Your database connection string will be:
-    `postgresql://user:password@localhost:5432/thefactorydb`
+    `postgresql://user:password@localhost:5432/thefactory-db`
 
 ### Option 2: Docker
 
@@ -52,29 +52,24 @@ If you have Docker and Docker Compose installed, you can easily set up a Postgre
     Run the following command in the same directory as your `docker-compose.yml` file:
 
     ```bash
-    docker-compose up -d
+    docker compose up --build
     ```
 
     This will start a PostgreSQL container in the background. The `pgvector` extension is automatically available in the `pgvector/pgvector` image.
 
 3.  **Connection URL**: The database will be available at:
-    `postgresql://user:password@localhost:5432/thefactorydb`
+    `postgresql://user:password@localhost:5432/thefactory-db`
 
 ## Populating the Database
 
 Once your database is running, you can use the populate script to initialize the schema and ingest files.
 
 1.  **Install dependencies:** `npm install`
-2.  **Set the `DATABASE_URL` environment variable**:
+
+2.  **Run the populate script:** This will initialize the database, ingest files from `src/` and `docs/`, and run a sample hybrid search query.
 
     ```bash
-    export DATABASE_URL="postgresql://user:password@localhost:5432/thefactorydb"
-    ```
-
-3.  **Run the populate script:** This will initialize the database, ingest files from `src/` and `docs/`, and run a sample hybrid search query.
-
-    ```bash
-    npm run populate -- --root . --reset
+    node scripts/populate.ts -- --root . --reset --url postgresql://user:password@localhost:5432/thefactory-db
     ```
 
 See `scripts/populate.ts` for details on command-line flags. The script uses the `DATABASE_URL` by default.
