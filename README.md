@@ -13,26 +13,27 @@ To use `thefactory-db`, you need a running PostgreSQL instance with the `pgvecto
 ### Option 1: Local PostgreSQL Installation
 
 1.  **Install PostgreSQL**: Follow the official guides for your operating system:
-    *   [macOS](https://www.postgresql.org/docs/current/tutorial-install.html) (e.g., via `brew install postgresql`)
-    *   [Windows](https://www.postgresql.org/docs/current/tutorial-install.html) (use the installer)
-    *   [Linux](https://www.postgresql.org/docs/current/tutorial-install.html) (e.g., `sudo apt-get install postgresql postgresql-contrib`)
+    - [macOS](https://www.postgresql.org/docs/current/tutorial-install.html) (e.g., via `brew install postgresql`)
+    - [Windows](https://www.postgresql.org/docs/current/tutorial-install.html) (use the installer)
+    - [Linux](https://www.postgresql.org/docs/current/tutorial-install.html) (e.g., `sudo apt-get install postgresql postgresql-contrib`)
 
 2.  **Start PostgreSQL**: Ensure the PostgreSQL service is running.
 
 3.  **Create a database and user**:
-    *   Open the PostgreSQL command-line tool (`psql`).
-    *   Run the following SQL commands:
+    - Open the PostgreSQL command-line tool (`psql`).
+    - Run the following SQL commands:
 
     ```sql
     CREATE DATABASE thefactorydb;
     CREATE USER "user" WITH ENCRYPTED PASSWORD 'password';
     GRANT ALL PRIVILEGES ON DATABASE thefactorydb TO "user";
     ```
-    *   Connect to your new database: `\c thefactorydb`
+
+    - Connect to your new database: `\c thefactorydb`
 
 4.  **Enable the vector extension**:
-    *   You need to install `pgvector`. Follow the instructions for your OS from the [pgvector GitHub repository](https://github.com/pgvector/pgvector).
-    *   Once installed, connect to your database (`psql -d thefactorydb`) and run:
+    - You need to install `pgvector`. Follow the instructions for your OS from the [pgvector GitHub repository](https://github.com/pgvector/pgvector).
+    - Once installed, connect to your database (`psql -d thefactorydb`) and run:
 
     ```sql
     CREATE EXTENSION IF NOT EXISTS vector;
@@ -53,6 +54,7 @@ If you have Docker and Docker Compose installed, you can easily set up a Postgre
     ```bash
     docker-compose up -d
     ```
+
     This will start a PostgreSQL container in the background. The `pgvector` extension is automatically available in the `pgvector/pgvector` image.
 
 3.  **Connection URL**: The database will be available at:
@@ -83,26 +85,27 @@ See `scripts/populate.ts` for details on command-line flags. The script uses the
 import { openDatabase } from 'thefactory-db'
 
 // Set DATABASE_URL in your environment or provide it directly
-const db = await openDatabase({ connectionString: process.env.DATABASE_URL });
+const db = await openDatabase({ connectionString: process.env.DATABASE_URL })
 
 // Add an entity
 const entity = await db.addEntity({
   type: 'internal_document',
   content: 'This is a test document about hybrid search.',
-  metadata: { author: 'dev' }
-});
+  metadata: { author: 'dev' },
+})
 
 // Perform a hybrid search
 const results = await db.searchEntities({
   query: 'hybrid search test',
   textWeight: 0.6, // Blend text and vector scores
-  limit: 5
-});
+  limit: 5,
+})
 
-console.log(results);
+console.log(results)
 ```
 
 The `openDatabase` function will:
+
 1.  Connect to your PostgreSQL database.
 2.  Apply the latest schema from `docs/sql/schema.pg.sql`.
 3.  Ensure the `vector` extension is enabled.

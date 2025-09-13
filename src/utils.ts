@@ -16,12 +16,11 @@ export function readSql(name: string): string | undefined {
 
 export function base64ToUtf8(base64: string) {
   if (base64.startsWith('data:')) {
-    const base64Data = base64.split(',')[1];
-    return atob(base64Data);
+    const base64Data = base64.split(',')[1]
+    return atob(base64Data)
   }
-  return atob(base64);
+  return atob(base64)
 }
-
 
 const delete_entity_pg = `DELETE FROM entities WHERE id = $1`
 const get_entity_by_id_pg = `
@@ -186,4 +185,4 @@ const SQLS: Record<string, string> = {
   search_entities: search_entities_pg,
   update_entity: update_entity_pg,
   hybrid_search: hybrid_search_pg,
-};
+}

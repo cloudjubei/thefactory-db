@@ -1,11 +1,13 @@
 # File and Tooling Organisation
 
 Overview
+
 - thefactory-db is a PostgreSQL wrapper that provides FTS text search (tsvector) and vector similarity (pgvector) for hybrid search across files and documents.
 - It is designed to be reusable across projects. You can depend on it as a local file dependency ("thefactory-db": "file:../thefactory-db") or publish it to a private registry.
 - Database connection is provided via a Postgres connection string so multiple projects can access the same DB (ensure access strategy avoids concurrency hazards at the application layer).
 
 Top-level Layout
+
 - README.md: Quick-start usage and populate script instructions.
 - package.json, tsconfig.json: Build and TypeScript configuration.
 - src/: Source code for the database wrapper and types.
@@ -14,6 +16,7 @@ Top-level Layout
 - scripts/: Development/utility scripts (e.g., populate.ts to ingest files and test search).
 
 Key Source Modules (src/)
+
 - src/index.ts: Public entry point. Exports openDatabase(options) which returns a Database API instance. The instance provides:
   - addEntity({ type, content?, metadata? }): Promise<Entity> — Inserts an entity with embedding.
   - searchEntities({ query, textWeight?, limit?, types? }): Promise<EntityWithScore[]> — Hybrid search combining ts_rank and vector cosine similarity.
@@ -26,6 +29,7 @@ Key Source Modules (src/)
 - src/connection.ts: Connection factory and schema init. Loads SQL from docs/sql/schema.pg.sql and ensures the pgvector extension is available. It uses the provided connection string to establish a connection to the database.
 
 Database Schema
+
 - entities table fields:
   - id (uuid primary key)
   - type (text: 'project_file' | 'internal_document' | 'external_blob')
@@ -36,10 +40,12 @@ Database Schema
   - metadata (jsonb, optional)
 
 Hybrid Search
+
 - searchEntities merges text rank (ts_rank_cd over tsvector using websearch_to_tsquery) and vector cosine similarity using a weight factor (textWeight in [0,1]).
 - The SQL for hybrid search is defined in docs/sql/search_entities.pg.sql and composed dynamically with optional type filters.
 
 Scripts (scripts/)
+
 - scripts/populate.ts: CLI tool to scan a project and ingest src/ and docs/ into the DB, then run a sample hybrid search.
   - Flags:
     - --root <path> (default: cwd) Project root to scan
@@ -48,6 +54,7 @@ Scripts (scripts/)
     - --reset (boolean) TRUNCATE entities
 
 Usage in Other Projects
+
 - Add as a local dependency or install from your registry. Provide a Postgres connection string.
 - Example:
   - import { openDatabase } from 'thefactory-db'
