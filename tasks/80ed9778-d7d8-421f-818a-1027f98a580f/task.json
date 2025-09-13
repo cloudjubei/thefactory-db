@@ -1,8 +1,90 @@
 {
   "id": "80ed9778-d7d8-421f-818a-1027f98a580f",
-  "status": "-",
-  "title": "Cleanup",
-  "description": "Currently @src/index.ts is completely overloaded. It has all the crucial database operations defined - those should be handled in a separate file - so that index.ts can remain thin (just an entry point - exporting all the necessary functions and types).",
-  "features": [],
-  "featureIdToDisplayIndex": {}
+  "status": "~",
+  "title": "Separate Entities from Documents",
+  "description": "For the database to work as intended for the required use, we actually need two types of tables:\nEntities and Documents.\nDocuments will always assume that their content is a string.\nEntities will have their content as json.\nFor tokens and embeddings - Entities should have their content stringified, but if possible, only based on values and not on keys or json schema characters like braces or colons - as those only pollute the tokenization/embedding.\nBoth will have a type string associated with them. This means, that we need functions to get Documents and Entities of a specific type.\nIt also means that we must be able to filter inside search based on a list of ids or type - an example of how this is done is in the reference hybrid_search @docs/hybrid_search.sql .\nFor Entities, as their content is json, we also want a function matchEntities - that will allow to get entities whose content matches a specific json value, for instance `{ 'info': { 'category' : 'text' } }`.\n\nEssentially, the current Entities that are implemented right now become Documents with a few improvements, and we need a completely new schema for the new Entities. \nThere's no need for any backward-compatibility.",
+  "features": [
+    {
+      "id": "89ac4172-ba1a-451d-a590-50aa53350d3e",
+      "status": "-",
+      "title": "Dual-table Postgres schema: documents (text) and entities (jsonb) with FTS and vector indexes",
+      "description": "Create a new schema that defines two tables:\n- documents: id uuid primary key, type text not null, content text, fts tsvector generated from content, embedding vector(384), created_at timestamptz default now(), updated_at timestamptz default now(), metadata jsonb. Indexes: GIN on fts, HNSW/IVFFLAT on embedding, btree on type.\n- entities: id uuid primary key, type text not null, content jsonb not null, fts tsvector generated from json values only (use jsonb_to_tsvector('english', content, 'values') if available; fallback: string_agg of jsonb_each_text values), embedding vector(384), created_at/updated_at timestamptz, metadata jsonb. Indexes similar to documents.\nEnsure required extensions vector and pgcrypto are created. Update the schema SQL loaded by init to create both tables and indexes. There is no need to keep the previous single-table 'entities' definition; replace it by the new two-table design named exactly 'documents' and 'entities'. Update src/utils.ts schema_pg string accordingly so src/connection.ts initializes the new schema.",
+      "context": []
+    },
+    {
+      "id": "f0f72fae-a939-4b84-b343-0486d7c49543",
+      "status": "-",
+      "title": "Hybrid search SQL functions for documents and entities with id/type filters",
+      "description": "Add two SQL functions implemented in src/utils.ts (hybrid_search_pg string) to support hybrid search with Reciprocal Rank Fusion:\n- hybrid_search_documents(query_text text, query_embedding vector, match_count int, filter jsonb DEFAULT '{}'::jsonb, full_text_weight float DEFAULT 0.5, semantic_weight float DEFAULT 0.5, rrf_k int DEFAULT 50) RETURNS TABLE (...)\n- hybrid_search_entities(query_text text, query_embedding vector, match_count int, filter jsonb DEFAULT '{}'::jsonb, full_text_weight float DEFAULT 0.5, semantic_weight float DEFAULT 0.5, rrf_k int DEFAULT 50) RETURNS TABLE (...)\nBoth functions must:\n- Use a CTE base_* filtering rows by optional filter keys: 'ids' (array of uuids) and 'types' (array of text) to restrict results.\n- Build full_text and semantic rankings, RRF fuse scores, and return columns: id, type, content (text for documents, jsonb for entities), created_at, updated_at, metadata, rrf_score, similarity (normalized as in current code), cosine_similarity (nullable if no embedding), keyword_score.\n- Order by similarity desc and limit by match_count.\nThis mirrors docs/hybrid_search.sql patterns for filters while simplifying to ids/types.",
+      "context": []
+    },
+    {
+      "id": "ef86e5a2-1b8e-4617-9341-682da7085a32",
+      "status": "-",
+      "title": "Search query wrappers for documents and entities",
+      "description": "Add SQL wrapper queries in src/utils.ts and docs/sql to call the hybrid functions:\n- search_documents_query: SELECT normalized columns id, type, content, createdAt, updatedAt, metadata, keyword_score as text_score, cosine_similarity as vec_score, similarity as total_score FROM hybrid_search_documents($1, $2::vector, $3::int, $4::jsonb, $5::float, $6::float, $7::int)\n- search_entities_query: similar, but for hybrid_search_entities.\nAdjust readSql mapping (SQLS) to export 'search_documents_query' and 'search_entities_query'.",
+      "context": []
+    },
+    {
+      "id": "53c0dc7c-ac26-4f34-8ac4-660a60a36cd4",
+      "status": "-",
+      "title": "TypeScript types split: Documents (text) and Entities (json)",
+      "description": "Refactor src/types.ts to introduce separate types:\n- Document: { id: string; type: string; content: string | null; createdAt: string; updatedAt: string; metadata?: string | null }\n- DocumentInput: { type: string; content?: string; metadata?: string | null }\n- DocumentWithScore extends Document with { text_score: number | null; vec_score: number | null; total_score: number }\n- Entity: { id: string; type: string; content: unknown; createdAt: string; updatedAt: string; metadata?: string | null } (content represents JSON object)\n- EntityInput: { type: string; content: unknown; metadata?: string | null }\n- EntityWithScore extends Entity with score fields as above.\n- SearchParams: { query: string; textWeight?: number; limit?: number; types?: string[]; ids?: string[] }\nKeep OpenDbOptions unchanged. Remove the old EntityType union and the previous single Entity shape.",
+      "context": []
+    },
+    {
+      "id": "50f3d5db-d5be-4a36-84a0-8863e534c368",
+      "status": "-",
+      "title": "Utility to stringify JSON values for embeddings/tokenization",
+      "description": "Create src/utils/json.ts exporting function stringifyJsonValues(value: unknown): string which flattens a JSON value into a whitespace-separated string consisting only of primitive values (string, number, boolean, null treated as 'null'), excluding keys and structural characters. Handle nested arrays/objects by depth-first traversal; ignore circular references gracefully. Add unit-friendly, deterministic ordering (e.g., object keys sorted) to keep stable embeddings.",
+      "context": []
+    },
+    {
+      "id": "5c60e0ba-d0b7-4ff5-ba6f-591c1f3839be",
+      "status": "-",
+      "title": "Database API for Documents",
+      "description": "Refactor src/index.ts to implement Document operations using the new documents table and search_documents_query:\n- addDocument(d: DocumentInput): Promise<Document> — compute embedding from d.content ('' if undefined), insert into documents via new insert_document SQL, return normalized Document.\n- getDocumentById(id: string): Promise<Document | undefined> — use new get_document_by_id SQL.\n- updateDocument(id: string, patch: Partial<DocumentInput>): Promise<Document | undefined> — update content/type/metadata and re-embed if content changed.\n- deleteDocument(id: string): Promise<boolean> — delete by id.\n- searchDocuments(params: SearchParams): Promise<DocumentWithScore[]> — build embedding from params.query, build filter jsonb from params.ids/types and call search_documents_query.\nAdd corresponding SQL constants: insert_document, get_document_by_id, update_document, delete_document, as well as mapping in SQLS and usage in index.ts. Remove dependence on the old single-table 'entities' for document operations.",
+      "context": []
+    },
+    {
+      "id": "ce59e0a3-a9bb-4b0e-aa45-d0e6d79250c3",
+      "status": "-",
+      "title": "Database API for Entities (json content) including matchEntities",
+      "description": "Extend src/index.ts with JSON Entities operations using the new entities table:\n- addEntity(e: EntityInput): Promise<Entity> — compute embedding using stringifyJsonValues(e.content), insert into entities via insert_entity_json SQL, return normalized Entity.\n- getEntityById(id: string): Promise<Entity | undefined> — from entities table.\n- updateEntity(id: string, patch: Partial<EntityInput>): Promise<Entity | undefined> — if content changed, recompute embedding string from values and update.\n- deleteEntity(id: string): Promise<boolean>\n- searchEntities(params: SearchParams): Promise<EntityWithScore[]> — same pattern as documents, but uses search_entities_query and filter jsonb.\n- matchEntities(criteria: unknown, options?: { types?: string[]; ids?: string[]; limit?: number }): Promise<Entity[]> — selects from entities where content @> $1::jsonb, with optional type and ids filters and limit.\nAdd SQL constants: insert_entity_json, get_entity_json_by_id, update_entity_json, delete_entity_json, search_entities_query, match_entities_json. Update readSql mapping accordingly.",
+      "context": []
+    },
+    {
+      "id": "ec1dae9e-5076-4fcf-969e-20766cdb87eb",
+      "status": "-",
+      "title": "Revise init and SQL loading (readSql map) for new tables and functions",
+      "description": "Update src/utils.ts to include new SQL constants for documents and entities (insert/get/update/delete, hybrid functions, search queries, match_entities). Remove or replace the old single-table queries to avoid confusion. Ensure src/connection.ts still calls readSql('schema') and readSql('hybrid_search'), which now contain the extended schema and two hybrid functions.",
+      "context": []
+    },
+    {
+      "id": "d54cd46a-ac74-4dc3-a68b-ad7426eef158",
+      "status": "-",
+      "title": "Update scripts to use Documents API and demonstrate Entities",
+      "description": "Modify scripts:\n- populate.ts: switch ingestion to use addDocument and searchDocuments; TRUNCATE documents instead of entities when --reset is provided; adjust type inference to use string type and metadata unchanged.\n- example.ts: demonstrate creating a few documents and entities (with JSON content), then run searchDocuments and optionally searchEntities; log results.\n- clear.ts: TRUNCATE documents and entities (both), or at minimum documents; print results.",
+      "context": []
+    },
+    {
+      "id": "a6dfe956-c714-4bbb-9476-697c8d8860a7",
+      "status": "-",
+      "title": "Docs update: FILE_ORGANISATION and SQL references for Documents vs Entities",
+      "description": "Update docs/FILE_ORGANISATION.md to describe the new dual-table design and APIs exposed from src/index.ts (addDocument/searchDocuments and addEntity/searchEntities/matchEntities). Update docs/schema.sql and docs/hybrid_search.sql to mirror the new Postgres schema and hybrid functions for both tables, including filter by ids/types examples. Note breaking changes: previous 'entities' table became 'documents'.",
+      "context": []
+    }
+  ],
+  "featureIdToDisplayIndex": {
+    "89ac4172-ba1a-451d-a590-50aa53350d3e": 1,
+    "f0f72fae-a939-4b84-b343-0486d7c49543": 2,
+    "ef86e5a2-1b8e-4617-9341-682da7085a32": 3,
+    "53c0dc7c-ac26-4f34-8ac4-660a60a36cd4": 4,
+    "50f3d5db-d5be-4a36-84a0-8863e534c368": 5,
+    "5c60e0ba-d0b7-4ff5-ba6f-591c1f3839be": 6,
+    "ce59e0a3-a9bb-4b0e-aa45-d0e6d79250c3": 7,
+    "ec1dae9e-5076-4fcf-969e-20766cdb87eb": 8,
+    "d54cd46a-ac74-4dc3-a68b-ad7426eef158": 9,
+    "a6dfe956-c714-4bbb-9476-697c8d8860a7": 10
+  }
 }
