@@ -10,69 +10,108 @@ Database connection is provided via a Postgres connection string.
 
 To use `thefactory-db`, you need a running PostgreSQL instance with the `pgvector` extension enabled. You have two options:
 
-### Option 1: Local PostgreSQL Installation
+### Option 1: Local PostgreSQL Installation (from scratch)
 
-1.  **Install PostgreSQL**: Follow the official guides for your operating system:
-    - [macOS](https://www.postgresql.org/docs/current/tutorial-install.html) (e.g., via `brew install postgresql`)
-    - [Windows](https://www.postgresql.org/docs/current/tutorial-install.html) (use the installer)
-    - [Linux](https://www.postgresql.org/docs/current/tutorial-install.html) (e.g., `sudo apt-get install postgresql postgresql-contrib`)
+1) Install PostgreSQL
+- macOS: `brew install postgresql@16` (or use the official installer)
+- Windows: Download and run the installer from postgresql.org
+- Linux (Debian/Ubuntu): `sudo apt-get install -y postgresql postgresql-contrib`
 
-2.  **Start PostgreSQL**: Ensure the PostgreSQL service is running.
+2) Start PostgreSQL
+- macOS/Linux (service): `sudo service postgresql start` (or use your OS service manager)
+- Windows: The installer starts the service automatically
 
-3.  **Create a database and user**:
-    - Open the PostgreSQL command-line tool (`psql`).
-    - Run the following SQL commands:
+3) Create the database and user
+- Open the PostgreSQL shell as an admin user (often `postgres`):
+  - Linux/macOS: `sudo -u postgres psql`
+  - Windows: Run `psql` from the Start Menu (as the superuser you set during install)
+- Run the following SQL (note the hyphen in the DB name requires double quotes):
 
-    ```sql
-    CREATE DATABASE thefactory-db;
-    CREATE USER "user" WITH ENCRYPTED PASSWORD 'password';
-    GRANT ALL PRIVILEGES ON DATABASE thefactory-db TO "user";
-    ```
+```sql
+CREATE USER "user" WITH ENCRYPTED PASSWORD 'password';
+CREATE DATABASE "thefactory-db" OWNER "user";
+GRANT ALL PRIVILEGES ON DATABASE "thefactory-db" TO "user";
+```
 
-    - Connect to your new database: `\c thefactory-db`
+4) Install and enable the pgvector extension
+- Install pgvector following: https://github.com/pgvector/pgvector
+- Connect to your new database and enable the extension:
 
-4.  **Enable the vector extension**:
-    - You need to install `pgvector`. Follow the instructions for your OS from the [pgvector GitHub repository](https://github.com/pgvector/pgvector).
-    - Once installed, connect to your database (`psql -d thefactory-db`) and run:
+```bash
+psql -U user -d "thefactory-db" -h 127.0.0.1 -p 5432 -W
+```
 
-    ```sql
-    CREATE EXTENSION IF NOT EXISTS vector;
-    ```
+```sql
+CREATE EXTENSION IF NOT EXISTS vector;
+```
 
-5.  **Set your connection URL**: Your database connection string will be:
-    `postgresql://user:password@localhost:5432/thefactory-db`
+5) Connection URL
+- Your connection string will be:
 
-### Option 2: Docker
+```
+postgresql://user:password@localhost:5432/thefactory-db
+```
 
-If you have Docker and Docker Compose installed, you can easily set up a PostgreSQL instance with `pgvector`.
+Tip: Because the database name contains a hyphen, you must always quote it in SQL statements as "thefactory-db". The connection URL does not require quotes.
 
-1.  **Use the `docker-compose.yml` file**: This repository includes a `docker-compose.yml` file for your convenience.
+---
 
-2.  **Start the container**:
-    Run the following command in the same directory as your `docker-compose.yml` file:
+### Option 2: Docker (recommended for convenience)
 
-    ```bash
-    docker compose up --build
-    ```
+This repo includes a ready-to-use Docker Compose setup with `pgvector` and a bootstrap job that ensures the target database exists even if a persistent volume already exists.
 
-    This will start a PostgreSQL container in the background. The `pgvector` extension is automatically available in the `pgvector/pgvector` image.
+1) Start the database and the bootstrap job
 
-3.  **Connection URL**: The database will be available at:
-    `postgresql://user:password@localhost:5432/thefactory-db`
+```bash
+docker compose up -d db db-init
+```
+
+- `db` runs the PostgreSQL server with `pgvector`.
+- `db-init` waits for the DB, creates the database if missing, and enables the `vector` extension. You can safely re-run it:
+
+```bash
+docker compose run --rm db-init
+```
+
+2) Connection URL
+
+```
+postgresql://user:password@localhost:5432/thefactory-db
+```
+
+3) Troubleshooting / resetting
+- If you previously started Postgres with a volume that did not have the database, `db-init` will create it for you.
+- To completely reset the database (including deleting all data):
+
+```bash
+docker compose down -v
+# then re-create
+docker compose up -d db db-init
+```
+
+- To inspect the database shell:
+
+```bash
+docker exec -it thefactory-db-postgres psql -U user -d "thefactory-db"
+```
 
 ## Populating the Database
 
 Once your database is running, you can use the populate script to initialize the schema and ingest files.
 
-1.  **Install dependencies:** `npm install`
+1) Install dependencies
 
-2.  **Run the populate script:** This will initialize the database, ingest files from `src/` and `docs/`, and run a sample hybrid search query.
+```bash
+npm install
+```
 
-    ```bash
-    node scripts/populate.ts -- --root . --reset --url postgresql://user:password@localhost:5432/thefactory-db
-    ```
+2) Run the populate script
 
-See `scripts/populate.ts` for details on command-line flags. The script uses the `DATABASE_URL` by default.
+```bash
+node scripts/populate.ts -- --root . --reset --url postgresql://user:password@localhost:5432/thefactory-db
+```
+
+The script will initialize the schema (including `CREATE EXTENSION IF NOT EXISTS vector`) and ingest files from `src/` and `docs/`, then run a sample hybrid search. You can also set `DATABASE_URL` instead of supplying `--url`.
 
 ## Usage
 
@@ -92,7 +131,7 @@ const entity = await db.addEntity({
 // Perform a hybrid search
 const results = await db.searchEntities({
   query: 'hybrid search test',
-  textWeight: 0.6, // Blend text and vector scores
+  textWeight: 0.6,
   limit: 5,
 })
 
@@ -100,9 +139,8 @@ console.log(results)
 ```
 
 The `openDatabase` function will:
-
-1.  Connect to your PostgreSQL database.
-2.  Apply the latest schema from `docs/sql/schema.pg.sql`.
-3.  Ensure the `vector` extension is enabled.
+1) Connect to your PostgreSQL database
+2) Apply the latest schema from `docs/sql/schema.pg.sql`
+3) Ensure the `vector` and `pgcrypto` extensions are enabled (idempotent)
 
 The returned `db` object provides an API for adding and searching entities, as well as a `raw()` method for direct `pg.Pool` access.

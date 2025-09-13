@@ -13,5 +13,29 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
+  # One-off bootstrap job that ensures the database exists and vector extension is available.
+  # This runs against an already-initialized cluster and is safe to re-run.
+  db-init:
+    image: pgvector/pgvector:pg16
+    depends_on:
+      - db
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      PGPASSWORD: password
+    entrypoint: ["/bin/bash", "-c"]
+    command: |
+      set -e
+      until pg_isready -h db -p 5432 -U "$POSTGRES_USER"; do
+        echo "[db-init] waiting for db..."
+        sleep 1
+      done
+      echo "[db-init] ensuring database exists..."
+      psql -h db -U "$POSTGRES_USER" -d postgres -tc "SELECT 1 FROM pg_database WHERE datname = 'thefactory-db'" | grep -q 1 || \
+        psql -h db -U "$POSTGRES_USER" -d postgres -c 'CREATE DATABASE "thefactory-db"'
+      echo "[db-init] ensuring vector extension..."
+      psql -h db -U "$POSTGRES_USER" -d "thefactory-db" -c 'CREATE EXTENSION IF NOT EXISTS vector'
+    restart: "no"
+
 volumes:
   postgres_data:
