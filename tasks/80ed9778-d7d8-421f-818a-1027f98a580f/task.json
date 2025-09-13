@@ -13,7 +13,7 @@
     },
     {
       "id": "f0f72fae-a939-4b84-b343-0486d7c49543",
-      "status": "-",
+      "status": "+",
       "title": "Hybrid search SQL functions for documents and entities with id/type filters",
       "description": "Add two SQL functions implemented in src/utils.ts (hybrid_search_pg string) to support hybrid search with Reciprocal Rank Fusion:\n- hybrid_search_documents(query_text text, query_embedding vector, match_count int, filter jsonb DEFAULT '{}'::jsonb, full_text_weight float DEFAULT 0.5, semantic_weight float DEFAULT 0.5, rrf_k int DEFAULT 50) RETURNS TABLE (...)\n- hybrid_search_entities(query_text text, query_embedding vector, match_count int, filter jsonb DEFAULT '{}'::jsonb, full_text_weight float DEFAULT 0.5, semantic_weight float DEFAULT 0.5, rrf_k int DEFAULT 50) RETURNS TABLE (...)\nBoth functions must:\n- Use a CTE base_* filtering rows by optional filter keys: 'ids' (array of uuids) and 'types' (array of text) to restrict results.\n- Build full_text and semantic rankings, RRF fuse scores, and return columns: id, type, content (text for documents, jsonb for entities), created_at, updated_at, metadata, rrf_score, similarity (normalized as in current code), cosine_similarity (nullable if no embedding), keyword_score.\n- Order by similarity desc and limit by match_count.\nThis mirrors docs/hybrid_search.sql patterns for filters while simplifying to ids/types.",
       "context": []

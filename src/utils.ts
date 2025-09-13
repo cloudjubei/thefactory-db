@@ -77,8 +77,8 @@ SELECT
   e.id,
   e.type,
   e.content,
-  to_char(e.created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS "createdAt",
-  to_char(e.updated_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS "updatedAt",
+  to_char(e.created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') AS \"createdAt\",
+  to_char(e.updated_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') AS \"updatedAt\",
   to_jsonb(e.metadata) AS metadata,
   ts_rank_cd(e.fts, (SELECT tsq FROM params)) AS text_score,
   (1 - (e.embedding <=> $4)::float / 2.0) AS vec_score,
@@ -99,12 +99,15 @@ UPDATE entities SET
   metadata = COALESCE($6::jsonb, metadata)
 WHERE id = $1;
 `
+
+// New hybrid search functions for documents and entities with ids/types filter via jsonb
 const hybrid_search_pg = `
-CREATE OR REPLACE FUNCTION hybrid_search_entities(
+-- Documents: text content
+CREATE OR REPLACE FUNCTION hybrid_search_documents(
   query_text        text,
   query_embedding   vector,
   match_count       integer,
-  type_filter       text[] DEFAULT NULL,
+  filter            jsonb DEFAULT '{}'::jsonb,
   full_text_weight  float  DEFAULT 0.5,
   semantic_weight   float  DEFAULT 0.5,
   rrf_k             integer DEFAULT 50
@@ -123,50 +126,134 @@ RETURNS TABLE (
 )
 LANGUAGE sql AS
 $$
+WITH base_documents AS (
+  SELECT *
+  FROM documents
+  WHERE (
+    (NOT filter ? 'ids') OR id = ANY (
+      ARRAY(SELECT jsonb_array_elements_text(filter->'ids')::uuid)
+    )
+  )
+  AND (
+    (NOT filter ? 'types') OR type = ANY (
+      ARRAY(SELECT jsonb_array_elements_text(filter->'types'))
+    )
+  )
+),
+full_text AS (
+  SELECT id,
+         row_number() OVER (
+           ORDER BY ts_rank_cd(fts, websearch_to_tsquery(query_text)) DESC
+         ) AS rank_ix
+  FROM base_documents
+  WHERE fts @@ websearch_to_tsquery(query_text)
+  LIMIT LEAST(match_count, 30) * 2
+),
+semantic AS (
+  SELECT id,
+         row_number() OVER (
+           ORDER BY embedding <#> query_embedding
+         ) AS rank_ix
+  FROM base_documents
+  WHERE embedding IS NOT NULL
+  LIMIT LEAST(match_count, 30) * 2
+),
+scored AS (
+  SELECT COALESCE(ft.id, s.id) AS id,
+         COALESCE(1.0 / (rrf_k + ft.rank_ix), 0.0) * full_text_weight +
+         COALESCE(1.0 / (rrf_k + s.rank_ix), 0.0) * semantic_weight AS rrf_score
+  FROM full_text ft
+  FULL JOIN semantic s ON ft.id = s.id
+)
+SELECT d.id,
+       d.type,
+       d.content,
+       d.created_at,
+       d.updated_at,
+       d.metadata,
+       scored.rrf_score,
+       scored.rrf_score / ((full_text_weight + semantic_weight) / (rrf_k + 1)::float) AS similarity,
+       CASE WHEN d.embedding IS NULL THEN NULL ELSE 1 - (d.embedding <=> query_embedding)::float / 2.0 END AS cosine_similarity,
+       ts_rank_cd(d.fts, websearch_to_tsquery(query_text)) AS keyword_score
+FROM scored
+JOIN base_documents d ON d.id = scored.id
+ORDER BY similarity DESC
+LIMIT match_count;
+$$;
+
+-- Entities: jsonb content
+CREATE OR REPLACE FUNCTION hybrid_search_entities(
+  query_text        text,
+  query_embedding   vector,
+  match_count       integer,
+  filter            jsonb DEFAULT '{}'::jsonb,
+  full_text_weight  float  DEFAULT 0.5,
+  semantic_weight   float  DEFAULT 0.5,
+  rrf_k             integer DEFAULT 50
+)
+RETURNS TABLE (
+  id uuid,
+  type text,
+  content jsonb,
+  created_at timestamptz,
+  updated_at timestamptz,
+  metadata jsonb,
+  rrf_score double precision,
+  similarity float,
+  cosine_similarity float,
+  keyword_score float
+)
+LANGUAGE sql AS
+$$
 WITH base_entities AS (
   SELECT *
   FROM entities
-  WHERE (type_filter IS NULL OR type = ANY(type_filter))
+  WHERE (
+    (NOT filter ? 'ids') OR id = ANY (
+      ARRAY(SELECT jsonb_array_elements_text(filter->'ids')::uuid)
+    )
+  )
+  AND (
+    (NOT filter ? 'types') OR type = ANY (
+      ARRAY(SELECT jsonb_array_elements_text(filter->'types'))
+    )
+  )
 ),
 full_text AS (
-  SELECT
-    id,
-    row_number() OVER (
-      ORDER BY ts_rank_cd(fts, websearch_to_tsquery(query_text)) DESC
-    ) AS rank_ix
+  SELECT id,
+         row_number() OVER (
+           ORDER BY ts_rank_cd(fts, websearch_to_tsquery(query_text)) DESC
+         ) AS rank_ix
   FROM base_entities
   WHERE fts @@ websearch_to_tsquery(query_text)
   LIMIT LEAST(match_count, 30) * 2
 ),
 semantic AS (
-  SELECT
-    id,
-    row_number() OVER (
-      ORDER BY embedding <=> query_embedding
-    ) AS rank_ix
+  SELECT id,
+         row_number() OVER (
+           ORDER BY embedding <#> query_embedding
+         ) AS rank_ix
   FROM base_entities
   WHERE embedding IS NOT NULL
   LIMIT LEAST(match_count, 30) * 2
 ),
 scored AS (
-  SELECT
-    COALESCE(ft.id, s.id) AS id,
-    COALESCE(1.0 / (rrf_k + ft.rank_ix), 0.0) * full_text_weight +
-    COALESCE(1.0 / (rrf_k + s.rank_ix), 0.0) * semantic_weight AS rrf_score
+  SELECT COALESCE(ft.id, s.id) AS id,
+         COALESCE(1.0 / (rrf_k + ft.rank_ix), 0.0) * full_text_weight +
+         COALESCE(1.0 / (rrf_k + s.rank_ix), 0.0) * semantic_weight AS rrf_score
   FROM full_text ft
   FULL JOIN semantic s ON ft.id = s.id
 )
-SELECT
-  e.id,
-  e.type,
-  e.content,
-  e.created_at,
-  e.updated_at,
-  e.metadata,
-  scored.rrf_score,
-  scored.rrf_score / ((full_text_weight + semantic_weight) / (rrf_k + 1)::float) AS similarity,
-  (CASE WHEN e.embedding IS NULL THEN NULL ELSE 1 - (e.embedding <=> query_embedding)::float / 2.0 END) AS cosine_similarity,
-  ts_rank_cd(e.fts, websearch_to_tsquery(query_text)) AS keyword_score
+SELECT e.id,
+       e.type,
+       e.content,
+       e.created_at,
+       e.updated_at,
+       e.metadata,
+       scored.rrf_score,
+       scored.rrf_score / ((full_text_weight + semantic_weight) / (rrf_k + 1)::float) AS similarity,
+       CASE WHEN e.embedding IS NULL THEN NULL ELSE 1 - (e.embedding <=> query_embedding)::float / 2.0 END AS cosine_similarity,
+       ts_rank_cd(e.fts, websearch_to_tsquery(query_text)) AS keyword_score
 FROM scored
 JOIN base_entities e ON e.id = scored.id
 ORDER BY similarity DESC
@@ -185,7 +272,7 @@ SELECT
   keyword_score as text_score,
   cosine_similarity as vec_score,
   similarity as total_score
-FROM hybrid_search_entities($1, $2::vector, $3::int, $4::text[], $5::float, $6::float, $7::int)
+FROM hybrid_search_entities($1, $2::vector, $3::int, $4::jsonb, $5::float, $6::float, $7::int)
 `
 
 const SQLS: Record<string, string> = {
