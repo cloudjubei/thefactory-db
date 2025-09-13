@@ -56,7 +56,7 @@
     },
     {
       "id": "ec1dae9e-5076-4fcf-969e-20766cdb87eb",
-      "status": "-",
+      "status": "+",
       "title": "Revise init and SQL loading (readSql map) for new tables and functions",
       "description": "Update src/utils.ts to include new SQL constants for documents and entities (insert/get/update/delete, hybrid functions, search queries, match_entities). Remove or replace the old single-table queries to avoid confusion. Ensure src/connection.ts still calls readSql('schema') and readSql('hybrid_search'), which now contain the extended schema and two hybrid functions.",
       "context": []

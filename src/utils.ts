@@ -1,17 +1,5 @@
-// import delete_entity_pg from '../docs/sql/delete_entity.pg.sql';
-// import get_entity_by_id_pg from '../docs/sql/get_entity_by_id.pg.sql';
-// import insert_entity_pg from '../docs/sql/insert_entity.pg.sql';
-// import schema_pg from '../docs/sql/schema.pg.sql';
-// import search_entities_pg from '../docs/sql/search_entities.pg.sql';
-// import update_entity_pg from '../docs/sql/update_entity.pg.sql';
-// import hybrid_search_pg from '../docs/sql/hybrid_search.pg.sql';
-
 export function readSql(name: string): string | undefined {
   return SQLS[name]
-  // const b64 = SQLS[name];
-  // if (b64 !== undefined) {
-  //   return base64ToUtf8(b64);
-  // }
 }
 
 export function base64ToUtf8(base64: string) {
@@ -22,7 +10,11 @@ export function base64ToUtf8(base64: string) {
   return atob(base64)
 }
 
-const delete_entity_pg = `DELETE FROM entities WHERE id = $1`
+// -----------------------------
+// CRUD SQL for Entities (jsonb)
+// -----------------------------
+const delete_entity_pg = `DELETE FROM entities WHERE id = $1;`
+
 const get_entity_by_id_pg = `
 SELECT 
   id,
@@ -34,76 +26,27 @@ SELECT
 FROM entities
 WHERE id = $1;
 `
-const insert_entity_pg = `INSERT INTO entities (id, type, content, embedding, created_at, updated_at, metadata)
-VALUES ($1, $2, $3, $4, $5::timestamptz, $6::timestamptz, $7::jsonb);`
-const schema_pg = `-- Required extensions
-CREATE EXTENSION IF NOT EXISTS vector;
-CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
-CREATE TABLE IF NOT EXISTS entities (
-  id uuid PRIMARY KEY,
-  type text NOT NULL CHECK (type IN ('project_file','internal_document','external_blob')),
-  content text,
-  fts tsvector GENERATED ALWAYS AS (to_tsvector('english', coalesce(content,''))) STORED,
-  embedding vector(384),
-  created_at timestamptz NOT NULL DEFAULT now(),
-  updated_at timestamptz NOT NULL DEFAULT now(),
-  metadata jsonb
-);
-
-CREATE INDEX IF NOT EXISTS idx_entities_type ON entities(type);
-CREATE INDEX IF NOT EXISTS idx_entities_fts ON entities USING gin(fts);
--- Use cosine ops as embeddings are L2-normalized
-DO $$ BEGIN
-  CREATE INDEX idx_entities_embedding ON entities USING hnsw (embedding vector_cosine_ops);
-EXCEPTION WHEN others THEN
-  -- Fallback to ivfflat if hnsw not available
-  BEGIN
-    CREATE INDEX IF NOT EXISTS idx_entities_embedding_ivf ON entities USING ivfflat (embedding vector_cosine_ops);
-  EXCEPTION WHEN others THEN
-    -- ignore
-  END;
-END $$;
+const insert_entity_pg = `
+INSERT INTO entities (id, type, content, embedding, created_at, updated_at, metadata)
+VALUES ($1, $2, $3::jsonb, $4::vector, $5::timestamptz, $6::timestamptz, $7::jsonb);
 `
 
-const search_entities_pg = `
-WITH params AS (
-  SELECT 
-    websearch_to_tsquery($1) AS tsq,
-    $2::float AS tw,
-    $3::int AS lim
-)
-SELECT 
-  e.id,
-  e.type,
-  e.content,
-  null::text as tokenized_content,
-  null::text as embedding,
-  to_char(e.created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') AS "createdAt",
-  to_char(e.updated_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') AS "updatedAt",
-  to_jsonb(e.metadata) AS metadata,
-  ts_rank_cd(e.fts, (SELECT tsq FROM params)) AS text_score,
-  (1 - (e.embedding <=> $4)::float / 2.0) AS vec_score,
-  (SELECT tw FROM params) * COALESCE(ts_rank_cd(e.fts, (SELECT tsq FROM params)), 0.0) + 
-  (1.0 - (SELECT tw FROM params)) * COALESCE((1 - (e.embedding <=> $4)::float / 2.0), 0.0) AS total_score
-FROM entities e
-WHERE 1=1
-/*TYPE_FILTER*/
-ORDER BY total_score DESC
-LIMIT (SELECT lim FROM params);
-`
 const update_entity_pg = `
 UPDATE entities SET
   type = COALESCE($2, type),
-  content = COALESCE($3, content),
-  embedding = COALESCE($4, embedding),
+  content = COALESCE($3::jsonb, content),
+  embedding = COALESCE($4::vector, embedding),
   updated_at = $5::timestamptz,
   metadata = COALESCE($6::jsonb, metadata)
 WHERE id = $1;
 `
 
-// Document SQL
+// -------------------------------
+// CRUD SQL for Documents (text)
+// -------------------------------
 const delete_document_pg = `DELETE FROM documents WHERE id = $1;`
+
 const get_document_by_id_pg = `
 SELECT 
   id,
@@ -115,19 +58,155 @@ SELECT
 FROM documents
 WHERE id = $1;
 `
-const insert_document_pg = `INSERT INTO documents (id, type, content, embedding, created_at, updated_at, metadata)
-VALUES ($1, $2, $3, $4, $5::timestamptz, $6::timestamptz, $7::jsonb);`
+
+const insert_document_pg = `
+INSERT INTO documents (id, type, content, embedding, created_at, updated_at, metadata)
+VALUES ($1, $2, $3, $4::vector, $5::timestamptz, $6::timestamptz, $7::jsonb);
+`
+
 const update_document_pg = `
 UPDATE documents SET
   type = COALESCE($2, type),
   content = COALESCE($3, content),
-  embedding = COALESCE($4, embedding),
+  embedding = COALESCE($4::vector, embedding),
   updated_at = $5::timestamptz,
   metadata = COALESCE($6::jsonb, metadata)
 WHERE id = $1;
 `
 
-// New hybrid search functions for documents and entities with ids/types filter via jsonb
+// ----------------------------------------------------------
+// Schema: documents (text) and entities (jsonb), indexes and triggers
+// ----------------------------------------------------------
+const schema_pg = `
+-- Enable required extensions
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
+CREATE EXTENSION IF NOT EXISTS vector;
+
+-- Documents table: text content
+CREATE TABLE IF NOT EXISTS documents (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  type text NOT NULL,
+  content text,
+  fts tsvector GENERATED ALWAYS AS (
+    CASE WHEN content IS NULL OR content = '' THEN NULL ELSE to_tsvector('english', content) END
+  ) STORED,
+  embedding vector(384),
+  metadata jsonb,
+  created_at timestamptz NOT NULL DEFAULT now(),
+  updated_at timestamptz NOT NULL DEFAULT now()
+);
+
+-- Basic indexes for documents
+CREATE INDEX IF NOT EXISTS documents_type_idx ON documents USING btree(type);
+CREATE INDEX IF NOT EXISTS documents_fts_idx ON documents USING GIN(fts);
+-- Vector index HNSW preferred, fallback to IVFFLAT
+DO $$
+BEGIN
+  EXECUTE 'CREATE INDEX IF NOT EXISTS documents_embedding_hnsw_idx ON documents USING hnsw (embedding vector_cosine_ops)';
+EXCEPTION WHEN undefined_object THEN
+  BEGIN
+    EXECUTE 'CREATE INDEX IF NOT EXISTS documents_embedding_ivfflat_idx ON documents USING ivfflat (embedding vector_cosine_ops) WITH (lists = 100)';
+  EXCEPTION WHEN others THEN
+    NULL;
+  END;
+END$$;
+
+-- Trigger to update updated_at on row modification
+CREATE OR REPLACE FUNCTION set_updated_at()
+RETURNS trigger AS $$
+BEGIN
+  NEW.updated_at = now();
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS documents_set_updated_at ON documents;
+CREATE TRIGGER documents_set_updated_at
+BEFORE UPDATE ON documents
+FOR EACH ROW EXECUTE FUNCTION set_updated_at();
+
+-- Entities table: jsonb content
+CREATE TABLE IF NOT EXISTS entities (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  type text NOT NULL,
+  content jsonb NOT NULL,
+  fts tsvector,
+  embedding vector(384),
+  metadata jsonb,
+  created_at timestamptz NOT NULL DEFAULT now(),
+  updated_at timestamptz NOT NULL DEFAULT now()
+);
+
+-- Helper to prefer jsonb_to_tsvector(values) if available; fallback to values-only text
+CREATE OR REPLACE FUNCTION jsonb_values_text(j jsonb)
+RETURNS text AS $$
+DECLARE
+  out_text text;
+BEGIN
+  SELECT string_agg(value, ' ')
+  INTO out_text
+  FROM (
+    SELECT v
+    FROM jsonb_paths(j, ARRAY[]::text[])
+  ) AS p(path, v)
+  JOIN LATERAL (
+    SELECT CASE
+      WHEN jsonb_typeof(p.v) = 'string' THEN p.v #>> '{}'
+      WHEN jsonb_typeof(p.v) IN ('number','boolean') THEN (p.v #>> '{}')
+      ELSE NULL
+    END AS value
+  ) s ON true
+  WHERE value IS NOT NULL;
+
+  RETURN COALESCE(out_text, '');
+END;
+$$ LANGUAGE plpgsql IMMUTABLE;
+
+CREATE OR REPLACE FUNCTION jsonb_values_tsvector(j jsonb)
+RETURNS tsvector AS $$
+BEGIN
+  BEGIN
+    RETURN jsonb_to_tsvector('english', j, 'values');
+  EXCEPTION WHEN undefined_function THEN
+    RETURN to_tsvector('english', jsonb_values_text(j));
+  END;
+END;
+$$ LANGUAGE plpgsql IMMUTABLE;
+
+-- Trigger to keep fts and updated_at in sync for entities
+CREATE OR REPLACE FUNCTION entities_before_write()
+RETURNS trigger AS $$
+BEGIN
+  NEW.updated_at = now();
+  NEW.fts = CASE WHEN NEW.content IS NULL THEN NULL ELSE jsonb_values_tsvector(NEW.content) END;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS entities_set_fts ON entities;
+CREATE TRIGGER entities_set_fts
+BEFORE INSERT OR UPDATE OF content ON entities
+FOR EACH ROW EXECUTE FUNCTION entities_before_write();
+
+-- Indexes for entities
+CREATE INDEX IF NOT EXISTS entities_type_idx ON entities USING btree(type);
+CREATE INDEX IF NOT EXISTS entities_fts_idx ON entities USING GIN(fts);
+DO $$
+BEGIN
+  EXECUTE 'CREATE INDEX IF NOT EXISTS entities_embedding_hnsw_idx ON entities USING hnsw (embedding vector_cosine_ops)';
+EXCEPTION WHEN undefined_object THEN
+  BEGIN
+    EXECUTE 'CREATE INDEX IF NOT EXISTS entities_embedding_ivfflat_idx ON entities USING ivfflat (embedding vector_cosine_ops) WITH (lists = 100)';
+  EXCEPTION WHEN others THEN
+    NULL;
+  END;
+END$$;
+`
+
+// ----------------------------------------------------------
+// Hybrid search functions for documents and entities
+// - Filters with jsonb: { ids: [uuid], types: [text] }
+// ----------------------------------------------------------
 const hybrid_search_pg = `
 -- Documents: text content
 CREATE OR REPLACE FUNCTION hybrid_search_documents(
@@ -179,7 +258,7 @@ full_text AS (
 semantic AS (
   SELECT id,
          row_number() OVER (
-           ORDER BY embedding <#> query_embedding
+           ORDER BY embedding <-> query_embedding
          ) AS rank_ix
   FROM base_documents
   WHERE embedding IS NOT NULL
@@ -200,7 +279,7 @@ SELECT d.id,
        d.metadata,
        scored.rrf_score,
        scored.rrf_score / ((full_text_weight + semantic_weight) / (rrf_k + 1)::float) AS similarity,
-       CASE WHEN d.embedding IS NULL THEN NULL ELSE 1 - (d.embedding <=> query_embedding)::float / 2.0 END AS cosine_similarity,
+       CASE WHEN d.embedding IS NULL THEN NULL ELSE 1 - (d.embedding <-> query_embedding)::float END AS cosine_similarity,
        ts_rank_cd(d.fts, websearch_to_tsquery(query_text)) AS keyword_score
 FROM scored
 JOIN base_documents d ON d.id = scored.id
@@ -258,7 +337,7 @@ full_text AS (
 semantic AS (
   SELECT id,
          row_number() OVER (
-           ORDER BY embedding <#> query_embedding
+           ORDER BY embedding <-> query_embedding
          ) AS rank_ix
   FROM base_entities
   WHERE embedding IS NOT NULL
@@ -279,7 +358,7 @@ SELECT e.id,
        e.metadata,
        scored.rrf_score,
        scored.rrf_score / ((full_text_weight + semantic_weight) / (rrf_k + 1)::float) AS similarity,
-       CASE WHEN e.embedding IS NULL THEN NULL ELSE 1 - (e.embedding <=> query_embedding)::float / 2.0 END AS cosine_similarity,
+       CASE WHEN e.embedding IS NULL THEN NULL ELSE 1 - (e.embedding <-> query_embedding)::float END AS cosine_similarity,
        ts_rank_cd(e.fts, websearch_to_tsquery(query_text)) AS keyword_score
 FROM scored
 JOIN base_entities e ON e.id = scored.id
@@ -288,6 +367,9 @@ LIMIT match_count;
 $$;
 `
 
+// ----------------------------------------------------------
+// Search query wrappers calling hybrid_search_* functions
+// ----------------------------------------------------------
 const search_entities_query = `
 SELECT
   id,
@@ -316,16 +398,46 @@ SELECT
 FROM hybrid_search_documents($1, $2::vector, $3::int, $4::jsonb, $5::float, $6::float, $7::int)
 `
 
+// ----------------------------------------------------------
+// Match entities by JSON content containment with filters
+//   $1: jsonb pattern to match (content @> $1)
+//   $2: jsonb filter { ids?: string[], types?: string[] }
+//   $3: int limit (optional)
+// ----------------------------------------------------------
+const match_entities_pg = `
+SELECT
+  id,
+  type,
+  content,
+  to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') AS "createdAt",
+  to_char(updated_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') AS "updatedAt",
+  to_jsonb(metadata) AS metadata
+FROM entities
+WHERE content @> $1::jsonb
+  AND (
+    $2::jsonb IS NULL
+    OR (
+      (NOT ($2 ? 'ids') OR id = ANY (ARRAY(SELECT jsonb_array_elements_text($2->'ids')::uuid)))
+      AND (NOT ($2 ? 'types') OR type = ANY (ARRAY(SELECT jsonb_array_elements_text($2->'types'))))
+    )
+  )
+ORDER BY updated_at DESC
+LIMIT COALESCE($3::int, 100);
+`
+
 const SQLS: Record<string, string> = {
+  // Schema and functions
+  schema: schema_pg,
+  hybrid_search: hybrid_search_pg,
+
   // Entities
   delete_entity: delete_entity_pg,
   get_entity_by_id: get_entity_by_id_pg,
   insert_entity: insert_entity_pg,
-  schema: schema_pg,
-  search_entities: search_entities_pg,
   update_entity: update_entity_pg,
-  hybrid_search: hybrid_search_pg,
   search_entities_query: search_entities_query,
+  match_entities: match_entities_pg,
+
   // Documents
   delete_document: delete_document_pg,
   get_document_by_id: get_document_by_id_pg,
