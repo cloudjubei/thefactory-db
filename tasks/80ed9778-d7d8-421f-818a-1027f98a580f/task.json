@@ -34,7 +34,7 @@
     },
     {
       "id": "50f3d5db-d5be-4a36-84a0-8863e534c368",
-      "status": "-",
+      "status": "+",
       "title": "Utility to stringify JSON values for embeddings/tokenization",
       "description": "Create src/utils/json.ts exporting function stringifyJsonValues(value: unknown): string which flattens a JSON value into a whitespace-separated string consisting only of primitive values (string, number, boolean, null treated as 'null'), excluding keys and structural characters. Handle nested arrays/objects by depth-first traversal; ignore circular references gracefully. Add unit-friendly, deterministic ordering (e.g., object keys sorted) to keep stable embeddings.",
       "context": []
