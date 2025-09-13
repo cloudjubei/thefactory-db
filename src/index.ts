@@ -13,6 +13,7 @@ import type { DB } from './connection.js'
 import { v4 as uuidv4 } from 'uuid'
 import { createLocalEmbeddingProvider } from './utils/embeddings.js'
 import { readSql } from './utils.js'
+import { stringifyJsonValues } from './utils/json.js'
 
 const embeddingProvider = createLocalEmbeddingProvider()
 
@@ -26,11 +27,12 @@ function nowIso() {
 }
 
 const SQL = {
-  insert: readSql('insert_entity')!,
-  getById: readSql('get_entity_by_id')!,
-  deleteById: readSql('delete_entity')!,
-  update: readSql('update_entity')!,
+  insert: readSql('insert_entity_json') ?? readSql('insert_entity')!,
+  getById: readSql('get_entity_json_by_id') ?? readSql('get_entity_by_id')!,
+  deleteById: readSql('delete_entity_json') ?? readSql('delete_entity')!,
+  update: readSql('update_entity_json') ?? readSql('update_entity')!,
   searchEntities: readSql('search_entities_query')!,
+  matchEntities: readSql('match_entities_json') ?? readSql('match_entities')!,
 }
 
 const SQL_DOCS = {
@@ -48,6 +50,7 @@ export interface TheFactoryDb {
   updateEntity(id: string, patch: Partial<EntityInput>): Promise<Entity | undefined>
   deleteEntity(id: string): Promise<boolean>
   searchEntities(params: SearchParams): Promise<EntityWithScore[]>
+  matchEntities(criteria: unknown, options?: { types?: string[]; ids?: string[]; limit?: number }): Promise<Entity[]>
 
   // Documents (text)
   addDocument(d: DocumentInput): Promise<Document>
@@ -68,8 +71,8 @@ export async function openDatabase({ connectionString }: OpenDbOptions): Promise
   // ---------------------
   async function addEntity(e: EntityInput): Promise<Entity> {
     const createdAt = nowIso()
-    const contentStr = e.content == null ? '' : String(e.content)
-    const embedding = await embeddingProvider.embed(contentStr)
+    const contentEmbeddingText = stringifyJsonValues(e.content)
+    const embedding = await embeddingProvider.embed(contentEmbeddingText)
 
     const id = uuidv4()
     await db.query(SQL.insert, [
@@ -112,7 +115,8 @@ export async function openDatabase({ connectionString }: OpenDbOptions): Promise
 
     if (patch.content !== undefined) {
       newContent = patch.content
-      const emb = await embeddingProvider.embed(patch.content == null ? '' : String(patch.content))
+      const embText = stringifyJsonValues(patch.content)
+      const emb = await embeddingProvider.embed(embText)
       embeddingLiteral = toVectorLiteral(emb)
     }
 
@@ -159,14 +163,37 @@ export async function openDatabase({ connectionString }: OpenDbOptions): Promise
       id: row.id,
       type: row.type,
       content: row.content ?? null,
-      tokenized_content: row.tokenized_content ?? null,
-      embedding: row.embedding ?? null,
       createdAt: row.createdAt ?? row.created_at,
       updatedAt: row.updatedAt ?? row.updated_at,
       metadata: row.metadata ?? null,
       text_score: row.text_score ?? null,
       vec_score: row.vec_score ?? null,
       total_score: row.total_score ?? 0,
+    }))
+  }
+
+  async function matchEntities(
+    criteria: unknown,
+    options?: { types?: string[]; ids?: string[]; limit?: number },
+  ): Promise<Entity[]> {
+    const filter: any = {}
+    if (options?.types && options.types.length > 0) filter.types = options.types
+    if (options?.ids && options.ids.length > 0) filter.ids = options.ids
+    const limit = options?.limit ?? 100
+
+    const r = await db.query(SQL.matchEntities, [
+      JSON.stringify(criteria ?? {}),
+      Object.keys(filter).length ? JSON.stringify(filter) : null,
+      limit,
+    ])
+
+    return r.rows.map((row: any) => ({
+      id: row.id,
+      type: row.type,
+      content: row.content ?? null,
+      createdAt: row.createdAt ?? row.created_at,
+      updatedAt: row.updatedAt ?? row.updated_at,
+      metadata: row.metadata ?? null,
     }))
   }
 
@@ -285,6 +312,7 @@ export async function openDatabase({ connectionString }: OpenDbOptions): Promise
     updateEntity,
     deleteEntity,
     searchEntities,
+    matchEntities,
     // documents
     addDocument,
     getDocumentById,

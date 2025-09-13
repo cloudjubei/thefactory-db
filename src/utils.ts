@@ -437,6 +437,12 @@ const SQLS: Record<string, string> = {
   update_entity: update_entity_pg,
   search_entities_query: search_entities_query,
   match_entities: match_entities_pg,
+  // Aliases for explicit JSON entity naming
+  delete_entity_json: delete_entity_pg,
+  get_entity_json_by_id: get_entity_by_id_pg,
+  insert_entity_json: insert_entity_pg,
+  update_entity_json: update_entity_pg,
+  match_entities_json: match_entities_pg,
 
   // Documents
   delete_document: delete_document_pg,
