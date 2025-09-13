@@ -1,6 +1,6 @@
 {
   "id": "08660cf9-08cc-4e96-84e7-977dfe6cb58f",
-  "status": "+",
+  "status": "-",
   "title": "This project needs to rely on an PostgreSQL database that is provided via url",
   "description": "Currently we were relying on having a local embedded PostgresSQL database running. But these don't have all the latest functionality that we require (CREATE EXTENSION vector) . We need to modify all the code and especially the README.md to walk a user through 2 options:\n1) having a local PostgresSQL running and providing access to it via url\n2) running PostgresSQL in docker.\nBoth options need to be explained from scratch - for option 2 assuming the user has docker installed, but for option 1 assuming they have nothing.",
   "features": [
@@ -38,6 +38,19 @@
       "title": "Update FILE_ORGANISATION.md to reflect removal of embedded database",
       "description": "Update `docs/FILE_ORGANISATION.md` to remove all references to the embedded PostgreSQL runtime (`pg-embedded`). The documentation should now state that the project requires an external PostgreSQL connection string. Update the descriptions of `src/connection.ts` and `OpenDbOptions` to reflect this change.",
       "context": []
+    },
+    {
+      "id": "2c8928fb-5961-4d6d-8229-cccca2c037c6",
+      "status": "-",
+      "title": "Following the docker steps in README.md doesn't work",
+      "description": "After following @README.md to set up docker with postgresql and then using the @scripts/populate.ts  script as described, the code inside populate cannot connect, the error is:\n[thefactory-db] URL:  postgresql://user:password@localhost:5432/thefactory-db\n[thefactory-db] Error: error: database \"thefactory-db\" does not exist\n\nI suspect that we require a Dockerfile that will create the database just as it's explained at the end of option 1 in the README.md",
+      "plan": "",
+      "context": [
+        "README.md",
+        "scripts/populate.ts"
+      ],
+      "acceptance": [],
+      "blockers": []
     }
   ],
   "featureIdToDisplayIndex": {
@@ -45,6 +58,7 @@
     "faa878f1-c357-4d73-a97f-8c878fb5a3f5": 2,
     "91efa563-0b29-4a73-b470-0e6321d95c93": 3,
     "a16dcb52-9df8-40d3-82bf-c2600c8df0ac": 4,
-    "48699765-ac45-471f-bc06-c938db4b28e3": 5
+    "48699765-ac45-471f-bc06-c938db4b28e3": 5,
+    "2c8928fb-5961-4d6d-8229-cccca2c037c6": 6
   }
 }
