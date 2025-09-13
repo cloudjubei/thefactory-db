@@ -63,12 +63,11 @@
     },
     {
       "id": "d54cd46a-ac74-4dc3-a68b-ad7426eef158",
-      "status": "?",
+      "status": "-",
       "title": "Update scripts to use Documents API and demonstrate Entities",
       "description": "Modify scripts:\n- populate.ts: switch ingestion to use addDocument and searchDocuments; TRUNCATE documents instead of entities when --reset is provided; adjust type inference to use string type and metadata unchanged.\n- example.ts: demonstrate creating a few documents and entities (with JSON content), then run searchDocuments and optionally searchEntities; log results.\n- clear.ts: TRUNCATE documents and entities (both), or at minimum documents; print results.",
       "context": [],
-      "blockers": [],
-      "rejection": "Blocked: Agent loop failed: TypeError: pathsRel is not iterable"
+      "blockers": []
     },
     {
       "id": "a6dfe956-c714-4bbb-9476-697c8d8860a7",
