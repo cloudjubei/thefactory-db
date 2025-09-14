@@ -6,7 +6,8 @@ export type OpenDbOptions = {
 export type Document = {
   id: string
   type: string
-  content: string | null
+  content: string
+  src: string
   createdAt: string
   updatedAt: string
   metadata?: string | null
@@ -14,7 +15,8 @@ export type Document = {
 
 export type DocumentInput = {
   type: string
-  content?: string
+  content: string
+  src: string
   metadata?: string | null
 }
 

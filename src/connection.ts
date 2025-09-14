@@ -1,14 +1,13 @@
 import { readSql } from './utils.js'
-import pg from 'pg'
 
-export type DB = pg.Client
+export interface DB {
+  query(sql: string, inputs?: any[]) : Promise<any>;
+  end() : Promise<void>;
+}
 
 async function initSchema(client: DB) {
   const schemaSql = readSql('schema')
   const hybridSql = readSql('hybrid_search')
-
-  await client.query('CREATE EXTENSION IF NOT EXISTS vector')
-  await client.query('CREATE EXTENSION IF NOT EXISTS pgcrypto')
 
   if (schemaSql) {
     await client.query(schemaSql)
@@ -19,6 +18,7 @@ async function initSchema(client: DB) {
 }
 
 export async function openPostgres(connectionString: string): Promise<DB> {
+  const pg = await import('pg');
   const client = new pg.Client({ connectionString })
   await client.connect()
   try {

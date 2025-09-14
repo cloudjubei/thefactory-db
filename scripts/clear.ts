@@ -32,9 +32,9 @@ async function main() {
 
   const db = await openDatabase({ connectionString: url })
 
-  const pool = db.raw()
-  await pool.query('TRUNCATE TABLE documents, entities RESTART IDENTITY')
-  console.log('[thefactory-db] Truncated tables: documents, entities')
+  await db.clearEntities()
+  await db.clearDocuments()
+  console.log('[thefactory-db] Cleared')
 }
 
 main().catch((err) => {

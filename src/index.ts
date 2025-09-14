@@ -9,13 +9,9 @@ import type {
   DocumentInput,
   DocumentWithScore,
 } from './types.js'
-import type { DB } from './connection.js'
-import { v4 as uuidv4 } from 'uuid'
 import { createLocalEmbeddingProvider } from './utils/embeddings.js'
 import { readSql } from './utils.js'
 import { stringifyJsonValues } from './utils/json.js'
-
-const embeddingProvider = createLocalEmbeddingProvider()
 
 function toVectorLiteral(vec: number[] | Float32Array): string {
   // pgvector input format: '[1,2,3]'
@@ -33,6 +29,7 @@ const SQL = {
   update: readSql('update_entity')!,
   searchEntities: readSql('search_entities_query')!,
   matchEntities: readSql('match_entities')!,
+  clearEntities: readSql('clear_entities')!,
 }
 
 const SQL_DOCS = {
@@ -41,6 +38,7 @@ const SQL_DOCS = {
   deleteById: readSql('delete_document')!,
   update: readSql('update_document')!,
   searchDocuments: readSql('search_documents_query')!,
+  clearDocuments: readSql('clear_documents')!,
 }
 
 export interface TheFactoryDb {
@@ -51,6 +49,7 @@ export interface TheFactoryDb {
   deleteEntity(id: string): Promise<boolean>
   searchEntities(params: SearchParams): Promise<EntityWithScore[]>
   matchEntities(criteria: unknown, options?: { types?: string[]; ids?: string[]; limit?: number }): Promise<Entity[]>
+  clearEntities() : Promise<void>
 
   // Documents (text)
   addDocument(d: DocumentInput): Promise<Document>
@@ -58,13 +57,14 @@ export interface TheFactoryDb {
   updateDocument(id: string, patch: Partial<DocumentInput>): Promise<Document | undefined>
   deleteDocument(id: string): Promise<boolean>
   searchDocuments(params: SearchParams): Promise<DocumentWithScore[]>
+  clearDocuments() : Promise<void>
 
-  raw(): DB
   close(): Promise<void>
 }
 
 export async function openDatabase({ connectionString }: OpenDbOptions): Promise<TheFactoryDb> {
   const db = await openPostgres(connectionString)
+  const embeddingProvider = await createLocalEmbeddingProvider()
 
   // ---------------------
   // Entities (json)
@@ -87,14 +87,7 @@ export async function openDatabase({ connectionString }: OpenDbOptions): Promise
     const r = await db.query(SQL.getById, [id])
     const row = r.rows[0]
     if (!row) return undefined
-    return {
-      id: row.id,
-      type: row.type,
-      content: row.content ?? null,
-      createdAt: row.createdAt ?? row.created_at ?? nowIso(),
-      updatedAt: row.updatedAt ?? row.updated_at ?? nowIso(),
-      metadata: row.metadata ?? null,
-    }
+    return row as Entity
   }
 
   async function updateEntity(
@@ -103,15 +96,15 @@ export async function openDatabase({ connectionString }: OpenDbOptions): Promise
   ): Promise<Entity | undefined> {
     const exists = await getEntityById(id)
     if (!exists) return
-    const updatedAt = nowIso()
 
     let embeddingLiteral: string | null = null
     let newContent: unknown | null = null
+    let newContentString: string | null = null
 
     if (patch.content !== undefined) {
       newContent = patch.content
-      const embText = stringifyJsonValues(patch.content)
-      const emb = await embeddingProvider.embed(embText)
+      newContentString = stringifyJsonValues(patch.content)
+      const emb = await embeddingProvider.embed(newContentString)
       embeddingLiteral = toVectorLiteral(emb)
     }
 
@@ -119,8 +112,8 @@ export async function openDatabase({ connectionString }: OpenDbOptions): Promise
       id,
       patch.type ?? null,
       newContent,
+      newContentString,
       embeddingLiteral,
-      updatedAt,
       patch.metadata ?? null,
     ])
     return await getEntityById(id)
@@ -192,6 +185,10 @@ export async function openDatabase({ connectionString }: OpenDbOptions): Promise
     }))
   }
 
+  async function clearEntities(): Promise<void> {
+    return  db.query(SQL.clearEntities)
+  }
+
   // ---------------------
   // Documents (text)
   // ---------------------
@@ -202,6 +199,7 @@ export async function openDatabase({ connectionString }: OpenDbOptions): Promise
     const out = await db.query(SQL_DOCS.insert, [
       d.type,
       content,
+      d.src,
       toVectorLiteral(embedding),
       d.metadata ?? null,
     ])
@@ -212,14 +210,7 @@ export async function openDatabase({ connectionString }: OpenDbOptions): Promise
     const r = await db.query(SQL_DOCS.getById, [id])
     const row = r.rows[0]
     if (!row) return undefined
-    return {
-      id: row.id,
-      type: row.type,
-      content: row.content ?? null,
-      createdAt: row.createdAt ?? row.created_at ?? nowIso(),
-      updatedAt: row.updatedAt ?? row.updated_at ?? nowIso(),
-      metadata: row.metadata ?? null,
-    }
+    return row as Document
   }
 
   async function updateDocument(
@@ -228,7 +219,6 @@ export async function openDatabase({ connectionString }: OpenDbOptions): Promise
   ): Promise<Document | undefined> {
     const exists = await getDocumentById(id)
     if (!exists) return
-    const updatedAt = nowIso()
 
     let embeddingLiteral: string | null = null
     let newContent: string | null = null
@@ -243,8 +233,8 @@ export async function openDatabase({ connectionString }: OpenDbOptions): Promise
       id,
       patch.type ?? null,
       newContent,
+      patch.src ?? null,
       embeddingLiteral,
-      updatedAt,
       patch.metadata ?? null,
     ])
     return await getDocumentById(id)
@@ -281,7 +271,8 @@ export async function openDatabase({ connectionString }: OpenDbOptions): Promise
     return r.rows.map((row: any) => ({
       id: row.id,
       type: row.type,
-      content: row.content ?? null,
+      content: row.content,
+      src: row.src,
       createdAt: row.createdAt ?? row.created_at,
       updatedAt: row.updatedAt ?? row.updated_at,
       metadata: row.metadata ?? null,
@@ -291,25 +282,29 @@ export async function openDatabase({ connectionString }: OpenDbOptions): Promise
     }))
   }
 
+  async function clearDocuments(): Promise<void> {
+    return  db.query(SQL_DOCS.clearDocuments)
+  }
+
   async function close(): Promise<void> {
     await db.end()
   }
 
   return {
-    // entities
     addEntity,
     getEntityById,
     updateEntity,
     deleteEntity,
     searchEntities,
     matchEntities,
-    // documents
+    clearEntities,
+    
     addDocument,
     getDocumentById,
     updateDocument,
     deleteDocument,
     searchDocuments,
-    raw: () => db,
+    clearDocuments,
     close,
   }
 }

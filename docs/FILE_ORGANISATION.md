@@ -31,7 +31,7 @@ Key Source Modules (src/)
     - deleteEntity(id: string): Promise<boolean>
     - searchEntities({ query, textWeight?, limit?, ids?, types? }): Promise<EntityWithScore[]> — Hybrid search over entities via hybrid_search_entities.
     - matchEntities({ match, limit?, ids?, types? }): Promise<Entity[]> — Returns entities whose JSON content contains the provided JSON structure (Postgres @> containment). Optional ids/types filters are supported.
-  - raw(): pg.Client — Gives low-level access for advanced SQL.
+  - raw(): DB — Gives low-level access for advanced SQL.
 
 - src/types.ts: Shared TypeScript types for Documents and Entities, Search options and result row types, and OpenDbOptions.
 - src/connection.ts: Connection factory and schema init. Loads SQL from docs/schema.sql and installs hybrid_search functions. Ensures pgvector extension is available.

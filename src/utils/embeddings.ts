@@ -1,4 +1,4 @@
-import { pipeline } from '@xenova/transformers'
+// import { pipeline } from '@xenova/transformers'
 
 export interface EmbeddingProvider {
   readonly name: string
@@ -9,14 +9,17 @@ export interface EmbeddingProvider {
 // Embedding provider using Transformers.js with a sentence embedding model
 // Uses mean pooling over last hidden states and L2 normalization.
 // Works in Node.js, browsers (including Next.js), Electron, and React Native (with proper backend configuration).
-export function createLocalEmbeddingProvider(options?: {
+export async function createLocalEmbeddingProvider(options?: {
   model?: string // Preconverted ONNX model id, default: 'Xenova/all-MiniLM-L6-v2'
   revision?: string // Optional model revision
   normalize?: boolean // L2 normalize output (default true)
-}): EmbeddingProvider {
+}): Promise<EmbeddingProvider> {
   const model = options?.model ?? 'Xenova/all-MiniLM-L6-v2'
   const revision = options?.revision
   const normalize = options?.normalize ?? true
+
+  const xenova = await import('@xenova/transformers');
+  const pipeline = xenova.pipeline
 
   // Lazy pipeline init shared across calls
   let ready: ReturnType<typeof pipeline<'feature-extraction'>> | null = null

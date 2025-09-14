@@ -32,11 +32,13 @@ async function main() {
   const d1 = await db.addDocument({
     type: 'note',
     content: 'This is a test document about vectors and tokens',
+    src: "file://test",
     metadata: JSON.stringify({ author: 'alice' }),
   })
   const d2 = await db.addDocument({
     type: 'note',
     content: 'Another file focusing on full text search using Postgres tsvector',
+    src: "www.example.com",
     metadata: JSON.stringify({ author: 'bob' }),
   })
 
