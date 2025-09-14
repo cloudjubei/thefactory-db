@@ -1,0 +1,8 @@
+{
+  "id": "30a26e88-c04e-4619-a89c-1d21ed660e20",
+  "status": "-",
+  "title": "Add a logger",
+  "description": "This needs to output relevant but succinct information to the console on every API operation.\nThere should also be the possibility to control the log level on entry, so \"openDatabase\" .",
+  "features": [],
+  "featureIdToDisplayIndex": {}
+}
