@@ -19,10 +19,6 @@ function toVectorLiteral(vec: number[] | Float32Array): string {
   return `[${Array.from(vec).join(',')}]`
 }
 
-function nowIso() {
-  return new Date().toISOString()
-}
-
 const SQL = {
   insert: readSql('insert_entity')!,
   getById: readSql('get_entity_by_id')!,
