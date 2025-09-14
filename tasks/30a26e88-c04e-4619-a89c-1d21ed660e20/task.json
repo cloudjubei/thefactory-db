@@ -1,6 +1,6 @@
 {
   "id": "30a26e88-c04e-4619-a89c-1d21ed660e20",
-  "status": "~",
+  "status": "+",
   "title": "Add a logger",
   "description": "This needs to output relevant but succinct information to the console on every API operation.\nThere should also be the possibility to control the log level on entry, so \"openDatabase\" .",
   "features": [
@@ -20,7 +20,7 @@
     },
     {
       "id": "ce3410d2-7edc-46d7-9bea-d164c5b0f6b2",
-      "status": "-",
+      "status": "+",
       "title": "Add log statements to all public API methods",
       "description": "In `src/index.ts`, add an 'info' level log statement at the beginning of each public API method (e.g., `addDocument`, `getDocumentById`, `searchDocuments`, `addEntity`, etc.). The log messages should be succinct, indicating the operation being performed and key parameters, such as IDs or search queries.",
       "context": []

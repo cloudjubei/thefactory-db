@@ -1,5 +1,6 @@
 export type OpenDbOptions = {
   connectionString: string
+  logLevel?: LogLevel
 }
 
 // Documents (text)
