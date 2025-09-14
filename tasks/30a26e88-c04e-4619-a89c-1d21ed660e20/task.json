@@ -6,7 +6,7 @@
   "features": [
     {
       "id": "42b1a757-4dec-4b5b-ab90-935bf77a53c5",
-      "status": "-",
+      "status": "+",
       "title": "Create a simple logger utility",
       "description": "Create a new file `src/logger.ts` that exports a `createLogger` function. This function should accept a `LogLevel` ('debug', 'info', 'warn', 'error', 'silent') and return a logger object with corresponding methods (`debug`, `info`, `warn`, `error`). The logger will use the console but will only output messages for its configured level and above. Also, update `src/types.ts` to include the necessary `LogLevel` and `Logger` types.",
       "context": []
