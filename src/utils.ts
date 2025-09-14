@@ -28,8 +28,9 @@ WHERE id = $1;
 `
 
 const insert_entity_pg = `
-INSERT INTO entities (id, type, content, embedding, created_at, updated_at, metadata)
-VALUES ($1, $2, $3::jsonb, $4::vector, $5::timestamptz, $6::timestamptz, $7::jsonb);
+INSERT INTO entities (type, content, content_string, embedding, metadata)
+VALUES ($1, $2::jsonb, $3, $4::vector, $5::jsonb)
+RETURNING *;
 `
 
 const update_entity_pg = `
@@ -60,8 +61,9 @@ WHERE id = $1;
 `
 
 const insert_document_pg = `
-INSERT INTO documents (id, type, content, embedding, created_at, updated_at, metadata)
-VALUES ($1, $2, $3, $4::vector, $5::timestamptz, $6::timestamptz, $7::jsonb);
+INSERT INTO documents (type, content, embedding, metadata)
+VALUES ($1, $2, $3::vector, $4::jsonb)
+RETURNING *;
 `
 
 const update_document_pg = `
@@ -82,7 +84,7 @@ const schema_pg = `
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
 CREATE EXTENSION IF NOT EXISTS vector;
 
--- Documents table: text content
+-- Documents table
 CREATE TABLE IF NOT EXISTS documents (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   type text NOT NULL,
@@ -125,60 +127,27 @@ CREATE TRIGGER documents_set_updated_at
 BEFORE UPDATE ON documents
 FOR EACH ROW EXECUTE FUNCTION set_updated_at();
 
--- Entities table: jsonb content
+-- Entities table
 CREATE TABLE IF NOT EXISTS entities (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   type text NOT NULL,
   content jsonb NOT NULL,
-  fts tsvector,
+  content_string text NOT NULL,
+  fts tsvector GENERATED ALWAYS AS (
+    CASE WHEN content_string IS NULL OR content_string = '' THEN NULL ELSE to_tsvector('english', content_string) END
+  ) STORED,
   embedding vector(384),
   metadata jsonb,
   created_at timestamptz NOT NULL DEFAULT now(),
   updated_at timestamptz NOT NULL DEFAULT now()
 );
 
--- Helper to prefer jsonb_to_tsvector(values) if available; fallback to values-only text
-CREATE OR REPLACE FUNCTION jsonb_values_text(j jsonb)
-RETURNS text AS $$
-DECLARE
-  out_text text;
-BEGIN
-  SELECT string_agg(value, ' ')
-  INTO out_text
-  FROM (
-    SELECT v
-    FROM jsonb_paths(j, ARRAY[]::text[])
-  ) AS p(path, v)
-  JOIN LATERAL (
-    SELECT CASE
-      WHEN jsonb_typeof(p.v) = 'string' THEN p.v #>> '{}'
-      WHEN jsonb_typeof(p.v) IN ('number','boolean') THEN (p.v #>> '{}')
-      ELSE NULL
-    END AS value
-  ) s ON true
-  WHERE value IS NOT NULL;
-
-  RETURN COALESCE(out_text, '');
-END;
-$$ LANGUAGE plpgsql IMMUTABLE;
-
-CREATE OR REPLACE FUNCTION jsonb_values_tsvector(j jsonb)
-RETURNS tsvector AS $$
-BEGIN
-  BEGIN
-    RETURN jsonb_to_tsvector('english', j, 'values');
-  EXCEPTION WHEN undefined_function THEN
-    RETURN to_tsvector('english', jsonb_values_text(j));
-  END;
-END;
-$$ LANGUAGE plpgsql IMMUTABLE;
-
 -- Trigger to keep fts and updated_at in sync for entities
 CREATE OR REPLACE FUNCTION entities_before_write()
 RETURNS trigger AS $$
 BEGIN
   NEW.updated_at = now();
-  NEW.fts = CASE WHEN NEW.content IS NULL THEN NULL ELSE jsonb_values_tsvector(NEW.content) END;
+  NEW.fts = CASE WHEN NEW.content_string IS NULL THEN NULL ELSE to_tsvector('english', NEW.content_string) END;
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
@@ -437,12 +406,6 @@ const SQLS: Record<string, string> = {
   update_entity: update_entity_pg,
   search_entities_query: search_entities_query,
   match_entities: match_entities_pg,
-  // Aliases for explicit JSON entity naming
-  delete_entity_json: delete_entity_pg,
-  get_entity_json_by_id: get_entity_by_id_pg,
-  insert_entity_json: insert_entity_pg,
-  update_entity_json: update_entity_pg,
-  match_entities_json: match_entities_pg,
 
   // Documents
   delete_document: delete_document_pg,

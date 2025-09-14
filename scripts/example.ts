@@ -77,7 +77,7 @@ async function main() {
 
   // Run entity search (hybrid search over JSON values)
   const entResults = await db.searchEntities({
-    query: 'pgvector OR json',
+    query: 'json',
     textWeight: 0.5,
     limit: 10,
     types: ['note_meta'],

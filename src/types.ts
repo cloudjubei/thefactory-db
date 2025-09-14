@@ -36,7 +36,7 @@ export type Entity = {
 
 export type EntityInput = {
   type: string
-  content: unknown
+  content: Record<string,any> | any[]
   metadata?: string | null
 }
 

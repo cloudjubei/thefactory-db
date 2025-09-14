@@ -27,12 +27,12 @@ function nowIso() {
 }
 
 const SQL = {
-  insert: readSql('insert_entity_json') ?? readSql('insert_entity')!,
-  getById: readSql('get_entity_json_by_id') ?? readSql('get_entity_by_id')!,
-  deleteById: readSql('delete_entity_json') ?? readSql('delete_entity')!,
-  update: readSql('update_entity_json') ?? readSql('update_entity')!,
+  insert: readSql('insert_entity')!,
+  getById: readSql('get_entity_by_id')!,
+  deleteById: readSql('delete_entity')!,
+  update: readSql('update_entity')!,
   searchEntities: readSql('search_entities_query')!,
-  matchEntities: readSql('match_entities_json') ?? readSql('match_entities')!,
+  matchEntities: readSql('match_entities')!,
 }
 
 const SQL_DOCS = {
@@ -70,22 +70,17 @@ export async function openDatabase({ connectionString }: OpenDbOptions): Promise
   // Entities (json)
   // ---------------------
   async function addEntity(e: EntityInput): Promise<Entity> {
-    const createdAt = nowIso()
-    const contentEmbeddingText = stringifyJsonValues(e.content)
-    const embedding = await embeddingProvider.embed(contentEmbeddingText)
+    const stringContent = stringifyJsonValues(e.content)
+    const embedding = await embeddingProvider.embed(stringContent)
 
-    const id = uuidv4()
-    await db.query(SQL.insert, [
-      id,
+    const out = await db.query(SQL.insert, [
       e.type,
-      e.content ?? null,
+      e.content,
+      stringContent,
       toVectorLiteral(embedding),
-      createdAt,
-      createdAt,
       e.metadata ?? null,
     ])
-    // Return normalized entity
-    return (await getEntityById(id)) as Entity
+    return out.rows[0] as Entity
   }
 
   async function getEntityById(id: string): Promise<Entity | undefined> {
@@ -201,21 +196,16 @@ export async function openDatabase({ connectionString }: OpenDbOptions): Promise
   // Documents (text)
   // ---------------------
   async function addDocument(d: DocumentInput): Promise<Document> {
-    const createdAt = nowIso()
     const content = d.content ?? ''
     const embedding = await embeddingProvider.embed(content)
 
-    const id = uuidv4()
-    await db.query(SQL_DOCS.insert, [
-      id,
+    const out = await db.query(SQL_DOCS.insert, [
       d.type,
       content,
       toVectorLiteral(embedding),
-      createdAt,
-      createdAt,
       d.metadata ?? null,
     ])
-    return (await getDocumentById(id)) as Document
+    return out.rows[0] as Document
   }
 
   async function getDocumentById(id: string): Promise<Document | undefined> {
