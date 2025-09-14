@@ -13,7 +13,7 @@
     },
     {
       "id": "88bcaa01-a43a-442b-91b7-ed5634782624",
-      "status": "-",
+      "status": "+",
       "title": "Integrate logger into the Database API",
       "description": "Update the `OpenDbOptions` interface in `src/types.ts` to accept an optional `logLevel` property. In `src/index.ts`, within the `openDatabase` function, instantiate the logger using `createLogger` and the provided `logLevel` (defaulting to 'info'). The logger instance should be made available to the database methods.",
       "context": []
