@@ -19,18 +19,18 @@ Key Source Modules (src/)
 
 - src/index.ts: Public entry point. Exports openDatabase(options) which returns a Database API instance. The instance provides:
   - Documents API (text content)
-    - addDocument({ type, content, metadata? }): Promise<Document> — Inserts a document with embedding using the documents table.
+    - addDocument({ projectId, type, content, metadata? }): Promise<Document> — Inserts a document with embedding using the documents table.
     - getDocumentById(id: string): Promise<Document | undefined>
     - updateDocument(id: string, patch: Partial<DocumentInput>): Promise<Document | undefined>
     - deleteDocument(id: string): Promise<boolean>
-    - searchDocuments({ query, textWeight?, limit?, ids?, types? }): Promise<DocumentWithScore[]> — Hybrid search over documents via hybrid_search_documents.
+    - searchDocuments({ query, textWeight?, limit?, projectIds?, ids?, types? }): Promise<DocumentWithScore[]> — Hybrid search over documents via hybrid_search_documents.
   - Entities API (json content)
-    - addEntity({ type, content, metadata? }): Promise<Entity> — Inserts an entity with embedding. For tokens/embeddings, JSON values are stringified without keys/braces/colons to reduce noise.
+    - addEntity({ projectId, type, content, metadata? }): Promise<Entity> — Inserts an entity with embedding. For tokens/embeddings, JSON values are stringified without keys/braces/colons to reduce noise.
     - getEntityById(id: string): Promise<Entity | undefined>
     - updateEntity(id: string, patch: Partial<EntityInput>): Promise<Entity | undefined>
     - deleteEntity(id: string): Promise<boolean>
-    - searchEntities({ query, textWeight?, limit?, ids?, types? }): Promise<EntityWithScore[]> — Hybrid search over entities via hybrid_search_entities.
-    - matchEntities({ match, limit?, ids?, types? }): Promise<Entity[]> — Returns entities whose JSON content contains the provided JSON structure (Postgres @> containment). Optional ids/types filters are supported.
+    - searchEntities({ query, textWeight?, limit?, projectIds?, ids?, types? }): Promise<EntityWithScore[]> — Hybrid search over entities via hybrid_search_entities.
+    - matchEntities({ match, limit?, projectIds?, ids?, types? }): Promise<Entity[]> — Returns entities whose JSON content contains the provided JSON structure (Postgres @> containment). Optional ids/types filters are supported.
   - raw(): DB — Gives low-level access for advanced SQL.
 
 - src/types.ts: Shared TypeScript types for Documents and Entities, Search options and result row types, and OpenDbOptions.

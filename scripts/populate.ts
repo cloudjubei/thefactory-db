@@ -106,17 +106,20 @@ async function main() {
       const type = inferType(root, file)
       if (!type) continue
 
+      const projectId = 'test'
       const content = fs.readFileSync(file, 'utf8')
-      const rel = path.relative(root, file).replace(/\\/g, '/')
+      const src = path.relative(root, file).replace(/\\/g, '/')
       const metadata = {
-        path: rel,
+        path: src,
         size: stat.size,
         ext: path.extname(file),
       }
 
       await db.addDocument({
+        projectId,
         type,
         content,
+        src,
         metadata: JSON.stringify(metadata),
       })
       inserted++
@@ -128,9 +131,7 @@ async function main() {
   console.log(`[thefactory-db] Inserted ${inserted} documents.`)
 
   const sampleQuery = 'database vector hybrid search'
-  console.log(
-    `[thefactory-db] Running sample search: "${sampleQuery}" (textWeight=${textWeight})`,
-  )
+  console.log(`[thefactory-db] Running sample search: "${sampleQuery}" (textWeight=${textWeight})`)
   const results = await db.searchDocuments({
     query: sampleQuery,
     textWeight,

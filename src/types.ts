@@ -6,6 +6,7 @@ export type OpenDbOptions = {
 // Documents (text)
 export type Document = {
   id: string
+  projectId: string
   type: string
   content: string
   src: string
@@ -15,6 +16,7 @@ export type Document = {
 }
 
 export type DocumentInput = {
+  projectId: string
   type: string
   content: string
   src: string
@@ -30,6 +32,7 @@ export type DocumentWithScore = Document & {
 // Entities (json)
 export type Entity = {
   id: string
+  projectId: string
   type: string
   content: unknown
   createdAt: string
@@ -38,10 +41,12 @@ export type Entity = {
 }
 
 export type EntityInput = {
+  projectId: string
   type: string
-  content: Record<string,any> | any[]
+  content: Record<string, any> | any[]
   metadata?: string | null
 }
+export type EntityPatch = Omit<Partial<EntityInput>, 'projectId'>
 
 export type EntityWithScore = Entity & {
   text_score: number | null
@@ -55,14 +60,15 @@ export type SearchParams = {
   limit?: number
   types?: string[]
   ids?: string[]
+  projectIds?: string[]
 }
 
 // Logger
-export type LogLevel = 'debug' | 'info' | 'warn' | 'error' | 'silent';
+export type LogLevel = 'debug' | 'info' | 'warn' | 'error' | 'silent'
 
 export type Logger = {
-  debug: (...args: any[]) => void;
-  info: (...args: any[]) => void;
-  warn: (...args: any[]) => void;
-  error: (...args: any[]) => void;
-};
+  debug: (...args: any[]) => void
+  info: (...args: any[]) => void
+  warn: (...args: any[]) => void
+  error: (...args: any[]) => void
+}

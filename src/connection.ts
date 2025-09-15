@@ -1,9 +1,7 @@
 import { readSql } from './utils.js'
+import { Client } from 'pg'
 
-export interface DB {
-  query(sql: string, inputs?: any[]) : Promise<any>;
-  end() : Promise<void>;
-}
+export type DB = Client
 
 async function initSchema(client: DB) {
   const schemaSql = readSql('schema')
@@ -18,8 +16,7 @@ async function initSchema(client: DB) {
 }
 
 export async function openPostgres(connectionString: string): Promise<DB> {
-  const pg = await import('pg');
-  const client = new pg.Client({ connectionString })
+  const client = new Client({ connectionString })
   await client.connect()
   try {
     await initSchema(client)

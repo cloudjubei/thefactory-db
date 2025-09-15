@@ -1,4 +1,4 @@
-// import { pipeline } from '@xenova/transformers'
+import { pipeline } from '@xenova/transformers'
 
 export interface EmbeddingProvider {
   readonly name: string
@@ -17,9 +17,6 @@ export async function createLocalEmbeddingProvider(options?: {
   const model = options?.model ?? 'Xenova/all-MiniLM-L6-v2'
   const revision = options?.revision
   const normalize = options?.normalize ?? true
-
-  const xenova = await import('@xenova/transformers');
-  const pipeline = xenova.pipeline
 
   // Lazy pipeline init shared across calls
   let ready: ReturnType<typeof pipeline<'feature-extraction'>> | null = null

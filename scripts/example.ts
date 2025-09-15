@@ -30,20 +30,23 @@ async function main() {
 
   // Seed a couple of documents (text content)
   const d1 = await db.addDocument({
+    projectId: 'project1',
     type: 'note',
     content: 'This is a test document about vectors and tokens',
-    src: "file://test",
+    src: 'file://test',
     metadata: JSON.stringify({ author: 'alice' }),
   })
   const d2 = await db.addDocument({
+    projectId: 'project1',
     type: 'note',
     content: 'Another file focusing on full text search using Postgres tsvector',
-    src: "www.example.com",
+    src: 'www.example.com',
     metadata: JSON.stringify({ author: 'bob' }),
   })
 
   // Seed a couple of entities (JSON content)
   const e1 = await db.addEntity({
+    projectId: 'project2',
     type: 'note_meta',
     content: {
       info: { category: 'text', tags: ['pgvector', 'fts'] },
@@ -53,6 +56,7 @@ async function main() {
     metadata: JSON.stringify({ source: 'example' }),
   })
   const e2 = await db.addEntity({
+    projectId: 'project2',
     type: 'note_meta',
     content: {
       info: { category: 'howto', tags: ['entities', 'json'] },

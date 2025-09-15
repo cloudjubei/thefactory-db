@@ -1,4 +1,4 @@
-import { openPostgres } from './connection.js'
+import { DB, openPostgres } from './connection.js'
 import { createLogger } from './logger.js'
 import type {
   SearchParams,
@@ -9,6 +9,7 @@ import type {
   Document,
   DocumentInput,
   DocumentWithScore,
+  EntityPatch,
 } from './types.js'
 import { createLocalEmbeddingProvider } from './utils/embeddings.js'
 import { readSql } from './utils.js'
@@ -45,8 +46,11 @@ export interface TheFactoryDb {
   updateEntity(id: string, patch: Partial<EntityInput>): Promise<Entity | undefined>
   deleteEntity(id: string): Promise<boolean>
   searchEntities(params: SearchParams): Promise<EntityWithScore[]>
-  matchEntities(criteria: unknown, options?: { types?: string[]; ids?: string[]; limit?: number }): Promise<Entity[]>
-  clearEntities() : Promise<void>
+  matchEntities(
+    criteria: any,
+    options?: { types?: string[]; ids?: string[]; projectIds?: string[]; limit?: number },
+  ): Promise<Entity[]>
+  clearEntities(projectIds?: string[]): Promise<void>
 
   // Documents (text)
   addDocument(d: DocumentInput): Promise<Document>
@@ -54,12 +58,16 @@ export interface TheFactoryDb {
   updateDocument(id: string, patch: Partial<DocumentInput>): Promise<Document | undefined>
   deleteDocument(id: string): Promise<boolean>
   searchDocuments(params: SearchParams): Promise<DocumentWithScore[]>
-  clearDocuments() : Promise<void>
+  clearDocuments(projectIds?: string[]): Promise<void>
 
   close(): Promise<void>
+  raw(): DB
 }
 
-export async function openDatabase({ connectionString, logLevel }: OpenDbOptions): Promise<TheFactoryDb> {
+export async function openDatabase({
+  connectionString,
+  logLevel,
+}: OpenDbOptions): Promise<TheFactoryDb> {
   const logger = createLogger(logLevel)
   const db = await openPostgres(connectionString)
   const embeddingProvider = await createLocalEmbeddingProvider()
@@ -73,6 +81,7 @@ export async function openDatabase({ connectionString, logLevel }: OpenDbOptions
     const embedding = await embeddingProvider.embed(stringContent)
 
     const out = await db.query(SQL.insert, [
+      e.projectId,
       e.type,
       e.content,
       stringContent,
@@ -90,10 +99,7 @@ export async function openDatabase({ connectionString, logLevel }: OpenDbOptions
     return row as Entity
   }
 
-  async function updateEntity(
-    id: string,
-    patch: Partial<EntityInput>,
-  ): Promise<Entity | undefined> {
+  async function updateEntity(id: string, patch: EntityPatch): Promise<Entity | undefined> {
     logger.info('updateEntity', { id, keys: Object.keys(patch) })
     const exists = await getEntityById(id)
     if (!exists) return
@@ -127,7 +133,12 @@ export async function openDatabase({ connectionString, logLevel }: OpenDbOptions
   }
 
   async function searchEntities(params: SearchParams): Promise<EntityWithScore[]> {
-    logger.info('searchEntities', { query: params.query, types: params.types?.length, ids: params.ids?.length })
+    logger.info('searchEntities', {
+      query: params.query,
+      types: params.types?.length,
+      ids: params.ids?.length,
+      projectIds: params.projectIds?.length,
+    })
     const query = (params.query ?? '').trim()
     if (query.length <= 0) return []
     const qvecArr = await embeddingProvider.embed(query)
@@ -139,6 +150,7 @@ export async function openDatabase({ connectionString, logLevel }: OpenDbOptions
     const filter: any = {}
     if (params.types && params.types.length > 0) filter.types = params.types
     if (params.ids && params.ids.length > 0) filter.ids = params.ids
+    if (params.projectIds && params.projectIds.length > 0) filter.projectIds = params.projectIds
 
     const r = await db.query(SQL.searchEntities, [
       query,
@@ -152,6 +164,7 @@ export async function openDatabase({ connectionString, logLevel }: OpenDbOptions
 
     return r.rows.map((row: any) => ({
       id: row.id,
+      projectId: row.projectId,
       type: row.type,
       content: row.content ?? null,
       createdAt: row.createdAt ?? row.created_at,
@@ -165,12 +178,18 @@ export async function openDatabase({ connectionString, logLevel }: OpenDbOptions
 
   async function matchEntities(
     criteria: unknown,
-    options?: { types?: string[]; ids?: string[]; limit?: number },
+    options?: { types?: string[]; ids?: string[]; projectIds?: string[]; limit?: number },
   ): Promise<Entity[]> {
-    logger.info('matchEntities', { criteria, types: options?.types?.length, ids: options?.ids?.length })
+    logger.info('matchEntities', {
+      criteria,
+      types: options?.types?.length,
+      ids: options?.ids?.length,
+      projectIds: options?.projectIds?.length,
+    })
     const filter: any = {}
     if (options?.types && options.types.length > 0) filter.types = options.types
     if (options?.ids && options.ids.length > 0) filter.ids = options.ids
+    if (options?.projectIds && options.projectIds.length > 0) filter.projectIds = options.projectIds
     const limit = options?.limit ?? 100
 
     const r = await db.query(SQL.matchEntities, [
@@ -181,6 +200,7 @@ export async function openDatabase({ connectionString, logLevel }: OpenDbOptions
 
     return r.rows.map((row: any) => ({
       id: row.id,
+      projectId: row.projectId,
       type: row.type,
       content: row.content ?? null,
       createdAt: row.createdAt ?? row.created_at,
@@ -189,8 +209,9 @@ export async function openDatabase({ connectionString, logLevel }: OpenDbOptions
     }))
   }
 
-  async function clearEntities(): Promise<void> {
+  async function clearEntities(projectIds?: string[]): Promise<void> {
     logger.info('clearEntities')
+    //TODO: match projectIds if provided - otherwise clear all
     await db.query(SQL.clearEntities)
   }
 
@@ -203,6 +224,7 @@ export async function openDatabase({ connectionString, logLevel }: OpenDbOptions
     const embedding = await embeddingProvider.embed(content)
 
     const out = await db.query(SQL_DOCS.insert, [
+      d.projectId,
       d.type,
       content,
       d.src,
@@ -255,7 +277,12 @@ export async function openDatabase({ connectionString, logLevel }: OpenDbOptions
   }
 
   async function searchDocuments(params: SearchParams): Promise<DocumentWithScore[]> {
-    logger.info('searchDocuments', { query: params.query, types: params.types?.length, ids: params.ids?.length })
+    logger.info('searchDocuments', {
+      query: params.query,
+      types: params.types?.length,
+      ids: params.ids?.length,
+      projectIds: params.projectIds?.length,
+    })
     const query = (params.query ?? '').trim()
     if (query.length <= 0) return []
     const qvecArr = await embeddingProvider.embed(query)
@@ -267,6 +294,7 @@ export async function openDatabase({ connectionString, logLevel }: OpenDbOptions
     const filter: any = {}
     if (params.types && params.types.length > 0) filter.types = params.types
     if (params.ids && params.ids.length > 0) filter.ids = params.ids
+    if (params.projectIds && params.projectIds.length > 0) filter.projectIds = params.projectIds
 
     const r = await db.query(SQL_DOCS.searchDocuments, [
       query,
@@ -280,6 +308,7 @@ export async function openDatabase({ connectionString, logLevel }: OpenDbOptions
 
     return r.rows.map((row: any) => ({
       id: row.id,
+      projectId: row.projectId,
       type: row.type,
       content: row.content,
       src: row.src,
@@ -292,8 +321,9 @@ export async function openDatabase({ connectionString, logLevel }: OpenDbOptions
     }))
   }
 
-  async function clearDocuments(): Promise<void> {
+  async function clearDocuments(projectIds?: string[]): Promise<void> {
     logger.info('clearDocuments')
+    //TODO: same as clearEntities
     await db.query(SQL_DOCS.clearDocuments)
   }
 
@@ -310,7 +340,7 @@ export async function openDatabase({ connectionString, logLevel }: OpenDbOptions
     searchEntities,
     matchEntities,
     clearEntities,
-    
+
     addDocument,
     getDocumentById,
     updateDocument,
@@ -318,6 +348,7 @@ export async function openDatabase({ connectionString, logLevel }: OpenDbOptions
     searchDocuments,
     clearDocuments,
     close,
+    raw: () => db,
   }
 }
 
