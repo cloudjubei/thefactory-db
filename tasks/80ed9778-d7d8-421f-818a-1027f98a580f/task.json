@@ -78,7 +78,7 @@
     },
     {
       "id": "ffd133ad-761f-4c13-8633-a33925dc732f",
-      "status": "-",
+      "status": "+",
       "title": "projectId as a paramater in both Entities and Documents",
       "description": "A new parameter 'projectId' was added to Entites and Documents.\nIt allows filtering by it, and it means that it should be possible to match entities and documents by this field.\nIt should also be considered for all search.\nAll the affected files need to be updated to include it correctly:\n@src/utils.ts , @src/types.ts , @src/index.ts and the scripts @scripts/example.ts and @scripts/populate.ts .",
       "plan": "",

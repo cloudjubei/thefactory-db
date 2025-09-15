@@ -438,9 +438,39 @@ ORDER BY updated_at DESC
 LIMIT COALESCE($3::int, 100);
 `
 
-const clear_documents = `TRUNCATE TABLE documents RESTART IDENTITY`
+// ----------------------------------------------------------
+// Match documents by filters only (types/ids/projectIds)
+//   $1: jsonb filter { ids?: string[], types?: string[], projectIds?: string[] } | null
+//   $2: int limit (optional)
+// ----------------------------------------------------------
+const match_documents = `
+SELECT
+  id,
+  project_id AS "projectId",
+  type,
+  content,
+  src,
+  to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') AS "createdAt",
+  to_char(updated_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') AS "updatedAt",
+  to_jsonb(metadata) AS metadata
+FROM documents
+WHERE (
+  $1::jsonb IS NULL
+  OR (
+    (NOT ($1 ? 'ids') OR id = ANY (ARRAY(SELECT jsonb_array_elements_text($1->'ids')::uuid)))
+    AND (NOT ($1 ? 'types') OR type = ANY (ARRAY(SELECT jsonb_array_elements_text($1->'types'))))
+    AND (NOT ($1 ? 'projectIds') OR project_id = ANY (ARRAY(SELECT jsonb_array_elements_text($1->'projectIds'))))
+  )
+)
+ORDER BY updated_at DESC
+LIMIT COALESCE($2::int, 100);
+`
 
-const clear_entities = `TRUNCATE TABLE entities RESTART IDENTITY`
+// Clear helpers
+const clear_documents = `TRUNCATE TABLE documents RESTART IDENTITY;`
+const clear_entities = `TRUNCATE TABLE entities RESTART IDENTITY;`
+const clear_documents_by_project = `DELETE FROM documents WHERE project_id = ANY($1::text[]);`
+const clear_entities_by_project = `DELETE FROM entities WHERE project_id = ANY($1::text[]);`
 
 const SQLS: Record<string, string> = {
   // Schema and functions
@@ -455,6 +485,7 @@ const SQLS: Record<string, string> = {
   search_entities_query: search_entities_query,
   match_entities: match_entities,
   clear_entities: clear_entities,
+  clear_entities_by_project: clear_entities_by_project,
 
   // Documents
   delete_document: delete_document,
@@ -462,5 +493,7 @@ const SQLS: Record<string, string> = {
   insert_document: insert_document,
   update_document: update_document,
   search_documents_query: search_documents_query,
+  match_documents: match_documents,
   clear_documents: clear_documents,
+  clear_documents_by_project: clear_documents_by_project,
 }

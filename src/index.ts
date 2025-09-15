@@ -28,6 +28,7 @@ const SQL = {
   searchEntities: readSql('search_entities_query')!,
   matchEntities: readSql('match_entities')!,
   clearEntities: readSql('clear_entities')!,
+  clearEntitiesByProject: readSql('clear_entities_by_project')!,
 }
 
 const SQL_DOCS = {
@@ -36,7 +37,9 @@ const SQL_DOCS = {
   deleteById: readSql('delete_document')!,
   update: readSql('update_document')!,
   searchDocuments: readSql('search_documents_query')!,
+  matchDocuments: readSql('match_documents')!,
   clearDocuments: readSql('clear_documents')!,
+  clearDocumentsByProject: readSql('clear_documents_by_project')!,
 }
 
 export interface TheFactoryDb {
@@ -63,7 +66,7 @@ export interface TheFactoryDb {
     ids?: string[]
     projectIds?: string[]
     limit?: number
-  }): Promise<Entity[]>
+  }): Promise<Document[]>
   clearDocuments(projectIds?: string[]): Promise<void>
 
   close(): Promise<void>
@@ -216,9 +219,12 @@ export async function openDatabase({
   }
 
   async function clearEntities(projectIds?: string[]): Promise<void> {
-    logger.info('clearEntities')
-    //TODO: match projectIds if provided - otherwise clear all
-    await db.query(SQL.clearEntities)
+    logger.info('clearEntities', { count: projectIds?.length || 0 })
+    if (projectIds && projectIds.length > 0) {
+      await db.query(SQL.clearEntitiesByProject, [projectIds])
+    } else {
+      await db.query(SQL.clearEntities)
+    }
   }
 
   // ---------------------
@@ -287,8 +293,33 @@ export async function openDatabase({
     ids?: string[]
     projectIds?: string[]
     limit?: number
-  }): Promise<Entity[]> {
-    return [] //TODO:
+  }): Promise<Document[]> {
+    logger.info('matchDocuments', {
+      types: options?.types?.length,
+      ids: options?.ids?.length,
+      projectIds: options?.projectIds?.length,
+    })
+    const filter: any = {}
+    if (options?.types && options.types.length > 0) filter.types = options.types
+    if (options?.ids && options.ids.length > 0) filter.ids = options.ids
+    if (options?.projectIds && options.projectIds.length > 0) filter.projectIds = options.projectIds
+    const limit = options?.limit ?? 100
+
+    const r = await db.query(SQL_DOCS.matchDocuments, [
+      Object.keys(filter).length ? JSON.stringify(filter) : null,
+      limit,
+    ])
+
+    return r.rows.map((row: any) => ({
+      id: row.id,
+      projectId: row.projectId,
+      type: row.type,
+      content: row.content,
+      src: row.src,
+      createdAt: row.createdAt ?? row.created_at,
+      updatedAt: row.updatedAt ?? row.updated_at,
+      metadata: row.metadata ?? null,
+    }))
   }
 
   async function searchDocuments(params: SearchParams): Promise<DocumentWithScore[]> {
@@ -337,9 +368,12 @@ export async function openDatabase({
   }
 
   async function clearDocuments(projectIds?: string[]): Promise<void> {
-    logger.info('clearDocuments')
-    //TODO: same as clearEntities
-    await db.query(SQL_DOCS.clearDocuments)
+    logger.info('clearDocuments', { count: projectIds?.length || 0 })
+    if (projectIds && projectIds.length > 0) {
+      await db.query(SQL_DOCS.clearDocumentsByProject, [projectIds])
+    } else {
+      await db.query(SQL_DOCS.clearDocuments)
+    }
   }
 
   async function close(): Promise<void> {
