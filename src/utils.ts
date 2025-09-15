@@ -70,6 +70,20 @@ FROM documents
 WHERE id = $1;
 `
 
+const get_document_by_src = `
+SELECT 
+  id,
+  project_id AS "projectId",
+  type,
+  content,
+  src,
+  to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') AS "createdAt",
+  to_char(updated_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') AS "updatedAt",
+  to_jsonb(metadata) AS metadata
+FROM documents
+WHERE src = $1;
+`
+
 const insert_document = `
 INSERT INTO documents (project_id, type, content, src, embedding, metadata)
 VALUES ($1, $2, $3, $4, $5::vector, $6::jsonb)
@@ -490,6 +504,7 @@ const SQLS: Record<string, string> = {
   // Documents
   delete_document: delete_document,
   get_document_by_id: get_document_by_id,
+  get_document_by_src: get_document_by_src,
   insert_document: insert_document,
   update_document: update_document,
   search_documents_query: search_documents_query,

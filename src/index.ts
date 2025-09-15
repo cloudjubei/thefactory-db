@@ -34,6 +34,7 @@ const SQL = {
 const SQL_DOCS = {
   insert: readSql('insert_document')!,
   getById: readSql('get_document_by_id')!,
+  getBySrc: readSql('get_document_by_src')!,
   deleteById: readSql('delete_document')!,
   update: readSql('update_document')!,
   searchDocuments: readSql('search_documents_query')!,
@@ -58,6 +59,7 @@ export interface TheFactoryDb {
   // Documents (text)
   addDocument(d: DocumentInput): Promise<Document>
   getDocumentById(id: string): Promise<Document | undefined>
+  getDocumentBySrc(src: string): Promise<Document | undefined>
   updateDocument(id: string, patch: Partial<DocumentInput>): Promise<Document | undefined>
   deleteDocument(id: string): Promise<boolean>
   searchDocuments(params: SearchParams): Promise<DocumentWithScore[]>
@@ -124,7 +126,7 @@ export async function openDatabase({
       embeddingLiteral = toVectorLiteral(emb)
     }
 
-    await db.query(SQL.update, [
+    const r = await db.query(SQL.update, [
       id,
       patch.type ?? null,
       newContent,
@@ -132,7 +134,9 @@ export async function openDatabase({
       embeddingLiteral,
       patch.metadata ?? null,
     ])
-    return await getEntityById(id)
+    const row = r.rows[0]
+    if (!row) return undefined
+    return row as Entity
   }
 
   async function deleteEntity(id: string): Promise<boolean> {
@@ -254,6 +258,14 @@ export async function openDatabase({
     return row as Document
   }
 
+  async function getDocumentBySrc(src: string): Promise<Document | undefined> {
+    logger.info('getDocumentBySrc', { src })
+    const r = await db.query(SQL_DOCS.getBySrc, [src])
+    const row = r.rows[0]
+    if (!row) return undefined
+    return row as Document
+  }
+
   async function updateDocument(
     id: string,
     patch: Partial<DocumentInput>,
@@ -271,7 +283,7 @@ export async function openDatabase({
       embeddingLiteral = toVectorLiteral(emb)
     }
 
-    await db.query(SQL_DOCS.update, [
+    const r = await db.query(SQL_DOCS.update, [
       id,
       patch.type ?? null,
       newContent,
@@ -279,7 +291,9 @@ export async function openDatabase({
       embeddingLiteral,
       patch.metadata ?? null,
     ])
-    return await getDocumentById(id)
+    const row = r.rows[0]
+    if (!row) return undefined
+    return row as Document
   }
 
   async function deleteDocument(id: string): Promise<boolean> {
@@ -392,6 +406,7 @@ export async function openDatabase({
 
     addDocument,
     getDocumentById,
+    getDocumentBySrc,
     updateDocument,
     deleteDocument,
     searchDocuments,
