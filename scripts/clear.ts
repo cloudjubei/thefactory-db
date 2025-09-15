@@ -21,12 +21,10 @@ function parseArgs(argv: string[]) {
 
 async function main() {
   const args = parseArgs(process.argv.slice(2))
-  const rootArg = (args.root as string) || process.cwd()
-  const root = path.resolve(rootArg)
-  const url = (args.url as string) || process.env.DATABASE_URL
+  const url = args.url as string
 
   if (!url) {
-    console.error('[thefactory-db] Error: Database URL is required. Use --url or set DATABASE_URL')
+    console.error('[thefactory-db] Error: Database URL is required. Use --url')
     process.exit(1)
   }
 

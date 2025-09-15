@@ -1,6 +1,6 @@
 {
   "id": "80ed9778-d7d8-421f-818a-1027f98a580f",
-  "status": "+",
+  "status": "-",
   "title": "Separate Entities from Documents",
   "description": "For the database to work as intended for the required use, we actually need two types of tables:\nEntities and Documents.\nDocuments will always assume that their content is a string.\nEntities will have their content as json.\nFor tokens and embeddings - Entities should have their content stringified, but if possible, only based on values and not on keys or json schema characters like braces or colons - as those only pollute the tokenization/embedding.\nBoth will have a type string associated with them. This means, that we need functions to get Documents and Entities of a specific type.\nIt also means that we must be able to filter inside search based on a list of ids or type - an example of how this is done is in the reference hybrid_search @docs/hybrid_search.sql .\nFor Entities, as their content is json, we also want a function matchEntities - that will allow to get entities whose content matches a specific json value, for instance `{ 'info': { 'category' : 'text' } }`.\n\nEssentially, the current Entities that are implemented right now become Documents with a few improvements, and we need a completely new schema for the new Entities. \nThere's no need for any backward-compatibility.",
   "features": [
@@ -75,6 +75,22 @@
       "title": "Docs update: FILE_ORGANISATION and SQL references for Documents vs Entities",
       "description": "Update docs/FILE_ORGANISATION.md to describe the new dual-table design and APIs exposed from src/index.ts (addDocument/searchDocuments and addEntity/searchEntities/matchEntities). Update docs/schema.sql and docs/hybrid_search.sql to mirror the new Postgres schema and hybrid functions for both tables, including filter by ids/types examples. Note breaking changes: previous 'entities' table became 'documents'.",
       "context": []
+    },
+    {
+      "id": "ffd133ad-761f-4c13-8633-a33925dc732f",
+      "status": "-",
+      "title": "projectId as a paramater in both Entities and Documents",
+      "description": "A new parameter 'projectId' was added to Entites and Documents.\nIt allows filtering by it, and it means that it should be possible to match entities and documents by this field.\nIt should also be considered for all search.\nAll the affected files need to be updated to include it correctly:\n@src/utils.ts , @src/types.ts , @src/index.ts and the scripts @scripts/example.ts and @scripts/populate.ts .",
+      "plan": "",
+      "context": [
+        "src/utils.ts",
+        "src/types.ts",
+        "src/index.ts",
+        "scripts/example.ts",
+        "scripts/populate.ts"
+      ],
+      "acceptance": [],
+      "blockers": []
     }
   ],
   "featureIdToDisplayIndex": {
@@ -87,6 +103,7 @@
     "ce59e0a3-a9bb-4b0e-aa45-d0e6d79250c3": 7,
     "ec1dae9e-5076-4fcf-969e-20766cdb87eb": 8,
     "d54cd46a-ac74-4dc3-a68b-ad7426eef158": 9,
-    "a6dfe956-c714-4bbb-9476-697c8d8860a7": 10
+    "a6dfe956-c714-4bbb-9476-697c8d8860a7": 10,
+    "ffd133ad-761f-4c13-8633-a33925dc732f": 11
   }
 }
