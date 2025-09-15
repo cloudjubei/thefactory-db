@@ -20,7 +20,7 @@ function parseArgs(argv: string[]) {
 
 async function main() {
   const args = parseArgs(process.argv.slice(2))
-  const url = (args.url as string) || process.env.DATABASE_URL
+  const url = args.url as string
   if (!url) {
     console.error('[thefactory-db] Error: Database URL is required. Use --url or set DATABASE_URL')
     process.exit(1)
@@ -92,11 +92,19 @@ async function main() {
   })
   console.log('\nEntity search results:')
   for (const r of entResults) {
-    console.log({ id: r.id, type: r.type, projectId: r.projectId, score: r.total_score?.toFixed?.(4) ?? r.total_score })
+    console.log({
+      id: r.id,
+      type: r.type,
+      projectId: r.projectId,
+      score: r.total_score?.toFixed?.(4) ?? r.total_score,
+    })
   }
 
   // JSON match demonstration (with project filter)
-  const matched = await db.matchEntities({ info: { category: 'text' } }, { types: ['note_meta'], projectIds: ['project2'] })
+  const matched = await db.matchEntities(
+    { info: { category: 'text' } },
+    { types: ['note_meta'], projectIds: ['project2'] },
+  )
   console.log('\nEntity match (content @> { info: { category: "text" } }) in project2:')
   for (const r of matched) {
     console.log({ id: r.id, type: r.type, projectId: r.projectId })

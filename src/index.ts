@@ -10,6 +10,7 @@ import type {
   DocumentInput,
   DocumentWithScore,
   EntityPatch,
+  MatchParams,
 } from './types.js'
 import { createLocalEmbeddingProvider } from './utils/embeddings.js'
 import { readSql } from './utils.js'
@@ -50,10 +51,7 @@ export interface TheFactoryDb {
   updateEntity(id: string, patch: Partial<EntityInput>): Promise<Entity | undefined>
   deleteEntity(id: string): Promise<boolean>
   searchEntities(params: SearchParams): Promise<EntityWithScore[]>
-  matchEntities(
-    criteria: any,
-    options?: { types?: string[]; ids?: string[]; projectIds?: string[]; limit?: number },
-  ): Promise<Entity[]>
+  matchEntities(criteria: any, options?: MatchParams): Promise<Entity[]>
   clearEntities(projectIds?: string[]): Promise<void>
 
   // Documents (text)
@@ -63,12 +61,7 @@ export interface TheFactoryDb {
   updateDocument(id: string, patch: Partial<DocumentInput>): Promise<Document | undefined>
   deleteDocument(id: string): Promise<boolean>
   searchDocuments(params: SearchParams): Promise<DocumentWithScore[]>
-  matchDocuments(options: {
-    types?: string[]
-    ids?: string[]
-    projectIds?: string[]
-    limit?: number
-  }): Promise<Document[]>
+  matchDocuments(options: MatchParams): Promise<Document[]>
   clearDocuments(projectIds?: string[]): Promise<void>
 
   close(): Promise<void>
@@ -87,7 +80,7 @@ export async function openDatabase({
   // Entities (json)
   // ---------------------
   async function addEntity(e: EntityInput): Promise<Entity> {
-    logger.info('addEntity', { type: e.type })
+    logger.info('addEntity', { projectId: e.projectId, type: e.type })
     const stringContent = stringifyJsonValues(e.content)
     const embedding = await embeddingProvider.embed(stringContent)
 
@@ -146,12 +139,7 @@ export async function openDatabase({
   }
 
   async function searchEntities(params: SearchParams): Promise<EntityWithScore[]> {
-    logger.info('searchEntities', {
-      query: params.query,
-      types: params.types?.length,
-      ids: params.ids?.length,
-      projectIds: params.projectIds?.length,
-    })
+    logger.info('searchEntities', params)
     const query = (params.query ?? '').trim()
     if (query.length <= 0) return []
     const qvecArr = await embeddingProvider.embed(query)
@@ -195,9 +183,7 @@ export async function openDatabase({
   ): Promise<Entity[]> {
     logger.info('matchEntities', {
       criteria,
-      types: options?.types?.length,
-      ids: options?.ids?.length,
-      projectIds: options?.projectIds?.length,
+      options,
     })
     const filter: any = {}
     if (options?.types && options.types.length > 0) filter.types = options.types
@@ -235,7 +221,7 @@ export async function openDatabase({
   // Documents (text)
   // ---------------------
   async function addDocument(d: DocumentInput): Promise<Document> {
-    logger.info('addDocument', { type: d.type })
+    logger.info('addDocument', { projectId: d.projectId, type: d.type, src: d.src })
     const content = d.content ?? ''
     const embedding = await embeddingProvider.embed(content)
 
@@ -308,11 +294,7 @@ export async function openDatabase({
     projectIds?: string[]
     limit?: number
   }): Promise<Document[]> {
-    logger.info('matchDocuments', {
-      types: options?.types?.length,
-      ids: options?.ids?.length,
-      projectIds: options?.projectIds?.length,
-    })
+    logger.info('matchDocuments', options)
     const filter: any = {}
     if (options?.types && options.types.length > 0) filter.types = options.types
     if (options?.ids && options.ids.length > 0) filter.ids = options.ids
@@ -337,12 +319,7 @@ export async function openDatabase({
   }
 
   async function searchDocuments(params: SearchParams): Promise<DocumentWithScore[]> {
-    logger.info('searchDocuments', {
-      query: params.query,
-      types: params.types?.length,
-      ids: params.ids?.length,
-      projectIds: params.projectIds?.length,
-    })
+    logger.info('searchDocuments', params)
     const query = (params.query ?? '').trim()
     if (query.length <= 0) return []
     const qvecArr = await embeddingProvider.embed(query)

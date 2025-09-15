@@ -54,13 +54,15 @@ export type EntityWithScore = Entity & {
   total_score: number
 }
 
-export type SearchParams = {
-  query: string
-  textWeight?: number
+export type MatchParams = {
   limit?: number
   types?: string[]
   ids?: string[]
   projectIds?: string[]
+}
+export type SearchParams = MatchParams & {
+  query: string
+  textWeight?: number
 }
 
 // Logger
