@@ -41,9 +41,9 @@ async function main() {
   console.log('Documents count thefactory-knowledge: ', knowledgeDocuments.length)
 
   const docResults = await db.searchDocuments({
-    query: 'ipc',
+    query: 'task',
     textWeight: 0.6,
-    limit: 20,
+    limit: 10,
     projectIds: ['main'],
   })
   console.log('\nDocument search results:')
@@ -54,7 +54,7 @@ async function main() {
   const docResults2 = await db.searchDocuments({
     query: 'console.log',
     textWeight: 0.9,
-    limit: 20,
+    limit: 4,
     projectIds: ['main'],
   })
   console.log('\nDocument search results2:')

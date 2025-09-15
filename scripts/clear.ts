@@ -22,6 +22,7 @@ function parseArgs(argv: string[]) {
 async function main() {
   const args = parseArgs(process.argv.slice(2))
   const url = args.url as string
+  const projectId = args.p as string
 
   if (!url) {
     console.error('[thefactory-db] Error: Database URL is required. Use --url')
@@ -29,9 +30,9 @@ async function main() {
   }
 
   const db = await openDatabase({ connectionString: url })
-
-  await db.clearEntities()
-  await db.clearDocuments()
+  const projectIds = projectId ? [projectId] : undefined
+  await db.clearEntities(projectIds)
+  await db.clearDocuments(projectIds)
   console.log('[thefactory-db] Cleared')
 }
 
