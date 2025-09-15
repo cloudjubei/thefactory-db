@@ -75,10 +75,11 @@ async function main() {
     textWeight: 0.6,
     limit: 10,
     types: ['note'],
+    projectIds: ['project1'],
   })
   console.log('\nDocument search results:')
   for (const r of docResults) {
-    console.log({ id: r.id, type: r.type, score: r.total_score.toFixed(4) })
+    console.log({ id: r.id, type: r.type, projectId: r.projectId, score: r.total_score.toFixed(4) })
   }
 
   // Run entity search (hybrid search over JSON values)
@@ -87,17 +88,18 @@ async function main() {
     textWeight: 0.5,
     limit: 10,
     types: ['note_meta'],
+    projectIds: ['project2'],
   })
   console.log('\nEntity search results:')
   for (const r of entResults) {
-    console.log({ id: r.id, type: r.type, score: r.total_score?.toFixed?.(4) ?? r.total_score })
+    console.log({ id: r.id, type: r.type, projectId: r.projectId, score: r.total_score?.toFixed?.(4) ?? r.total_score })
   }
 
-  // JSON match demonstration
-  const matched = await db.matchEntities({ info: { category: 'text' } }, { types: ['note_meta'] })
-  console.log('\nEntity match (content @> { info: { category: "text" } }):')
+  // JSON match demonstration (with project filter)
+  const matched = await db.matchEntities({ info: { category: 'text' } }, { types: ['note_meta'], projectIds: ['project2'] })
+  console.log('\nEntity match (content @> { info: { category: "text" } }) in project2:')
   for (const r of matched) {
-    console.log({ id: r.id, type: r.type })
+    console.log({ id: r.id, type: r.type, projectId: r.projectId })
   }
 }
 

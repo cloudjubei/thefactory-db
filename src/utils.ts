@@ -18,6 +18,7 @@ const delete_entity = `DELETE FROM entities WHERE id = $1;`
 const get_entity_by_id = `
 SELECT 
   id,
+  project_id AS "projectId",
   type,
   content,
   to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') AS "createdAt",
@@ -28,9 +29,16 @@ WHERE id = $1;
 `
 
 const insert_entity = `
-INSERT INTO entities (type, content, content_string, embedding, metadata)
-VALUES ($1, $2::jsonb, $3, $4::vector, $5::jsonb)
-RETURNING *;
+INSERT INTO entities (project_id, type, content, content_string, embedding, metadata)
+VALUES ($1, $2, $3::jsonb, $4, $5::vector, $6::jsonb)
+RETURNING 
+  id,
+  project_id AS "projectId",
+  type,
+  content,
+  to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') AS "createdAt",
+  to_char(updated_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') AS "updatedAt",
+  to_jsonb(metadata) AS metadata;
 `
 
 const update_entity = `
@@ -51,6 +59,7 @@ const delete_document = `DELETE FROM documents WHERE id = $1;`
 const get_document_by_id = `
 SELECT 
   id,
+  project_id AS "projectId",
   type,
   content,
   src,
@@ -62,9 +71,17 @@ WHERE id = $1;
 `
 
 const insert_document = `
-INSERT INTO documents (type, content, src, embedding, metadata)
-VALUES ($1, $2, $3, $4::vector, $5::jsonb)
-RETURNING *;
+INSERT INTO documents (project_id, type, content, src, embedding, metadata)
+VALUES ($1, $2, $3, $4, $5::vector, $6::jsonb)
+RETURNING 
+  id,
+  project_id AS "projectId",
+  type,
+  content,
+  src,
+  to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') AS "createdAt",
+  to_char(updated_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') AS "updatedAt",
+  to_jsonb(metadata) AS metadata;
 `
 
 const update_document = `
@@ -88,6 +105,7 @@ CREATE EXTENSION IF NOT EXISTS vector;
 -- Documents table
 CREATE TABLE IF NOT EXISTS documents (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  project_id text NOT NULL,
   type text NOT NULL,
   content text,
   fts tsvector GENERATED ALWAYS AS (
@@ -101,6 +119,7 @@ CREATE TABLE IF NOT EXISTS documents (
 );
 
 -- Basic indexes for documents
+CREATE INDEX IF NOT EXISTS documents_project_id_idx ON documents USING btree(project_id);
 CREATE INDEX IF NOT EXISTS documents_type_idx ON documents USING btree(type);
 CREATE INDEX IF NOT EXISTS documents_fts_idx ON documents USING GIN(fts);
 -- Vector index HNSW preferred, fallback to IVFFLAT
@@ -132,6 +151,7 @@ FOR EACH ROW EXECUTE FUNCTION set_updated_at();
 -- Entities table
 CREATE TABLE IF NOT EXISTS entities (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  project_id text NOT NULL,
   type text NOT NULL,
   content jsonb NOT NULL,
   content_string text NOT NULL,
@@ -160,6 +180,7 @@ BEFORE INSERT OR UPDATE OF content ON entities
 FOR EACH ROW EXECUTE FUNCTION entities_before_write();
 
 -- Indexes for entities
+CREATE INDEX IF NOT EXISTS entities_project_id_idx ON entities USING btree(project_id);
 CREATE INDEX IF NOT EXISTS entities_type_idx ON entities USING btree(type);
 CREATE INDEX IF NOT EXISTS entities_fts_idx ON entities USING GIN(fts);
 DO $$
@@ -176,7 +197,7 @@ END$$;
 
 // ----------------------------------------------------------
 // Hybrid search functions for documents and entities
-// - Filters with jsonb: { ids: [uuid], types: [text] }
+// - Filters with jsonb: { ids: [uuid], types: [text], projectIds: [text] }
 // ----------------------------------------------------------
 const hybrid_search = `
 -- Documents
@@ -191,6 +212,7 @@ CREATE OR REPLACE FUNCTION hybrid_search_documents(
 )
 RETURNS TABLE (
   id uuid,
+  project_id text,
   type text,
   content text,
   src text,
@@ -215,6 +237,11 @@ WITH base_documents AS (
   AND (
     (NOT filter ? 'types') OR type = ANY (
       ARRAY(SELECT jsonb_array_elements_text(filter->'types'))
+    )
+  )
+  AND (
+    (NOT filter ? 'projectIds') OR project_id = ANY (
+      ARRAY(SELECT jsonb_array_elements_text(filter->'projectIds'))
     )
   )
 ),
@@ -244,6 +271,7 @@ scored AS (
   FULL JOIN semantic s ON ft.id = s.id
 )
 SELECT d.id,
+       d.project_id,
        d.type,
        d.content,
        d.src,
@@ -260,7 +288,7 @@ ORDER BY similarity DESC
 LIMIT match_count;
 $$;
 
--- Entitiesb content
+-- Entities content
 CREATE OR REPLACE FUNCTION hybrid_search_entities(
   query_text        text,
   query_embedding   vector,
@@ -272,6 +300,7 @@ CREATE OR REPLACE FUNCTION hybrid_search_entities(
 )
 RETURNS TABLE (
   id uuid,
+  project_id text,
   type text,
   content jsonb,
   created_at timestamptz,
@@ -295,6 +324,11 @@ WITH base_entities AS (
   AND (
     (NOT filter ? 'types') OR type = ANY (
       ARRAY(SELECT jsonb_array_elements_text(filter->'types'))
+    )
+  )
+  AND (
+    (NOT filter ? 'projectIds') OR project_id = ANY (
+      ARRAY(SELECT jsonb_array_elements_text(filter->'projectIds'))
     )
   )
 ),
@@ -324,6 +358,7 @@ scored AS (
   FULL JOIN semantic s ON ft.id = s.id
 )
 SELECT e.id,
+       e.project_id,
        e.type,
        e.content,
        e.created_at,
@@ -346,6 +381,7 @@ $$;
 const search_entities_query = `
 SELECT
   id,
+  project_id AS "projectId",
   type,
   content,
   to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') AS "createdAt",
@@ -360,6 +396,7 @@ FROM hybrid_search_entities($1, $2::vector, $3::int, $4::jsonb, $5::float, $6::f
 const search_documents_query = `
 SELECT
   id,
+  project_id AS "projectId",
   type,
   content,
   src,
@@ -375,12 +412,13 @@ FROM hybrid_search_documents($1, $2::vector, $3::int, $4::jsonb, $5::float, $6::
 // ----------------------------------------------------------
 // Match entities by JSON content containment with filters
 //   $1: jsonb pattern to match (content @> $1)
-//   $2: jsonb filter { ids?: string[], types?: string[] }
+//   $2: jsonb filter { ids?: string[], types?: string[], projectIds?: string[] }
 //   $3: int limit (optional)
 // ----------------------------------------------------------
 const match_entities = `
 SELECT
   id,
+  project_id AS "projectId",
   type,
   content,
   to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') AS "createdAt",
@@ -393,6 +431,7 @@ WHERE content @> $1::jsonb
     OR (
       (NOT ($2 ? 'ids') OR id = ANY (ARRAY(SELECT jsonb_array_elements_text($2->'ids')::uuid)))
       AND (NOT ($2 ? 'types') OR type = ANY (ARRAY(SELECT jsonb_array_elements_text($2->'types'))))
+      AND (NOT ($2 ? 'projectIds') OR project_id = ANY (ARRAY(SELECT jsonb_array_elements_text($2->'projectIds'))))
     )
   )
 ORDER BY updated_at DESC

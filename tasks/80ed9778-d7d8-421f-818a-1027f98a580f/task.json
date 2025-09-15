@@ -1,6 +1,6 @@
 {
   "id": "80ed9778-d7d8-421f-818a-1027f98a580f",
-  "status": "-",
+  "status": "+",
   "title": "Separate Entities from Documents",
   "description": "For the database to work as intended for the required use, we actually need two types of tables:\nEntities and Documents.\nDocuments will always assume that their content is a string.\nEntities will have their content as json.\nFor tokens and embeddings - Entities should have their content stringified, but if possible, only based on values and not on keys or json schema characters like braces or colons - as those only pollute the tokenization/embedding.\nBoth will have a type string associated with them. This means, that we need functions to get Documents and Entities of a specific type.\nIt also means that we must be able to filter inside search based on a list of ids or type - an example of how this is done is in the reference hybrid_search @docs/hybrid_search.sql .\nFor Entities, as their content is json, we also want a function matchEntities - that will allow to get entities whose content matches a specific json value, for instance `{ 'info': { 'category' : 'text' } }`.\n\nEssentially, the current Entities that are implemented right now become Documents with a few improvements, and we need a completely new schema for the new Entities. \nThere's no need for any backward-compatibility.",
   "features": [
@@ -78,7 +78,7 @@
     },
     {
       "id": "ffd133ad-761f-4c13-8633-a33925dc732f",
-      "status": "-",
+      "status": "+",
       "title": "projectId as a paramater in both Entities and Documents",
       "description": "A new parameter 'projectId' was added to Entites and Documents.\nIt allows filtering by it, and it means that it should be possible to match entities and documents by this field.\nIt should also be considered for all search.\nAll the affected files need to be updated to include it correctly:\n@src/utils.ts , @src/types.ts , @src/index.ts and the scripts @scripts/example.ts and @scripts/populate.ts .",
       "plan": "",

@@ -137,6 +137,7 @@ async function main() {
     textWeight,
     limit: 10,
     types: ['project_file', 'internal_document'],
+    projectIds: ['test'],
   })
 
   for (let i = 0; i < results.length; i++) {
@@ -149,7 +150,7 @@ async function main() {
       }
     } catch {}
     console.log(
-      `${String(i + 1).padStart(2, ' ')}. score=${r.total_score.toFixed(4)} type=${r.type} path=${metaPath} id=${r.id}`,
+      `${String(i + 1).padStart(2, ' ')}. score=${r.total_score.toFixed(4)} type=${r.type} projectId=${r.projectId} path=${metaPath} id=${r.id}`,
     )
   }
 
