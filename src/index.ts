@@ -58,6 +58,12 @@ export interface TheFactoryDb {
   updateDocument(id: string, patch: Partial<DocumentInput>): Promise<Document | undefined>
   deleteDocument(id: string): Promise<boolean>
   searchDocuments(params: SearchParams): Promise<DocumentWithScore[]>
+  matchDocuments(options: {
+    types?: string[]
+    ids?: string[]
+    projectIds?: string[]
+    limit?: number
+  }): Promise<Entity[]>
   clearDocuments(projectIds?: string[]): Promise<void>
 
   close(): Promise<void>
@@ -276,6 +282,15 @@ export async function openDatabase({
     return (r.rowCount ?? 0) > 0
   }
 
+  async function matchDocuments(options: {
+    types?: string[]
+    ids?: string[]
+    projectIds?: string[]
+    limit?: number
+  }): Promise<Entity[]> {
+    return [] //TODO:
+  }
+
   async function searchDocuments(params: SearchParams): Promise<DocumentWithScore[]> {
     logger.info('searchDocuments', {
       query: params.query,
@@ -346,6 +361,7 @@ export async function openDatabase({
     updateDocument,
     deleteDocument,
     searchDocuments,
+    matchDocuments,
     clearDocuments,
     close,
     raw: () => db,
