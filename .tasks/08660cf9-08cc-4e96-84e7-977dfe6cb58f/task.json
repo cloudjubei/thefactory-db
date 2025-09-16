@@ -9,35 +9,50 @@
       "status": "+",
       "title": "Update README.md with PostgreSQL setup instructions",
       "description": "Modify the README.md to provide two clear options for setting up a PostgreSQL database: 1. Installing and running PostgreSQL locally. 2. Running PostgreSQL using Docker. For option 2, provide a `docker-compose.yml` file and instructions on how to use it. These instructions should replace the existing setup guide that relies on an embedded database.",
-      "context": []
+      "context": [],
+      "createdAt": "2025-09-16T13:01:26.233Z",
+      "completedAt": "2025-09-16T13:01:26.233Z",
+      "updatedAt": "2025-09-16T13:01:26.233Z"
     },
     {
       "id": "faa878f1-c357-4d73-a97f-8c878fb5a3f5",
       "status": "+",
       "title": "Remove pg-embedded dependency and associated code",
       "description": "Remove the `pg-embedded` dependency from `package.json`. Then, refactor `src/connection.ts` to remove all code related to `pg-embedded`, including the `ensureEmbeddedPostgres` function. The `openPostgres` function should now only accept a connection string. Update `src/types.ts` to remove the `databaseDir` option from `OpenDbOptions`.",
-      "context": []
+      "context": [],
+      "createdAt": "2025-09-16T13:01:26.233Z",
+      "completedAt": "2025-09-16T13:01:26.233Z",
+      "updatedAt": "2025-09-16T13:01:26.233Z"
     },
     {
       "id": "91efa563-0b29-4a73-b470-0e6321d95c93",
       "status": "+",
       "title": "Update populate script to rely on DATABASE_URL",
       "description": "Modify `scripts/populate.ts` to remove any logic that depends on the embedded database. The script should now exclusively use a PostgreSQL connection URL, which can be provided via the `--url` flag or the `DATABASE_URL` environment variable. Ensure the script's documentation and argument parsing are updated accordingly.",
-      "context": []
+      "context": [],
+      "createdAt": "2025-09-16T13:01:26.233Z",
+      "completedAt": "2025-09-16T13:01:26.233Z",
+      "updatedAt": "2025-09-16T13:01:26.233Z"
     },
     {
       "id": "a16dcb52-9df8-40d3-82bf-c2600c8df0ac",
       "status": "+",
       "title": "Create docker-compose.yml for local development",
       "description": "Create a `docker-compose.yml` file in the root of the project. This file should define a PostgreSQL service with the `pgvector` extension enabled. Include environment variables for the user, password, and database name. Ensure the port is mapped to the host machine.",
-      "context": []
+      "context": [],
+      "createdAt": "2025-09-16T13:01:26.233Z",
+      "completedAt": "2025-09-16T13:01:26.233Z",
+      "updatedAt": "2025-09-16T13:01:26.233Z"
     },
     {
       "id": "48699765-ac45-471f-bc06-c938db4b28e3",
       "status": "+",
       "title": "Update FILE_ORGANISATION.md to reflect removal of embedded database",
       "description": "Update `docs/FILE_ORGANISATION.md` to remove all references to the embedded PostgreSQL runtime (`pg-embedded`). The documentation should now state that the project requires an external PostgreSQL connection string. Update the descriptions of `src/connection.ts` and `OpenDbOptions` to reflect this change.",
-      "context": []
+      "context": [],
+      "createdAt": "2025-09-16T13:01:26.233Z",
+      "completedAt": "2025-09-16T13:01:26.233Z",
+      "updatedAt": "2025-09-16T13:01:26.233Z"
     },
     {
       "id": "2c8928fb-5961-4d6d-8229-cccca2c037c6",
@@ -50,7 +65,10 @@
         "scripts/populate.ts"
       ],
       "acceptance": [],
-      "blockers": []
+      "blockers": [],
+      "createdAt": "2025-09-16T13:01:26.233Z",
+      "completedAt": "2025-09-16T13:01:26.233Z",
+      "updatedAt": "2025-09-16T13:01:26.233Z"
     }
   ],
   "featureIdToDisplayIndex": {
@@ -60,5 +78,8 @@
     "a16dcb52-9df8-40d3-82bf-c2600c8df0ac": 4,
     "48699765-ac45-471f-bc06-c938db4b28e3": 5,
     "2c8928fb-5961-4d6d-8229-cccca2c037c6": 6
-  }
+  },
+  "createdAt": "2025-09-16T13:01:26.233Z",
+  "completedAt": "2025-09-16T13:01:26.233Z",
+  "updatedAt": "2025-09-16T13:01:26.233Z"
 }
