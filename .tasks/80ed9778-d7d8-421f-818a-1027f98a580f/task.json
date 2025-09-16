@@ -90,8 +90,7 @@
         "scripts/populate.ts"
       ],
       "acceptance": [],
-      "blockers": [],
-      "rejection": "matchDocuments and clearEntities and clearDocuments not implemented correctly"
+      "blockers": []
     }
   ],
   "featureIdToDisplayIndex": {
