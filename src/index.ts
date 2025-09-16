@@ -237,7 +237,7 @@ export async function openDatabase({
   }
 
   async function getDocumentById(id: string): Promise<Document | undefined> {
-    logger.info('getDocumentById', { id })
+    // logger.info('getDocumentById', { id })
     const r = await db.query(SQL_DOCS.getById, [id])
     const row = r.rows[0]
     if (!row) return undefined
@@ -245,7 +245,7 @@ export async function openDatabase({
   }
 
   async function getDocumentBySrc(src: string): Promise<Document | undefined> {
-    logger.info('getDocumentBySrc', { src })
+    // logger.info('getDocumentBySrc', { src })
     const r = await db.query(SQL_DOCS.getBySrc, [src])
     const row = r.rows[0]
     if (!row) return undefined
@@ -256,7 +256,7 @@ export async function openDatabase({
     id: string,
     patch: Partial<DocumentInput>,
   ): Promise<Document | undefined> {
-    logger.info('updateDocument', { id, keys: Object.keys(patch) })
+    // logger.info('updateDocument', { id, keys: Object.keys(patch) })
     const exists = await getDocumentById(id)
     if (!exists) return
 
