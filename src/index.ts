@@ -51,7 +51,7 @@ export interface TheFactoryDb {
   updateEntity(id: string, patch: Partial<EntityInput>): Promise<Entity | undefined>
   deleteEntity(id: string): Promise<boolean>
   searchEntities(params: SearchParams): Promise<EntityWithScore[]>
-  matchEntities(criteria: any, options?: MatchParams): Promise<Entity[]>
+  matchEntities(criteria: any | undefined, options?: MatchParams): Promise<Entity[]>
   clearEntities(projectIds?: string[]): Promise<void>
 
   // Documents (text)
@@ -178,7 +178,7 @@ export async function openDatabase({
   }
 
   async function matchEntities(
-    criteria: unknown,
+    criteria: any | undefined,
     options?: { types?: string[]; ids?: string[]; projectIds?: string[]; limit?: number },
   ): Promise<Entity[]> {
     logger.info('matchEntities', {

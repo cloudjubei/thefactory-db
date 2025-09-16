@@ -12,7 +12,7 @@ export type Document = {
   src: string
   createdAt: string
   updatedAt: string
-  metadata?: string | null
+  metadata?: Record<string, any>
 }
 
 export type DocumentInput = {
@@ -20,7 +20,7 @@ export type DocumentInput = {
   type: string
   content: string
   src: string
-  metadata?: string | null
+  metadata?: Record<string, any>
 }
 
 export type DocumentWithScore = Document & {
@@ -37,14 +37,14 @@ export type Entity = {
   content: unknown
   createdAt: string
   updatedAt: string
-  metadata?: string | null
+  metadata?: Record<string, any>
 }
 
 export type EntityInput = {
   projectId: string
   type: string
   content: Record<string, any> | any[]
-  metadata?: string | null
+  metadata?: Record<string, any>
 }
 export type EntityPatch = Omit<Partial<EntityInput>, 'projectId'>
 
