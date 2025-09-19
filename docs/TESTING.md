@@ -2,22 +2,23 @@
 
 This document outlines the testing standards and best practices for this project. Comprehensive testing is crucial to ensure the reliability, maintainability, and quality of the codebase.
 
+Our goal is to achieve near 100% test coverage. While this is an ambitious target, it underscores our commitment to quality. Every new feature or bug fix must be accompanied by comprehensive tests.
+
 ### ATOMICITY
 Tests should be as atomic as they can be. One test file per one code file. In every file, each test should be checking a single code path or a single return. One unit test shouldn't be testing the same function multiple times, other than to test out the difference in flow or data stored between multiple runs (if there's any need for that).
 
 ## Core Principles
 
-### Isolate Tests with Mocks
-Unit tests **must** be isolated from external services. All dependencies—including repositories, external providers (Cognito, AI services), and other services—must be mocked. This ensures tests are fast, deterministic, and do not rely on network or live credentials. Mocks should be configured to test a variety of scenarios, including successful responses, error conditions, and malformed data, to ensure the service under test is resilient.
+- **Write Tests First (TDD-ish)**: While not strictly required, writing tests before or alongside your implementation is highly encouraged. It helps clarify requirements and design.
+- **Test for Correctness and Robustness**: Tests should not only validate expected behavior (the "happy path") but also probe for edge cases, invalid inputs, and potential failure modes.
+- **Code Should be Testable**: Write your code with testing in mind. This often means smaller functions, dependency injection, and clear separation of concerns.
+- **NEVER fix code just to make tests pass**: The project's code needs to make sense and work so the features are satisfied. Tests must always poke at holes and edges of the code.
 
-We aim for near 100% test coverage. The goal is to write meaningful, behavior-driven tests that:
-
+## What to test
 - Core Logic: All primary functionalities must be thoroughly tested.
 - Edge Cases: Consider invalid inputs, empty values, boundary limits, and unexpected scenarios.
 - Error Handling: Ensure that the system handles errors gracefully and predictably.
 - Schema Validation: All data entering and leaving the public API should be validated against the expected schema.
-
-Important: Never change code just to make tests pass. Code must remain sensible, maintainable, and correct. Tests should probe for edge cases and catch defects, not enforce hacks.
 
 ## Tech Stack
 
