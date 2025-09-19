@@ -15,9 +15,11 @@ For an overview of the project structure and coding standards, please refer to t
 
 ## Testing
 
-We are committed to maintaining a high standard of code quality and reliability. Comprehensive testing is a cornerstone of our development process. All contributions should be accompanied by thorough tests.
+We are committed to maintaining a high standard of code quality and reliability. Comprehensive testing is vital to the project. We aim for near 100% coverage with meaningful tests that exercise core logic, edge cases, and error handling.
 
-For detailed guidance on our testing philosophy, tools, and best practices, please refer to our Testing Guidelines (docs/TESTING.md).
+Important: Do not modify code just to make tests pass. The implementation must remain sensible and correct; tests should reveal issues, not enforce hacks. All inputs to the public API are validated at runtime (see `src/validation.ts`), and tests assert that malformed inputs are rejected.
+
+For detailed guidance on our testing philosophy, tools, validation expectations, and best practices, please refer to our Testing Guidelines (docs/TESTING.md).
 
 ## Setup
 

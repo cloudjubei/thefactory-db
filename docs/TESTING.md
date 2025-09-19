@@ -4,35 +4,45 @@ This document outlines the testing standards and best practices for this project
 
 ## Testing Philosophy
 
-We aim for near 100% test coverage. While this is a goal, the primary focus should be on writing meaningful tests that cover:
+We aim for near 100% test coverage. The goal is to write meaningful, behavior-driven tests that:
 
--   **Core Logic**: All primary functionalities must be thoroughly tested.
--   **Edge Cases**: Consider invalid inputs, empty values, and unexpected scenarios.
--   **Error Handling**: Ensure that the system handles errors gracefully.
--   **Schema Validation**: All data entering and leaving the system should be validated against its expected schema.
+- Core Logic: All primary functionalities must be thoroughly tested.
+- Edge Cases: Consider invalid inputs, empty values, boundary limits, and unexpected scenarios.
+- Error Handling: Ensure that the system handles errors gracefully and predictably.
+- Schema Validation: All data entering and leaving the public API should be validated against the expected schema.
+
+Important: Never change code just to make tests pass. Code must remain sensible, maintainable, and correct. Tests should probe for edge cases and catch defects, not enforce hacks.
 
 ## Tech Stack
 
--   **Test Runner**: [Vitest](https://vitest.dev/)
--   **Coverage**: [c8](https://github.com/bcoe/c8)
+- Test Runner: Vitest
+- Coverage: c8 (via vitest coverage)
+
+## Validation
+
+Runtime validation is implemented in `src/validation.ts` and enforced in the public API (`src/index.ts`). Tests under `test/validation.test.ts` and `test/index-validation.test.ts` verify that malformed inputs are rejected and that valid inputs proceed correctly.
+
+## Mocks and Isolation
+
+- External systems (PostgreSQL client, embeddings, tokenizers) are mocked in tests to ensure speed and determinism.
+- See existing tests for examples using `vi.mock` and spy functions.
+- Embedding provider is mocked to return deterministic vectors. If multiple shapes are possible (e.g., array outputs), add cases to verify flexible handling.
 
 ## How to Write Tests
 
--   **File Naming**: Test files should be named `*.test.ts` and placed in the `test/` directory.
--   **Mocking**: All external dependencies (e.g., databases, external APIs, file system) must be mocked. This ensures that tests are fast, reliable, and run in isolation. Vitest provides powerful mocking capabilities. See `vi.mock` in the existing tests for examples.
--   **Assertions**: Use the `expect` assertion library from Vitest for clear and readable assertions.
--   **Structure**: Use `describe` to group related tests and `it` for individual test cases. Use `beforeEach` and `afterEach` to set up and tear down test conditions.
+- File Naming: `*.test.ts` in the `test/` directory.
+- Structure: Use `describe` blocks for grouping and `it` for individual cases. Use `beforeEach`/`afterEach` for setup/teardown.
+- Assertions: Use Vitest's `expect` API. Prefer explicit, readable assertions.
+- Coverage: Add tests that cover branches and error paths. For example, invalid inputs, empty query handling, clamping options, and missing SQL paths.
 
 ## Running Tests
 
-To run the tests, use the following scripts from `package.json`:
-
 ```bash
-# Run all tests
+# Run all tests (watch mode)
 npm test
 
-# Run tests and generate a coverage report
+# Run tests once and generate a coverage report
 npm run test:cov
 ```
 
-The coverage report will be generated in the `coverage/` directory.
+Coverage reports will be generated in the `coverage/` directory.

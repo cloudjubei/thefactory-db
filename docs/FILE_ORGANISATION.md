@@ -12,33 +12,26 @@
 - `README.md`: Quick-start usage and utility scripts.
 - `package.json`, `tsconfig.json`: Build and TypeScript configuration.
 - `src/`: Source code for the database wrapper and types.
+  - `src/index.ts`: Public entry point. Exports `openDatabase(options)` which returns a `Database` API instance. The instance provides:
+    - Documents API (text content)
+      - `addDocument`, `getDocumentById`, `getDocumentBySrc`, `updateDocument`, `deleteDocument`
+      - `searchDocuments`, `matchDocuments`, `clearDocuments`
+    - Entities API (json content)
+      - `addEntity`, `getEntityById`, `updateEntity`, `deleteEntity`
+      - `searchEntities`, `matchEntities`, `clearEntities`
+    - `raw(): DB` — Gives low-level access for advanced SQL.
+  - `src/connection.ts`: Connection factory and schema init. Applies embedded SQL statements (schema + hybrid functions) defined in `src/utils.ts`.
+  - `src/types.ts`: Shared TypeScript types for Documents and Entities, Search options and result row types, and `OpenDbOptions`.
+  - `src/logger.ts`: Small logger abstraction with log level filtering.
+  - `src/validation.ts`: Runtime input validation for public API methods. Ensures inbound parameters conform to expected shapes and types (documents, entities, search and match params). Tests verify malformed inputs are rejected.
+  - `src/utils.ts`: Embedded SQL strings and small helpers (e.g., base64 decoding).
+  - `src/utils/embeddings.ts`: Local embedding provider wrapper around Transformers.js.
+  - `src/utils/json.ts`: JSON value stringifier used for entity embeddings/FTS.
+  - `src/utils/tokenizer.ts`: Tokenizer helpers and FTS normalization utilities.
 - `docs/`: Human-facing documentation for this package (this file).
   - `docs/CODE_STANDARD.md`: Coding standards, architectural patterns, and best practices.
   - `docs/sql/`: Reference SQL scripts (schema and hybrid search) for humans. Runtime uses embedded SQL in `src/utils.ts`.
   - `docs/hybrid_search.sql`: Reference hybrid search functions and examples.
-
-## Key Source Modules (`src/`)
-
-- `src/index.ts`: Public entry point. Exports `openDatabase(options)` which returns a `Database` API instance. The instance provides:
-  - Documents API (text content)
-    - `addDocument({ projectId, type, content, src, metadata? }): Promise<Document>` — Inserts a document with embedding using the `documents` table.
-    - `getDocumentById(id: string): Promise<Document | undefined>`
-    - `getDocumentBySrc(src: string): Promise<Document | undefined>`
-    - `updateDocument(id: string, patch: Partial<DocumentInput>): Promise<Document | undefined>`
-    - `deleteDocument(id: string): Promise<boolean>`
-    - `searchDocuments({ query, textWeight?, limit?, projectIds?, ids?, types? }): Promise<DocumentWithScore[]>` — Hybrid search over documents via `hybrid_search_documents`.
-    - `matchDocuments({ limit?, projectIds?, ids?, types? }): Promise<Document[]>` — Filter-only retrieval helper.
-  - Entities API (json content)
-    - `addEntity({ projectId, type, content, metadata? }): Promise<Entity>` — Inserts an entity with embedding. For embeddings, JSON values are stringified without keys/braces/colons to reduce noise.
-    - `getEntityById(id: string): Promise<Entity | undefined>`
-    - `updateEntity(id: string, patch: Partial<EntityInput>): Promise<Entity | undefined>`
-    - `deleteEntity(id: string): Promise<boolean>`
-    - `searchEntities({ query, textWeight?, limit?, projectIds?, ids?, types? }): Promise<EntityWithScore[]>` — Hybrid search over entities via `hybrid_search_entities`.
-    - `matchEntities(criteria, { limit?, projectIds?, ids?, types? }): Promise<Entity[]>` — Returns entities whose JSON content contains the provided JSON structure (Postgres `@>` containment).
-  - `raw(): DB` — Gives low-level access for advanced SQL.
-
-- `src/types.ts`: Shared TypeScript types for Documents and Entities, Search options and result row types, and `OpenDbOptions`.
-- `src/connection.ts`: Connection factory and schema init. Applies embedded SQL statements (schema + hybrid functions) defined in `src/utils.ts`. Ensures required extensions exist.
 
 ## Database Schema
 
@@ -85,3 +78,8 @@ Embedding dimension is 384 and requires the `pgvector` extension.
 
 - Required extensions: `pgcrypto` and `pgvector` are created by the schema.
 - Vector dimension is 384.
+
+## Testing and Validation
+
+- Tests live under `test/` and target near-100% coverage.
+- Public API parameters are validated at runtime by `src/validation.ts`. Malformed inputs are rejected with descriptive errors. Tests in `test/validation.test.ts` and `test/index-validation.test.ts` verify this behavior.

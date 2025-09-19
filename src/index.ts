@@ -15,6 +15,14 @@ import type {
 import { createLocalEmbeddingProvider } from './utils/embeddings.js';
 import { readSql } from './utils.js';
 import { stringifyJsonValues } from './utils/json.js';
+import {
+  assertDocumentInput,
+  assertDocumentPatch,
+  assertEntityInput,
+  assertEntityPatch,
+  assertMatchParams,
+  assertSearchParams,
+} from './validation.js';
 
 function toVectorLiteral(vec: number[] | Float32Array): string {
   // pgvector input format: '[1,2,3]'
@@ -75,7 +83,7 @@ export interface TheFactoryDb {
    * @param patch - The partial data to update.
    * @returns The updated entity, or `undefined` if not found.
    */
-  updateEntity(id: string, patch: Partial<EntityInput>): Promise<Entity | undefined>;
+  updateEntity(id: string, patch: EntityPatch): Promise<Entity | undefined>;
 
   /**
    * Deletes an entity by its ID.
@@ -191,6 +199,7 @@ export async function openDatabase({
   // Entities (json)
   // ---------------------
   async function addEntity(e: EntityInput): Promise<Entity> {
+    assertEntityInput(e);
     logger.info('addEntity', { projectId: e.projectId, type: e.type });
     const stringContent = stringifyJsonValues(e.content);
     const embedding = await embeddingProvider.embed(stringContent);
@@ -215,6 +224,7 @@ export async function openDatabase({
   }
 
   async function updateEntity(id: string, patch: EntityPatch): Promise<Entity | undefined> {
+    assertEntityPatch(patch);
     logger.info('updateEntity', { id, keys: Object.keys(patch) });
     const exists = await getEntityById(id);
     if (!exists) return;
@@ -250,6 +260,7 @@ export async function openDatabase({
   }
 
   async function searchEntities(params: SearchParams): Promise<EntityWithScore[]> {
+    assertSearchParams(params);
     logger.info('searchEntities', params);
     const query = (params.query ?? '').trim();
     if (query.length <= 0) return [];
@@ -282,6 +293,7 @@ export async function openDatabase({
     criteria: any | undefined,
     options?: { types?: string[]; ids?: string[]; projectIds?: string[]; limit?: number },
   ): Promise<Entity[]> {
+    assertMatchParams(options);
     logger.info('matchEntities', {
       criteria,
       options,
@@ -315,6 +327,7 @@ export async function openDatabase({
   // Documents (text)
   // ---------------------
   async function addDocument(d: DocumentInput): Promise<Document> {
+    assertDocumentInput(d);
     logger.info('addDocument', { projectId: d.projectId, type: d.type, src: d.src });
     const content = d.content ?? '';
     const embedding = await embeddingProvider.embed(content);
@@ -350,6 +363,7 @@ export async function openDatabase({
     id: string,
     patch: Partial<DocumentInput>,
   ): Promise<Document | undefined> {
+    assertDocumentPatch(patch);
     // logger.info('updateDocument', { id, keys: Object.keys(patch) })
     const exists = await getDocumentById(id);
     if (!exists) return;
@@ -388,6 +402,7 @@ export async function openDatabase({
     projectIds?: string[];
     limit?: number;
   }): Promise<Document[]> {
+    assertMatchParams(options);
     logger.info('matchDocuments', options);
     const filter: any = {};
     if (options?.types && options.types.length > 0) filter.types = options.types;
@@ -405,6 +420,7 @@ export async function openDatabase({
   }
 
   async function searchDocuments(params: SearchParams): Promise<DocumentWithScore[]> {
+    assertSearchParams(params);
     logger.info('searchDocuments', params);
     const query = (params.query ?? '').trim();
     if (query.length <= 0) return [];
