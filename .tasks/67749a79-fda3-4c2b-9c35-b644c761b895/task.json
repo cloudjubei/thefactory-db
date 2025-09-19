@@ -1,21 +1,42 @@
 {
   "id": "67749a79-fda3-4c2b-9c35-b644c761b895",
-  "status": "-",
+  "status": "?",
   "title": "Ongoing Improvements",
   "description": "Various ongoing improvements to the project",
   "features": [
     {
       "id": "a6f59759-f507-4e8d-85d2-ea4d79601e88",
-      "status": "-",
+      "status": "?",
       "title": "When a file is added/updated/removed after app start - update",
       "description": "Currently doesn't work",
       "context": [],
       "createdAt": "2025-09-19T01:05:00.627Z",
-      "updatedAt": "2025-09-19T01:05:00.627Z"
+      "updatedAt": "2025-09-19T10:36:58.553Z"
+    },
+    {
+      "id": "8a94bd10-9838-4e6f-9b6c-1b2060d6de40",
+      "status": "-",
+      "title": "Aim for close to 100% test coverage",
+      "description": "We need to make sure that the tests cover as close as 100% of the codebase.\nObviously, things like the ai service with getting results from the AI cannot be fully tested - but we can test for many ranges of responses by mocking the LLM responses appropriately. The same idea should be taken everywhere to try to achieve 100% coverage.\n\nOne important thing is to make sure that data that is entering and leaving endpoints is validated thoroughly to make sure that it matches the expected schema. This should be part of the code and the tests should validate it too (i.e. malformed objects being rejected).\n\nThere needs to be a relevant section in @README.md  explaining how vital testing is and to refer to @docs/TESTING.md for all guidance related to writing tests and the standard for them. For reference there is also the @docs/CODE_STANDARD.md  document that highlights the coding standard within the project.\n\nNEVER FIX CODE JUST SO TESTS PASS - THE PROJECT CODE NEEDS TO MAKE SENSE AND WORK SO THE FEATURES ARE SATISFIED. TESTS ALWAYS NEED TO POKE AT HOLES AND EDGES OF THE CODE.",
+      "context": [],
+      "createdAt": "2025-09-19T10:36:00.358Z",
+      "updatedAt": "2025-09-19T10:36:00.358Z"
+    },
+    {
+      "id": "656fa3b5-b86a-41f3-8312-3aa1ed774c6d",
+      "status": "-",
+      "title": "Code standard",
+      "description": "The document @docs/CODE_STANDARD.md  highlights the overall architecture and coding standards maintained in this project.\nThere is a clear reference to it inside @README.md and @docs/FILE_ORGANISATION.md so that anyone creating new features or updating existing ones will go to it.\nIt should be as succinct as possible, but explaining the idea as well as possible.\n\nGo over all the code and make sure that it satisfies the standards.",
+      "context": [],
+      "createdAt": "2025-09-19T10:36:08.586Z",
+      "updatedAt": "2025-09-19T10:36:44.083Z",
+      "blockers": []
     }
   ],
   "featureIdToDisplayIndex": {
-    "a6f59759-f507-4e8d-85d2-ea4d79601e88": 1
+    "656fa3b5-b86a-41f3-8312-3aa1ed774c6d": 1,
+    "8a94bd10-9838-4e6f-9b6c-1b2060d6de40": 2,
+    "a6f59759-f507-4e8d-85d2-ea4d79601e88": 3
   },
   "createdAt": "2025-09-19T01:04:36.087Z",
   "updatedAt": "2025-09-19T01:04:36.087Z"
