@@ -6,6 +6,13 @@ It is designed to be reusable across projects. You can depend on it as a local f
 
 Database connection is provided via a Postgres connection string.
 
+## Development
+
+For an overview of the project structure and coding standards, please refer to the following documents:
+
+- [File and Tooling Organisation](docs/FILE_ORGANISATION.md)
+- [Code Standard and Architecture Guide](docs/CODE_STANDARD.md)
+
 ## Setup
 
 To use `thefactory-db`, you need a running PostgreSQL instance with the `pgvector` extension enabled. You have two options:

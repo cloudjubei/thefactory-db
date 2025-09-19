@@ -8,6 +8,12 @@ const LOG_LEVELS: Record<LogLevel, number> = {
   silent: 4,
 };
 
+/**
+ * Creates a new logger instance with the specified log level.
+ * Messages with a severity lower than the configured level will be ignored.
+ * @param level - The minimum log level to output messages for. Defaults to 'info'.
+ * @returns A logger instance.
+ */
 export function createLogger(level: LogLevel = 'info'): Logger {
   const logLevel = LOG_LEVELS[level];
 

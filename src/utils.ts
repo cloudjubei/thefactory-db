@@ -1,47 +1,47 @@
 export function readSql(name: string): string | undefined {
-  return SQLS[name]
+  return SQLS[name];
 }
 
 export function base64ToUtf8(base64: string) {
   if (base64.startsWith('data:')) {
-    const base64Data = base64.split(',')[1]
-    return atob(base64Data)
+    const base64Data = base64.split(',')[1];
+    return atob(base64Data);
   }
-  return atob(base64)
+  return atob(base64);
 }
 
 // -----------------------------
 // CRUD SQL for Entities (jsonb)
 // -----------------------------
-const delete_entity = `DELETE FROM entities WHERE id = $1;`
+const deleteEntity = `DELETE FROM entities WHERE id = $1;`;
 
-const get_entity_by_id = `
+const getEntityById = `
 SELECT 
   id,
-  project_id AS "projectId",
+  project_id AS \"projectId\",
   type,
   content,
-  to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') AS "createdAt",
-  to_char(updated_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') AS "updatedAt",
+  to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\\\"T\\\"HH24:MI:SS.MS\\\"Z\\\"') AS \"createdAt\",
+  to_char(updated_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\\\"T\\\"HH24:MI:SS.MS\\\"Z\\\"') AS \"updatedAt\",
   to_jsonb(metadata) AS metadata
 FROM entities
 WHERE id = $1;
-`
+`;
 
-const insert_entity = `
+const insertEntity = `
 INSERT INTO entities (project_id, type, content, content_string, embedding, metadata)
 VALUES ($1, $2, $3::jsonb, $4, $5::vector, $6::jsonb)
 RETURNING 
   id,
-  project_id AS "projectId",
+  project_id AS \"projectId\",
   type,
   content,
-  to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') AS "createdAt",
-  to_char(updated_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') AS "updatedAt",
+  to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\\\"T\\\"HH24:MI:SS.MS\\\"Z\\\"') AS \"createdAt\",
+  to_char(updated_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\\\"T\\\"HH24:MI:SS.MS\\\"Z\\\"') AS \"updatedAt\",
   to_jsonb(metadata) AS metadata;
-`
+`;
 
-const update_entity = `
+const updateEntity = `
 UPDATE entities SET
   type = COALESCE($2, type),
   content = COALESCE($3::jsonb, content),
@@ -49,56 +49,56 @@ UPDATE entities SET
   embedding = COALESCE($5::vector, embedding),
   metadata = COALESCE($6::jsonb, metadata)
 WHERE id = $1;
-`
+`;
 
 // -------------------------------
 // CRUD SQL for Documents (text)
 // -------------------------------
-const delete_document = `DELETE FROM documents WHERE id = $1;`
+const deleteDocument = `DELETE FROM documents WHERE id = $1;`;
 
-const get_document_by_id = `
+const getDocumentById = `
 SELECT 
   id,
-  project_id AS "projectId",
+  project_id AS \"projectId\",
   type,
   content,
   src,
-  to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') AS "createdAt",
-  to_char(updated_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') AS "updatedAt",
+  to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\\\"T\\\"HH24:MI:SS.MS\\\"Z\\\"') AS \"createdAt\",
+  to_char(updated_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\\\"T\\\"HH24:MI:SS.MS\\\"Z\\\"') AS \"updatedAt\",
   to_jsonb(metadata) AS metadata
 FROM documents
 WHERE id = $1;
-`
+`;
 
-const get_document_by_src = `
+const getDocumentBySrc = `
 SELECT 
   id,
-  project_id AS "projectId",
+  project_id AS \"projectId\",
   type,
   content,
   src,
-  to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') AS "createdAt",
-  to_char(updated_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') AS "updatedAt",
+  to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\\\"T\\\"HH24:MI:SS.MS\\\"Z\\\"') AS \"createdAt\",
+  to_char(updated_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\\\"T\\\"HH24:MI:SS.MS\\\"Z\\\"') AS \"updatedAt\",
   to_jsonb(metadata) AS metadata
 FROM documents
 WHERE src = $1;
-`
+`;
 
-const insert_document = `
+const insertDocument = `
 INSERT INTO documents (project_id, type, content, src, embedding, metadata)
 VALUES ($1, $2, $3, $4, $5::vector, $6::jsonb)
 RETURNING 
   id,
-  project_id AS "projectId",
+  project_id AS \"projectId\",
   type,
   content,
   src,
-  to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') AS "createdAt",
-  to_char(updated_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') AS "updatedAt",
+  to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\\\"T\\\"HH24:MI:SS.MS\\\"Z\\\"') AS \"createdAt\",
+  to_char(updated_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\\\"T\\\"HH24:MI:SS.MS\\\"Z\\\"') AS \"updatedAt\",
   to_jsonb(metadata) AS metadata;
-`
+`;
 
-const update_document = `
+const updateDocument = `
 UPDATE documents SET
   type = COALESCE($2, type),
   content = COALESCE($3, content),
@@ -106,7 +106,7 @@ UPDATE documents SET
   embedding = COALESCE($5::vector, embedding),
   metadata = COALESCE($6::jsonb, metadata)
 WHERE id = $1;
-`
+`;
 
 // ----------------------------------------------------------
 // Schema: documents (text) and entities (jsonb), indexes and triggers
@@ -207,13 +207,13 @@ EXCEPTION WHEN undefined_object THEN
     NULL;
   END;
 END$$;
-`
+`;
 
 // ----------------------------------------------------------
 // Hybrid search functions for documents and entities
 // - Filters with jsonb: { ids: [uuid], types: [text], projectIds: [text] }
 // ----------------------------------------------------------
-const hybrid_search = `
+const hybridSearch = `
 -- Documents
 CREATE OR REPLACE FUNCTION hybrid_search_documents(
   query_text        text,
@@ -387,41 +387,41 @@ JOIN base_entities e ON e.id = scored.id
 ORDER BY similarity DESC
 LIMIT match_count;
 $$;
-`
+`;
 
 // ----------------------------------------------------------
 // Search query wrappers calling hybrid_search_* functions
 // ----------------------------------------------------------
-const search_entities_query = `
+const searchEntitiesQuery = `
 SELECT
   id,
-  project_id AS "projectId",
+  project_id AS \"projectId\",
   type,
   content,
-  to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') AS "createdAt",
-  to_char(updated_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') AS "updatedAt",
+  to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\\\"T\\\"HH24:MI:SS.MS\\\"Z\\\"') AS \"createdAt\",
+  to_char(updated_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\\\"T\\\"HH24:MI:SS.MS\\\"Z\\\"') AS \"updatedAt\",
   to_jsonb(metadata) AS metadata,
-  keyword_score as text_score,
-  cosine_similarity as vec_score,
-  similarity as total_score
-FROM hybrid_search_entities($1, $2::vector, $3::int, $4::jsonb, $5::float, $6::float, $7::int)
-`
+  keyword_score as \"textScore\",
+  cosine_similarity as \"vecScore\",
+  similarity as \"totalScore\"
+FROM hybrid_search_entities($1, $2::vector, $3::int, $4::jsonb, $5::float, $6::float, $7::int);
+`;
 
-const search_documents_query = `
+const searchDocumentsQuery = `
 SELECT
   id,
-  project_id AS "projectId",
+  project_id AS \"projectId\",
   type,
   content,
   src,
-  to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') AS "createdAt",
-  to_char(updated_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') AS "updatedAt",
+  to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\\\"T\\\"HH24:MI:SS.MS\\\"Z\\\"') AS \"createdAt\",
+  to_char(updated_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\\\"T\\\"HH24:MI:SS.MS\\\"Z\\\"') AS \"updatedAt\",
   to_jsonb(metadata) AS metadata,
-  keyword_score as text_score,
-  cosine_similarity as vec_score,
-  similarity as total_score
-FROM hybrid_search_documents($1, $2::vector, $3::int, $4::jsonb, $5::float, $6::float, $7::int)
-`
+  keyword_score as \"textScore\",
+  cosine_similarity as \"vecScore\",
+  similarity as \"totalScore\"
+FROM hybrid_search_documents($1, $2::vector, $3::int, $4::jsonb, $5::float, $6::float, $7::int);
+`;
 
 // ----------------------------------------------------------
 // Match entities by JSON content containment with filters
@@ -429,14 +429,14 @@ FROM hybrid_search_documents($1, $2::vector, $3::int, $4::jsonb, $5::float, $6::
 //   $2: jsonb filter { ids?: string[], types?: string[], projectIds?: string[] }
 //   $3: int limit (optional)
 // ----------------------------------------------------------
-const match_entities = `
+const matchEntities = `
 SELECT
   id,
-  project_id AS "projectId",
+  project_id AS \"projectId\",
   type,
   content,
-  to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') AS "createdAt",
-  to_char(updated_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') AS "updatedAt",
+  to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\\\"T\\\"HH24:MI:SS.MS\\\"Z\\\"') AS \"createdAt\",
+  to_char(updated_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\\\"T\\\"HH24:MI:SS.MS\\\"Z\\\"') AS \"updatedAt\",
   to_jsonb(metadata) AS metadata
 FROM entities
 WHERE content @> $1::jsonb
@@ -450,22 +450,22 @@ WHERE content @> $1::jsonb
   )
 ORDER BY updated_at DESC
 LIMIT COALESCE($3::int, 100);
-`
+`;
 
 // ----------------------------------------------------------
 // Match documents by filters only (types/ids/projectIds)
 //   $1: jsonb filter { ids?: string[], types?: string[], projectIds?: string[] } | null
 //   $2: int limit (optional)
 // ----------------------------------------------------------
-const match_documents = `
+const matchDocuments = `
 SELECT
   id,
-  project_id AS "projectId",
+  project_id AS \"projectId\",
   type,
   content,
   src,
-  to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') AS "createdAt",
-  to_char(updated_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') AS "updatedAt",
+  to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\\\"T\\\"HH24:MI:SS.MS\\\"Z\\\"') AS \"createdAt\",
+  to_char(updated_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\\\"T\\\"HH24:MI:SS.MS\\\"Z\\\"') AS \"updatedAt\",
   to_jsonb(metadata) AS metadata
 FROM documents
 WHERE (
@@ -478,37 +478,37 @@ WHERE (
 )
 ORDER BY updated_at DESC
 LIMIT COALESCE($2::int, 100);
-`
+`;
 
 // Clear helpers
-const clear_documents = `TRUNCATE TABLE documents RESTART IDENTITY;`
-const clear_entities = `TRUNCATE TABLE entities RESTART IDENTITY;`
-const clear_documents_by_project = `DELETE FROM documents WHERE project_id = ANY($1::text[]);`
-const clear_entities_by_project = `DELETE FROM entities WHERE project_id = ANY($1::text[]);`
+const clearDocuments = `TRUNCATE TABLE documents RESTART IDENTITY;`;
+const clearEntities = `TRUNCATE TABLE entities RESTART IDENTITY;`;
+const clearDocumentsByProject = `DELETE FROM documents WHERE project_id = ANY($1::text[]);`;
+const clearEntitiesByProject = `DELETE FROM entities WHERE project_id = ANY($1::text[]);`;
 
 const SQLS: Record<string, string> = {
   // Schema and functions
   schema: schema,
-  hybrid_search: hybrid_search,
+  hybrid_search: hybridSearch,
 
   // Entities
-  delete_entity: delete_entity,
-  get_entity_by_id: get_entity_by_id,
-  insert_entity: insert_entity,
-  update_entity: update_entity,
-  search_entities_query: search_entities_query,
-  match_entities: match_entities,
-  clear_entities: clear_entities,
-  clear_entities_by_project: clear_entities_by_project,
+  delete_entity: deleteEntity,
+  get_entity_by_id: getEntityById,
+  insert_entity: insertEntity,
+  update_entity: updateEntity,
+  search_entities_query: searchEntitiesQuery,
+  match_entities: matchEntities,
+  clear_entities: clearEntities,
+  clear_entities_by_project: clearEntitiesByProject,
 
   // Documents
-  delete_document: delete_document,
-  get_document_by_id: get_document_by_id,
-  get_document_by_src: get_document_by_src,
-  insert_document: insert_document,
-  update_document: update_document,
-  search_documents_query: search_documents_query,
-  match_documents: match_documents,
-  clear_documents: clear_documents,
-  clear_documents_by_project: clear_documents_by_project,
-}
+  delete_document: deleteDocument,
+  get_document_by_id: getDocumentById,
+  get_document_by_src: getDocumentBySrc,
+  insert_document: insertDocument,
+  update_document: updateDocument,
+  search_documents_query: searchDocumentsQuery,
+  match_documents: matchDocuments,
+  clear_documents: clearDocuments,
+  clear_documents_by_project: clearDocumentsByProject,
+};
