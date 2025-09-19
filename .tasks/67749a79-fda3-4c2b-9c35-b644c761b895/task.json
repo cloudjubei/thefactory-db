@@ -25,13 +25,14 @@
     },
     {
       "id": "656fa3b5-b86a-41f3-8312-3aa1ed774c6d",
-      "status": "-",
+      "status": "+",
       "title": "Code standard",
       "description": "The document @docs/CODE_STANDARD.md  highlights the overall architecture and coding standards maintained in this project.\nThere is a clear reference to it inside @README.md and @docs/FILE_ORGANISATION.md so that anyone creating new features or updating existing ones will go to it.\nIt should be as succinct as possible, but explaining the idea as well as possible.\n\nGo over all the code and make sure that it satisfies the standards.",
       "context": [],
       "createdAt": "2025-09-19T10:36:08.586Z",
-      "updatedAt": "2025-09-19T20:23:42.372Z",
-      "blockers": []
+      "updatedAt": "2025-09-19T20:29:09.008Z",
+      "blockers": [],
+      "completedAt": "2025-09-19T20:29:09.008Z"
     }
   ],
   "featureIdToDisplayIndex": {

@@ -2,7 +2,7 @@
 
 `thefactory-db` is a standalone, local-first PostgreSQL package with FTS text search (tsvector) and vector similarity (pgvector) for hybrid search across files and documents.
 
-It is designed to be reusable across projects. You can depend on it as a local file dependency (`"thefactory-db": "file:../thefactory-db"`) or publish it to a private registry.
+It is designed to be reusable across projects. You can depend on it as a local file dependency ("thefactory-db": "file:../thefactory-db") or publish it to a private registry.
 
 Database connection is provided via a Postgres connection string.
 
@@ -10,14 +10,14 @@ Database connection is provided via a Postgres connection string.
 
 For an overview of the project structure and coding standards, please refer to the following documents:
 
-- [File and Tooling Organisation](docs/FILE_ORGANISATION.md)
-- [Code Standard and Architecture Guide](docs/CODE_STANDARD.md)
+- File and Tooling Organisation (docs/FILE_ORGANISATION.md)
+- Code Standard and Architecture Guide (docs/CODE_STANDARD.md)
 
 ## Testing
 
 We are committed to maintaining a high standard of code quality and reliability. Comprehensive testing is a cornerstone of our development process. All contributions should be accompanied by thorough tests.
 
-For detailed guidance on our testing philosophy, tools, and best practices, please refer to our [Testing Guidelines](docs/TESTING.md).
+For detailed guidance on our testing philosophy, tools, and best practices, please refer to our Testing Guidelines (docs/TESTING.md).
 
 ## Setup
 
@@ -108,47 +108,25 @@ docker compose up -d db db-init
 docker exec -it thefactory-db-postgres psql -U user -d "thefactory-db"
 ```
 
-## Populating the Database
-
-Once your database is running, you can use the populate script to initialize the schema and ingest files.
-
-1) Install dependencies
-
-```bash
-npm install
-```
-
-2) Run the populate script
-
-```bash
-node scripts/populate.ts -- --root . --reset --url postgresql://user:password@localhost:5432/thefactory-db
-```
-
-The script will initialize the schema (including `CREATE EXTENSION IF NOT EXISTS vector`) and ingest files from `src/` and `docs/`, then run a sample hybrid search. You can also set `DATABASE_URL` instead of supplying `--url`.
-
-3) Clear the database
-
-```bash
-node scripts/clear.ts -- --root . --reset --url postgresql://user:password@localhost:5432/thefactory-db
-```
-
 ## Usage
 
 ```typescript
 import { openDatabase } from 'thefactory-db'
 
 // Set DATABASE_URL in your environment or provide it directly
-const db = await openDatabase({ connectionString: process.env.DATABASE_URL })
+const db = await openDatabase({ connectionString: process.env.DATABASE_URL! })
 
-// Add an entity
-const entity = await db.addEntity({
-  type: 'internal_document',
+// Add a text document
+const doc = await db.addDocument({
+  projectId: 'my-project',
+  type: 'project_file',
+  src: 'README.md',
   content: 'This is a test document about hybrid search.',
   metadata: { author: 'dev' },
 })
 
-// Perform a hybrid search
-const results = await db.searchEntities({
+// Perform a hybrid search over documents
+const results = await db.searchDocuments({
   query: 'hybrid search test',
   textWeight: 0.6,
   limit: 5,
@@ -159,7 +137,23 @@ console.log(results)
 
 The `openDatabase` function will:
 1) Connect to your PostgreSQL database
-2) Apply the latest schema from `docs/sql/schema.pg.sql`
+2) Initialize the required schema and functions (executed from embedded SQL)
 3) Ensure the `vector` and `pgcrypto` extensions are enabled (idempotent)
 
-The returned `db` object provides an API for adding and searching entities, as well as a `raw()` method for direct `pg.Pool` access.
+The returned `db` object provides an API for adding/searching documents and entities, as well as a `raw()` method for direct `pg.Client` access.
+
+## Utilities
+
+Two simple scripts are included for convenience (run after `npm run build` so `dist/` is present):
+
+- Clear all (or by project):
+
+```bash
+node scripts/clear.ts -- --url postgresql://user:password@localhost:5432/thefactory-db --p my-project
+```
+
+- Count selected documents:
+
+```bash
+node scripts/count.ts -- --url postgresql://user:password@localhost:5432/thefactory-db
+```
