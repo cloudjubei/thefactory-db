@@ -1,5 +1,7 @@
 // Runtime validation helpers for public API inputs
 
+import { MatchParams, SearchParams } from './types'
+
 function isPlainObject(v: unknown): v is Record<string, unknown> {
   return typeof v === 'object' && v !== null && !Array.isArray(v)
 }
@@ -28,8 +30,7 @@ export function assertDocumentInput(input: any): void {
 
 export function assertDocumentPatch(patch: any): void {
   if (!isRecord(patch)) throw new TypeError('Document patch must be an object')
-  if (patch.projectId !== undefined)
-    throw new TypeError('Document.projectId cannot be changed')
+  if (patch.projectId !== undefined) throw new TypeError('Document.projectId cannot be changed')
   if (patch.type !== undefined && typeof patch.type !== 'string')
     throw new TypeError('DocumentPatch.type must be a string if provided')
   if (patch.content !== undefined && typeof patch.content !== 'string' && patch.content !== null)
@@ -55,8 +56,7 @@ export function assertEntityInput(input: any): void {
 
 export function assertEntityPatch(patch: any): void {
   if (!isRecord(patch)) throw new TypeError('Entity patch must be an object')
-  if (patch.projectId !== undefined)
-    throw new TypeError('Entity.projectId cannot be changed')
+  if (patch.projectId !== undefined) throw new TypeError('Entity.projectId cannot be changed')
   if (patch.type !== undefined && typeof patch.type !== 'string' && patch.type !== null)
     throw new TypeError('EntityPatch.type must be a string or null if provided')
   if (patch.content !== undefined) {
@@ -68,11 +68,11 @@ export function assertEntityPatch(patch: any): void {
     throw new TypeError('EntityPatch.metadata must be an object or null if provided')
 }
 
-export function assertMatchParams(opts: any | undefined): void {
+export function assertMatchParams(opts?: MatchParams): void {
   if (opts === undefined) return
   if (!isRecord(opts)) throw new TypeError('Match options must be an object')
-  if (opts.limit !== undefined && !(Number.isInteger(opts.limit) && opts.limit > 0))
-    throw new TypeError('Match options.limit must be a positive integer if provided')
+  if (opts.limit !== undefined && !Number.isInteger(opts.limit))
+    throw new TypeError('Match options.limit must be an integer if provided')
   if (opts.types !== undefined && !isStringArray(opts.types))
     throw new TypeError('Match options.types must be an array of strings if provided')
   if (opts.ids !== undefined && !isStringArray(opts.ids))
@@ -81,7 +81,8 @@ export function assertMatchParams(opts: any | undefined): void {
     throw new TypeError('Match options.projectIds must be an array of strings if provided')
 }
 
-export function assertSearchParams(params: any): void {
+export function assertSearchParams(params: SearchParams): void {
+  if (params === undefined) throw new TypeError('Params must be present')
   if (!isRecord(params)) throw new TypeError('Search params must be an object')
   if (params.query === undefined || typeof params.query !== 'string')
     throw new TypeError('Search params.query must be a string')

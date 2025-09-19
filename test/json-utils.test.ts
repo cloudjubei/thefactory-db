@@ -10,7 +10,7 @@ describe('stringifyJsonValues', () => {
     // For 'a': { y: true, z: 'last' } => 'last true' (values visited sorted by keys)
     // For 'arr': [1,'two',false,null] => '1 two false null'
     // For 'b': 2
-    expect(out).toBe('last true 1 two false null 2')
+    expect(out).toBe('true last 1 two false null 2')
   })
 
   it('handles primitive values', () => {

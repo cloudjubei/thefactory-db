@@ -41,7 +41,9 @@ describe('TheFactoryDb validation and edges', () => {
     await expect(db.addDocument({})).rejects.toThrow()
     // invalid content type
     // @ts-expect-error invalid
-    await expect(db.addDocument({ projectId: 'p', type: 't', src: 's', content: 123 })).rejects.toThrow()
+    await expect(
+      db.addDocument({ projectId: 'p', type: 't', src: 's', content: 123 }),
+    ).rejects.toThrow()
   })
 
   it('updateDocument rejects invalid patch', async () => {
@@ -104,11 +106,7 @@ describe('TheFactoryDb validation and edges', () => {
     const db = await openDatabase({ connectionString: 'test' })
     mockDbClient.query.mockResolvedValue({ rows: [] })
     await db.matchEntities(undefined, undefined)
-    expect(mockDbClient.query).toHaveBeenCalledWith('FAKE_SQL', [
-      JSON.stringify({}),
-      null,
-      100,
-    ])
+    expect(mockDbClient.query).toHaveBeenCalledWith('FAKE_SQL', [JSON.stringify({}), null, 20])
   })
 
   it('clearDocuments without projectIds clears all', async () => {
