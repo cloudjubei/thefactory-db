@@ -41,7 +41,7 @@ async function main() {
   console.log('Documents count thefactory-knowledge: ', knowledgeDocuments.length)
 
   const docResults = await db.searchDocuments({
-    query: 'task',
+    query: 'story',
     textWeight: 0.6,
     limit: 10,
     projectIds: ['main'],
