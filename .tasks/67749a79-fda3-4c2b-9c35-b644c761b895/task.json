@@ -1,0 +1,22 @@
+{
+  "id": "67749a79-fda3-4c2b-9c35-b644c761b895",
+  "status": "-",
+  "title": "Ongoing Improvements",
+  "description": "Various ongoing improvements to the project",
+  "features": [
+    {
+      "id": "a6f59759-f507-4e8d-85d2-ea4d79601e88",
+      "status": "-",
+      "title": "When a file is added/updated/removed after app start - update",
+      "description": "Currently doesn't work",
+      "context": [],
+      "createdAt": "2025-09-19T01:05:00.627Z",
+      "updatedAt": "2025-09-19T01:05:00.627Z"
+    }
+  ],
+  "featureIdToDisplayIndex": {
+    "a6f59759-f507-4e8d-85d2-ea4d79601e88": 1
+  },
+  "createdAt": "2025-09-19T01:04:36.087Z",
+  "updatedAt": "2025-09-19T01:04:36.087Z"
+}
