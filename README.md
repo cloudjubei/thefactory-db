@@ -13,6 +13,12 @@ For an overview of the project structure and coding standards, please refer to t
 - [File and Tooling Organisation](docs/FILE_ORGANISATION.md)
 - [Code Standard and Architecture Guide](docs/CODE_STANDARD.md)
 
+## Testing
+
+We are committed to maintaining a high standard of code quality and reliability. Comprehensive testing is a cornerstone of our development process. All contributions should be accompanied by thorough tests.
+
+For detailed guidance on our testing philosophy, tools, and best practices, please refer to our [Testing Guidelines](docs/TESTING.md).
+
 ## Setup
 
 To use `thefactory-db`, you need a running PostgreSQL instance with the `pgvector` extension enabled. You have two options:
