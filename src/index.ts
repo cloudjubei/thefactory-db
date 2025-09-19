@@ -18,7 +18,12 @@ import { stringifyJsonValues } from './utils/json.js';
 
 function toVectorLiteral(vec: number[] | Float32Array): string {
   // pgvector input format: '[1,2,3]'
-  return `[${Array.from(vec).join(',')}]`;
+  // Normalize numeric precision to avoid Float32 artifacts like 0.10000000149
+  const nums = Array.from(vec).map((n) => {
+    const rounded = Math.round(Number(n) * 1e6) / 1e6; // 6 decimal places is ample for pgvector input
+    return Number.isFinite(rounded) ? rounded.toString() : '0';
+  });
+  return `[${nums.join(',')}]`;
 }
 
 // Lazily resolve SQL strings at call time so tests can mock readSql reliably
