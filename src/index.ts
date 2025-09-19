@@ -21,27 +21,28 @@ function toVectorLiteral(vec: number[] | Float32Array): string {
   return `[${Array.from(vec).join(',')}]`;
 }
 
+// Lazily resolve SQL strings at call time so tests can mock readSql reliably
 const SQL = {
-  insert: readSql('insertEntity')!,
-  getById: readSql('getEntityById')!,
-  deleteById: readSql('deleteEntity')!,
-  update: readSql('updateEntity')!,
-  searchEntities: readSql('searchEntitiesQuery')!,
-  matchEntities: readSql('matchEntities')!,
-  clearEntities: readSql('clearEntities')!,
-  clearEntitiesByProject: readSql('clearEntitiesByProject')!,
+  insert: () => readSql('insertEntity')!,
+  getById: () => readSql('getEntityById')!,
+  deleteById: () => readSql('deleteEntity')!,
+  update: () => readSql('updateEntity')!,
+  searchEntities: () => readSql('searchEntitiesQuery')!,
+  matchEntities: () => readSql('matchEntities')!,
+  clearEntities: () => readSql('clearEntities')!,
+  clearEntitiesByProject: () => readSql('clearEntitiesByProject')!,
 };
 
 const SQL_DOCS = {
-  insert: readSql('insertDocument')!,
-  getById: readSql('getDocumentById')!,
-  getBySrc: readSql('getDocumentBySrc')!,
-  deleteById: readSql('deleteDocument')!,
-  update: readSql('updateDocument')!,
-  searchDocuments: readSql('searchDocumentsQuery')!,
-  matchDocuments: readSql('matchDocuments')!,
-  clearDocuments: readSql('clearDocuments')!,
-  clearDocumentsByProject: readSql('clearDocumentsByProject')!,
+  insert: () => readSql('insertDocument')!,
+  getById: () => readSql('getDocumentById')!,
+  getBySrc: () => readSql('getDocumentBySrc')!,
+  deleteById: () => readSql('deleteDocument')!,
+  update: () => readSql('updateDocument')!,
+  searchDocuments: () => readSql('searchDocumentsQuery')!,
+  matchDocuments: () => readSql('matchDocuments')!,
+  clearDocuments: () => readSql('clearDocuments')!,
+  clearDocumentsByProject: () => readSql('clearDocumentsByProject')!,
 };
 
 /**
@@ -189,7 +190,7 @@ export async function openDatabase({
     const stringContent = stringifyJsonValues(e.content);
     const embedding = await embeddingProvider.embed(stringContent);
 
-    const out = await db.query(SQL.insert, [
+    const out = await db.query(SQL.insert(), [
       e.projectId,
       e.type,
       e.content,
@@ -202,7 +203,7 @@ export async function openDatabase({
 
   async function getEntityById(id: string): Promise<Entity | undefined> {
     logger.info('getEntityById', { id });
-    const r = await db.query(SQL.getById, [id]);
+    const r = await db.query(SQL.getById(), [id]);
     const row = r.rows[0];
     if (!row) return undefined;
     return row as Entity;
@@ -224,7 +225,7 @@ export async function openDatabase({
       embeddingLiteral = toVectorLiteral(emb);
     }
 
-    const r = await db.query(SQL.update, [
+    const r = await db.query(SQL.update(), [
       id,
       patch.type ?? null,
       newContent,
@@ -239,7 +240,7 @@ export async function openDatabase({
 
   async function deleteEntity(id: string): Promise<boolean> {
     logger.info('deleteEntity', { id });
-    const r = await db.query(SQL.deleteById, [id]);
+    const r = await db.query(SQL.deleteById(), [id]);
     return (r.rowCount ?? 0) > 0;
   }
 
@@ -259,7 +260,7 @@ export async function openDatabase({
     if (params.projectIds && params.projectIds.length > 0)
       filter.projectIds = params.projectIds;
 
-    const r = await db.query(SQL.searchEntities, [
+    const r = await db.query(SQL.searchEntities(), [
       query,
       qvec,
       limit,
@@ -287,7 +288,7 @@ export async function openDatabase({
       filter.projectIds = options.projectIds;
     const limit = options?.limit ?? 100;
 
-    const r = await db.query(SQL.matchEntities, [
+    const r = await db.query(SQL.matchEntities(), [
       JSON.stringify(criteria ?? {}),
       Object.keys(filter).length ? JSON.stringify(filter) : null,
       limit,
@@ -299,9 +300,9 @@ export async function openDatabase({
   async function clearEntities(projectIds?: string[]): Promise<void> {
     logger.info('clearEntities', { count: projectIds?.length || 0 });
     if (projectIds && projectIds.length > 0) {
-      await db.query(SQL.clearEntitiesByProject, [projectIds]);
+      await db.query(SQL.clearEntitiesByProject(), [projectIds]);
     } else {
-      await db.query(SQL.clearEntities);
+      await db.query(SQL.clearEntities());
     }
   }
 
@@ -313,7 +314,7 @@ export async function openDatabase({
     const content = d.content ?? '';
     const embedding = await embeddingProvider.embed(content);
 
-    const out = await db.query(SQL_DOCS.insert, [
+    const out = await db.query(SQL_DOCS.insert(), [
       d.projectId,
       d.type,
       content,
@@ -326,7 +327,7 @@ export async function openDatabase({
 
   async function getDocumentById(id: string): Promise<Document | undefined> {
     // logger.info('getDocumentById', { id })
-    const r = await db.query(SQL_DOCS.getById, [id]);
+    const r = await db.query(SQL_DOCS.getById(), [id]);
     const row = r.rows[0];
     if (!row) return undefined;
     return row as Document;
@@ -334,7 +335,7 @@ export async function openDatabase({
 
   async function getDocumentBySrc(src: string): Promise<Document | undefined> {
     // logger.info('getDocumentBySrc', { src })
-    const r = await db.query(SQL_DOCS.getBySrc, [src]);
+    const r = await db.query(SQL_DOCS.getBySrc(), [src]);
     const row = r.rows[0];
     if (!row) return undefined;
     return row as Document;
@@ -357,7 +358,7 @@ export async function openDatabase({
       embeddingLiteral = toVectorLiteral(emb);
     }
 
-    const r = await db.query(SQL_DOCS.update, [
+    const r = await db.query(SQL_DOCS.update(), [
       id,
       patch.type ?? null,
       newContent,
@@ -372,7 +373,7 @@ export async function openDatabase({
 
   async function deleteDocument(id: string): Promise<boolean> {
     logger.info('deleteDocument', { id });
-    const r = await db.query(SQL_DOCS.deleteById, [id]);
+    const r = await db.query(SQL_DOCS.deleteById(), [id]);
     return (r.rowCount ?? 0) > 0;
   }
 
@@ -390,7 +391,7 @@ export async function openDatabase({
       filter.projectIds = options.projectIds;
     const limit = options?.limit ?? 100;
 
-    const r = await db.query(SQL_DOCS.matchDocuments, [
+    const r = await db.query(SQL_DOCS.matchDocuments(), [
       Object.keys(filter).length ? JSON.stringify(filter) : null,
       limit,
     ]);
@@ -414,7 +415,7 @@ export async function openDatabase({
     if (params.projectIds && params.projectIds.length > 0)
       filter.projectIds = params.projectIds;
 
-    const r = await db.query(SQL_DOCS.searchDocuments, [
+    const r = await db.query(SQL_DOCS.searchDocuments(), [
       query,
       qvec,
       limit,
@@ -430,9 +431,9 @@ export async function openDatabase({
   async function clearDocuments(projectIds?: string[]): Promise<void> {
     logger.info('clearDocuments', { count: projectIds?.length || 0 });
     if (projectIds && projectIds.length > 0) {
-      await db.query(SQL_DOCS.clearDocumentsByProject, [projectIds]);
+      await db.query(SQL_DOCS.clearDocumentsByProject(), [projectIds]);
     } else {
-      await db.query(SQL_DOCS.clearDocuments);
+      await db.query(SQL_DOCS.clearDocuments());
     }
   }
 
