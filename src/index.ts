@@ -481,5 +481,4 @@ export async function openDatabase({
   }
 }
 
-export type { Entity, EntityWithScore } from './types.js'
-export type { Document, DocumentWithScore } from './types.js'
+export type * from './types.js'
