@@ -32,6 +32,7 @@
   - `docs/CODE_STANDARD.md`: Coding standards, architectural patterns, and best practices.
   - `docs/sql/`: Reference SQL scripts (schema and hybrid search) for humans. Runtime uses embedded SQL in `src/utils.ts`.
   - `docs/hybrid_search.sql`: Reference hybrid search functions and examples.
+  - `docs/TESTING_E2E.md`: How to run E2E tests against a real DB.
 
 ## Database Schema
 
@@ -83,9 +84,7 @@ Embedding dimension is 384 and requires the `pgvector` extension.
 
 - Unit tests live under `tests/` and target near-100% coverage. They mock external dependencies (e.g., embeddings, PG client) for determinism and speed.
 - End-to-End tests live under `tests/e2e/` and run against a real PostgreSQL database with `pgvector`.
-  - To run E2E tests:
-    - Start DB: `docker compose up -d db db-init`
-    - Export connection: `export DATABASE_URL=postgresql://user:password@localhost:5432/thefactory-db`
-    - Run: `RUN_E2E=1 npx vitest run tests/e2e`
-  - See `tests/e2e/README.md` for detailed instructions.
+  - Start E2E DB: `docker compose -f tests/e2e/docker-compose.e2e.yml up -d db-e2e db-init-e2e`
+  - Run E2E suite: `npm run test:e2e` (uses a hardcoded connection string)
+  - See `docs/TESTING_E2E.md` for details.
 - Public API parameters are validated at runtime by `src/validation.ts`. Malformed inputs are rejected with descriptive errors. Tests in `tests/validation.test.ts` and `tests/index-validation.test.ts` verify this behavior.

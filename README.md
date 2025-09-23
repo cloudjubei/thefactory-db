@@ -19,7 +19,30 @@ We are committed to maintaining a high standard of code quality and reliability.
 
 Important: Do not modify code just to make tests pass. The implementation must remain sensible and correct; tests should reveal issues, not enforce hacks. All inputs to the public API are validated at runtime (see `src/validation.ts`), and tests assert that malformed inputs are rejected.
 
+- Unit tests live under `tests/` and mock external dependencies for speed and determinism.
+- End-to-End tests live under `tests/e2e/` and run against a real PostgreSQL database with `pgvector`.
+
 For detailed guidance on our testing philosophy, tools, validation expectations, and best practices, please refer to our Testing Guidelines (docs/TESTING.md).
+
+### E2E Tests (real DB)
+
+Quick start:
+
+1) Start the dedicated E2E database (isolated stack that won’t clash with `docker-compose.yml`):
+
+```bash
+docker compose -f tests/e2e/docker-compose.e2e.yml up -d db-e2e db-init-e2e
+```
+
+2) Run the tests:
+
+```bash
+npm run test:e2e
+```
+
+This uses a hardcoded connection string pointing to the E2E DB (`postgresql://user:password@localhost:55432/thefactory-db`).
+
+See docs/TESTING_E2E.md for more details, troubleshooting, and reset instructions.
 
 ## Setup
 

@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  db-e2e:
+    image: pgvector/pgvector:pg16
+    container_name: thefactory-db-postgres-e2e
+    environment:
+      POSTGRES_DB: thefactory-db
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+    ports:
+      - '55432:5432' # map to a different host port to avoid clashing with local/dev DB
+    volumes:
+      - postgres_e2e_data:/var/lib/postgresql/data
+
+  # One-off bootstrap job that ensures the database exists and vector extension is available.
+  # This runs against an already-initialized cluster and is safe to re-run.
+  db-init-e2e:
+    image: pgvector/pgvector:pg16
+    depends_on:
+      - db-e2e
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      PGPASSWORD: password
+    entrypoint: ["/bin/bash", "-c"]
+    command: |
+      set -e
+      until pg_isready -h db-e2e -p 5432 -U "$POSTGRES_USER"; do
+        echo "[db-init-e2e] waiting for db..."
+        sleep 1
+      done
+      echo "[db-init-e2e] ensuring database exists..."
+      psql -h db-e2e -U "$POSTGRES_USER" -d postgres -tc "SELECT 1 FROM pg_database WHERE datname = 'thefactory-db'" | grep -q 1 || \
+        psql -h db-e2e -U "$POSTGRES_USER" -d postgres -c 'CREATE DATABASE "thefactory-db"'
+      echo "[db-init-e2e] ensuring vector extension..."
+      psql -h db-e2e -U "$POSTGRES_USER" -d "thefactory-db" -c 'CREATE EXTENSION IF NOT EXISTS vector'
+    restart: "no"
+
+volumes:
+  postgres_e2e_data:

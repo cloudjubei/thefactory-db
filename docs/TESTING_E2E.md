@@ -1,69 +1,64 @@
-# E2E Tests with a Real Postgres DB
+# End-to-End (E2E) Testing
 
-The end-to-end tests exercise the full stack against a real PostgreSQL database with the pgvector extension. They are opt-in to avoid heavy CI costs.
+These tests run against a real PostgreSQL instance with the pgvector extension to validate embeddings, tokenization, indexing, and hybrid search end-to-end.
 
-## Quick Start (Docker Compose)
+## Quick start
 
-This repository includes a ready-to-use Postgres + pgvector setup.
+1) Start the test database (isolated stack, non-conflicting port):
 
-1) Start the database and the bootstrap job
-
-```
-docker compose up -d db db-init
+```bash
+docker compose -f tests/e2e/docker-compose.e2e.yml up -d db-e2e db-init-e2e
 ```
 
-- `db` runs PostgreSQL 16 with the pgvector extension available.
-- `db-init` waits for the DB, creates database `thefactory-db` if missing, and ensures the `vector` extension is enabled. You can safely re-run it:
+- `db-e2e` runs PostgreSQL with pgvector and exposes port 55432 on your host.
+- `db-init-e2e` waits for the DB, creates the "thefactory-db" database if missing, and ensures the `vector` extension is enabled. It is safe to re-run.
 
-```
-docker compose run --rm db-init
-```
+2) Run the E2E tests
 
-2) Export a connection URL for the tests
-
-```
-export DATABASE_URL="postgresql://user:password@localhost:5432/thefactory-db"
+```bash
+npm run test:e2e
 ```
 
-3) Run only the E2E tests
+The script uses a hardcoded connection string and sets the required env flags. No additional setup is needed.
 
-E2E tests are opt-in and will be skipped unless you explicitly enable them:
-
-```
-# build first if needed
-npm run build
-
-# run E2E only
-RUN_E2E=1 npx vitest run tests/e2e
-```
-
-You can also run the whole suite (unit + E2E), though it may take longer. E2E tests still require `RUN_E2E=1`.
+Connection used by tests:
 
 ```
-RUN_E2E=1 npm test
+postgresql://user:password@localhost:55432/thefactory-db
 ```
 
-4) Reset database (optional)
+## What’s covered
 
-If you want to reset all data:
+- Tokenizer utilities (runtime correctness)
+- Embeddings provider via Transformers.js (model loads, returns unit-norm vectors)
+- Documents: indexing CRUD + hybrid search
+- Entities: indexing CRUD + hybrid search
 
+Tests live under `tests/e2e/`.
+
+## Re-running or resetting
+
+- Re-run init only:
+
+```bash
+docker compose -f tests/e2e/docker-compose.e2e.yml run --rm db-init-e2e
 ```
-docker compose down -v
-# then recreate
-docker compose up -d db db-init
+
+- Tear down everything and remove volumes (reset all data):
+
+```bash
+docker compose -f tests/e2e/docker-compose.e2e.yml down -v
+# then start again
+docker compose -f tests/e2e/docker-compose.e2e.yml up -d db-e2e db-init-e2e
 ```
 
-5) Inspect the DB
+## Troubleshooting
 
+- Ensure port 55432 is free on your machine.
+- Inspect the database:
+
+```bash
+docker exec -it thefactory-db-postgres-e2e psql -U user -d "thefactory-db"
 ```
-docker exec -it thefactory-db-postgres psql -U user -d "thefactory-db"
-```
 
-## Notes on Embeddings
-
-These tests use the local embedding provider (Transformers.js) by default, which may download the ONNX model on first use. To speed this up across runs, set a cache location:
-
-- Linux/macOS: export TRANSFORMERS_CACHE="$HOME/.cache/transformers"
-- Windows (PowerShell): $env:TRANSFORMERS_CACHE = "$HOME/.cache/transformers"
-
-If you prefer to avoid running embeddings-heavy tests, keep E2E disabled (do not set RUN_E2E=1). The unit tests already mock embeddings and cover behavior thoroughly.
+- First run will download a small embedding model for Transformers.js. This requires internet access or a previously cached model.
