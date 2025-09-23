@@ -81,5 +81,11 @@ Embedding dimension is 384 and requires the `pgvector` extension.
 
 ## Testing and Validation
 
-- Tests live under `test/` and target near-100% coverage.
-- Public API parameters are validated at runtime by `src/validation.ts`. Malformed inputs are rejected with descriptive errors. Tests in `test/validation.test.ts` and `test/index-validation.test.ts` verify this behavior.
+- Unit tests live under `tests/` and target near-100% coverage. They mock external dependencies (e.g., embeddings, PG client) for determinism and speed.
+- End-to-End tests live under `tests/e2e/` and run against a real PostgreSQL database with `pgvector`.
+  - To run E2E tests:
+    - Start DB: `docker compose up -d db db-init`
+    - Export connection: `export DATABASE_URL=postgresql://user:password@localhost:5432/thefactory-db`
+    - Run: `RUN_E2E=1 npx vitest run tests/e2e`
+  - See `tests/e2e/README.md` for detailed instructions.
+- Public API parameters are validated at runtime by `src/validation.ts`. Malformed inputs are rejected with descriptive errors. Tests in `tests/validation.test.ts` and `tests/index-validation.test.ts` verify this behavior.

@@ -1,6 +1,6 @@
 {
   "id": "67749a79-fda3-4c2b-9c35-b644c761b895",
-  "status": "-",
+  "status": "=",
   "title": "Ongoing Improvements",
   "description": "Various ongoing improvements to the project",
   "features": [
@@ -46,12 +46,13 @@
     },
     {
       "id": "f018a399-a2fb-47f5-9990-b89fc7381097",
-      "status": "-",
+      "status": "+",
       "title": "Need to create an e2e tests using a real db under `tests/e2e`",
       "description": "First we need to explain to the user how to easily spin up a test database with docker compose that will be used for e2e tests.\nThen assuming the database is running, there need to be e2e tests for embedding, tokenization, indexing and most importantly for hybrid-search - mirroring most of the tests inside `tests`",
       "context": [],
       "createdAt": "2025-09-23T13:02:45.316Z",
-      "updatedAt": "2025-09-23T13:02:45.316Z"
+      "updatedAt": "2025-09-23T13:11:55.455Z",
+      "completedAt": "2025-09-23T13:11:55.455Z"
     }
   ],
   "featureIdToDisplayIndex": {
