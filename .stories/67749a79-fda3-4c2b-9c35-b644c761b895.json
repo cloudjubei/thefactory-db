@@ -46,14 +46,15 @@
     },
     {
       "id": "f018a399-a2fb-47f5-9990-b89fc7381097",
-      "status": "-",
+      "status": "+",
       "title": "Need to create an e2e tests using a real db under `tests/e2e`",
       "description": "First we need to explain to the user how to easily spin up a test database with docker compose that will be used for e2e tests.\nThen assuming the database is running, there need to be e2e tests for indexing and most importantly for hybrid-search - mirroring all the tests inside `tests` that would require to call `openDatabase`",
       "context": [],
       "createdAt": "2025-09-23T13:02:45.316Z",
-      "updatedAt": "2025-09-23T15:19:24.656Z",
+      "updatedAt": "2025-09-23T16:17:21.497Z",
       "rejection": "Make sure there's a test that checks that entities/documents get their updateAt regenerated on update and that entities get their fts regenerated on updated (this should be automatic based on the schema.sql). There should be appropriate atomic e2e tests for all these cases.",
-      "blockers": []
+      "blockers": [],
+      "completedAt": "2025-09-23T16:17:21.497Z"
     },
     {
       "id": "bd58e850-de61-4e54-adba-9a7b49e76f29",
