@@ -18,11 +18,11 @@ const deleteEntity = `DELETE FROM entities WHERE id = $1;`;
 const getEntityById = `
 SELECT 
   id,
-  project_id AS \"projectId\",
+  project_id AS "projectId",
   type,
   content,
-  to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\\\"T\\\"HH24:MI:SS.MS\\\"Z\\\"') AS \"createdAt\",
-  to_char(updated_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\\\"T\\\"HH24:MI:SS.MS\\\"Z\\\"') AS \"updatedAt\",
+  to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS "createdAt",
+  to_char(updated_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS "updatedAt",
   to_jsonb(metadata) AS metadata
 FROM entities
 WHERE id = $1;
@@ -33,11 +33,11 @@ INSERT INTO entities (project_id, type, content, content_string, embedding, meta
 VALUES ($1, $2, $3::jsonb, $4, $5::vector, $6::jsonb)
 RETURNING 
   id,
-  project_id AS \"projectId\",
+  project_id AS "projectId",
   type,
   content,
-  to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\\\"T\\\"HH24:MI:SS.MS\\\"Z\\\"') AS \"createdAt\",
-  to_char(updated_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\\\"T\\\"HH24:MI:SS.MS\\\"Z\\\"') AS \"updatedAt\",
+  to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS "createdAt",
+  to_char(updated_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS "updatedAt",
   to_jsonb(metadata) AS metadata;
 `;
 
@@ -51,11 +51,11 @@ UPDATE entities SET
 WHERE id = $1
 RETURNING 
   id,
-  project_id AS \"projectId\",
+  project_id AS "projectId",
   type,
   content,
-  to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\\\"T\\\"HH24:MI:SS.MS\\\"Z\\\"') AS \"createdAt\",
-  to_char(updated_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\\\"T\\\"HH24:MI:SS.MS\\\"Z\\\"') AS \"updatedAt\",
+  to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS "createdAt",
+  to_char(updated_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS "updatedAt",
   to_jsonb(metadata) AS metadata;
 `;
 
@@ -67,12 +67,12 @@ const deleteDocument = `DELETE FROM documents WHERE id = $1;`;
 const getDocumentById = `
 SELECT 
   id,
-  project_id AS \"projectId\",
+  project_id AS "projectId",
   type,
   content,
   src,
-  to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\\\"T\\\"HH24:MI:SS.MS\\\"Z\\\"') AS \"createdAt\",
-  to_char(updated_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\\\"T\\\"HH24:MI:SS.MS\\\"Z\\\"') AS \"updatedAt\",
+  to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS "createdAt",
+  to_char(updated_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS "updatedAt",
   to_jsonb(metadata) AS metadata
 FROM documents
 WHERE id = $1;
@@ -81,12 +81,12 @@ WHERE id = $1;
 const getDocumentBySrc = `
 SELECT 
   id,
-  project_id AS \"projectId\",
+  project_id AS "projectId",
   type,
   content,
   src,
-  to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\\\"T\\\"HH24:MI:SS.MS\\\"Z\\\"') AS \"createdAt\",
-  to_char(updated_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\\\"T\\\"HH24:MI:SS.MS\\\"Z\\\"') AS \"updatedAt\",
+  to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS "createdAt",
+  to_char(updated_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS "updatedAt",
   to_jsonb(metadata) AS metadata
 FROM documents
 WHERE src = $1;
@@ -97,12 +97,12 @@ INSERT INTO documents (project_id, type, content, src, embedding, metadata)
 VALUES ($1, $2, $3, $4, $5::vector, $6::jsonb)
 RETURNING 
   id,
-  project_id AS \"projectId\",
+  project_id AS "projectId",
   type,
   content,
   src,
-  to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\\\"T\\\"HH24:MI:SS.MS\\\"Z\\\"') AS \"createdAt\",
-  to_char(updated_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\\\"T\\\"HH24:MI:SS.MS\\\"Z\\\"') AS \"updatedAt\",
+  to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS "createdAt",
+  to_char(updated_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS "updatedAt",
   to_jsonb(metadata) AS metadata;
 `;
 
@@ -116,12 +116,12 @@ UPDATE documents SET
 WHERE id = $1
 RETURNING 
   id,
-  project_id AS \"projectId\",
+  project_id AS "projectId",
   type,
   content,
   src,
-  to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\\\"T\\\"HH24:MI:SS.MS\\\"Z\\\"') AS \"createdAt\",
-  to_char(updated_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\\\"T\\\"HH24:MI:SS.MS\\\"Z\\\"') AS \"updatedAt\",
+  to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS "createdAt",
+  to_char(updated_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS "updatedAt",
   to_jsonb(metadata) AS metadata;
 `;
 
@@ -195,20 +195,11 @@ CREATE TABLE IF NOT EXISTS entities (
   updated_at timestamptz NOT NULL DEFAULT now()
 );
 
--- Trigger to keep fts and updated_at in sync for entities
-CREATE OR REPLACE FUNCTION entities_before_write()
-RETURNS trigger AS $$
-BEGIN
-  NEW.updated_at = now();
-  NEW.fts = CASE WHEN NEW.content_string IS NULL THEN NULL ELSE to_tsvector('english', NEW.content_string) END;
-  RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
-
-DROP TRIGGER IF EXISTS entities_set_fts ON entities;
-CREATE TRIGGER entities_set_fts
-BEFORE INSERT OR UPDATE OF content ON entities
-FOR EACH ROW EXECUTE FUNCTION entities_before_write();
+-- Updated_at trigger for entities (fts is a GENERATED column)
+DROP TRIGGER IF EXISTS entities_set_updated_at ON entities;
+CREATE TRIGGER entities_set_updated_at
+BEFORE UPDATE ON entities
+FOR EACH ROW EXECUTE FUNCTION set_updated_at();
 
 -- Indexes for entities
 CREATE INDEX IF NOT EXISTS entities_project_id_idx ON entities USING btree(project_id);
@@ -435,31 +426,31 @@ $$;
 const searchEntitiesQuery = `
 SELECT
   id,
-  project_id AS \"projectId\",
+  project_id AS "projectId",
   type,
   content,
-  to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\\\"T\\\"HH24:MI:SS.MS\\\"Z\\\"') AS \"createdAt\",
-  to_char(updated_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\\\"T\\\"HH24:MI:SS.MS\\\"Z\\\"') AS \"updatedAt\",
+  to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS "createdAt",
+  to_char(updated_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS "updatedAt",
   to_jsonb(metadata) AS metadata,
-  keyword_score as \"textScore\",
-  cosine_similarity as \"vecScore\",
-  similarity as \"totalScore\"
+  keyword_score as "textScore",
+  cosine_similarity as "vecScore",
+  similarity as "totalScore"
 FROM hybrid_search_entities($1, $2::vector, $3::int, $4::jsonb, $5::float, $6::float, $7::int);
 `;
 
 const searchDocumentsQuery = `
 SELECT
   id,
-  project_id AS \"projectId\",
+  project_id AS "projectId",
   type,
   content,
   src,
-  to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\\\"T\\\"HH24:MI:SS.MS\\\"Z\\\"') AS \"createdAt\",
-  to_char(updated_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\\\"T\\\"HH24:MI:SS.MS\\\"Z\\\"') AS \"updatedAt\",
+  to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS "createdAt",
+  to_char(updated_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS "updatedAt",
   to_jsonb(metadata) AS metadata,
-  keyword_score as \"textScore\",
-  cosine_similarity as \"vecScore\",
-  similarity as \"totalScore\"
+  keyword_score as "textScore",
+  cosine_similarity as "vecScore",
+  similarity as "totalScore"
 FROM hybrid_search_documents($1, $2::vector, $3::int, $4::jsonb, $5::float, $6::float, $7::int);
 `;
 
@@ -472,11 +463,11 @@ FROM hybrid_search_documents($1, $2::vector, $3::int, $4::jsonb, $5::float, $6::
 const matchEntities = `
 SELECT
   id,
-  project_id AS \"projectId\",
+  project_id AS "projectId",
   type,
   content,
-  to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\\\"T\\\"HH24:MI:SS.MS\\\"Z\\\"') AS \"createdAt\",
-  to_char(updated_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\\\"T\\\"HH24:MI:SS.MS\\\"Z\\\"') AS \"updatedAt\",
+  to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS "createdAt",
+  to_char(updated_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS "updatedAt",
   to_jsonb(metadata) AS metadata
 FROM entities
 WHERE content @> $1::jsonb
@@ -500,12 +491,12 @@ LIMIT COALESCE($3::int, 100);
 const matchDocuments = `
 SELECT
   id,
-  project_id AS \"projectId\",
+  project_id AS "projectId",
   type,
   content,
   src,
-  to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\\\"T\\\"HH24:MI:SS.MS\\\"Z\\\"') AS \"createdAt\",
-  to_char(updated_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\\\"T\\\"HH24:MI:SS.MS\\\"Z\\\"') AS \"updatedAt\",
+  to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS "createdAt",
+  to_char(updated_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS "updatedAt",
   to_jsonb(metadata) AS metadata
 FROM documents
 WHERE (
