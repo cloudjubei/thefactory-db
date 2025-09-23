@@ -1,6 +1,6 @@
 {
   "id": "67749a79-fda3-4c2b-9c35-b644c761b895",
-  "status": "=",
+  "status": "?",
   "title": "Ongoing Improvements",
   "description": "Various ongoing improvements to the project",
   "features": [
@@ -120,7 +120,7 @@
     },
     {
       "id": "ad2a782a-d8f1-4560-83f5-2e972c9ed02f",
-      "status": "-",
+      "status": "?",
       "title": "Entities tests need to show that metadata isn't taken into account",
       "description": "The entities hybrid search tests - @tests/e2e/entities-hybrid-advanced.e2e.test.ts and @tests/e2e/entities-hybrid.e2e.test.ts need to be updated with tests that show that even if metadata holds relevant data - then it won't change a hybrid search result.",
       "context": [
@@ -129,7 +129,8 @@
       ],
       "blockers": [],
       "createdAt": "2025-09-23T22:23:59.756Z",
-      "updatedAt": "2025-09-23T22:23:59.756Z"
+      "updatedAt": "2025-09-23T22:28:22.536Z",
+      "rejection": "Blocked: The test runner is failing with `ERR_MODULE_NOT_FOUND`, preventing me from verifying my changes. This seems to be an issue with the environment's `vitest` installation, as it happens for all test files, not just the ones I modified."
     }
   ],
   "featureIdToDisplayIndex": {
