@@ -34,14 +34,14 @@ async function main() {
     type: 'note',
     content: 'This is a test document about vectors and tokens',
     src: 'file://test',
-    metadata: JSON.stringify({ author: 'alice' }),
+    metadata: { author: 'alice' },
   })
   const d2 = await db.addDocument({
     projectId: 'project1',
     type: 'note',
     content: 'Another file focusing on full text search using Postgres tsvector',
     src: 'www.example.com',
-    metadata: JSON.stringify({ author: 'bob' }),
+    metadata: { author: 'bob' },
   })
 
   // Seed a couple of entities (JSON content)
@@ -53,7 +53,7 @@ async function main() {
       title: 'Hybrid search intro',
       author: 'carol',
     },
-    metadata: JSON.stringify({ source: 'example' }),
+    metadata: { source: 'example' },
   })
   const e2 = await db.addEntity({
     projectId: 'project2',
@@ -63,7 +63,7 @@ async function main() {
       title: 'Working with JSON entities',
       author: 'dave',
     },
-    metadata: JSON.stringify({ source: 'example' }),
+    metadata: { source: 'example' },
   })
 
   console.log('Inserted:')
@@ -79,7 +79,7 @@ async function main() {
   })
   console.log('\nDocument search results:')
   for (const r of docResults) {
-    console.log({ id: r.id, type: r.type, projectId: r.projectId, score: r.total_score.toFixed(4) })
+    console.log({ id: r.id, type: r.type, projectId: r.projectId, score: r.totalScore.toFixed(4) })
   }
 
   // Run entity search (hybrid search over JSON values)
@@ -96,7 +96,7 @@ async function main() {
       id: r.id,
       type: r.type,
       projectId: r.projectId,
-      score: r.total_score?.toFixed?.(4) ?? r.total_score,
+      score: r.totalScore?.toFixed?.(4),
     })
   }
 

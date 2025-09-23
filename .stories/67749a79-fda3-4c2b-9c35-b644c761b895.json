@@ -116,6 +116,19 @@
       "blockers": [],
       "createdAt": "2025-09-23T22:08:33.087Z",
       "updatedAt": "2025-09-23T22:08:33.087Z"
+    },
+    {
+      "id": "ad2a782a-d8f1-4560-83f5-2e972c9ed02f",
+      "status": "-",
+      "title": "Entities tests need to show that metadata isn't taken into account",
+      "description": "The entities hybrid search tests - @tests/e2e/entities-hybrid-advanced.e2e.test.ts and @tests/e2e/entities-hybrid.e2e.test.ts need to be updated with tests that show that even if metadata holds relevant data - then it won't change a hybrid search result.",
+      "context": [
+        "tests/e2e/entities-hybrid-advanced.e2e.test.ts",
+        "tests/e2e/entities-hybrid.e2e.test.ts"
+      ],
+      "blockers": [],
+      "createdAt": "2025-09-23T22:23:59.756Z",
+      "updatedAt": "2025-09-23T22:23:59.756Z"
     }
   ],
   "featureIdToDisplayIndex": {
@@ -128,7 +141,8 @@
     "94a33d4a-7698-4962-86cd-cb3a19d7f664": 7,
     "734c141d-83b8-4a4c-8ed5-75ef2d5ea874": 8,
     "4016b214-feaf-41a0-b56c-f61932f3250c": 9,
-    "39e9a493-5433-405b-8fc0-89f4ec5d3e18": 10
+    "39e9a493-5433-405b-8fc0-89f4ec5d3e18": 10,
+    "ad2a782a-d8f1-4560-83f5-2e972c9ed02f": 11
   },
   "createdAt": "2025-09-19T01:04:36.087Z",
   "updatedAt": "2025-09-19T01:04:36.087Z"

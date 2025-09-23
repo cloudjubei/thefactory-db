@@ -48,7 +48,7 @@ async function main() {
   })
   console.log('\nDocument search results:')
   for (const r of docResults) {
-    console.log({ id: r.id, type: r.type, src: r.src, score: r.total_score.toFixed(4) })
+    console.log({ id: r.id, type: r.type, src: r.src, score: r.totalScore.toFixed(4) })
   }
 
   const docResults2 = await db.searchDocuments({
@@ -59,7 +59,7 @@ async function main() {
   })
   console.log('\nDocument search results2:')
   for (const r of docResults2) {
-    console.log({ id: r.id, type: r.type, src: r.src, score: r.total_score.toFixed(4) })
+    console.log({ id: r.id, type: r.type, src: r.src, score: r.totalScore.toFixed(4) })
   }
 }
 
