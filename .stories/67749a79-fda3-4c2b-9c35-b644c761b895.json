@@ -1,6 +1,6 @@
 {
   "id": "67749a79-fda3-4c2b-9c35-b644c761b895",
-  "status": "-",
+  "status": "=",
   "title": "Ongoing Improvements",
   "description": "Various ongoing improvements to the project",
   "features": [
@@ -36,12 +36,13 @@
     },
     {
       "id": "a83e8f50-66a3-44f7-a01f-057de5bb0a00",
-      "status": "-",
+      "status": "+",
       "title": "The current tests are too basic",
       "description": "We need to have more advanced tests to really see that the search functionality is working appropriately.\nWe need two sets of files - 1 made up non-code documents and 2 this project's files (all of them).\n\nWe need to have the tests cover all sorts of cases for using the hybrid search - when the weight is 0, 0.2, 0.5, 0.8, 1.0 . When there is information just in the title of the file, just in the contents or just in the embeddings (semantically it's there).",
       "context": [],
       "createdAt": "2025-09-23T12:45:38.880Z",
-      "updatedAt": "2025-09-23T12:45:38.880Z"
+      "updatedAt": "2025-09-23T12:51:52.069Z",
+      "completedAt": "2025-09-23T12:51:52.069Z"
     }
   ],
   "featureIdToDisplayIndex": {
