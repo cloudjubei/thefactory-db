@@ -1,6 +1,6 @@
 {
   "id": "67749a79-fda3-4c2b-9c35-b644c761b895",
-  "status": "-",
+  "status": "=",
   "title": "Ongoing Improvements",
   "description": "Various ongoing improvements to the project",
   "features": [
@@ -26,12 +26,13 @@
     },
     {
       "id": "03858e2a-b346-4a6c-b711-427a85401e8e",
-      "status": "-",
+      "status": "+",
       "title": "Hybrid Search needs improvements",
       "description": "Right now the search doesn't seem to be pick up file names for keyword search.\nWhen the query is passed in - for embedding/semantic search - it should process the whole query and let the embeddings score like they do now. But for keyword search, the query should be space separated - and each such keyword should be tested against the file contents and the file name. File name should score separately from contents - it should be weighed 50/50 (file name vs contents) for the final score for the overall keyword score.",
       "context": [],
       "createdAt": "2025-09-23T12:18:10.277Z",
-      "updatedAt": "2025-09-23T12:18:10.277Z"
+      "updatedAt": "2025-09-23T12:32:09.157Z",
+      "completedAt": "2025-09-23T12:32:09.157Z"
     }
   ],
   "featureIdToDisplayIndex": {
