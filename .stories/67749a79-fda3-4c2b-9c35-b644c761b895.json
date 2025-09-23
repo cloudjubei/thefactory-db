@@ -1,6 +1,6 @@
 {
   "id": "67749a79-fda3-4c2b-9c35-b644c761b895",
-  "status": "-",
+  "status": "=",
   "title": "Ongoing Improvements",
   "description": "Various ongoing improvements to the project",
   "features": [
@@ -95,7 +95,7 @@
     },
     {
       "id": "4016b214-feaf-41a0-b56c-f61932f3250c",
-      "status": "-",
+      "status": "+",
       "title": "Complex e2e from this project's codebase",
       "description": "Following @tests/e2e/documents-hybrid-advanced.e2e.test.ts and @tests/hybrid-search-advanced.test.ts - there need to be advanced e2e tests using this project's code files as documents to search against, checking various weight settings.\nThese tests need to be exact - i.e. they should always return the same expected files in the correct order for the given weight.",
       "context": [
@@ -104,7 +104,8 @@
       ],
       "blockers": [],
       "createdAt": "2025-09-23T18:11:34.201Z",
-      "updatedAt": "2025-09-23T18:11:34.201Z"
+      "updatedAt": "2025-09-23T22:03:29.894Z",
+      "completedAt": "2025-09-23T22:03:29.894Z"
     }
   ],
   "featureIdToDisplayIndex": {
