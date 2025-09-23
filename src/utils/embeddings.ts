@@ -1,4 +1,9 @@
-import { pipeline } from '@xenova/transformers'
+import { pipeline, env } from '@xenova/transformers'
+
+// Ensure reproducible embeddings by disabling web workers.
+// This may affect performance but is crucial for deterministic outputs,
+// especially in testing environments.
+env.useWebWorker = false
 
 export interface EmbeddingProvider {
   readonly name: string
