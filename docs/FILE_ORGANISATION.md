@@ -84,7 +84,7 @@ Embedding dimension is 384 and requires the `pgvector` extension.
 
 - Unit tests live under `tests/` and target near-100% coverage. They mock external dependencies (e.g., embeddings, PG client) for determinism and speed.
 - End-to-End tests live under `tests/e2e/` and run against a real PostgreSQL database with `pgvector`.
-  - Start E2E DB: `docker compose -f tests/e2e/docker-compose.e2e.yml up -d db-e2e db-init-e2e`
+  - Start E2E DB: `docker compose -f docker-compose.e2e.yml up -d db-e2e db-init-e2e`
   - Run E2E suite: `npm run test:e2e` (uses a hardcoded connection string)
   - See `docs/TESTING_E2E.md` for details.
 - Public API parameters are validated at runtime by `src/validation.ts`. Malformed inputs are rejected with descriptive errors. Tests in `tests/validation.test.ts` and `tests/index-validation.test.ts` verify this behavior.

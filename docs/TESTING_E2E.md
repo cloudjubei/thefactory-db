@@ -1,6 +1,6 @@
 # End-to-End (E2E) Testing
 
-These tests run against a real PostgreSQL instance with the pgvector extension to validate embeddings, tokenization, indexing, and hybrid search end-to-end.
+These tests run against a real PostgreSQL instance with the pgvector extension to validate indexing and hybrid search end-to-end.
 
 ## Quick start
 
@@ -29,8 +29,6 @@ postgresql://user:password@localhost:55432/thefactory-db
 
 ## What’s covered
 
-- Tokenizer utilities (runtime correctness)
-- Embeddings provider via Transformers.js (model loads, returns unit-norm vectors)
 - Documents: indexing CRUD + hybrid search
 - Entities: indexing CRUD + hybrid search
 
@@ -61,4 +59,4 @@ docker compose -f docker-compose.e2e.yml up -d db-e2e db-init-e2e
 docker exec -it thefactory-db-postgres-e2e psql -U user -d "thefactory-db"
 ```
 
-- First run will download a small embedding model for Transformers.js. This requires internet access or a previously cached model.
+- First run will download the embedding model for Transformers.js when tests execute hybrid search. This requires internet access or a previously cached model.
