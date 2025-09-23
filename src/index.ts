@@ -282,7 +282,7 @@ export async function openDatabase({
       Object.keys(filter).length ? JSON.stringify(filter) : JSON.stringify({}),
       textWeight,
       semWeight,
-      50,
+      20,
     ])
 
     return r.rows as EntityWithScore[]
@@ -439,7 +439,7 @@ export async function openDatabase({
       Object.keys(filter).length ? JSON.stringify(filter) : JSON.stringify({}),
       textWeight,
       semWeight,
-      50,
+      20,
     ])
 
     return r.rows as DocumentWithScore[]

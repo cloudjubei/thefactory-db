@@ -271,21 +271,21 @@ full_text AS (
   SELECT id,
          row_number() OVER (
            ORDER BY (
-             COALESCE(ts_rank_cd(fts, plainto_tsquery('english', query_text)), 0.0) * 0.5 +
+             COALESCE(ts_rank_cd(fts, websearch_to_tsquery('english', query_text)), 0.0) * 0.5 +
              COALESCE(
                ts_rank_cd(
                  to_tsvector('simple', regexp_replace(src, '[^a-zA-Z0-9]+', ' ', 'g')),
-                 plainto_tsquery('simple', query_text)
+                 websearch_to_tsquery('simple', query_text)
                ),
                0.0
-             ) * 0.5
+             ) * 1.5
            ) DESC
          ) AS rank_ix
   FROM base_documents
   WHERE (
-    (fts @@ plainto_tsquery('english', query_text))
+    (fts @@ websearch_to_tsquery('english', query_text))
     OR (
-      to_tsvector('simple', regexp_replace(src, '[^a-zA-Z0-9]+', ' ', 'g')) @@ plainto_tsquery('simple', query_text)
+      to_tsvector('simple', regexp_replace(src, '[^a-zA-Z0-9]+', ' ', 'g')) @@ websearch_to_tsquery('simple', query_text)
     )
   )
   LIMIT LEAST(match_count, 30) * 2
@@ -318,14 +318,14 @@ SELECT d.id,
        scored.rrf_score / ((full_text_weight + semantic_weight) / (rrf_k + 1)::float) AS similarity,
        CASE WHEN d.embedding IS NULL THEN NULL ELSE 1 - (d.embedding <-> query_embedding)::float END AS cosine_similarity,
        (
-         COALESCE(ts_rank_cd(d.fts, plainto_tsquery('english', query_text)), 0.0) * 0.5 +
+         COALESCE(ts_rank_cd(d.fts, websearch_to_tsquery('english', query_text)), 0.0) * 0.5 +
          COALESCE(
            ts_rank_cd(
              to_tsvector('simple', regexp_replace(d.src, '[^a-zA-Z0-9]+', ' ', 'g')),
-             plainto_tsquery('simple', query_text)
+             websearch_to_tsquery('simple', query_text)
            ),
            0.0
-         ) * 0.5
+         ) * 1.5
        ) AS keyword_score
 FROM scored
 JOIN base_documents d ON d.id = scored.id
