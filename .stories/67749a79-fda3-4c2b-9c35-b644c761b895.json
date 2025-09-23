@@ -1,6 +1,6 @@
 {
   "id": "67749a79-fda3-4c2b-9c35-b644c761b895",
-  "status": "-",
+  "status": "=",
   "title": "Ongoing Improvements",
   "description": "Various ongoing improvements to the project",
   "features": [
@@ -58,7 +58,7 @@
     },
     {
       "id": "bd58e850-de61-4e54-adba-9a7b49e76f29",
-      "status": "-",
+      "status": "+",
       "title": "Make more complex e2e tests",
       "description": "THere should be an equivalent e2e test version of @tests/hybrid-search-advanced.test.ts .\nWe should have one version for entities and one for documents.\nThe goal is to stress test different weights to the scores [0,0.2,0.5,0.8,1] of the keywords vs embedding weights.\nWe also make sure that files are picked up based on their file names - so there need to be appropriate tests for that.\nFollow @docs/TESTING.md for standards. \nMake sure the tests are as atomic and self-contained as possible.\nPrefer more easily failable tests rather than a huge battery of tests that could fail at the beginning.",
       "context": [
@@ -66,9 +66,10 @@
         "docs/TESTING.md"
       ],
       "createdAt": "2025-09-23T15:07:16.099Z",
-      "updatedAt": "2025-09-23T15:27:14.311Z",
+      "updatedAt": "2025-09-23T16:20:36.753Z",
       "rejection": "When running a test fails (error shown at the end).\nThese tests should be far more atomic (each test should be testing a single thing) - i.e. one per tested weight. Use `beforeAll` to seed a batch of 20 entities/documents that should have far more content. Then run all these tests.\nThe error:\n\n\n FAIL  tests/e2e/documents-hybrid-advanced.e2e.test.ts > E2E: Documents Hybrid Search Advanced (real DB) > ranks content, title-only (src), and semantic-only documents across weights [0,0.2,0.5,0.8,1]\nAssertionError: expected 2 to be less than or equal to 1\n ❯ tests/e2e/documents-hybrid-advanced.e2e.test.ts:65:30\n     63|     const positions = resultsByW.map((res) => ({ pD2: pos(res, d2.id), pD3: pos(res, d3.id) }))\n     64|     // At low text weight (semantic-dominant), semantic-only should be ahead of or equal to title-only\n     65|     expect(positions[0].pD3).toBeLessThanOrEqual(positions[0].pD2)\n       |                              ^\n     66|     // At high text weight (text-dominant), title-only should be ahead of or equal to semantic-only\n     67|     expect(positions[positions.length - 1].pD2).toBeLessThanOrEqual(positions[positions.length - 1].pD3)",
-      "blockers": []
+      "blockers": [],
+      "completedAt": "2025-09-23T16:20:36.753Z"
     }
   ],
   "featureIdToDisplayIndex": {

@@ -10,9 +10,66 @@ const DATABASE_URL = process.env.DATABASE_URL || ''
     const projectId = `e2e-docs-adv-${Date.now()}`
     let db: Awaited<ReturnType<typeof openDatabase>>
 
+    // Seeded docs
+    const ids = {
+      contentStrong: [] as string[],
+      titleOnly: [] as string[],
+      semanticOnly: [] as string[],
+      control: [] as string[],
+    }
+
     beforeAll(async () => {
       db = await openDatabase({ connectionString: DATABASE_URL, logLevel: 'warn' })
       await db.clearDocuments([projectId])
+
+      // Seed ~20 documents
+      // 1) Strong content matches for query 'car engine'
+      for (let i = 0; i < 5; i++) {
+        const d = await db.addDocument({
+          projectId,
+          type: 'note',
+          src: `notes/content-${i}.md`,
+          content:
+            'This document discusses car engine maintenance. The car engine is central to vehicle performance. Car engine tips and tricks.',
+        })
+        ids.contentStrong.push(d.id)
+      }
+
+      // 2) Title-only (src filename contains Car-Engine) but content lacks the literal tokens
+      for (let i = 0; i < 5; i++) {
+        const d = await db.addDocument({
+          projectId,
+          type: 'note',
+          src: `guides/Car-Engine-Guide-${i}.txt`,
+          content:
+            'Completely unrelated prose about gardening and cooking. No mention of the specific keywords, focusing on recipes and plants.',
+        })
+        ids.titleOnly.push(d.id)
+      }
+
+      // 3) Semantic-only (mentions synonyms automobile/motor but not exact terms 'car'/'engine')
+      for (let i = 0; i < 5; i++) {
+        const d = await db.addDocument({
+          projectId,
+          type: 'note',
+          src: `notes/auto-${i}.txt`,
+          content:
+            'This article covers automobile motor upkeep and advice. The automobile motor influences vehicle performance. Helpful tips for every driver.',
+        })
+        ids.semanticOnly.push(d.id)
+      }
+
+      // 4) Controls (unrelated)
+      for (let i = 0; i < 5; i++) {
+        const d = await db.addDocument({
+          projectId,
+          type: 'misc',
+          src: `misc/${i}.txt`,
+          content:
+            'Random notes on tropical fruits like banana and mango. Nothing about vehicles or mechanics. Just fruit facts and recipes.',
+        })
+        ids.control.push(d.id)
+      }
     })
 
     afterAll(async () => {
@@ -23,82 +80,92 @@ const DATABASE_URL = process.env.DATABASE_URL || ''
       }
     })
 
-    it('ranks content, title-only (src), and semantic-only documents across weights [0,0.2,0.5,0.8,1]', async () => {
-      const d1 = await db.addDocument({
-        projectId,
-        type: 'note',
-        src: 'notes/a.txt',
-        content: 'This document talks about car and engine.',
-      })
-      const d2 = await db.addDocument({
-        projectId,
-        type: 'note',
-        src: 'notes/Car-Notes.txt',
-        content: 'This note is about vehicles and engines.',
-      })
-      const d3 = await db.addDocument({
-        projectId,
-        type: 'note',
-        src: 'notes/auto.txt',
-        content: 'This document is about automobile and engine.',
-      })
+    // Helpers
+    async function run(query: string, w: number, limit = 30) {
+      return db.searchDocuments({ query, projectIds: [projectId], textWeight: w, limit })
+    }
+    function pos(res: any[], id: string) {
+      const i = res.findIndex((r) => r.id === id)
+      return i < 0 ? 999 : i
+    }
 
-      const weights = [0, 0.2, 0.5, 0.8, 1]
-      const resultsByW = await Promise.all(
-        weights.map((w) =>
-          db.searchDocuments({ query: 'car', projectIds: [projectId], textWeight: w, limit: 10 }),
-        ),
-      )
+    // One test per weight for atomicity
+    it('w=0 (semantic-only): semantic-only docs should outrank title-only docs and appear near the top-10', async () => {
+      const res = await run('car engine', 0)
+      expect(res.length).toBeGreaterThanOrEqual(10)
 
-      const pos = (res: any[], id: string) => {
-        const i = res.findIndex((r) => r.id === id)
-        return i < 0 ? 999 : i
-      }
+      // At least one semantic-only doc ranks ahead (lower index) than the best title-only doc
+      const bestTitle = Math.min(...ids.titleOnly.map((id) => pos(res, id)))
+      const bestSemantic = Math.min(...ids.semanticOnly.map((id) => pos(res, id)))
+      expect(bestSemantic).toBeLessThan(bestTitle)
 
-      // d1 has exact keyword 'car' in content: should remain near top across weights
-      for (const res of resultsByW) {
-        expect(res.length).toBeGreaterThanOrEqual(3)
-        expect(pos(res, d1.id)).toBeLessThanOrEqual(1) // top-2
-      }
-
-      // As textWeight increases, the title-only doc (src contains Car) should not fall behind semantic-only
-      const positions = resultsByW.map((res) => ({ pD2: pos(res, d2.id), pD3: pos(res, d3.id) }))
-      // At low text weight (semantic-dominant), semantic-only should be ahead of or equal to title-only
-      expect(positions[0].pD3).toBeLessThanOrEqual(positions[0].pD2)
-      // At high text weight (text-dominant), title-only should be ahead of or equal to semantic-only
-      expect(positions[positions.length - 1].pD2).toBeLessThanOrEqual(
-        positions[positions.length - 1].pD3,
-      )
-
-      // Score fields present
-      for (const res of resultsByW) {
-        for (const r of res) {
-          expect(typeof r.totalScore).toBe('number')
-          expect(typeof r.textScore === 'number' || r.textScore === null).toBe(true)
-        }
-      }
+      // Strong content matches should still be high due to semantic similarity
+      const bestContent = Math.min(...ids.contentStrong.map((id) => pos(res, id)))
+      expect(bestContent).toBeLessThanOrEqual(5)
     })
 
-    it('filename (src) contributes to textScore and retrieval when textWeight is high', async () => {
-      //TODO: FIX this test is bad - the document is the only one in the database, so it will ALWAYS be returned; There should more documents present to test such a case.
-      const doc = await db.addDocument({
-        projectId,
-        type: 'report',
-        src: 'reports/Car-Guide.txt',
-        content: 'completely unrelated content without the target keyword',
-      })
+    it('w=0.2: both signals contribute; semantic-only present near top and title-only starts to surface', async () => {
+      const res = await run('car engine', 0.2)
+      expect(res.length).toBeGreaterThanOrEqual(10)
 
-      const highText = await db.searchDocuments({
-        query: 'car',
-        projectIds: [projectId],
-        textWeight: 1,
-        limit: 10,
-      })
+      const bestSemantic = Math.min(...ids.semanticOnly.map((id) => pos(res, id)))
+      expect(bestSemantic).toBeLessThanOrEqual(8)
 
-      // Should retrieve the doc based on filename tokenization
-      const hit = highText.find((r) => r.id === doc.id)
-      expect(hit).toBeTruthy()
-      expect(hit && hit.textScore).toBeGreaterThan(0)
+      const bestTitle = Math.min(...ids.titleOnly.map((id) => pos(res, id)))
+      // Should begin to surface but not necessarily beat semantic-only yet
+      expect(bestTitle).toBeLessThanOrEqual(15)
+
+      const bestContent = Math.min(...ids.contentStrong.map((id) => pos(res, id)))
+      expect(bestContent).toBeLessThanOrEqual(5)
+    })
+
+    it('w=0.5: balanced; both semantic-only and title-only appear in top-10', async () => {
+      const res = await run('car engine', 0.5)
+      expect(res.length).toBeGreaterThanOrEqual(10)
+
+      const bestSemantic = Math.min(...ids.semanticOnly.map((id) => pos(res, id)))
+      const bestTitle = Math.min(...ids.titleOnly.map((id) => pos(res, id)))
+      expect(bestSemantic).toBeLessThanOrEqual(10)
+      expect(bestTitle).toBeLessThanOrEqual(10)
+
+      const bestContent = Math.min(...ids.contentStrong.map((id) => pos(res, id)))
+      expect(bestContent).toBeLessThanOrEqual(3)
+    })
+
+    it('w=0.8: title-only (filename) should be stronger and appear in top-5', async () => {
+      const res = await run('car engine', 0.8)
+      expect(res.length).toBeGreaterThanOrEqual(10)
+
+      const bestTitle = Math.min(...ids.titleOnly.map((id) => pos(res, id)))
+      expect(bestTitle).toBeLessThanOrEqual(5)
+
+      const bestContent = Math.min(...ids.contentStrong.map((id) => pos(res, id)))
+      expect(bestContent).toBeLessThanOrEqual(3)
+    })
+
+    it('w=1 (text-only): filename (src) match enables retrieval even with unrelated content', async () => {
+      const res = await run('car engine', 1)
+      expect(res.length).toBeGreaterThanOrEqual(10)
+
+      // Filename-based docs should be clearly surfaced
+      const bestTitle = Math.min(...ids.titleOnly.map((id) => pos(res, id)))
+      expect(bestTitle).toBeLessThanOrEqual(3)
+
+      // Semantic-only without exact keywords in text should lag
+      const bestSemantic = Math.min(...ids.semanticOnly.map((id) => pos(res, id)))
+      expect(bestSemantic).toBeGreaterThan(bestTitle)
+
+      // Strong content keyword docs should be top ranked
+      const bestContent = Math.min(...ids.contentStrong.map((id) => pos(res, id)))
+      expect(bestContent).toBeLessThanOrEqual(2)
+    })
+
+    it('filename (src) contributes to textScore: top results include src hits when textWeight=1', async () => {
+      const res = await run('car engine', 1)
+      // ensure at least one of the top hits comes from titleOnly group (src contains Car-Engine)
+      const top5 = res.slice(0, 5).map((r) => r.id)
+      const hitFromTitle = ids.titleOnly.some((id) => top5.includes(id))
+      expect(hitFromTitle).toBe(true)
     })
   },
 )
