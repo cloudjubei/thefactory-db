@@ -1,6 +1,6 @@
 # E2E Tests with a Real Postgres DB
 
-These end-to-end tests exercise the full stack against a real PostgreSQL database with the pgvector extension. They are opt-in to avoid heavy CI costs.
+The end-to-end tests exercise the full stack against a real PostgreSQL database with the pgvector extension. They are opt-in to avoid heavy CI costs.
 
 ## Quick Start (Docker Compose)
 
