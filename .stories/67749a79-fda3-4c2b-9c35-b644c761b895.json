@@ -1,6 +1,6 @@
 {
   "id": "67749a79-fda3-4c2b-9c35-b644c761b895",
-  "status": "=",
+  "status": "-",
   "title": "Ongoing Improvements",
   "description": "Various ongoing improvements to the project",
   "features": [
@@ -51,8 +51,7 @@
       "description": "First we need to explain to the user how to easily spin up a test database with docker compose that will be used for e2e tests.\nThen assuming the database is running, there need to be e2e tests for indexing and most importantly for hybrid-search - mirroring all the tests inside `tests` that would require to call `openDatabase`",
       "context": [],
       "createdAt": "2025-09-23T13:02:45.316Z",
-      "updatedAt": "2025-09-23T16:17:21.497Z",
-      "rejection": "Make sure there's a test that checks that entities/documents get their updateAt regenerated on update and that entities get their fts regenerated on updated (this should be automatic based on the schema.sql). There should be appropriate atomic e2e tests for all these cases.",
+      "updatedAt": "2025-09-23T16:59:28.369Z",
       "blockers": [],
       "completedAt": "2025-09-23T16:17:21.497Z"
     },
@@ -66,10 +65,35 @@
         "docs/TESTING.md"
       ],
       "createdAt": "2025-09-23T15:07:16.099Z",
-      "updatedAt": "2025-09-23T16:20:36.753Z",
-      "rejection": "When running a test fails (error shown at the end).\nThese tests should be far more atomic (each test should be testing a single thing) - i.e. one per tested weight. Use `beforeAll` to seed a batch of 20 entities/documents that should have far more content. Then run all these tests.\nThe error:\n\n\n FAIL  tests/e2e/documents-hybrid-advanced.e2e.test.ts > E2E: Documents Hybrid Search Advanced (real DB) > ranks content, title-only (src), and semantic-only documents across weights [0,0.2,0.5,0.8,1]\nAssertionError: expected 2 to be less than or equal to 1\n ❯ tests/e2e/documents-hybrid-advanced.e2e.test.ts:65:30\n     63|     const positions = resultsByW.map((res) => ({ pD2: pos(res, d2.id), pD3: pos(res, d3.id) }))\n     64|     // At low text weight (semantic-dominant), semantic-only should be ahead of or equal to title-only\n     65|     expect(positions[0].pD3).toBeLessThanOrEqual(positions[0].pD2)\n       |                              ^\n     66|     // At high text weight (text-dominant), title-only should be ahead of or equal to semantic-only\n     67|     expect(positions[positions.length - 1].pD2).toBeLessThanOrEqual(positions[positions.length - 1].pD3)",
+      "updatedAt": "2025-09-23T17:00:30.567Z",
       "blockers": [],
       "completedAt": "2025-09-23T16:20:36.753Z"
+    },
+    {
+      "id": "94a33d4a-7698-4962-86cd-cb3a19d7f664",
+      "status": "-",
+      "title": "Tests fail",
+      "description": "updatedAt and fts regeneration tests @tests/e2e/updates-and-fts.e2e.test.ts  \nfail",
+      "context": [
+        "tests/e2e/updates-and-fts.e2e.test.ts"
+      ],
+      "createdAt": "2025-09-23T17:00:26.541Z",
+      "updatedAt": "2025-09-23T17:03:02.486Z",
+      "rejection": "FAIL  tests/e2e/updates-and-fts.e2e.test.ts > E2E: Updates and FTS regeneration (real DB) > documents: updates should regenerate updatedAt\nAssertionError: expected NaN to be greater than NaN\n ❯ tests/e2e/updates-and-fts.e2e.test.ts:42:16\n     40| \n     41|     const t1 = new Date(upd!.updatedAt).getTime()\n     42|     expect(t1).toBeGreaterThan(t0)\n       |                ^\n     43|   })\n     44| \n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/6]⎯\n\n FAIL  tests/e2e/updates-and-fts.e2e.test.ts > E2E: Updates and FTS regeneration (real DB) > entities: updates should regenerate updatedAt and FTS on content changes\nAssertionError: expected NaN to be greater than NaN\n ❯ tests/e2e/updates-and-fts.e2e.test.ts:69:16\n     67|     // updatedAt must increase\n     68|     const t1 = new Date(entUpd!.updatedAt).getTime()\n     69|     expect(t1).toBeGreaterThan(t0)\n       |                ^\n     70| \n     71|     // FTS should no longer match \"alpha\" and should match \"beta\"",
+      "blockers": []
+    },
+    {
+      "id": "734c141d-83b8-4a4c-8ed5-75ef2d5ea874",
+      "status": "-",
+      "title": "Complex tests fail - suspicion title doesn't get taken into account when hybrid searching",
+      "description": "@tests/e2e/documents-hybrid-advanced.e2e.test.ts fails",
+      "context": [
+        "tests/e2e/documents-hybrid-advanced.e2e.test.ts"
+      ],
+      "createdAt": "2025-09-23T17:01:25.209Z",
+      "updatedAt": "2025-09-23T17:03:16.551Z",
+      "rejection": "FAIL  tests/e2e/documents-hybrid-advanced.e2e.test.ts > E2E: Documents Hybrid Search Advanced (real DB) > w=0.2: both signals contribute; semantic-only present near top and title-only starts to surface\nAssertionError: expected 10 to be less than or equal to 8\n ❯ tests/e2e/documents-hybrid-advanced.e2e.test.ts:112:28\n    110| \n    111|       const bestSemantic = Math.min(...ids.semanticOnly.map((id) => pos(res, id)))\n    112|       expect(bestSemantic).toBeLessThanOrEqual(8)\n       |                            ^\n    113| \n    114|       const bestTitle = Math.min(...ids.titleOnly.map((id) => pos(res, id)))\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/6]⎯\n\n FAIL  tests/e2e/documents-hybrid-advanced.e2e.test.ts > E2E: Documents Hybrid Search Advanced (real DB) > w=1 (text-only): filename (src) match enables retrieval even with unrelated content\nAssertionError: expected 5 to be less than or equal to 3\n ❯ tests/e2e/documents-hybrid-advanced.e2e.test.ts:152:25\n    150|       // Filename-based docs should be clearly surfaced\n    151|       const bestTitle = Math.min(...ids.titleOnly.map((id) => pos(res, id)))\n    152|       expect(bestTitle).toBeLessThanOrEqual(3)\n       |                         ^\n    153| \n    154|       // Semantic-only without exact keywords in text should lag\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/6]⎯\n\n FAIL  tests/e2e/documents-hybrid-advanced.e2e.test.ts > E2E: Documents Hybrid Search Advanced (real DB) > filename (src) contributes to textScore: top results include src hits when textWeight=1\nAssertionError: expected false to be true // Object.is equality\n\n- Expected\n+ Received\n\n- true\n+ false\n\n ❯ tests/e2e/documents-hybrid-advanced.e2e.test.ts:168:28\n    166|       const top5 = res.slice(0, 5).map((r) => r.id)\n    167|       const hitFromTitle = ids.titleOnly.some((id) => top5.includes(id))\n    168|       expect(hitFromTitle).toBe(true)\n       |                            ^\n    169|     })\n    170|   },\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/6]⎯\n\n FAIL  tests/e2e/entities-hybrid-advanced.e2e.test.ts > E2E: Entities Hybrid Search Advanced (real DB) > w=0 (semantic-only): semantic entities appear above controls and near top\nAssertionError: expected 7 to be less than or equal to 5\n ❯ tests/e2e/entities-hybrid-advanced.e2e.test.ts:97:28\n     95| \n     96|       // Semantic should be competitive at w=0\n     97|       expect(bestSemantic).toBeLessThanOrEqual(5)\n       |                            ^\n     98|     })\n     99|",
+      "blockers": []
     }
   ],
   "featureIdToDisplayIndex": {
@@ -78,7 +102,9 @@
     "03858e2a-b346-4a6c-b711-427a85401e8e": 3,
     "a83e8f50-66a3-44f7-a01f-057de5bb0a00": 4,
     "f018a399-a2fb-47f5-9990-b89fc7381097": 5,
-    "bd58e850-de61-4e54-adba-9a7b49e76f29": 6
+    "bd58e850-de61-4e54-adba-9a7b49e76f29": 6,
+    "94a33d4a-7698-4962-86cd-cb3a19d7f664": 7,
+    "734c141d-83b8-4a4c-8ed5-75ef2d5ea874": 8
   },
   "createdAt": "2025-09-19T01:04:36.087Z",
   "updatedAt": "2025-09-19T01:04:36.087Z"
