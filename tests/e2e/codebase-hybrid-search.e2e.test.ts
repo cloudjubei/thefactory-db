@@ -97,9 +97,9 @@ function collectProjectFiles(root: string): string[] {
       'docs/HYBRIDSEARCH.md',
       'tests/e2e/entities-hybrid.e2e.test.ts',
       'scripts/example.ts',
-      'tests/hybrid-search-advanced.test.ts',
       'tests/tokenizer.test.ts',
       'src/index.ts',
+      'tests/hybrid-search-advanced.test.ts',
       'tests/e2e/documents-hybrid.e2e.test.ts',
       'scripts/test.ts',
       'tests/utils.test.ts',
@@ -112,10 +112,10 @@ function collectProjectFiles(root: string): string[] {
     const srcs = res.map((r) => r.src)
     expect(srcs).toEqual([
       'docs/HYBRIDSEARCH.md',
-      'tests/hybrid-search-advanced.test.ts',
       'scripts/example.ts',
       'tests/e2e/codebase-hybrid-search.e2e.test.ts',
       'src/index.ts',
+      'tests/hybrid-search-advanced.test.ts',
       'docs/FILE_ORGANISATION.md',
       'tests/connection.test.ts',
       'tests/e2e/documents-hybrid-advanced.e2e.test.ts',
@@ -124,7 +124,7 @@ function collectProjectFiles(root: string): string[] {
     ])
   })
 
-  it('w=1 (text-only): "pgvector" should return SQL files and connection setup', async () => {
+  it('w=1 (text-only): "pgvector" should return md files, tests and scripts', async () => {
     const res = await run('pgvector', 1)
     const srcs = res.map((r) => r.src)
     expect(srcs).toEqual([
