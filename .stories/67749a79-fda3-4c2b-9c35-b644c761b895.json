@@ -1,6 +1,6 @@
 {
   "id": "67749a79-fda3-4c2b-9c35-b644c761b895",
-  "status": "-",
+  "status": "?",
   "title": "Ongoing Improvements",
   "description": "Various ongoing improvements to the project",
   "features": [
@@ -134,13 +134,14 @@
     },
     {
       "id": "057eb355-399f-443b-b98d-6c2f46a953da",
-      "status": "-",
+      "status": "?",
       "title": "e2e tests suffer from randomness",
       "description": "It seems that a few of the e2e tests give different results on different runs. This seems to be caused by some randomness being involved at tokenization or even more probably at the embedding stage.\nWe should make sure that two items that are exactly the same - should get the same exact fts tokens and embeddings.\nThere shouldn't be randomisation at play.",
       "context": [],
       "blockers": [],
       "createdAt": "2025-09-23T22:57:35.778Z",
-      "updatedAt": "2025-09-23T22:57:52.626Z"
+      "updatedAt": "2025-09-23T23:15:32.077Z",
+      "rejection": "Blocked: The e2e test runner is failing with an environment-specific error (`ERR_MODULE_NOT_FOUND` within vitest's internal scripts), which prevents me from running any e2e tests to validate the fix. This seems to be an issue with the test execution toolchain, not the application code."
     }
   ],
   "featureIdToDisplayIndex": {

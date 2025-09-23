@@ -23,7 +23,12 @@ export async function createLocalEmbeddingProvider(options?: {
 
   async function getExtractor() {
     if (!ready) {
-      ready = pipeline('feature-extraction', model, revision ? { revision } : undefined)
+      // NOTE: quantized: false is important for reproducible embeddings
+      const pipelineOptions: any = { quantized: false }
+      if (revision) {
+        pipelineOptions.revision = revision
+      }
+      ready = pipeline('feature-extraction', model, pipelineOptions)
     }
     return ready
   }
