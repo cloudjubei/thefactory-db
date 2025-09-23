@@ -139,3 +139,120 @@ const DATABASE_URL = process.env.DATABASE_URL || ''
     })
   },
 )
+
+;(RUN && DATABASE_URL ? describe : describe.skip)('E2E: Entities Keyword List Search', () => {
+  const projectId = `e2e-ents-keywords-${Date.now()}`
+  let db: Awaited<ReturnType<typeof openDatabase>>
+
+  const ids = {
+    matchAtStart: '' as string,
+    matchInMiddle: '' as string,
+    matchAtEnd: '' as string,
+    noMatch: '' as string,
+    semanticMatch: '' as string,
+    partialMatch: '' as string,
+  }
+
+  beforeAll(async () => {
+    db = await openDatabase({ connectionString: DATABASE_URL, logLevel: 'warn' })
+    await db.clearEntities([projectId])
+
+    ids.matchAtStart = (await db.addEntity({
+      projectId,
+      type: 'product',
+      content: {
+        title: 'car engine maintenance guide',
+        description: 'Important for vehicle longevity.',
+      },
+    })).id
+
+    ids.matchInMiddle = (await db.addEntity({
+      projectId,
+      type: 'product',
+      content: {
+        title: 'Guide to vehicle longevity',
+        description: 'This guide is about car engine maintenance.',
+      },
+    })).id
+
+    ids.matchAtEnd = (await db.addEntity({
+      projectId,
+      type: 'product',
+      content: {
+        title: 'Vehicle Longevity',
+        description: 'A comprehensive guide to vehicle care, including car engine maintenance.',
+      },
+    })).id
+
+    ids.noMatch = (await db.addEntity({
+      projectId,
+      type: 'product',
+      content: {
+        title: 'Gardening Tips',
+        description: 'A guide to growing beautiful flowers.',
+      },
+    })).id
+
+    ids.semanticMatch = (await db.addEntity({
+      projectId,
+      type: 'product',
+      content: {
+        title: 'Automobile Motor Upkeep',
+        description: 'A guide to keeping your vehicle in top shape.',
+      },
+    })).id
+
+    ids.partialMatch = (await db.addEntity({
+      projectId,
+      type: 'product',
+      content: {
+        title: 'Car Maintenance Guide',
+        description: 'A guide to general car care.',
+      },
+    })).id
+  })
+
+  afterAll(async () => {
+    try {
+      await db.clearEntities([projectId])
+    } finally {
+      await db.close()
+    }
+  })
+
+  it('with textWeight=1, should only return entities with all keywords', async () => {
+    const results = await db.searchEntities({ query: 'car engine maintenance', projectIds: [projectId], textWeight: 1, limit: 10 })
+    const resultIds = results.map((r) => r.id)
+
+    expect(resultIds).toContain(ids.matchAtStart)
+    expect(resultIds).toContain(ids.matchInMiddle)
+    expect(resultIds).toContain(ids.matchAtEnd)
+    expect(resultIds).not.toContain(ids.noMatch)
+    expect(resultIds).not.toContain(ids.semanticMatch)
+    expect(resultIds).not.toContain(ids.partialMatch)
+    expect(results.length).toBe(3)
+  })
+
+  it('with textWeight=0, should return semantically similar entities', async () => {
+    const results = await db.searchEntities({ query: 'car engine maintenance', projectIds: [projectId], textWeight: 0, limit: 10 })
+    const resultIds = results.map((r) => r.id)
+
+    expect(resultIds).toContain(ids.semanticMatch)
+    // The keyword matches should also be here because their content is semantically relevant
+    expect(resultIds).toContain(ids.matchAtStart)
+    expect(resultIds).toContain(ids.matchInMiddle)
+    expect(resultIds).toContain(ids.matchAtEnd)
+    
+    expect(resultIds).not.toContain(ids.noMatch) 
+
+    // The top result should be the semantic one
+    const semanticRank = results.findIndex(r => r.id === ids.semanticMatch)
+    const keywordRank = results.findIndex(r => r.id === ids.matchAtStart)
+    expect(semanticRank).toBeLessThan(keywordRank)
+  })
+
+  it('with textWeight=1 and no matching entities, should return empty array', async () => {
+    const results = await db.searchEntities({ query: 'non existing keywords', projectIds: [projectId], textWeight: 1, limit: 10 })
+    expect(results.length).toBe(0)
+  })
+})

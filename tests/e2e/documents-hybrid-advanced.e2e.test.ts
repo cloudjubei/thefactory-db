@@ -188,5 +188,110 @@ const DATABASE_URL = process.env.DATABASE_URL || ''
       const hitFromTitle = ids.titleOnly.some((id) => top7.includes(id))
       expect(hitFromTitle).toBe(true)
     })
-  },
+  }
 )
+
+;(RUN && DATABASE_URL ? describe : describe.skip)('E2E: Documents Keyword List Search', () => {
+  const projectId = `e2e-docs-keywords-${Date.now()}`
+  let db: Awaited<ReturnType<typeof openDatabase>>
+
+  const ids = {
+    matchAtStart: '' as string,
+    matchInMiddle: '' as string,
+    matchAtEnd: '' as string,
+    noMatch: '' as string,
+    semanticMatch: '' as string,
+    partialMatch: '' as string,
+  }
+
+  beforeAll(async () => {
+    db = await openDatabase({ connectionString: DATABASE_URL, logLevel: 'warn' })
+    await db.clearDocuments([projectId])
+
+    ids.matchAtStart = (await db.addDocument({
+      projectId,
+      type: 'note',
+      src: 'notes/start.txt',
+      content: 'car engine maintenance is important for vehicle longevity. The rest of the document is about other things.',
+    })).id
+
+    ids.matchInMiddle = (await db.addDocument({
+      projectId,
+      type: 'note',
+      src: 'notes/middle.txt',
+      content: 'The document starts with some intro. Then it talks about car engine maintenance. And then it concludes.',
+    })).id
+
+    ids.matchAtEnd = (await db.addDocument({
+      projectId,
+      type: 'note',
+      src: 'notes/end.txt',
+      content: 'This document is about many things, but concludes with the importance of car engine maintenance.',
+    })).id
+
+    ids.noMatch = (await db.addDocument({
+      projectId,
+      type: 'note',
+      src: 'notes/no-match.txt',
+      content: 'This document is about gardening and cooking. No mention of automobiles.',
+    })).id
+
+    ids.semanticMatch = (await db.addDocument({
+      projectId,
+      type: 'note',
+      src: 'notes/semantic.txt',
+      content: 'This article is about automobile motor upkeep. It is important for your vehicle.',
+    })).id
+    
+    ids.partialMatch = (await db.addDocument({
+      projectId,
+      type: 'note',
+      src: 'notes/partial.txt',
+      content: 'This document talks about car maintenance in general, but not the engine specifically.',
+    })).id
+  })
+
+  afterAll(async () => {
+    try {
+      await db.clearDocuments([projectId])
+    } finally {
+      await db.close()
+    }
+  })
+
+  it('with textWeight=1, should only return documents with all keywords', async () => {
+    const results = await db.searchDocuments({ query: 'car engine maintenance', projectIds: [projectId], textWeight: 1, limit: 10 })
+    const resultIds = results.map((r) => r.id)
+
+    expect(resultIds).toContain(ids.matchAtStart)
+    expect(resultIds).toContain(ids.matchInMiddle)
+    expect(resultIds).toContain(ids.matchAtEnd)
+    expect(resultIds).not.toContain(ids.noMatch)
+    expect(resultIds).not.toContain(ids.semanticMatch)
+    expect(resultIds).not.toContain(ids.partialMatch)
+    expect(results.length).toBe(3)
+  })
+
+  it('with textWeight=0, should return semantically similar documents', async () => {
+    const results = await db.searchDocuments({ query: 'car engine maintenance', projectIds: [projectId], textWeight: 0, limit: 10 })
+    const resultIds = results.map((r) => r.id)
+
+    expect(resultIds).toContain(ids.semanticMatch)
+    // The keyword matches should also be here because their content is semantically relevant
+    expect(resultIds).toContain(ids.matchAtStart)
+    expect(resultIds).toContain(ids.matchInMiddle)
+    expect(resultIds).toContain(ids.matchAtEnd)
+    
+    expect(resultIds).not.toContain(ids.noMatch) 
+
+    // The top result should be the semantic one
+    const semanticRank = results.findIndex(r => r.id === ids.semanticMatch)
+    const keywordRank = results.findIndex(r => r.id === ids.matchAtStart)
+    expect(semanticRank).toBeLessThan(keywordRank)
+  })
+
+  it('with textWeight=1 and no matching documents, should return empty array', async () => {
+    const results = await db.searchDocuments({ query: 'non existing keywords', projectIds: [projectId], textWeight: 1, limit: 10 })
+    expect(results.length).toBe(0)
+  })
+})
