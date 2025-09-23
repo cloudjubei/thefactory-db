@@ -54,6 +54,18 @@
       "updatedAt": "2025-09-23T15:03:34.436Z",
       "rejection": "When running `npm run test:e2e` 2 tests fails:\n\n\n FAIL  tests/e2e/documents-indexing.e2e.test.ts > E2E: Documents Indexing (real DB) > add/get/update/delete/getBySrc/clear\nAssertionError: expected undefined to be 'updated' // Object.is equality\n\n- Expected: \n\"updated\"\n\n+ Received: \nundefined\n\n ❯ tests/e2e/documents-indexing.e2e.test.ts:46:30\n     44| \n     45|     const updated = await db.updateDocument(created.id, { content: 'updated', metadata: { b: 2 } })\n     46|     expect(updated?.content).toBe('updated')\n       |                              ^\n     47|     expect(updated?.metadata).toEqual({ b: 2 })\n     48| \n\n\n FAIL  tests/e2e/entities-indexing.e2e.test.ts > E2E: Entities Indexing (real DB) > add/get/update/delete/match/clear\nAssertionError: expected undefined to be 'person' // Object.is equality\n\n- Expected: \n\"person\"\n\n+ Received: \nundefined\n\n ❯ tests/e2e/entities-indexing.e2e.test.ts:43:27\n     41|       type: 'person',\n     42|     })\n     43|     expect(updated?.type).toBe('person')\n       |                           ^\n     44| \n     45|     const matched = await db.matchEntities(",
       "blockers": []
+    },
+    {
+      "id": "bd58e850-de61-4e54-adba-9a7b49e76f29",
+      "status": "-",
+      "title": "Make more complex e2e tests",
+      "description": "THere should be an equivalent e2e test version of @tests/hybrid-search-advanced.test.ts .\nWe should have one version for entities and one for documents.\nThe goal is to stress test different weights to the scores [0,0.2,0.5,0.8,1] of the keywords vs embedding weights.\nWe also make sure that files are picked up based on their file names - so there need to be appropriate tests for that.\nFollow @docs/TESTING.md for standards. \nMake sure the tests are as atomic and self-contained as possible.\nPrefer more easily failable tests rather than a huge battery of tests that could fail at the beginning.",
+      "context": [
+        "tests/hybrid-search-advanced.test.ts",
+        "docs/TESTING.md"
+      ],
+      "createdAt": "2025-09-23T15:07:16.099Z",
+      "updatedAt": "2025-09-23T15:07:16.099Z"
     }
   ],
   "featureIdToDisplayIndex": {
@@ -61,7 +73,8 @@
     "8a94bd10-9838-4e6f-9b6c-1b2060d6de40": 2,
     "03858e2a-b346-4a6c-b711-427a85401e8e": 3,
     "a83e8f50-66a3-44f7-a01f-057de5bb0a00": 4,
-    "f018a399-a2fb-47f5-9990-b89fc7381097": 5
+    "f018a399-a2fb-47f5-9990-b89fc7381097": 5,
+    "bd58e850-de61-4e54-adba-9a7b49e76f29": 6
   },
   "createdAt": "2025-09-19T01:04:36.087Z",
   "updatedAt": "2025-09-19T01:04:36.087Z"
