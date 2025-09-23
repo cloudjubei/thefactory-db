@@ -10,6 +10,7 @@ const DATABASE_URL = process.env.DATABASE_URL || ''
 
   beforeAll(async () => {
     db = await openDatabase({ connectionString: DATABASE_URL, logLevel: 'warn' })
+    await db.clearDocuments([projectId])
   })
 
   afterAll(async () => {
@@ -25,24 +26,26 @@ const DATABASE_URL = process.env.DATABASE_URL || ''
       projectId,
       type: 'note',
       src: 'notes/a.txt',
-      content: 'This document talks about car and engine.'
+      content: 'This document talks about car and engine.',
     })
     const d2 = await db.addDocument({
       projectId,
       type: 'note',
       src: 'notes/Car-Notes.txt',
-      content: 'This note is about vehicles and engines.'
+      content: 'This note is about vehicles and engines.',
     })
     const d3 = await db.addDocument({
       projectId,
       type: 'note',
       src: 'notes/auto.txt',
-      content: 'This document is about automobile and engine.'
+      content: 'This document is about automobile and engine.',
     })
 
     const weights = [0, 0.5, 1]
     const resultsByW = await Promise.all(
-      weights.map((w) => db.searchDocuments({ query: 'car', projectIds: [projectId], textWeight: w, limit: 10 }))
+      weights.map((w) =>
+        db.searchDocuments({ query: 'car', projectIds: [projectId], textWeight: w, limit: 10 }),
+      ),
     )
 
     const pos = (res: any[], id: string) => {

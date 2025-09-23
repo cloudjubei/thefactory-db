@@ -10,6 +10,7 @@ const DATABASE_URL = process.env.DATABASE_URL || ''
 
   beforeAll(async () => {
     db = await openDatabase({ connectionString: DATABASE_URL, logLevel: 'warn' })
+    await db.clearDocuments([projectId])
   })
 
   afterAll(async () => {
@@ -35,10 +36,16 @@ const DATABASE_URL = process.env.DATABASE_URL || ''
     const byId = await db.getEntityById(created.id)
     expect(byId?.id).toBe(created.id)
 
-    const updated = await db.updateEntity(created.id, { content: { name: 'Alice', age: 31 }, type: 'person' })
+    const updated = await db.updateEntity(created.id, {
+      content: { name: 'Alice', age: 31 },
+      type: 'person',
+    })
     expect(updated?.type).toBe('person')
 
-    const matched = await db.matchEntities({ name: 'Alice' }, { projectIds: [projectId], limit: 10 })
+    const matched = await db.matchEntities(
+      { name: 'Alice' },
+      { projectIds: [projectId], limit: 10 },
+    )
     expect(Array.isArray(matched)).toBe(true)
     expect(matched.some((e) => e.id === created.id)).toBe(true)
 

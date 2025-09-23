@@ -10,6 +10,7 @@ const DATABASE_URL = process.env.DATABASE_URL || ''
 
   beforeAll(async () => {
     db = await openDatabase({ connectionString: DATABASE_URL, logLevel: 'warn' })
+    await db.clearDocuments([projectId])
   })
 
   afterAll(async () => {
@@ -21,12 +22,30 @@ const DATABASE_URL = process.env.DATABASE_URL || ''
   })
 
   it('hybrid search returns results and respects weights', async () => {
-    await db.addEntity({ projectId, type: 'product', content: { title: 'Yellow banana', tags: ['fruit'] } })
-    await db.addEntity({ projectId, type: 'product', content: { title: 'Bananas are tasty', desc: 'ripe' } })
+    await db.addEntity({
+      projectId,
+      type: 'product',
+      content: { title: 'Yellow banana', tags: ['fruit'] },
+    })
+    await db.addEntity({
+      projectId,
+      type: 'product',
+      content: { title: 'Bananas are tasty', desc: 'ripe' },
+    })
     await db.addEntity({ projectId, type: 'product', content: { title: 'Car engine', desc: 'v8' } })
 
-    const w0 = await db.searchEntities({ query: 'banana', projectIds: [projectId], textWeight: 0, limit: 5 })
-    const w1 = await db.searchEntities({ query: 'banana', projectIds: [projectId], textWeight: 1, limit: 5 })
+    const w0 = await db.searchEntities({
+      query: 'banana',
+      projectIds: [projectId],
+      textWeight: 0,
+      limit: 5,
+    })
+    const w1 = await db.searchEntities({
+      query: 'banana',
+      projectIds: [projectId],
+      textWeight: 1,
+      limit: 5,
+    })
 
     expect(w0.length).toBeGreaterThan(0)
     expect(w1.length).toBeGreaterThan(0)

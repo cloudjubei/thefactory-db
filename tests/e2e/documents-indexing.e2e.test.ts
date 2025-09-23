@@ -10,6 +10,7 @@ const DATABASE_URL = process.env.DATABASE_URL || ''
 
   beforeAll(async () => {
     db = await openDatabase({ connectionString: DATABASE_URL, logLevel: 'warn' })
+    await db.clearDocuments([projectId])
   })
 
   afterAll(async () => {
