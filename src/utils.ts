@@ -48,7 +48,15 @@ UPDATE entities SET
   content_string = COALESCE($4, content_string),
   embedding = COALESCE($5::vector, embedding),
   metadata = COALESCE($6::jsonb, metadata)
-WHERE id = $1;
+WHERE id = $1
+RETURNING 
+  id,
+  project_id AS \"projectId\",
+  type,
+  content,
+  to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\\\"T\\\"HH24:MI:SS.MS\\\"Z\\\"') AS \"createdAt\",
+  to_char(updated_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\\\"T\\\"HH24:MI:SS.MS\\\"Z\\\"') AS \"updatedAt\",
+  to_jsonb(metadata) AS metadata;
 `;
 
 // -------------------------------
@@ -105,7 +113,16 @@ UPDATE documents SET
   src = COALESCE($4, src),
   embedding = COALESCE($5::vector, embedding),
   metadata = COALESCE($6::jsonb, metadata)
-WHERE id = $1;
+WHERE id = $1
+RETURNING 
+  id,
+  project_id AS \"projectId\",
+  type,
+  content,
+  src,
+  to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\\\"T\\\"HH24:MI:SS.MS\\\"Z\\\"') AS \"createdAt\",
+  to_char(updated_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\\\"T\\\"HH24:MI:SS.MS\\\"Z\\\"') AS \"updatedAt\",
+  to_jsonb(metadata) AS metadata;
 `;
 
 // ----------------------------------------------------------
@@ -178,19 +195,18 @@ CREATE TABLE IF NOT EXISTS entities (
   updated_at timestamptz NOT NULL DEFAULT now()
 );
 
--- Trigger to keep fts and updated_at in sync for entities
+-- Trigger to keep updated_at in sync for entities
 CREATE OR REPLACE FUNCTION entities_before_write()
 RETURNS trigger AS $$
 BEGIN
   NEW.updated_at = now();
-  NEW.fts = CASE WHEN NEW.content_string IS NULL THEN NULL ELSE to_tsvector('english', NEW.content_string) END;
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
 
-DROP TRIGGER IF EXISTS entities_set_fts ON entities;
-CREATE TRIGGER entities_set_fts
-BEFORE INSERT OR UPDATE OF content ON entities
+DROP TRIGGER IF EXISTS entities_set_updated_at ON entities;
+CREATE TRIGGER entities_set_updated_at
+BEFORE UPDATE ON entities
 FOR EACH ROW EXECUTE FUNCTION entities_before_write();
 
 -- Indexes for entities
