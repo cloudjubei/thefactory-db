@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   db-e2e:
     image: pgvector/pgvector:pg16
@@ -23,7 +21,7 @@ services:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
       PGPASSWORD: password
-    entrypoint: ["/bin/bash", "-c"]
+    entrypoint: ['/bin/bash', '-c']
     command: |
       set -e
       until pg_isready -h db-e2e -p 5432 -U "$POSTGRES_USER"; do
@@ -35,7 +33,7 @@ services:
         psql -h db-e2e -U "$POSTGRES_USER" -d postgres -c 'CREATE DATABASE "thefactory-db"'
       echo "[db-init-e2e] ensuring vector extension..."
       psql -h db-e2e -U "$POSTGRES_USER" -d "thefactory-db" -c 'CREATE EXTENSION IF NOT EXISTS vector'
-    restart: "no"
+    restart: 'no'
 
 volumes:
   postgres_e2e_data:

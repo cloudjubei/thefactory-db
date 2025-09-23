@@ -195,18 +195,19 @@ CREATE TABLE IF NOT EXISTS entities (
   updated_at timestamptz NOT NULL DEFAULT now()
 );
 
--- Trigger to keep updated_at in sync for entities
+-- Trigger to keep fts and updated_at in sync for entities
 CREATE OR REPLACE FUNCTION entities_before_write()
 RETURNS trigger AS $$
 BEGIN
   NEW.updated_at = now();
+  NEW.fts = CASE WHEN NEW.content_string IS NULL THEN NULL ELSE to_tsvector('english', NEW.content_string) END;
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
 
-DROP TRIGGER IF EXISTS entities_set_updated_at ON entities;
-CREATE TRIGGER entities_set_updated_at
-BEFORE UPDATE ON entities
+DROP TRIGGER IF EXISTS entities_set_fts ON entities;
+CREATE TRIGGER entities_set_fts
+BEFORE INSERT OR UPDATE OF content ON entities
 FOR EACH ROW EXECUTE FUNCTION entities_before_write();
 
 -- Indexes for entities
