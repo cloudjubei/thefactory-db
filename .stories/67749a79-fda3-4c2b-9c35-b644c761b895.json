@@ -1,6 +1,6 @@
 {
   "id": "67749a79-fda3-4c2b-9c35-b644c761b895",
-  "status": "=",
+  "status": "-",
   "title": "Ongoing Improvements",
   "description": "Various ongoing improvements to the project",
   "features": [
@@ -46,15 +46,14 @@
     },
     {
       "id": "f018a399-a2fb-47f5-9990-b89fc7381097",
-      "status": "+",
+      "status": "-",
       "title": "Need to create an e2e tests using a real db under `tests/e2e`",
       "description": "First we need to explain to the user how to easily spin up a test database with docker compose that will be used for e2e tests.\nThen assuming the database is running, there need to be e2e tests for indexing and most importantly for hybrid-search - mirroring all the tests inside `tests` that would require to call `openDatabase`",
       "context": [],
       "createdAt": "2025-09-23T13:02:45.316Z",
-      "updatedAt": "2025-09-23T14:36:14.999Z",
-      "rejection": "When running `npm run test:e2e` no tests run and only this shows:\n\n\n> thefactory-db@0.2.0 test:e2e\n> cross-env RUN_E2E=1 DATABASE_URL=postgresql://user:***@localhost:55432/thefactory-db vitest run tests/e2e\n\n\n RUN  v1.6.1 /thefactory-db\n\n · tests/e2e/tokenizer.e2e.test.ts (2)\nnode(23053,0x17b467000) malloc: Double free of object 0x1371a7cc0\nnode(23053,0x17b467000) malloc: *** set a breakpoint in malloc_error_break to debug",
-      "blockers": [],
-      "completedAt": "2025-09-23T14:36:14.999Z"
+      "updatedAt": "2025-09-23T14:44:15.363Z",
+      "rejection": "When running `npm run test:e2e` they all seem to run at the same time, they should actually run sequentially - this is one of the errors that shows:\n\n\n ❯ tests/e2e/documents-indexing.e2e.test.ts (1) 1065ms\n   ❯ E2E: Documents Indexing (real DB) (1) 1065ms\n     ⠴ [ beforeAll ]\n     · add/get/update/delete/getBySrc/clear\n     ⠹ [ afterAll ]\n ❯ tests/e2e/entities-indexing.e2e.test.ts (1) 1064ms\n   ❯ E2E: Entities Indexing (real DB) (1) 1064ms\n     ⠴ [ beforeAll ]\n     · add/get/update/delete/match/clear\n     ⠹ [ afterAll ]\n ❯ tests/e2e/entities-hybrid.e2e.test.ts (1) 1065ms\n   ❯ E2E: Entities Hybrid Search (real DB) (1) 1065ms\n     ⠴ [ beforeAll ]\n     · hybrid search returns results and respects weights\n     ⠹ [ afterAll ]\n ✓ tests/e2e/documents-hybrid.e2e.test.ts (2) 1565ms\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯ Failed Suites 3 ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯\n\n FAIL  tests/e2e/documents-indexing.e2e.test.ts > E2E: Documents Indexing (real DB)\nerror: deadlock detected\n ❯ node_modules/pg/lib/client.js:545:17\n ❯ initSchema src/connection.ts:18:5\n     16| \n     17|   if (schemaSql) {\n     18|     await client.query(schemaSql);\n       |     ^\n     19|   }\n     20|   if (hybridSql) {\n ❯ Module.openPostgres src/connection.ts:35:5\n ❯ Module.openDatabase src/index.ts:195:14\n ❯ tests/e2e/documents-indexing.e2e.test.ts:12:10",
+      "blockers": []
     }
   ],
   "featureIdToDisplayIndex": {
