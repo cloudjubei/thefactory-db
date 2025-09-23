@@ -26,6 +26,7 @@ function createTestEmbeddingProvider() {
     automobile: [0.9, 0.1, 0, 0, 0, 0, 0, 0],
     vehicle: [0.6, 0.3, 0, 0, 0, 0, 0, 0],
     engine: [0, 1, 0, 0, 0, 0, 0, 0],
+    maintenance: [0, 0.5, 0.5, 0, 0, 0, 0, 0],
 
     // fruit domain
     banana: [0, 0, 1, 0, 0, 0, 0, 0],
@@ -204,12 +205,12 @@ function createMockDb() {
           if (filter.types) filtered = filtered.filter((d) => filter.types.includes(d.type))
           if (filter.projectIds) filtered = filtered.filter((d) => filter.projectIds.includes(d.projectId))
 
-          const q = (queryText || '').toLowerCase()
+          const queryKeywords = (queryText || '').toLowerCase().split(/\s+/).filter(Boolean)
+
           function keywordScore(d: Doc): number {
-            const contentHas = d.content.toLowerCase().includes(q)
-            const srcHas = d.src.toLowerCase().replace(/[^a-z0-9\s]+/g, ' ').includes(q)
-            // approximate SQL: 0.5 content + 0.5 src
-            return (contentHas ? 0.5 : 0) + (srcHas ? 0.5 : 0)
+            const docText = (d.content + ' ' + d.src).toLowerCase()
+            const hasAllKeywords = queryKeywords.every(kw => docText.includes(kw))
+            return hasAllKeywords ? 1 : 0
           }
 
           const scored = filtered.map((d) => {
@@ -231,7 +232,7 @@ function createMockDb() {
             }
           })
           scored.sort((a, b) => b.totalScore - a.totalScore)
-          return { rows: scored.slice(0, limit) }
+          return { rows: scored.filter(r => r.totalScore > 0).slice(0, limit) }
         }
         default:
           // for entities or others not used here, return empty
@@ -257,6 +258,7 @@ describe('Advanced Hybrid Search', () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
+    mockDb._docs.splice(0, mockDb._docs.length) // Clear documents before each test
     ;(openPostgres as unknown as any).mockResolvedValue(mockDb)
     ;(createLogger as unknown as any).mockReturnValue(mockLogger)
     ;(createLocalEmbeddingProvider as unknown as any).mockResolvedValue(testProvider)
@@ -341,5 +343,40 @@ describe('Advanced Hybrid Search', () => {
       const topSrcs = results.slice(0, 5).map((r) => r.src)
       expect(topSrcs.some((s) => s.includes('docs/') || s.includes('src/'))).toBe(true)
     }
+  })
+
+  it('Keyword list search: should match documents based on keyword presence', async () => {
+    const db = await openDatabase({ connectionString: 'test' })
+    const projectId = 'proj-keywords'
+
+    const d1 = await db.addDocument({ projectId, type: 'note', src: 'start.txt', content: 'car engine maintenance is important' })
+    const d2 = await db.addDocument({ projectId, type: 'note', src: 'middle.txt', content: 'Importance of car engine maintenance' })
+    const d3 = await db.addDocument({ projectId, type: 'note', src: 'end.txt', content: 'Regular maintenance for your car engine' })
+    const d4 = await db.addDocument({ projectId, type: 'note', src: 'no-match.txt', content: 'This is about gardening' })
+    const d5 = await db.addDocument({ projectId, type: 'note', src: 'partial.txt', content: 'car maintenance tips' })
+    const d6 = await db.addDocument({ projectId, type: 'note', src: 'semantic.txt', content: 'automobile motor upkeep' })
+
+    // Test with textWeight=1 (text-only search)
+    const resultsText = await db.searchDocuments({ query: 'car engine maintenance', projectIds: [projectId], textWeight: 1 })
+    const resultIdsText = resultsText.map(r => r.id)
+
+    expect(resultIdsText).toContain(d1.id)
+    expect(resultIdsText).toContain(d2.id)
+    expect(resultIdsText).toContain(d3.id)
+    expect(resultIdsText).not.toContain(d4.id)
+    expect(resultIdsText).not.toContain(d5.id)
+    expect(resultIdsText).not.toContain(d6.id)
+    expect(resultsText.length).toBe(3)
+
+    // Test with textWeight=0 (semantic-only search)
+    const resultsSemantic = await db.searchDocuments({ query: 'car engine maintenance', projectIds: [projectId], textWeight: 0 })
+    const resultIdsSemantic = resultsSemantic.map(r => r.id)
+    
+    expect(resultIdsSemantic).toContain(d6.id) // Semantic match should be here
+    expect(resultIdsSemantic).not.toContain(d4.id) // No match should not be here
+    expect(resultIdsSemantic.length).toBeGreaterThan(0)
+
+    const semanticRank = resultsSemantic.findIndex(r => r.id === d6.id)
+    expect(semanticRank).toBe(0) // Should be the top result
   })
 })
