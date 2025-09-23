@@ -319,7 +319,7 @@ const DATABASE_URL = process.env.DATABASE_URL || ''
       query: 'non existing keywords',
       projectIds: [projectId],
       textWeight: 1,
-      limit: 3,
+      limit: 2,
     })
     const resultIds = results.map((r) => r.id)
 

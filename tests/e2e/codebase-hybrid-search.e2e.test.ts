@@ -97,13 +97,13 @@ function collectProjectFiles(root: string): string[] {
       'docs/HYBRIDSEARCH.md',
       'tests/e2e/entities-hybrid.e2e.test.ts',
       'scripts/example.ts',
-      'tests/tokenizer.test.ts',
       'src/index.ts',
-      'tests/hybrid-search-advanced.test.ts',
       'tests/e2e/documents-hybrid.e2e.test.ts',
+      'tests/hybrid-search-advanced.test.ts',
+      'tests/tokenizer.test.ts',
       'scripts/test.ts',
-      'tests/utils.test.ts',
-      'src/utils/json.ts',
+      'tests/e2e/entities-hybrid-advanced.e2e.test.ts',
+      'tests/e2e/codebase-hybrid-search.e2e.test.ts',
     ])
   })
 
@@ -112,15 +112,15 @@ function collectProjectFiles(root: string): string[] {
     const srcs = res.map((r) => r.src)
     expect(srcs).toEqual([
       'docs/HYBRIDSEARCH.md',
-      'scripts/example.ts',
       'tests/e2e/codebase-hybrid-search.e2e.test.ts',
+      'scripts/example.ts',
       'src/index.ts',
       'tests/hybrid-search-advanced.test.ts',
-      'docs/FILE_ORGANISATION.md',
       'tests/connection.test.ts',
-      'tests/e2e/documents-hybrid-advanced.e2e.test.ts',
       'tests/e2e/entities-hybrid-advanced.e2e.test.ts',
+      'tests/e2e/documents-hybrid-advanced.e2e.test.ts',
       'src/utils.ts',
+      'tests/e2e/entities-hybrid.e2e.test.ts',
     ])
   })
 
@@ -131,13 +131,13 @@ function collectProjectFiles(root: string): string[] {
       'README.md',
       'tests/e2e/codebase-hybrid-search.e2e.test.ts',
       'docs/FILE_ORGANISATION.md',
-      'src/index.ts',
       'docs/TESTING_E2E.md',
+      'src/index.ts',
+      'scripts/example.ts',
       'tests/hybrid-search-advanced.test.ts',
       'docs/CODE_STANDARD.md',
-      'scripts/example.ts',
       'docs/HYBRIDSEARCH.md',
-      'tests/e2e/entities-hybrid-advanced.e2e.test.ts',
+      'docker-compose.e2e.yml',
     ])
   })
   it('w=0 (semantic-only): "pgvector" should find files related to vector databases', async () => {
@@ -146,13 +146,13 @@ function collectProjectFiles(root: string): string[] {
     expect(srcs).toEqual([
       'tests/hybrid-search-advanced.test.ts',
       'docker-compose.yml',
-      'README.md',
       'docs/HYBRIDSEARCH.md',
+      'README.md',
       'docker-compose.e2e.yml',
       'src/connection.ts',
-      'src/index.ts',
       'tests/embeddings.test.ts',
-      'src/utils/json.ts',
+      'src/index.ts',
+      'tests/embeddings-options.test.ts',
       'tests/connection.test.ts',
     ])
   })
