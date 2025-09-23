@@ -27,6 +27,15 @@ Connection used by tests:
 postgresql://user:password@localhost:55432/thefactory-db
 ```
 
+Important: E2E tests run sequentially (single process) to avoid database initialization races and deadlocks. The `npm run test:e2e` script enforces this (passes `--threads=false` to Vitest). If you run Vitest manually, ensure you also disable threads for E2E runs.
+
+Run a single E2E file, if desired:
+
+```bash
+RUN_E2E=1 DATABASE_URL=postgresql://user:password@localhost:55432/thefactory-db \
+  npx vitest run tests/e2e/documents-hybrid.e2e.test.ts --threads=false
+```
+
 ## What’s covered
 
 - Documents: indexing CRUD + hybrid search
