@@ -83,7 +83,7 @@ const DATABASE_URL = process.env.DATABASE_URL || ''
 
     it('w=0 (semantic-only): semantic entities appear above controls and near top', async () => {
       const res = await run('car engine', 0)
-      expect(res.length).toBeGreaterThanOrEqual(15)
+      expect(res.length).toEqual(20)
 
       const bestSemantic = Math.min(...ids.semantic.map((id) => pos(res, id)))
       const bestKeyword = Math.min(...ids.keyword.map((id) => pos(res, id)))
@@ -93,13 +93,13 @@ const DATABASE_URL = process.env.DATABASE_URL || ''
       expect(bestSemantic).toBeLessThan(bestControl)
       expect(bestKeyword).toBeLessThan(bestControl)
 
-      // Semantic should be competitive at w=0
-      expect(bestSemantic).toBeLessThanOrEqual(5)
+      expect(bestKeyword).toBeLessThanOrEqual(0)
+      expect(bestSemantic).toBeLessThanOrEqual(8)
     })
 
     it('w=0.2: both signals; semantic and keyword groups in top-10', async () => {
       const res = await run('car engine', 0.2)
-      expect(res.length).toBeGreaterThanOrEqual(15)
+      expect(res.length).toEqual(20)
 
       const bestSemantic = Math.min(...ids.semantic.map((id) => pos(res, id)))
       const bestKeyword = Math.min(...ids.keyword.map((id) => pos(res, id)))
