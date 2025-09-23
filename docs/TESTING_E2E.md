@@ -7,7 +7,7 @@ These tests run against a real PostgreSQL instance with the pgvector extension t
 1) Start the test database (isolated stack, non-conflicting port):
 
 ```bash
-docker compose -f tests/e2e/docker-compose.e2e.yml up -d db-e2e db-init-e2e
+docker compose -f docker-compose.e2e.yml up -d db-e2e db-init-e2e
 ```
 
 - `db-e2e` runs PostgreSQL with pgvector and exposes port 55432 on your host.
@@ -41,15 +41,15 @@ Tests live under `tests/e2e/`.
 - Re-run init only:
 
 ```bash
-docker compose -f tests/e2e/docker-compose.e2e.yml run --rm db-init-e2e
+docker compose -f docker-compose.e2e.yml run --rm db-init-e2e
 ```
 
 - Tear down everything and remove volumes (reset all data):
 
 ```bash
-docker compose -f tests/e2e/docker-compose.e2e.yml down -v
+docker compose -f docker-compose.e2e.yml down -v
 # then start again
-docker compose -f tests/e2e/docker-compose.e2e.yml up -d db-e2e db-init-e2e
+docker compose -f docker-compose.e2e.yml up -d db-e2e db-init-e2e
 ```
 
 ## Troubleshooting

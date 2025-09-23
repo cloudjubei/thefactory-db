@@ -1,6 +1,6 @@
 {
   "id": "67749a79-fda3-4c2b-9c35-b644c761b895",
-  "status": "=",
+  "status": "-",
   "title": "Ongoing Improvements",
   "description": "Various ongoing improvements to the project",
   "features": [
@@ -46,20 +46,14 @@
     },
     {
       "id": "f018a399-a2fb-47f5-9990-b89fc7381097",
-      "status": "+",
+      "status": "-",
       "title": "Need to create an e2e tests using a real db under `tests/e2e`",
-      "description": "First we need to explain to the user how to easily spin up a test database with docker compose that will be used for e2e tests.\nThen assuming the database is running, there need to be e2e tests for embedding, tokenization, indexing and most importantly for hybrid-search - mirroring most of the tests inside `tests`",
-      "context": [
-        "docker-compose.yml",
-        "package.json",
-        "README.md",
-        "docs/FILE_ORGANISATION.md"
-      ],
+      "description": "First we need to explain to the user how to easily spin up a test database with docker compose that will be used for e2e tests.\nThen assuming the database is running, there need to be e2e tests for indexing and most importantly for hybrid-search - mirroring all the tests inside `tests` that would require to call `openDatabase`",
+      "context": [],
       "createdAt": "2025-09-23T13:02:45.316Z",
-      "updatedAt": "2025-09-23T13:27:08.554Z",
-      "rejection": "The @docs/TESTING_E2E.md needs to talk about spinning up a testing db - there should be a separate docker-compose.yml or however it needs to be setup to make this easy (it needs to not clash with the setup in the regular @docker-compose.yml )\nThere also needs to be a single `npm run test:e2e` that will handle everything - in @package.json  .\nEssentially the user should just be required to call `docker compose` and then after it's loaded the database, should immediately be able to call `npm run test:e2e` . The DB connection string can be hardcoded - we want the user to have to do as few steps as possible.\n@README.md must be updated to include information about e2e tests and @docs/FILE_ORGANISATION.md should just have them succinctly mentioned.",
-      "blockers": [],
-      "completedAt": "2025-09-23T13:27:08.554Z"
+      "updatedAt": "2025-09-23T13:51:47.330Z",
+      "rejection": "When running `npm run test:e2e` no tests run and only this shows:\n\n\n> thefactory-db@0.2.0 test:e2e\n> cross-env RUN_E2E=1 DATABASE_URL=postgresql://user:***@localhost:55432/thefactory-db vitest run tests/e2e\n\n\n RUN  v1.6.1 /thefactory-db\n\n · tests/e2e/tokenizer.e2e.test.ts (2)\nnode(23053,0x17b467000) malloc: Double free of object 0x1371a7cc0\nnode(23053,0x17b467000) malloc: *** set a breakpoint in malloc_error_break to debug",
+      "blockers": []
     }
   ],
   "featureIdToDisplayIndex": {

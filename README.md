@@ -10,8 +10,8 @@ Database connection is provided via a Postgres connection string.
 
 For an overview of the project structure and coding standards, please refer to the following documents:
 
-- File and Tooling Organisation (docs/FILE_ORGANISATION.md)
-- Code Standard and Architecture Guide (docs/CODE_STANDARD.md)
+- [File and Tooling Organisation](docs/FILE_ORGANISATION.md)
+- [Code Standard and Architecture Guide](docs/CODE_STANDARD.md)
 
 ## Testing
 
@@ -20,29 +20,9 @@ We are committed to maintaining a high standard of code quality and reliability.
 Important: Do not modify code just to make tests pass. The implementation must remain sensible and correct; tests should reveal issues, not enforce hacks. All inputs to the public API are validated at runtime (see `src/validation.ts`), and tests assert that malformed inputs are rejected.
 
 - Unit tests live under `tests/` and mock external dependencies for speed and determinism.
-- End-to-End tests live under `tests/e2e/` and run against a real PostgreSQL database with `pgvector`.
+- End-to-End tests live under `tests/e2e/` and run against a real PostgreSQL database with `pgvector`. For running e2e tests check out [the docs](docs/TESTING_E2E.md)
 
-For detailed guidance on our testing philosophy, tools, validation expectations, and best practices, please refer to our Testing Guidelines (docs/TESTING.md).
-
-### E2E Tests (real DB)
-
-Quick start:
-
-1) Start the dedicated E2E database (isolated stack that won’t clash with `docker-compose.yml`):
-
-```bash
-docker compose -f tests/e2e/docker-compose.e2e.yml up -d db-e2e db-init-e2e
-```
-
-2) Run the tests:
-
-```bash
-npm run test:e2e
-```
-
-This uses a hardcoded connection string pointing to the E2E DB (`postgresql://user:password@localhost:55432/thefactory-db`).
-
-See docs/TESTING_E2E.md for more details, troubleshooting, and reset instructions.
+For detailed guidance on our testing philosophy, tools, validation expectations, and best practices, please refer to our [Testing Guidelines](docs/TESTING.md).
 
 ## Setup
 
@@ -50,16 +30,19 @@ To use `thefactory-db`, you need a running PostgreSQL instance with the `pgvecto
 
 ### Option 1: Local PostgreSQL Installation (from scratch)
 
-1) Install PostgreSQL
+1. Install PostgreSQL
+
 - macOS: `brew install postgresql@16` (or use the official installer)
 - Windows: Download and run the installer from postgresql.org
 - Linux (Debian/Ubuntu): `sudo apt-get install -y postgresql postgresql-contrib`
 
-2) Start PostgreSQL
+2. Start PostgreSQL
+
 - macOS/Linux (service): `sudo service postgresql start` (or use your OS service manager)
 - Windows: The installer starts the service automatically
 
-3) Create the database and user
+3. Create the database and user
+
 - Open the PostgreSQL shell as an admin user (often `postgres`):
   - Linux/macOS: `sudo -u postgres psql`
   - Windows: Run `psql` from the Start Menu (as the superuser you set during install)
@@ -71,7 +54,8 @@ CREATE DATABASE "thefactory-db" OWNER "user";
 GRANT ALL PRIVILEGES ON DATABASE "thefactory-db" TO "user";
 ```
 
-4) Install and enable the pgvector extension
+4. Install and enable the pgvector extension
+
 - Install pgvector following: https://github.com/pgvector/pgvector
 - Connect to your new database and enable the extension:
 
@@ -83,7 +67,8 @@ psql -U user -d "thefactory-db" -h 127.0.0.1 -p 5432 -W
 CREATE EXTENSION IF NOT EXISTS vector;
 ```
 
-5) Connection URL
+5. Connection URL
+
 - Your connection string will be:
 
 ```
@@ -98,7 +83,7 @@ Tip: Because the database name contains a hyphen, you must always quote it in SQ
 
 This repo includes a ready-to-use Docker Compose setup with `pgvector` and a bootstrap job that ensures the target database exists even if a persistent volume already exists.
 
-1) Start the database and the bootstrap job
+1. Start the database and the bootstrap job
 
 ```bash
 docker compose up -d db db-init
@@ -111,13 +96,14 @@ docker compose up -d db db-init
 docker compose run --rm db-init
 ```
 
-2) Connection URL
+2. Connection URL
 
 ```
 postgresql://user:password@localhost:5432/thefactory-db
 ```
 
-3) Troubleshooting / resetting
+3. Troubleshooting / resetting
+
 - If you previously started Postgres with a volume that did not have the database, `db-init` will create it for you.
 - To completely reset the database (including deleting all data):
 
@@ -161,9 +147,10 @@ console.log(results)
 ```
 
 The `openDatabase` function will:
-1) Connect to your PostgreSQL database
-2) Initialize the required schema and functions (executed from embedded SQL)
-3) Ensure the `vector` and `pgcrypto` extensions are enabled (idempotent)
+
+1. Connect to your PostgreSQL database
+2. Initialize the required schema and functions (executed from embedded SQL)
+3. Ensure the `vector` and `pgcrypto` extensions are enabled (idempotent)
 
 The returned `db` object provides an API for adding/searching documents and entities, as well as a `raw()` method for direct `pg.Client` access.
 
