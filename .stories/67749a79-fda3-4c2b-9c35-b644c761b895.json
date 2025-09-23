@@ -105,6 +105,16 @@
       "blockers": [],
       "createdAt": "2025-09-23T18:11:34.201Z",
       "updatedAt": "2025-09-23T18:11:34.201Z"
+    },
+    {
+      "id": "8654fddf-1de5-4e81-a5b6-2480ac2e84ef",
+      "status": "-",
+      "title": "Augment the existing hybrid search tests",
+      "description": "All the tests that use hybrid search (both e2e and normal) need to be updated to include cases where a list of keywords is presented.\nA test case needs to show having matches at the start of the list, another in the middle, another at the end, another no matches, and yet another having a sentence that doesn't match in terms of keywords but semantically does.",
+      "context": [],
+      "blockers": [],
+      "createdAt": "2025-09-23T22:07:13.910Z",
+      "updatedAt": "2025-09-23T22:07:13.910Z"
     }
   ],
   "featureIdToDisplayIndex": {
@@ -116,7 +126,8 @@
     "bd58e850-de61-4e54-adba-9a7b49e76f29": 6,
     "94a33d4a-7698-4962-86cd-cb3a19d7f664": 7,
     "734c141d-83b8-4a4c-8ed5-75ef2d5ea874": 8,
-    "4016b214-feaf-41a0-b56c-f61932f3250c": 9
+    "4016b214-feaf-41a0-b56c-f61932f3250c": 9,
+    "8654fddf-1de5-4e81-a5b6-2480ac2e84ef": 10
   },
   "createdAt": "2025-09-19T01:04:36.087Z",
   "updatedAt": "2025-09-19T01:04:36.087Z"
