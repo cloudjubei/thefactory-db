@@ -1,7 +1,5 @@
 import { pipeline, env } from '@xenova/transformers'
 
-env.useWebWorker = false
-
 export interface EmbeddingProvider {
   readonly name: string
   readonly dimension: number

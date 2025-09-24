@@ -248,7 +248,12 @@ RETURNS TABLE (
 )
 LANGUAGE sql AS
 $$
-WITH base_documents AS (
+WITH tokens AS (
+  SELECT token
+  FROM unnest(regexp_split_to_array(trim(coalesce(query_text, '')), E'\\s+')) AS token
+  WHERE length(token) > 0
+),
+base_documents AS (
   SELECT *
   FROM documents
   WHERE (
@@ -267,28 +272,29 @@ WITH base_documents AS (
     )
   )
 ),
+token_scores AS (
+  SELECT d.id,
+         MAX(
+           COALESCE(ts_rank_cd(d.fts, websearch_to_tsquery('english', t.token)), 0.0) * 0.5 +
+           COALESCE(
+             ts_rank_cd(
+               to_tsvector('simple', regexp_replace(d.src, '[^a-zA-Z0-9]+', ' ', 'g')),
+               websearch_to_tsquery('simple', t.token)
+             ),
+             0.0
+           ) * 1.5
+         ) AS token_max_score
+  FROM base_documents d
+  CROSS JOIN tokens t
+  GROUP BY d.id
+),
 full_text AS (
-  SELECT id,
+  SELECT ts.id,
          row_number() OVER (
-           ORDER BY (
-             COALESCE(ts_rank_cd(fts, websearch_to_tsquery('english', query_text)), 0.0) * 0.5 +
-             COALESCE(
-               ts_rank_cd(
-                 to_tsvector('simple', regexp_replace(src, '[^a-zA-Z0-9]+', ' ', 'g')),
-                 websearch_to_tsquery('simple', query_text)
-               ),
-               0.0
-             ) * 1.5
-           ) DESC,
-           id ASC
+           ORDER BY ts.token_max_score DESC, ts.id ASC
          ) AS rank_ix
-  FROM base_documents
-  WHERE (
-    (fts @@ websearch_to_tsquery('english', query_text))
-    OR (
-      to_tsvector('simple', regexp_replace(src, '[^a-zA-Z0-9]+', ' ', 'g')) @@ websearch_to_tsquery('simple', query_text)
-    )
-  )
+  FROM token_scores ts
+  WHERE ts.token_max_score > 0
   LIMIT LEAST(match_count, 30) * 2
 ),
 semantic AS (
@@ -318,18 +324,10 @@ SELECT d.id,
        scored.rrf_score,
        scored.rrf_score / ((full_text_weight + semantic_weight) / (rrf_k + 1)::float) AS similarity,
        CASE WHEN d.embedding IS NULL THEN NULL ELSE 1 - (d.embedding <-> query_embedding)::float END AS cosine_similarity,
-       (
-         COALESCE(ts_rank_cd(d.fts, websearch_to_tsquery('english', query_text)), 0.0) * 0.5 +
-         COALESCE(
-           ts_rank_cd(
-             to_tsvector('simple', regexp_replace(d.src, '[^a-zA-Z0-9]+', ' ', 'g')),
-             websearch_to_tsquery('simple', query_text)
-           ),
-           0.0
-         ) * 1.5
-       ) AS keyword_score
+       COALESCE(ts.token_max_score, 0.0) AS keyword_score
 FROM scored
 JOIN base_documents d ON d.id = scored.id
+LEFT JOIN token_scores ts ON ts.id = d.id
 ORDER BY similarity DESC, d.id ASC
 LIMIT match_count;
 $$;
@@ -359,7 +357,12 @@ RETURNS TABLE (
 )
 LANGUAGE sql AS
 $$
-WITH base_entities AS (
+WITH tokens AS (
+  SELECT token
+  FROM unnest(regexp_split_to_array(trim(coalesce(query_text, '')), E'\\s+')) AS token
+  WHERE length(token) > 0
+),
+base_entities AS (
   SELECT *
   FROM entities
   WHERE (
@@ -378,13 +381,20 @@ WITH base_entities AS (
     )
   )
 ),
+token_scores AS (
+  SELECT e.id,
+         MAX(COALESCE(ts_rank_cd(e.fts, websearch_to_tsquery('english', t.token)), 0.0)) AS token_max_score
+  FROM base_entities e
+  CROSS JOIN tokens t
+  GROUP BY e.id
+),
 full_text AS (
-  SELECT id,
+  SELECT ts.id,
          row_number() OVER (
-           ORDER BY ts_rank_cd(fts, websearch_to_tsquery(query_text)) DESC, id ASC
+           ORDER BY ts.token_max_score DESC, ts.id ASC
          ) AS rank_ix
-  FROM base_entities
-  WHERE fts @@ websearch_to_tsquery(query_text)
+  FROM token_scores ts
+  WHERE ts.token_max_score > 0
   LIMIT LEAST(match_count, 30) * 2
 ),
 semantic AS (
@@ -413,9 +423,10 @@ SELECT e.id,
        scored.rrf_score,
        scored.rrf_score / ((full_text_weight + semantic_weight) / (rrf_k + 1)::float) AS similarity,
        CASE WHEN e.embedding IS NULL THEN NULL ELSE 1 - (e.embedding <-> query_embedding)::float END AS cosine_similarity,
-       ts_rank_cd(e.fts, websearch_to_tsquery(query_text)) AS keyword_score
+       COALESCE(ts.token_max_score, 0.0) AS keyword_score
 FROM scored
 JOIN base_entities e ON e.id = scored.id
+LEFT JOIN token_scores ts ON ts.id = e.id
 ORDER BY similarity DESC, e.id ASC
 LIMIT match_count;
 $$;
