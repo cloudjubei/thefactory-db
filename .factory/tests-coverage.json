@@ -1,10 +1,91 @@
 {
-  "status": "error",
-  "message": "Failed to locate coverage JSON (coverage-final.json). Ensure @vitest/coverage-v8 is installed and reporters include json.",
-  "files": {},
-  "debug": {
-    "exit_code": 1,
-    "stdout": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n      Coverage enabled with v8\n\n ✓ tests/connection.test.ts (3 tests) 8ms\n ✓ tests/validation.test.ts (12 tests) 8ms\n ✓ tests/logger.test.ts (7 tests) 4ms\n ✓ tests/tokenizer.test.ts (3 tests) 4ms\n ✓ tests/utils.test.ts (4 tests) 2ms\n ✓ tests/json-utils.test.ts (5 tests) 2ms\n ✓ tests/index-validation.test.ts (10 tests) 9ms\n ❯ tests/index.test.ts (18 tests | 2 failed) 20ms\n   ✓ TheFactoryDb > Entities > addEntity should insert a new entity 3ms\n   ✓ TheFactoryDb > Entities > getEntityById should return an entity if found 0ms\n   ✓ TheFactoryDb > Entities > getEntityById should return undefined if not found 0ms\n   ✓ TheFactoryDb > Entities > updateEntity should update an existing entity 0ms\n   ✓ TheFactoryDb > Entities > deleteEntity should return true if deleted 0ms\n   × TheFactoryDb > Entities > searchEntities should perform a search 12ms\n     → expected \"spy\" to be called with arguments: [ 'FAKE_SQL', …(1) ]\u001b[90m\n\nReceived: \n\n\u001b[1m  1st spy call:\n\n\u001b[22m\u001b[33m@@ -5,8 +5,8 @@\u001b[90m\n\u001b[2m      \"[0.1,0.2,0.3]\",\u001b[22m\n\u001b[2m      20,\u001b[22m\n\u001b[2m      \"{\\\"projectIds\\\":[\\\"p1\\\"]}\",\u001b[22m\n\u001b[2m      0.5,\u001b[22m\n\u001b[2m      0.5,\u001b[22m\n\u001b[32m-     50,\u001b[90m\n\u001b[31m+     20,\u001b[90m\n\u001b[2m    ],\u001b[22m\n\u001b[2m  ]\u001b[22m\n\u001b[39m\u001b[90m\n\nNumber of calls: \u001b[1m1\u001b[22m\n\u001b[39m\n   ✓ TheFactoryDb > Entities > matchEntities should find entities by content 1ms\n   ✓ TheFactoryDb > Entities > clearEntities should clear all entities 0ms\n   ✓ TheFactoryDb > Documents > addDocument should insert a new document 0ms\n   ✓ TheFactoryDb > Documents > getDocumentById should return a document if found 0ms\n   ✓ TheFactoryDb > Documents > getDocumentById should return undefined if not found 0ms\n   ✓ TheFactoryDb > Documents > updateDocument should update an existing document 0ms\n   ✓ TheFactoryDb > Documents > deleteDocument should return true if deleted 0ms\n   × TheFactoryDb > Documents > searchDocuments should perform a search 1ms\n     → expected \"spy\" to be called with arguments: [ 'FAKE_SQL', …(1) ]\u001b[90m\n\nReceived: \n\n\u001b[1m  1st spy call:\n\n\u001b[22m\u001b[33m@@ -5,8 +5,8 @@\u001b[90m\n\u001b[2m      \"[0.1,0.2,0.3]\",\u001b[22m\n\u001b[2m      20,\u001b[22m\n\u001b[2m      \"{\\\"projectIds\\\":[\\\"p1\\\"]}\",\u001b[22m\n\u001b[2m      0.5,\u001b[22m\n\u001b[2m      0.5,\u001b[22m\n\u001b[32m-     50,\u001b[90m\n\u001b[31m+     20,\u001b[90m\n\u001b[2m    ],\u001b[22m\n\u001b[2m  ]\u001b[22m\n\u001b[39m\u001b[90m\n\nNumber of calls: \u001b[1m1\u001b[22m\n\u001b[39m\n   ✓ TheFactoryDb > Documents > matchDocuments should find documents by filters 0ms\n   ✓ TheFactoryDb > Documents > clearDocuments should clear documents by project 0ms\n   ✓ TheFactoryDb > close should end the database connection 0ms\n   ✓ TheFactoryDb > raw should return the raw client 0ms\n ❯ tests/hybrid-search-advanced.test.ts (3 tests | 2 failed) 64ms\n   × Advanced Hybrid Search > Non-code docs: title-only vs content-only vs semantic-only across weights 11ms\n     → expected 2 to be greater than or equal to 3\n   ✓ Advanced Hybrid Search > Project files ingestion: can search across repository files for hybrid-related queries 44ms\n   × Advanced Hybrid Search > Keyword list search: should match documents based on keyword presence 7ms\n     → expected 4 to be +0 // Object.is equality\n ↓ tests/e2e/documents-hybrid.e2e.test.ts (2 tests | 2 skipped)\n ↓ tests/e2e/documents-hybrid-advanced.e2e.test.ts (9 tests | 9 skipped)\n ↓ tests/e2e/codebase-hybrid-search.e2e.test.ts (5 tests | 5 skipped)\n ↓ tests/e2e/documents-indexing.e2e.test.ts (1 test | 1 skipped)\n ↓ tests/e2e/entities-hybrid-advanced.e2e.test.ts (9 tests | 9 skipped)\n ↓ tests/e2e/entities-indexing.e2e.test.ts (1 test | 1 skipped)\n ↓ tests/e2e/entities-hybrid.e2e.test.ts (2 tests | 2 skipped)\n ↓ tests/e2e/updates-and-fts.e2e.test.ts (2 tests | 2 skipped)\n\n Test Files  4 failed | 7 passed | 8 skipped (19)\n      Tests  4 failed | 61 passed | 31 skipped (96)\n   Start at  03:14:45\n   Duration  1.24s (transform 453ms, setup 0ms, collect 3.12s, tests 121ms, environment 3ms, prepare 1.60s)\n\n % Coverage report from v8\n----------------|---------|----------|---------|---------|-------------------\nFile            | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s \n----------------|---------|----------|---------|---------|-------------------\nAll files       |   78.93 |    94.33 |   92.85 |   78.93 |                   \n src            |     100 |     97.6 |     100 |     100 |                   \n  connection.ts |     100 |      100 |     100 |     100 |                   \n  logger.ts     |     100 |      100 |     100 |     100 |                   \n  utils.ts      |     100 |      100 |     100 |     100 |                   \n  validation.ts |     100 |    97.08 |     100 |     100 | 75,85-86          \n src/utils      |   55.62 |    82.35 |   77.77 |   55.62 |                   \n  embeddings.ts |    3.38 |      100 |       0 |    3.38 | 14-86             \n  json.ts       |   91.37 |    85.18 |     100 |   91.37 | 19,29-30,74,82    \n  tokenizer.ts  |      75 |    71.42 |      80 |      75 | 50,54-57,82-90    \n----------------|---------|----------|---------|---------|-------------------\n",
-    "stderr": "\n⎯⎯⎯⎯⎯⎯ Failed Suites 2 ⎯⎯⎯⎯⎯⎯⎯\n\n FAIL  tests/embeddings-options.test.ts [ tests/embeddings-options.test.ts ]\nError: [vitest] No \"env\" export is defined on the \"@xenova/transformers\" mock. Did you forget to return it from \"vi.mock\"?\nIf you need to partially mock a module, you can use \"importOriginal\" helper inside:\n\nvi\u001b[33m.\u001b[39m\u001b[34mmock\u001b[39m(\u001b[35mimport\u001b[39m(\u001b[32m\"@xenova/transformers\"\u001b[39m)\u001b[33m,\u001b[39m \u001b[35masync\u001b[39m (importOriginal) \u001b[33m=>\u001b[39m {\n  \u001b[35mconst\u001b[39m actual \u001b[33m=\u001b[39m \u001b[35mawait\u001b[39m \u001b[34mimportOriginal\u001b[39m()\n  \u001b[35mreturn\u001b[39m {\n    \u001b[33m...\u001b[39mactual\u001b[33m,\u001b[39m\n    \u001b[90m// your mocked methods\u001b[39m\n  }\n})\n\n ❯ src/utils/embeddings.ts:3:1\n      1| import { pipeline, env } from '@xenova/transformers'\n      2| \n      3| env.useWebWorker = false\n       | ^\n      4| \n      5| export interface EmbeddingProvider {\n ❯ tests/embeddings-options.test.ts:7:1\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/6]⎯\n\n FAIL  tests/embeddings.test.ts [ tests/embeddings.test.ts ]\nError: [vitest] No \"env\" export is defined on the \"@xenova/transformers\" mock. Did you forget to return it from \"vi.mock\"?\nIf you need to partially mock a module, you can use \"importOriginal\" helper inside:\n\nvi\u001b[33m.\u001b[39m\u001b[34mmock\u001b[39m(\u001b[35mimport\u001b[39m(\u001b[32m\"@xenova/transformers\"\u001b[39m)\u001b[33m,\u001b[39m \u001b[35masync\u001b[39m (importOriginal) \u001b[33m=>\u001b[39m {\n  \u001b[35mconst\u001b[39m actual \u001b[33m=\u001b[39m \u001b[35mawait\u001b[39m \u001b[34mimportOriginal\u001b[39m()\n  \u001b[35mreturn\u001b[39m {\n    \u001b[33m...\u001b[39mactual\u001b[33m,\u001b[39m\n    \u001b[90m// your mocked methods\u001b[39m\n  }\n})\n\n ❯ src/utils/embeddings.ts:3:1\n      1| import { pipeline, env } from '@xenova/transformers'\n      2| \n      3| env.useWebWorker = false\n       | ^\n      4| \n      5| export interface EmbeddingProvider {\n ❯ tests/embeddings.test.ts:18:1\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/6]⎯\n\n\n⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯\n\n FAIL  tests/hybrid-search-advanced.test.ts > Advanced Hybrid Search > Non-code docs: title-only vs content-only vs semantic-only across weights\nAssertionError: expected 2 to be greater than or equal to 3\n ❯ tests/hybrid-search-advanced.test.ts:299:26\n    297|     // - D1 (content includes 'car') should consistently rank very hig…\n    298|     resultsByW.forEach((res, idx) => {\n    299|       expect(res.length).toBeGreaterThanOrEqual(3)\n       |                          ^\n    300|       expect(pos(res, d1.id)).toBeLessThanOrEqual(1) // in top-2\n    301|     })\n ❯ tests/hybrid-search-advanced.test.ts:298:16\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/6]⎯\n\n FAIL  tests/hybrid-search-advanced.test.ts > Advanced Hybrid Search > Keyword list search: should match documents based on keyword presence\nAssertionError: expected 4 to be +0 // Object.is equality\n\n\u001b[32m- Expected\u001b[39m\n\u001b[31m+ Received\u001b[39m\n\n\u001b[32m- 0\u001b[39m\n\u001b[31m+ 4\u001b[39m\n\n ❯ tests/hybrid-search-advanced.test.ts:380:26\n    378| \n    379|     const semanticRank = resultsSemantic.findIndex(r => r.id === d6.id)\n    380|     expect(semanticRank).toBe(0) // Should be the top result\n       |                          ^\n    381|   })\n    382| })\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/6]⎯\n\n FAIL  tests/index.test.ts > TheFactoryDb > Entities > searchEntities should perform a search\nAssertionError: expected \"spy\" to be called with arguments: [ 'FAKE_SQL', …(1) ]\u001b[90m\n\nReceived: \n\n\u001b[1m  1st spy call:\n\n\u001b[22m\u001b[33m@@ -5,8 +5,8 @@\u001b[90m\n\u001b[2m      \"[0.1,0.2,0.3]\",\u001b[22m\n\u001b[2m      20,\u001b[22m\n\u001b[2m      \"{\\\"projectIds\\\":[\\\"p1\\\"]}\",\u001b[22m\n\u001b[2m      0.5,\u001b[22m\n\u001b[2m      0.5,\u001b[22m\n\u001b[32m-     50,\u001b[90m\n\u001b[31m+     20,\u001b[90m\n\u001b[2m    ],\u001b[22m\n\u001b[2m  ]\u001b[22m\n\u001b[39m\u001b[90m\n\nNumber of calls: \u001b[1m1\u001b[22m\n\u001b[39m\n ❯ tests/index.test.ts:134:34\n    132| \n    133|       expect(mockEmbeddingProvider.embed).toHaveBeenCalledWith('test')\n    134|       expect(mockDbClient.query).toHaveBeenCalledWith('FAKE_SQL', [\n       |                                  ^\n    135|         'test',\n    136|         '[0.1,0.2,0.3]',\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/6]⎯\n\n FAIL  tests/index.test.ts > TheFactoryDb > Documents > searchDocuments should perform a search\nAssertionError: expected \"spy\" to be called with arguments: [ 'FAKE_SQL', …(1) ]\u001b[90m\n\nReceived: \n\n\u001b[1m  1st spy call:\n\n\u001b[22m\u001b[33m@@ -5,8 +5,8 @@\u001b[90m\n\u001b[2m      \"[0.1,0.2,0.3]\",\u001b[22m\n\u001b[2m      20,\u001b[22m\n\u001b[2m      \"{\\\"projectIds\\\":[\\\"p1\\\"]}\",\u001b[22m\n\u001b[2m      0.5,\u001b[22m\n\u001b[2m      0.5,\u001b[22m\n\u001b[32m-     50,\u001b[90m\n\u001b[31m+     20,\u001b[90m\n\u001b[2m    ],\u001b[22m\n\u001b[2m  ]\u001b[22m\n\u001b[39m\u001b[90m\n\nNumber of calls: \u001b[1m1\u001b[22m\n\u001b[39m\n ❯ tests/index.test.ts:250:34\n    248| \n    249|       expect(mockEmbeddingProvider.embed).toHaveBeenCalledWith('test')\n    250|       expect(mockDbClient.query).toHaveBeenCalledWith('FAKE_SQL', [\n       |                                  ^\n    251|         'test',\n    252|         '[0.1,0.2,0.3]',\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/6]⎯\n\n"
-  }
+  "status": "ok",
+  "files": {
+    "src/connection.ts": {
+      "pct_statements": 100,
+      "pct_branch": 100,
+      "pct_functions": 100,
+      "pct_lines": 100,
+      "uncovered_lines": []
+    },
+    "src/logger.ts": {
+      "pct_statements": 100,
+      "pct_branch": 100,
+      "pct_functions": 100,
+      "pct_lines": 100,
+      "uncovered_lines": []
+    },
+    "src/utils.ts": {
+      "pct_statements": 100,
+      "pct_branch": 100,
+      "pct_functions": 100,
+      "pct_lines": 100,
+      "uncovered_lines": []
+    },
+    "src/validation.ts": {
+      "pct_statements": 100,
+      "pct_branch": 97.0873786407767,
+      "pct_functions": 100,
+      "pct_lines": 100,
+      "uncovered_lines": []
+    },
+    "src/utils/embeddings.ts": {
+      "pct_statements": 84.48275862068965,
+      "pct_branch": 90.47619047619048,
+      "pct_functions": 100,
+      "pct_lines": 84.48275862068965,
+      "uncovered_lines": [
+        54,
+        55,
+        56,
+        58,
+        59,
+        60,
+        61,
+        62,
+        63
+      ]
+    },
+    "src/utils/json.ts": {
+      "pct_statements": 91.37931034482759,
+      "pct_branch": 85.18518518518519,
+      "pct_functions": 100,
+      "pct_lines": 91.37931034482759,
+      "uncovered_lines": [
+        18,
+        28,
+        29,
+        73,
+        81
+      ]
+    },
+    "src/utils/tokenizer.ts": {
+      "pct_statements": 75,
+      "pct_branch": 71.42857142857143,
+      "pct_functions": 80,
+      "pct_lines": 75,
+      "uncovered_lines": [
+        49,
+        53,
+        54,
+        55,
+        56,
+        81,
+        82,
+        83,
+        84,
+        85,
+        86,
+        88,
+        89
+      ]
+    }
+  },
+  "summary": {
+    "pct_statements": 92.98029556650246,
+    "pct_branch": 92.02533224724627,
+    "pct_functions": 97.14285714285714,
+    "pct_lines": 92.98029556650246
+  },
+  "message": ""
 }

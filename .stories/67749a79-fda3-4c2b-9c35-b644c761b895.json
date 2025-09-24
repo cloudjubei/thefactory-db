@@ -1,6 +1,6 @@
 {
   "id": "67749a79-fda3-4c2b-9c35-b644c761b895",
-  "status": "=",
+  "status": "-",
   "title": "Ongoing Improvements",
   "description": "Various ongoing improvements to the project",
   "features": [
@@ -82,16 +82,15 @@
     },
     {
       "id": "734c141d-83b8-4a4c-8ed5-75ef2d5ea874",
-      "status": "+",
-      "title": "Complex tests fail - suspicion title doesn't get taken into account when hybrid searching",
-      "description": "@tests/e2e/documents-hybrid-advanced.e2e.test.ts fails",
+      "status": "-",
+      "title": "Title doesn't get taken into account when hybrid searching",
+      "description": "Inside the definition of hybrid search in @src/utils.ts - for documents, `src` isn't taken into account - the name portion of it should be. But even better, we should enforce accepting a name, inside DocumentInput, and store it in the database and then keyword search (inside hybrid search) should also test itself against this value.",
       "context": [
-        "tests/e2e/documents-hybrid-advanced.e2e.test.ts"
+        "src/utils.ts"
       ],
       "createdAt": "2025-09-23T17:01:25.209Z",
-      "updatedAt": "2025-09-23T18:08:20.539Z",
-      "blockers": [],
-      "completedAt": "2025-09-23T17:19:24.814Z"
+      "updatedAt": "2025-09-24T02:31:50.900Z",
+      "blockers": []
     },
     {
       "id": "4016b214-feaf-41a0-b56c-f61932f3250c",
@@ -142,6 +141,18 @@
       "createdAt": "2025-09-23T22:57:35.778Z",
       "updatedAt": "2025-09-24T00:25:29.131Z",
       "completedAt": "2025-09-24T00:25:29.131Z"
+    },
+    {
+      "id": "4c2bf377-ffe0-4ad3-8b2d-f3cc9ba32592",
+      "status": "-",
+      "title": "when multiple keywords are input they are not treated separately",
+      "description": "I keep observing a textScore of 0 when calling `searchDocuments` in @src/index.ts . When only one keyword is input, the textScore is correct, but with multiple keywords that are space separated - the result is pretty much always 0.\nWhat should happen is that the input should be space separated, and for each such keyword the textScore should be computed and then the maximum of all these keywords should be taken - that should be the final score for a set of keywords. This should be directly inside the SQL `hybrid_search_entities` and `hybrid_search_documents` functions.",
+      "context": [
+        "src/index.ts"
+      ],
+      "blockers": [],
+      "createdAt": "2025-09-24T02:37:08.544Z",
+      "updatedAt": "2025-09-24T02:37:08.544Z"
     }
   ],
   "featureIdToDisplayIndex": {
@@ -152,11 +163,12 @@
     "f018a399-a2fb-47f5-9990-b89fc7381097": 5,
     "bd58e850-de61-4e54-adba-9a7b49e76f29": 6,
     "94a33d4a-7698-4962-86cd-cb3a19d7f664": 7,
-    "734c141d-83b8-4a4c-8ed5-75ef2d5ea874": 8,
-    "4016b214-feaf-41a0-b56c-f61932f3250c": 9,
-    "39e9a493-5433-405b-8fc0-89f4ec5d3e18": 10,
-    "ad2a782a-d8f1-4560-83f5-2e972c9ed02f": 11,
-    "057eb355-399f-443b-b98d-6c2f46a953da": 12
+    "4016b214-feaf-41a0-b56c-f61932f3250c": 8,
+    "39e9a493-5433-405b-8fc0-89f4ec5d3e18": 9,
+    "ad2a782a-d8f1-4560-83f5-2e972c9ed02f": 10,
+    "057eb355-399f-443b-b98d-6c2f46a953da": 11,
+    "4c2bf377-ffe0-4ad3-8b2d-f3cc9ba32592": 12,
+    "734c141d-83b8-4a4c-8ed5-75ef2d5ea874": 13
   },
   "createdAt": "2025-09-19T01:04:36.087Z",
   "updatedAt": "2025-09-19T01:04:36.087Z"

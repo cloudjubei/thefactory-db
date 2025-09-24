@@ -29,6 +29,7 @@ async function main() {
   const db = await openDatabase({ connectionString: url })
 
   const allDocuments = await db.matchDocuments({
+    limit: 1000,
     types: ['project_code', 'project_file', 'external_file'],
   })
 
