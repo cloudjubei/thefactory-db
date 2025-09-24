@@ -370,10 +370,12 @@ RETURNS TABLE (
 )
 LANGUAGE sql AS
 $$
-WITH tokens AS (
-  SELECT token
-  FROM unnest(regexp_split_to_array(trim(coalesce(query_text, '')), E'\\s+')) AS token
-  WHERE length(token) > 0
+WITH tokens_query AS (
+  SELECT to_tsquery('english', string_agg(lexeme, ' | ')) AS ts_query
+  FROM (
+    SELECT unnest(string_to_array(trim(coalesce(query_text, '')), ' ')) AS lexeme
+  ) AS query_tokens
+  WHERE lexeme <> ''
 ),
 base_entities AS (
   SELECT *
@@ -395,25 +397,24 @@ base_entities AS (
   )
 ),
 token_scores AS (
-  SELECT e.id,
-         MAX(COALESCE(ts_rank_cd(e.fts, plainto_tsquery(t.token)), 0.0)) AS token_max_score
+  SELECT e.id, e.type, e.updated_at,
+         ts_rank_cd(e.fts, t.ts_query) AS token_score
   FROM base_entities e
-  CROSS JOIN tokens t
-  GROUP BY e.id
+  CROSS JOIN tokens_query t
+  WHERE e.fts @@ t.ts_query
 ),
-full_text AS (
+full_text as (  
   SELECT ts.id,
-         row_number() OVER (
-           ORDER BY ts.token_max_score DESC, ts.id ASC
-         ) AS rank_ix
+    row_number() over (
+      ORDER BY ts.token_score DESC, ts.type ASC, ts.updated_at ASC
+    ) as rank_ix
   FROM token_scores ts
-  WHERE ts.token_max_score > 0
-  LIMIT LEAST(match_count, 30) * 2
+  limit least(match_count, 30) * 2
 ),
 semantic AS (
   SELECT id,
          row_number() OVER (
-           ORDER BY embedding <-> query_embedding, id ASC
+           ORDER BY embedding <#> query_embedding
          ) AS rank_ix
   FROM base_entities
   WHERE embedding IS NOT NULL
@@ -435,8 +436,8 @@ SELECT e.id,
        e.metadata,
        scored.rrf_score,
        scored.rrf_score / ((full_text_weight + semantic_weight) / (rrf_k + 1)::float) AS similarity,
-       CASE WHEN e.embedding IS NULL THEN NULL ELSE 1 - (e.embedding <-> query_embedding)::float END AS cosine_similarity,
-       COALESCE(ts.token_max_score, 0.0) AS keyword_score
+       1 - (embedding <=> query_embedding) / 2 AS cosine_similarity,
+       COALESCE(ts.token_score, 0.0) AS keyword_score
 FROM scored
 JOIN base_entities e ON e.id = scored.id
 LEFT JOIN token_scores ts ON ts.id = e.id

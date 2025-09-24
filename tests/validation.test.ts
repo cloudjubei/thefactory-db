@@ -16,6 +16,7 @@ describe('validation', () => {
           projectId: 'p',
           type: 't',
           src: 's',
+          name: 'n',
           content: 'c',
           metadata: { a: 1 },
         }),
