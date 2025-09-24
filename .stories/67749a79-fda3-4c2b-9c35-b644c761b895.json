@@ -1,6 +1,6 @@
 {
   "id": "67749a79-fda3-4c2b-9c35-b644c761b895",
-  "status": "-",
+  "status": "=",
   "title": "Ongoing Improvements",
   "description": "Various ongoing improvements to the project",
   "features": [
@@ -82,15 +82,16 @@
     },
     {
       "id": "734c141d-83b8-4a4c-8ed5-75ef2d5ea874",
-      "status": "-",
+      "status": "+",
       "title": "Title doesn't get taken into account when hybrid searching",
       "description": "Inside the definition of hybrid search in @src/utils.ts - for documents, `src` isn't taken into account - the name portion of it should be. But even better, we should enforce accepting a name, inside DocumentInput, and store it in the database and then keyword search (inside hybrid search) should also test itself against this value.",
       "context": [
         "src/utils.ts"
       ],
       "createdAt": "2025-09-23T17:01:25.209Z",
-      "updatedAt": "2025-09-24T02:31:50.900Z",
-      "blockers": []
+      "updatedAt": "2025-09-24T03:00:18.323Z",
+      "blockers": [],
+      "completedAt": "2025-09-24T03:00:18.323Z"
     },
     {
       "id": "4016b214-feaf-41a0-b56c-f61932f3250c",
@@ -144,7 +145,7 @@
     },
     {
       "id": "4c2bf377-ffe0-4ad3-8b2d-f3cc9ba32592",
-      "status": "-",
+      "status": "+",
       "title": "when multiple keywords are input they are not treated separately",
       "description": "I keep observing a textScore of 0 when calling `searchDocuments` in @src/index.ts . When only one keyword is input, the textScore is correct, but with multiple keywords that are space separated - the result is pretty much always 0.\nWhat should happen is that the input should be space separated, and for each such keyword the textScore should be computed and then the maximum of all these keywords should be taken - that should be the final score for a set of keywords. This should be directly inside the SQL `hybrid_search_entities` and `hybrid_search_documents` functions.",
       "context": [
@@ -152,7 +153,8 @@
       ],
       "blockers": [],
       "createdAt": "2025-09-24T02:37:08.544Z",
-      "updatedAt": "2025-09-24T02:37:08.544Z"
+      "updatedAt": "2025-09-24T02:42:00.191Z",
+      "completedAt": "2025-09-24T02:42:00.191Z"
     }
   ],
   "featureIdToDisplayIndex": {

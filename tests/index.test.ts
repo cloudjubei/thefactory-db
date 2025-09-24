@@ -167,7 +167,7 @@ describe('TheFactoryDb', () => {
   describe('Documents', () => {
     it('addDocument should insert a new document', async () => {
       const db = await openDatabase({ connectionString: 'test' })
-      const docInput = { projectId: 'p1', type: 't1', content: 'hello', src: 's1' }
+      const docInput = { projectId: 'p1', type: 't1', name: 'Title', content: 'hello', src: 's1' }
       const expectedDoc = { ...docInput, id: '123' }
       mockDbClient.query.mockResolvedValue({ rows: [expectedDoc] })
 
@@ -177,6 +177,7 @@ describe('TheFactoryDb', () => {
       expect(mockDbClient.query).toHaveBeenCalledWith('FAKE_SQL', [
         'p1',
         't1',
+        'Title',
         'hello',
         's1',
         '[0.1,0.2,0.3]',
@@ -187,7 +188,7 @@ describe('TheFactoryDb', () => {
 
     it('getDocumentById should return a document if found', async () => {
       const db = await openDatabase({ connectionString: 'test' })
-      const expectedDoc = { id: '123', projectId: 'p1', type: 't1', content: 'hello', src: 's1' }
+      const expectedDoc = { id: '123', projectId: 'p1', type: 't1', name: 'Title', content: 'hello', src: 's1' }
       mockDbClient.query.mockResolvedValue({ rows: [expectedDoc] })
 
       const result = await db.getDocumentById('123')
@@ -207,7 +208,7 @@ describe('TheFactoryDb', () => {
 
     it('updateDocument should update an existing document', async () => {
       const db = await openDatabase({ connectionString: 'test' })
-      const existingDoc = { id: '123', content: 'old' }
+      const existingDoc = { id: '123', name: 'Title', content: 'old' }
       const patch = { content: 'new' }
       const updatedDoc = { ...existingDoc, ...patch }
       mockDbClient.query
@@ -220,6 +221,7 @@ describe('TheFactoryDb', () => {
       expect(mockEmbeddingProvider.embed).toHaveBeenCalledWith('new')
       expect(mockDbClient.query).toHaveBeenCalledWith('FAKE_SQL', [
         '123',
+        null,
         null,
         'new',
         null,

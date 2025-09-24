@@ -63,130 +63,28 @@ const SQL_DOCS = {
  */
 export interface TheFactoryDb {
   // Entities (json)
-  /**
-   * Adds a new JSON-based entity to the database.
-   * @param e - The entity data to insert.
-   * @returns The newly created entity.
-   */
   addEntity(e: EntityInput): Promise<Entity>
-
-  /**
-   * Retrieves an entity by its unique ID.
-   * @param id - The ID of the entity to retrieve.
-   * @returns The entity if found, otherwise `undefined`.
-   */
   getEntityById(id: string): Promise<Entity | undefined>
-
-  /**
-   * Updates an existing entity.
-   * @param id - The ID of the entity to update.
-   * @param patch - The partial data to update.
-   * @returns The updated entity, or `undefined` if not found.
-   */
   updateEntity(id: string, patch: EntityPatch): Promise<Entity | undefined>
-
-  /**
-   * Deletes an entity by its ID.
-   * @param id - The ID of the entity to delete.
-   * @returns `true` if the entity was deleted, otherwise `false`.
-   */
   deleteEntity(id: string): Promise<boolean>
-
-  /**
-   * Performs a hybrid search over entities.
-   * @param params - The search parameters.
-   * @returns A list of entities with their relevance scores.
-   */
   searchEntities(params: SearchParams): Promise<EntityWithScore[]>
-
-  /**
-   * Finds entities whose content matches a given JSON structure.
-   * @param criteria - The JSON object to match against.
-   * @param options - Optional filtering and limit options.
-   * @returns A list of matching entities.
-   */
   matchEntities(criteria: any | undefined, options?: MatchParams): Promise<Entity[]>
-
-  /**
-   * Clears entities from the database.
-   * @param projectIds - Optional list of project IDs to clear. If not provided, all entities are cleared.
-   */
   clearEntities(projectIds?: string[]): Promise<void>
 
   // Documents (text)
-  /**
-   * Adds a new text-based document to the database.
-   * @param d - The document data to insert.
-   * @returns The newly created document.
-   */
   addDocument(d: DocumentInput): Promise<Document>
-
-  /**
-   * Retrieves a document by its unique ID.
-   * @param id - The ID of the document to retrieve.
-   * @returns The document if found, otherwise `undefined`.
-   */
   getDocumentById(id: string): Promise<Document | undefined>
-
-  /**
-   * Retrieves a document by its source identifier.
-   * @param src - The source identifier of the document.
-   * @returns The document if found, otherwise `undefined`.
-   */
   getDocumentBySrc(src: string): Promise<Document | undefined>
-
-  /**
-   * Updates an existing document.
-   * @param id - The ID of the document to update.
-   * @param patch - The partial data to update.
-   * @returns The updated document, or `undefined` if not found.
-   */
   updateDocument(id: string, patch: Partial<DocumentInput>): Promise<Document | undefined>
-
-  /**
-   * Deletes a document by its ID.
-   * @param id - The ID of the document to delete.
-   * @returns `true` if the document was deleted, otherwise `false`.
-   */
   deleteDocument(id: string): Promise<boolean>
-
-  /**
-   * Performs a hybrid search over documents.
-   * @param params - The search parameters.
-   * @returns A list of documents with their relevance scores.
-   */
   searchDocuments(params: SearchParams): Promise<DocumentWithScore[]>
-
-  /**
-   * Finds documents based on filtering criteria.
-   * @param options - Filtering and limit options.
-   * @returns A list of matching documents.
-   */
   matchDocuments(options: MatchParams): Promise<Document[]>
-
-  /**
-   * Clears documents from the database.
-   * @param projectIds - Optional list of project IDs to clear. If not provided, all documents are cleared.
-   */
   clearDocuments(projectIds?: string[]): Promise<void>
 
-  /**
-   * Closes the database connection.
-   */
   close(): Promise<void>
-
-  /**
-   * Provides raw access to the underlying database client.
-   * @returns The raw database client.
-   */
   raw(): DB
 }
 
-/**
- * Opens a new database connection and returns the database interface.
- * @param options - The options for opening the database.
- * @returns A promise that resolves to the `TheFactoryDb` interface.
- */
 export async function openDatabase({
   connectionString,
   logLevel,
@@ -282,7 +180,7 @@ export async function openDatabase({
       Object.keys(filter).length ? JSON.stringify(filter) : JSON.stringify({}),
       textWeight,
       semWeight,
-      20,
+      50,
     ])
 
     return r.rows as EntityWithScore[]
@@ -326,13 +224,14 @@ export async function openDatabase({
   // ---------------------
   async function addDocument(d: DocumentInput): Promise<Document> {
     assertDocumentInput(d)
-    logger.info('addDocument', { projectId: d.projectId, type: d.type, src: d.src })
+    logger.info('addDocument', { projectId: d.projectId, type: d.type, name: d.name, src: d.src })
     const content = d.content ?? ''
     const embedding = await embeddingProvider.embed(content)
 
     const out = await db.query(SQL_DOCS.insert(), [
       d.projectId,
       d.type,
+      d.name,
       content,
       d.src,
       toVectorLiteral(embedding),
@@ -342,7 +241,6 @@ export async function openDatabase({
   }
 
   async function getDocumentById(id: string): Promise<Document | undefined> {
-    // logger.info('getDocumentById', { id })
     const r = await db.query(SQL_DOCS.getById(), [id])
     const row = r.rows[0]
     if (!row) return undefined
@@ -350,7 +248,6 @@ export async function openDatabase({
   }
 
   async function getDocumentBySrc(src: string): Promise<Document | undefined> {
-    // logger.info('getDocumentBySrc', { src })
     const r = await db.query(SQL_DOCS.getBySrc(), [src])
     const row = r.rows[0]
     if (!row) return undefined
@@ -362,7 +259,6 @@ export async function openDatabase({
     patch: Partial<DocumentInput>,
   ): Promise<Document | undefined> {
     assertDocumentPatch(patch)
-    // logger.info('updateDocument', { id, keys: Object.keys(patch) })
     const exists = await getDocumentById(id)
     if (!exists) return
 
@@ -378,6 +274,7 @@ export async function openDatabase({
     const r = await db.query(SQL_DOCS.update(), [
       id,
       patch.type ?? null,
+      patch.name ?? null,
       newContent,
       patch.src ?? null,
       embeddingLiteral,
@@ -439,7 +336,7 @@ export async function openDatabase({
       Object.keys(filter).length ? JSON.stringify(filter) : JSON.stringify({}),
       textWeight,
       semWeight,
-      20,
+      50,
     ])
 
     return r.rows as DocumentWithScore[]

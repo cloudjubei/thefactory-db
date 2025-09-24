@@ -25,18 +25,21 @@ const DATABASE_URL = process.env.DATABASE_URL || ''
     const d1 = await db.addDocument({
       projectId,
       type: 'note',
+      name: 'a',
       src: 'notes/a.txt',
       content: 'This document talks about car and engine.',
     })
     const d2 = await db.addDocument({
       projectId,
       type: 'note',
+      name: 'Car-Notes',
       src: 'notes/Car-Notes.txt',
       content: 'This note is about vehicles and engines.',
     })
     const d3 = await db.addDocument({
       projectId,
       type: 'note',
+      name: 'auto',
       src: 'notes/auto.txt',
       content: 'This document is about automobile and engine.',
     })

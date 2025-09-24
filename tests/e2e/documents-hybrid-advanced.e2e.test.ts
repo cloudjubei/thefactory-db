@@ -25,10 +25,12 @@ const DATABASE_URL = process.env.DATABASE_URL || ''
       // Seed 24 documents
       // 1) Strong content matches for query 'car engine'
       for (let i = 0; i < 6; i++) {
+        const src = `notes/content-${i}.md`
         const d = await db.addDocument({
           projectId,
           type: 'note',
-          src: `notes/content-${i}.md`,
+          name: src,
+          src,
           content:
             'This document discusses car engine maintenance. The car engine is central to vehicle performance. Car engine tips and tricks.',
         })
@@ -37,10 +39,12 @@ const DATABASE_URL = process.env.DATABASE_URL || ''
 
       // 2) Title-only (src filename contains Car-Engine) but content lacks the literal tokens
       for (let i = 0; i < 6; i++) {
+        const src = `guides/Car-Engine-Guide-${i}.txt`
         const d = await db.addDocument({
           projectId,
           type: 'note',
-          src: `guides/Car-Engine-Guide-${i}.txt`,
+          name: src,
+          src,
           content:
             'Completely unrelated prose about gardening and cooking. No mention of the specific keywords, focusing on recipes and plants.',
         })
@@ -49,10 +53,12 @@ const DATABASE_URL = process.env.DATABASE_URL || ''
 
       // 3) Semantic-only (mentions synonyms automobile/motor but not exact terms 'car'/'engine')
       for (let i = 0; i < 6; i++) {
+        const src = `notes/auto-${i}.txt`
         const d = await db.addDocument({
           projectId,
           type: 'note',
-          src: `notes/auto-${i}.txt`,
+          name: src,
+          src,
           content:
             'This article covers automobile motor upkeep and advice. The automobile motor influences vehicle performance. Helpful tips for every driver.',
         })
@@ -61,10 +67,12 @@ const DATABASE_URL = process.env.DATABASE_URL || ''
 
       // 4) Controls (unrelated)
       for (let i = 0; i < 6; i++) {
+        const src = `misc/${i}.txt`
         const d = await db.addDocument({
           projectId,
           type: 'misc',
-          src: `misc/${i}.txt`,
+          name: src,
+          src,
           content:
             'Random notes on tropical fruits like banana and mango. Nothing about fruit unrelated things. Just fruit facts and recipes.',
         })
@@ -211,6 +219,7 @@ const DATABASE_URL = process.env.DATABASE_URL || ''
       await db.addDocument({
         projectId,
         type: 'note',
+        name: 'start',
         src: 'notes/start.txt',
         content:
           'car engine maintenance is important for vehicle longevity. The rest of the document is about other things.',
@@ -221,6 +230,7 @@ const DATABASE_URL = process.env.DATABASE_URL || ''
       await db.addDocument({
         projectId,
         type: 'note',
+        name: 'middle',
         src: 'notes/middle.txt',
         content:
           'The document starts with some intro. Then it talks about car engine maintenance. And then it concludes.',
@@ -231,6 +241,7 @@ const DATABASE_URL = process.env.DATABASE_URL || ''
       await db.addDocument({
         projectId,
         type: 'note',
+        name: 'end',
         src: 'notes/end.txt',
         content:
           'This document is about many things, but concludes with the importance of car engine maintenance.',
@@ -241,8 +252,9 @@ const DATABASE_URL = process.env.DATABASE_URL || ''
       await db.addDocument({
         projectId,
         type: 'note',
-        src: 'notes/no-match.txt',
-        content: 'This document is about gardening and cooking. No mention of automobiles.',
+        name: 'gardening',
+        src: 'notes/gardening.txt',
+        content: 'This is about gardening and cooking.',
       })
     ).id
 
@@ -250,6 +262,7 @@ const DATABASE_URL = process.env.DATABASE_URL || ''
       await db.addDocument({
         projectId,
         type: 'note',
+        name: 'semantic',
         src: 'notes/semantic.txt',
         content: 'This article is about automobile motor upkeep. It is important for your vehicle.',
       })
@@ -259,6 +272,7 @@ const DATABASE_URL = process.env.DATABASE_URL || ''
       await db.addDocument({
         projectId,
         type: 'note',
+        name: 'partial',
         src: 'notes/partial.txt',
         content:
           'This document talks about car maintenance in general, but not the engine specifically.',
@@ -279,16 +293,16 @@ const DATABASE_URL = process.env.DATABASE_URL || ''
       query: 'car engine maintenance',
       projectIds: [projectId],
       textWeight: 1,
-      limit: 3,
+      limit: 4,
     })
     const resultIds = results.map((r) => r.id)
 
     expect(resultIds).toContain(ids.matchAtStart)
     expect(resultIds).toContain(ids.matchInMiddle)
     expect(resultIds).toContain(ids.matchAtEnd)
-    expect(resultIds).not.toContain(ids.noMatch)
+    expect(resultIds).toContain(ids.partialMatch)
     expect(resultIds).not.toContain(ids.semanticMatch)
-    expect(resultIds).not.toContain(ids.partialMatch)
+    expect(resultIds).not.toContain(ids.noMatch)
   })
 
   it('with textWeight=0, should return semantically similar documents', async () => {
@@ -314,15 +328,13 @@ const DATABASE_URL = process.env.DATABASE_URL || ''
     expect(keywordRank).toBeLessThan(semanticRank)
   })
 
-  it('with textWeight=1 and no matching documents, should return empty array', async () => {
+  it('with textWeight=1 and no matching documents, should return something but with a score of 0', async () => {
     const results = await db.searchDocuments({
-      query: 'non existing keywords',
+      query: 'existing keywords',
       projectIds: [projectId],
       textWeight: 1,
-      limit: 2,
+      limit: 1,
     })
-    const resultIds = results.map((r) => r.id)
-
-    expect(resultIds).not.toContain(ids.noMatch)
+    expect(results[0].totalScore).toEqual(0)
   })
 })

@@ -26,10 +26,12 @@ const DATABASE_URL = process.env.DATABASE_URL || ''
     })
 
     it('documents: updates should regenerate updatedAt', async () => {
+      const src = `file-${Math.random().toString(36).slice(2)}.md`
       const doc = await db.addDocument({
         projectId,
         type: 'note',
-        src: `file-${Math.random().toString(36).slice(2)}.md`,
+        name: src,
+        src,
         content: 'initial content',
       })
 

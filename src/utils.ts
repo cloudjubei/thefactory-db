@@ -1,19 +1,19 @@
 export function readSql(name: string): string | undefined {
-  return SQLS[name];
+  return SQLS[name]
 }
 
 export function base64ToUtf8(base64: string) {
   if (base64.startsWith('data:')) {
-    const base64Data = base64.split(',')[1];
-    return atob(base64Data);
+    const base64Data = base64.split(',')[1]
+    return atob(base64Data)
   }
-  return atob(base64);
+  return atob(base64)
 }
 
 // -----------------------------
 // CRUD SQL for Entities (jsonb)
 // -----------------------------
-const deleteEntity = `DELETE FROM entities WHERE id = $1;`;
+const deleteEntity = `DELETE FROM entities WHERE id = $1;`
 
 const getEntityById = `
 SELECT 
@@ -26,7 +26,7 @@ SELECT
   to_jsonb(metadata) AS metadata
 FROM entities
 WHERE id = $1;
-`;
+`
 
 const insertEntity = `
 INSERT INTO entities (project_id, type, content, content_string, embedding, metadata)
@@ -39,7 +39,7 @@ RETURNING
   to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS "createdAt",
   to_char(updated_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS "updatedAt",
   to_jsonb(metadata) AS metadata;
-`;
+`
 
 const updateEntity = `
 UPDATE entities SET
@@ -57,18 +57,19 @@ RETURNING
   to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS "createdAt",
   to_char(updated_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS "updatedAt",
   to_jsonb(metadata) AS metadata;
-`;
+`
 
 // -------------------------------
 // CRUD SQL for Documents (text)
 // -------------------------------
-const deleteDocument = `DELETE FROM documents WHERE id = $1;`;
+const deleteDocument = `DELETE FROM documents WHERE id = $1;`
 
 const getDocumentById = `
 SELECT 
   id,
   project_id AS "projectId",
   type,
+  name,
   content,
   src,
   to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS "createdAt",
@@ -76,13 +77,14 @@ SELECT
   to_jsonb(metadata) AS metadata
 FROM documents
 WHERE id = $1;
-`;
+`
 
 const getDocumentBySrc = `
 SELECT 
   id,
   project_id AS "projectId",
   type,
+  name,
   content,
   src,
   to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS "createdAt",
@@ -90,40 +92,43 @@ SELECT
   to_jsonb(metadata) AS metadata
 FROM documents
 WHERE src = $1;
-`;
+`
 
 const insertDocument = `
-INSERT INTO documents (project_id, type, content, src, embedding, metadata)
-VALUES ($1, $2, $3, $4, $5::vector, $6::jsonb)
+INSERT INTO documents (project_id, type, name, content, src, embedding, metadata)
+VALUES ($1, $2, $3, $4, $5, $6::vector, $7::jsonb)
 RETURNING 
   id,
   project_id AS "projectId",
   type,
+  name,
   content,
   src,
   to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS "createdAt",
   to_char(updated_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS "updatedAt",
   to_jsonb(metadata) AS metadata;
-`;
+`
 
 const updateDocument = `
 UPDATE documents SET
   type = COALESCE($2, type),
-  content = COALESCE($3, content),
-  src = COALESCE($4, src),
-  embedding = COALESCE($5::vector, embedding),
-  metadata = COALESCE($6::jsonb, metadata)
+  name = COALESCE($3, name),
+  content = COALESCE($4, content),
+  src = COALESCE($5, src),
+  embedding = COALESCE($6::vector, embedding),
+  metadata = COALESCE($7::jsonb, metadata)
 WHERE id = $1
 RETURNING 
   id,
   project_id AS "projectId",
   type,
+  name,
   content,
   src,
   to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS "createdAt",
   to_char(updated_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS "updatedAt",
   to_jsonb(metadata) AS metadata;
-`;
+`
 
 // ----------------------------------------------------------
 // Schema: documents (text) and entities (jsonb), indexes and triggers
@@ -133,14 +138,28 @@ const schema = `
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
 CREATE EXTENSION IF NOT EXISTS vector;
 
+CREATE OR REPLACE FUNCTION tokenize_code(input_text text)
+RETURNS text AS $$
+BEGIN
+  -- Convert camelCase and PascalCase to space-separated words
+  input_text := regexp_replace(input_text, '([a-z])([A-Z])', '\\1 \\2', 'g');
+  
+  -- Replace underscores, hyphens, and dots with spaces
+  input_text := regexp_replace(input_text, '[-._]', ' ', 'g');
+  
+  RETURN input_text;
+END;
+$$ LANGUAGE plpgsql IMMUTABLE;
+
 -- Documents table
 CREATE TABLE IF NOT EXISTS documents (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   project_id text NOT NULL,
   type text NOT NULL,
+  name text NOT NULL,
   content text,
   fts tsvector GENERATED ALWAYS AS (
-    CASE WHEN content IS NULL OR content = '' THEN NULL ELSE to_tsvector('english', content) END
+    to_tsvector('english', tokenize_code(name)) || to_tsvector('english', coalesce(tokenize_code(content), ''))
   ) STORED,
   embedding vector(384),
   src text NOT NULL,
@@ -215,7 +234,7 @@ EXCEPTION WHEN undefined_object THEN
     NULL;
   END;
 END$$;
-`;
+`
 
 // ----------------------------------------------------------
 // Hybrid search functions for documents and entities
@@ -236,6 +255,7 @@ RETURNS TABLE (
   id uuid,
   project_id text,
   type text,
+  name text,
   content text,
   src text,
   created_at timestamptz,
@@ -248,7 +268,14 @@ RETURNS TABLE (
 )
 LANGUAGE sql AS
 $$
-WITH base_documents AS (
+WITH tokens_query AS (
+  SELECT to_tsquery('english', string_agg(lexeme, ' | ')) AS ts_query
+  FROM (
+    SELECT unnest(string_to_array(trim(coalesce(query_text, '')), ' ')) AS lexeme
+  ) AS query_tokens
+  WHERE lexeme <> ''
+),
+base_documents AS (
   SELECT *
   FROM documents
   WHERE (
@@ -267,34 +294,25 @@ WITH base_documents AS (
     )
   )
 ),
-full_text AS (
-  SELECT id,
-         row_number() OVER (
-           ORDER BY (
-             COALESCE(ts_rank_cd(fts, websearch_to_tsquery('english', query_text)), 0.0) * 0.5 +
-             COALESCE(
-               ts_rank_cd(
-                 to_tsvector('simple', regexp_replace(src, '[^a-zA-Z0-9]+', ' ', 'g')),
-                 websearch_to_tsquery('simple', query_text)
-               ),
-               0.0
-             ) * 1.5
-           ) DESC,
-           id ASC
-         ) AS rank_ix
-  FROM base_documents
-  WHERE (
-    (fts @@ websearch_to_tsquery('english', query_text))
-    OR (
-      to_tsvector('simple', regexp_replace(src, '[^a-zA-Z0-9]+', ' ', 'g')) @@ websearch_to_tsquery('simple', query_text)
-    )
-  )
-  LIMIT LEAST(match_count, 30) * 2
+token_scores AS (
+  SELECT d.id, d.name,
+         ts_rank_cd(d.fts, t.ts_query) AS token_score
+  FROM base_documents d
+  CROSS JOIN tokens_query t
+  WHERE d.fts @@ t.ts_query
+),
+full_text as (  
+  SELECT ts.id,
+    row_number() over (
+      ORDER BY ts.token_score DESC, ts.name ASC
+    ) as rank_ix
+  FROM token_scores ts
+  limit least(match_count, 30) * 2
 ),
 semantic AS (
   SELECT id,
          row_number() OVER (
-           ORDER BY embedding <-> query_embedding, id ASC
+           ORDER BY embedding <#> query_embedding
          ) AS rank_ix
   FROM base_documents
   WHERE embedding IS NOT NULL
@@ -310,6 +328,7 @@ scored AS (
 SELECT d.id,
        d.project_id,
        d.type,
+       d.name,
        d.content,
        d.src,
        d.created_at,
@@ -317,20 +336,12 @@ SELECT d.id,
        d.metadata,
        scored.rrf_score,
        scored.rrf_score / ((full_text_weight + semantic_weight) / (rrf_k + 1)::float) AS similarity,
-       CASE WHEN d.embedding IS NULL THEN NULL ELSE 1 - (d.embedding <-> query_embedding)::float END AS cosine_similarity,
-       (
-         COALESCE(ts_rank_cd(d.fts, websearch_to_tsquery('english', query_text)), 0.0) * 0.5 +
-         COALESCE(
-           ts_rank_cd(
-             to_tsvector('simple', regexp_replace(d.src, '[^a-zA-Z0-9]+', ' ', 'g')),
-             websearch_to_tsquery('simple', query_text)
-           ),
-           0.0
-         ) * 1.5
-       ) AS keyword_score
+       1 - (embedding <=> query_embedding) / 2 AS cosine_similarity,
+       COALESCE(ts.token_score, 0.0) AS keyword_score
 FROM scored
 JOIN base_documents d ON d.id = scored.id
-ORDER BY similarity DESC, d.id ASC
+LEFT JOIN token_scores ts ON ts.id = d.id
+ORDER BY similarity DESC, d.name ASC
 LIMIT match_count;
 $$;
 
@@ -359,7 +370,12 @@ RETURNS TABLE (
 )
 LANGUAGE sql AS
 $$
-WITH base_entities AS (
+WITH tokens AS (
+  SELECT token
+  FROM unnest(regexp_split_to_array(trim(coalesce(query_text, '')), E'\\s+')) AS token
+  WHERE length(token) > 0
+),
+base_entities AS (
   SELECT *
   FROM entities
   WHERE (
@@ -378,13 +394,20 @@ WITH base_entities AS (
     )
   )
 ),
+token_scores AS (
+  SELECT e.id,
+         MAX(COALESCE(ts_rank_cd(e.fts, plainto_tsquery(t.token)), 0.0)) AS token_max_score
+  FROM base_entities e
+  CROSS JOIN tokens t
+  GROUP BY e.id
+),
 full_text AS (
-  SELECT id,
+  SELECT ts.id,
          row_number() OVER (
-           ORDER BY ts_rank_cd(fts, websearch_to_tsquery(query_text)) DESC, id ASC
+           ORDER BY ts.token_max_score DESC, ts.id ASC
          ) AS rank_ix
-  FROM base_entities
-  WHERE fts @@ websearch_to_tsquery(query_text)
+  FROM token_scores ts
+  WHERE ts.token_max_score > 0
   LIMIT LEAST(match_count, 30) * 2
 ),
 semantic AS (
@@ -413,13 +436,14 @@ SELECT e.id,
        scored.rrf_score,
        scored.rrf_score / ((full_text_weight + semantic_weight) / (rrf_k + 1)::float) AS similarity,
        CASE WHEN e.embedding IS NULL THEN NULL ELSE 1 - (e.embedding <-> query_embedding)::float END AS cosine_similarity,
-       ts_rank_cd(e.fts, websearch_to_tsquery(query_text)) AS keyword_score
+       COALESCE(ts.token_max_score, 0.0) AS keyword_score
 FROM scored
 JOIN base_entities e ON e.id = scored.id
+LEFT JOIN token_scores ts ON ts.id = e.id
 ORDER BY similarity DESC, e.id ASC
 LIMIT match_count;
 $$;
-`;
+`
 
 // ----------------------------------------------------------
 // Search query wrappers calling hybrid_search_* functions
@@ -437,13 +461,14 @@ SELECT
   cosine_similarity as "vecScore",
   similarity as "totalScore"
 FROM hybrid_search_entities($1, $2::vector, $3::int, $4::jsonb, $5::float, $6::float, $7::int);
-`;
+`
 
 const searchDocumentsQuery = `
 SELECT
   id,
   project_id AS "projectId",
   type,
+  name,
   content,
   src,
   to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS "createdAt",
@@ -453,7 +478,7 @@ SELECT
   cosine_similarity as "vecScore",
   similarity as "totalScore"
 FROM hybrid_search_documents($1, $2::vector, $3::int, $4::jsonb, $5::float, $6::float, $7::int);
-`;
+`
 
 // ----------------------------------------------------------
 // Match entities by JSON content containment with filters
@@ -482,7 +507,7 @@ WHERE content @> $1::jsonb
   )
 ORDER BY updated_at DESC
 LIMIT COALESCE($3::int, 100);
-`;
+`
 
 // ----------------------------------------------------------
 // Match documents by filters only (types/ids/projectIds)
@@ -494,6 +519,7 @@ SELECT
   id,
   project_id AS "projectId",
   type,
+  name,
   content,
   src,
   to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS "createdAt",
@@ -510,13 +536,13 @@ WHERE (
 )
 ORDER BY updated_at DESC
 LIMIT COALESCE($2::int, 100);
-`;
+`
 
 // Clear helpers
-const clearDocuments = `TRUNCATE TABLE documents RESTART IDENTITY;`;
-const clearEntities = `TRUNCATE TABLE entities RESTART IDENTITY;`;
-const clearDocumentsByProject = `DELETE FROM documents WHERE project_id = ANY($1::text[]);`;
-const clearEntitiesByProject = `DELETE FROM entities WHERE project_id = ANY($1::text[]);`;
+const clearDocuments = `TRUNCATE TABLE documents RESTART IDENTITY;`
+const clearEntities = `TRUNCATE TABLE entities RESTART IDENTITY;`
+const clearDocumentsByProject = `DELETE FROM documents WHERE project_id = ANY($1::text[]);`
+const clearEntitiesByProject = `DELETE FROM entities WHERE project_id = ANY($1::text[]);`
 
 const SQLS: Record<string, string> = {
   // Schema and functions
@@ -543,4 +569,4 @@ const SQLS: Record<string, string> = {
   matchDocuments: matchDocuments,
   clearDocuments: clearDocuments,
   clearDocumentsByProject: clearDocumentsByProject,
-};
+}

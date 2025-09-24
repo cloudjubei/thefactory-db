@@ -90,7 +90,6 @@ function collectProjectFiles(root: string): string[] {
       if (e.isDirectory()) {
         walk(full)
       } else {
-        // Skip binary likely files by extension
         if (/\.(png|jpg|jpeg|gif|webp|ico|lock)$/.test(e.name)) continue
         out.push(rel)
       }
@@ -106,6 +105,7 @@ function createMockDb() {
     id: string
     projectId: string
     type: string
+    name: string
     content: string
     src: string
     createdAt: string
@@ -122,17 +122,18 @@ function createMockDb() {
     query: vi.fn(async (sql: string, args?: any[]) => {
       switch (sql) {
         case 'insertDocument': {
-          const [projectId, type, content, src, embeddingLit, metadata] = args as [string, string, string, string, string, any]
+          const [projectId, type, name, content, src, embeddingLit, metadata] = args as [string, string, string, string, string, string, any]
           const id = String(seq++)
           const createdAt = nowStr()
           const updatedAt = createdAt
-          docs.push({ id, projectId, type, content: content ?? '', src, createdAt, updatedAt, metadata, embedding: parseVectorLiteral(embeddingLit) })
+          docs.push({ id, projectId, type, name, content: content ?? '', src, createdAt, updatedAt, metadata, embedding: parseVectorLiteral(embeddingLit) })
           return {
             rows: [
               {
                 id,
                 projectId,
                 type,
+                name,
                 content: content ?? '',
                 src,
                 createdAt,
@@ -153,16 +154,17 @@ function createMockDb() {
           return { rows: d ? [{ ...d, createdAt: d.createdAt, updatedAt: d.updatedAt, metadata: d.metadata }] : [] }
         }
         case 'updateDocument': {
-          const [id, typePatch, contentPatch, srcPatch, embeddingLit, metadataPatch] = args as [string, string | null, string | null, string | null, string | null, any]
+          const [id, typePatch, namePatch, contentPatch, srcPatch, embeddingLit, metadataPatch] = args as [string, string | null, string | null, string | null, string | null, string | null, any]
           const d = docs.find((x) => x.id === id)
           if (!d) return { rows: [] }
           if (typePatch !== null) d.type = typePatch
+          if (namePatch !== null) d.name = namePatch
           if (contentPatch !== null) d.content = contentPatch
           if (srcPatch !== null) d.src = srcPatch
           if (embeddingLit !== null) d.embedding = parseVectorLiteral(embeddingLit)
           if (metadataPatch !== null) d.metadata = metadataPatch
           d.updatedAt = nowStr()
-          return { rows: [{ id: d.id, projectId: d.projectId, type: d.type, content: d.content, src: d.src, createdAt: d.createdAt, updatedAt: d.updatedAt, metadata: d.metadata }] }
+          return { rows: [{ id: d.id, projectId: d.projectId, type: d.type, name: d.name, content: d.content, src: d.src, createdAt: d.createdAt, updatedAt: d.updatedAt, metadata: d.metadata }] }
         }
         case 'deleteDocument': {
           const [id] = args as [string]
@@ -193,7 +195,7 @@ function createMockDb() {
             if (filter.projectIds) filtered = filtered.filter((d) => filter.projectIds.includes(d.projectId))
           }
           filtered.sort((a, b) => (a.updatedAt < b.updatedAt ? 1 : -1))
-          return { rows: filtered.slice(0, limit).map((d) => ({ id: d.id, projectId: d.projectId, type: d.type, content: d.content, src: d.src, createdAt: d.createdAt, updatedAt: d.updatedAt, metadata: d.metadata })) }
+          return { rows: filtered.slice(0, limit).map((d) => ({ id: d.id, projectId: d.projectId, type: d.type, name: d.name, content: d.content, src: d.src, createdAt: d.createdAt, updatedAt: d.updatedAt, metadata: d.metadata })) }
         }
         case 'searchDocumentsQuery': {
           const [queryText, qvecLit, limitRaw, filterJson, textWeight, semWeight] = args as [string, string, number, string, number, number]
@@ -208,7 +210,7 @@ function createMockDb() {
           const queryKeywords = (queryText || '').toLowerCase().split(/\s+/).filter(Boolean)
 
           function keywordScore(d: Doc): number {
-            const docText = (d.content + ' ' + d.src).toLowerCase()
+            const docText = (d.content + ' ' + d.src + ' ' + d.name).toLowerCase()
             const hasAllKeywords = queryKeywords.every(kw => docText.includes(kw))
             return hasAllKeywords ? 1 : 0
           }
@@ -221,6 +223,7 @@ function createMockDb() {
               id: d.id,
               projectId: d.projectId,
               type: d.type,
+              name: d.name,
               content: d.content,
               src: d.src,
               createdAt: d.createdAt,
@@ -235,7 +238,6 @@ function createMockDb() {
           return { rows: scored.filter(r => r.totalScore > 0).slice(0, limit) }
         }
         default:
-          // for entities or others not used here, return empty
           return { rows: [] }
       }
     }),
@@ -274,12 +276,9 @@ describe('Advanced Hybrid Search', () => {
     const db = await openDatabase({ connectionString: 'test' })
     const projectId = 'proj-adv'
 
-    // D1: content-only match for query 'car'
-    const d1 = await db.addDocument({ projectId, type: 'note', src: 'notes/a.txt', content: 'This document talks about car and engine.' })
-    // D2: title-only match (src contains 'Car'), content does not include 'car'
-    const d2 = await db.addDocument({ projectId, type: 'note', src: 'notes/Car-Notes.txt', content: 'This note is about vehicles and engines.' })
-    // D3: semantic-only (content mentions automobile but not car); src does not include car
-    const d3 = await db.addDocument({ projectId, type: 'note', src: 'notes/auto.txt', content: 'This document is about automobile and engine.' })
+    const d1 = await db.addDocument({ projectId, type: 'note', name: 'a', src: 'notes/a.txt', content: 'This document talks about car and engine.' })
+    const d2 = await db.addDocument({ projectId, type: 'note', name: 'Car-Notes', src: 'notes/Car-Notes.txt', content: 'This note is about vehicles and engines.' })
+    const d3 = await db.addDocument({ projectId, type: 'note', name: 'auto', src: 'notes/auto.txt', content: 'This document is about automobile and engine.' })
 
     const weights = [0, 0.2, 0.5, 0.8, 1]
 
@@ -287,32 +286,23 @@ describe('Advanced Hybrid Search', () => {
       weights.map((w) => db.searchDocuments({ query: 'car', projectIds: [projectId], textWeight: w, limit: 10 }))
     )
 
-    // Helper to find position in result set
     function pos(res: any[], id: string) {
       const i = res.findIndex((r) => r.id === id)
       return i < 0 ? 999 : i
     }
 
-    // Expectations:
-    // - D1 (content includes 'car') should consistently rank very high for all weights
-    resultsByW.forEach((res, idx) => {
+    resultsByW.forEach((res) => {
       expect(res.length).toBeGreaterThanOrEqual(3)
-      expect(pos(res, d1.id)).toBeLessThanOrEqual(1) // in top-2
+      expect(pos(res, d1.id)).toBeLessThanOrEqual(1)
     })
 
-    // - As textWeight increases, the title-only doc (D2) should improve in rank relative to semantic-only (D3)
     const positions = resultsByW.map((res) => ({ pD2: pos(res, d2.id), pD3: pos(res, d3.id) }))
-    // At low text weight, semantic-only should be ahead or equal to title-only
     expect(positions[0].pD3).toBeLessThanOrEqual(positions[0].pD2)
-    // At high text weight, title-only should be ahead of or equal to semantic-only
     expect(positions[positions.length - 1].pD2).toBeLessThanOrEqual(positions[positions.length - 1].pD3)
 
-    // Spot check extremes
     const res0 = resultsByW[0]
     const res1 = resultsByW[resultsByW.length - 1]
-    // w=0 (semantic only): D3 should be near top-2 alongside D1
     expect(pos(res0, d3.id)).toBeLessThanOrEqual(2)
-    // w=1 (text only): D2 should be near top-2 alongside D1
     expect(pos(res1, d2.id)).toBeLessThanOrEqual(2)
   })
 
@@ -322,14 +312,13 @@ describe('Advanced Hybrid Search', () => {
     const root = process.cwd()
     const files = collectProjectFiles(root)
 
-    // Ingest all project files as documents
     for (const rel of files) {
       const full = path.join(root, rel)
       try {
         const content = fs.readFileSync(full, 'utf8')
-        await db.addDocument({ projectId, type: path.extname(rel).slice(1) || 'txt', src: rel, content })
+        await db.addDocument({ projectId, type: path.extname(rel).slice(1) || 'txt', name: path.basename(rel), src: rel, content })
       } catch {
-        // ignore read errors or binaries
+        // ignore
       }
     }
 
@@ -337,9 +326,7 @@ describe('Advanced Hybrid Search', () => {
 
     for (const w of weights) {
       const results = await db.searchDocuments({ query: 'hybrid search', projectIds: [projectId], textWeight: w, limit: 20 })
-      // Expect at least one result
       expect(results.length).toBeGreaterThan(0)
-      // Expect some of the top results to be from docs/ or src/ where hybrid search is defined
       const topSrcs = results.slice(0, 5).map((r) => r.src)
       expect(topSrcs.some((s) => s.includes('docs/') || s.includes('src/'))).toBe(true)
     }
@@ -349,14 +336,13 @@ describe('Advanced Hybrid Search', () => {
     const db = await openDatabase({ connectionString: 'test' })
     const projectId = 'proj-keywords'
 
-    const d1 = await db.addDocument({ projectId, type: 'note', src: 'start.txt', content: 'car engine maintenance is important' })
-    const d2 = await db.addDocument({ projectId, type: 'note', src: 'middle.txt', content: 'Importance of car engine maintenance' })
-    const d3 = await db.addDocument({ projectId, type: 'note', src: 'end.txt', content: 'Regular maintenance for your car engine' })
-    const d4 = await db.addDocument({ projectId, type: 'note', src: 'no-match.txt', content: 'This is about gardening' })
-    const d5 = await db.addDocument({ projectId, type: 'note', src: 'partial.txt', content: 'car maintenance tips' })
-    const d6 = await db.addDocument({ projectId, type: 'note', src: 'semantic.txt', content: 'automobile motor upkeep' })
+    const d1 = await db.addDocument({ projectId, type: 'note', name: 'start', src: 'start.txt', content: 'car engine maintenance is important' })
+    const d2 = await db.addDocument({ projectId, type: 'note', name: 'middle', src: 'middle.txt', content: 'Importance of car engine maintenance' })
+    const d3 = await db.addDocument({ projectId, type: 'note', name: 'end', src: 'end.txt', content: 'Regular maintenance for your car engine' })
+    const d4 = await db.addDocument({ projectId, type: 'note', name: 'no-match', src: 'no-match.txt', content: 'This is about gardening' })
+    const d5 = await db.addDocument({ projectId, type: 'note', name: 'partial', src: 'partial.txt', content: 'car maintenance tips' })
+    const d6 = await db.addDocument({ projectId, type: 'note', name: 'semantic', src: 'semantic.txt', content: 'automobile motor upkeep' })
 
-    // Test with textWeight=1 (text-only search)
     const resultsText = await db.searchDocuments({ query: 'car engine maintenance', projectIds: [projectId], textWeight: 1 })
     const resultIdsText = resultsText.map(r => r.id)
 
@@ -368,15 +354,14 @@ describe('Advanced Hybrid Search', () => {
     expect(resultIdsText).not.toContain(d6.id)
     expect(resultsText.length).toBe(3)
 
-    // Test with textWeight=0 (semantic-only search)
     const resultsSemantic = await db.searchDocuments({ query: 'car engine maintenance', projectIds: [projectId], textWeight: 0 })
     const resultIdsSemantic = resultsSemantic.map(r => r.id)
     
-    expect(resultIdsSemantic).toContain(d6.id) // Semantic match should be here
-    expect(resultIdsSemantic).not.toContain(d4.id) // No match should not be here
+    expect(resultIdsSemantic).toContain(d6.id)
+    expect(resultIdsSemantic).not.toContain(d4.id)
     expect(resultIdsSemantic.length).toBeGreaterThan(0)
 
     const semanticRank = resultsSemantic.findIndex(r => r.id === d6.id)
-    expect(semanticRank).toBe(0) // Should be the top result
+    expect(semanticRank).toBe(0)
   })
 })

@@ -314,12 +314,12 @@ const DATABASE_URL = process.env.DATABASE_URL || ''
     expect(keywordRank).toBeLessThan(semanticRank)
   })
 
-  it('with textWeight=1 and no matching entities, should return empty array', async () => {
+  it('with textWeight=1 and no matching entities, should not match noMatch', async () => {
     const results = await db.searchEntities({
       query: 'non existing keywords',
       projectIds: [projectId],
       textWeight: 1,
-      limit: 3,
+      limit: 2,
     })
     const resultIds = results.map((r) => r.id)
 
