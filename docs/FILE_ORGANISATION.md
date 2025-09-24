@@ -42,6 +42,7 @@ Two tables are maintained:
   - `id` (uuid primary key, default `gen_random_uuid()`)
   - `project_id` (text not null)
   - `type` (text not null)
+  - `name` (text not null) — human-friendly title used for keyword ranking
   - `content` (text)
   - `fts` (tsvector, generated from `content`)
   - `embedding` (vector(384))
@@ -65,6 +66,7 @@ Embedding dimension is 384 and requires the `pgvector` extension.
 ## Hybrid Search
 
 - `searchDocuments` and `searchEntities` combine text rank (`ts_rank_cd` over `tsvector` using `websearch_to_tsquery`) and vector similarity (cosine similarity) with a weight factor (`textWeight` in [0,1]). Filters (`ids`/`types`/`projectIds`) are passed through as JSON parameters.
+- Documents keyword ranking considers token matches in content, the document name, and the `src` basename with higher weight given to name/src.
 - Reference SQL shapes are available under `docs/sql/` and `docs/hybrid_search.sql`. The actual SQL executed is embedded in `src/utils.ts`.
 
 ## Scripts (`scripts/`)

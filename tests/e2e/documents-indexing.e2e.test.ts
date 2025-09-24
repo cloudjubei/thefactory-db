@@ -22,10 +22,12 @@ const DATABASE_URL = process.env.DATABASE_URL || ''
   })
 
   it('add/get/update/delete/getBySrc/clear', async () => {
+    const src0 = `file-${Math.random().toString(36).slice(2)}.md`
     const created = await db.addDocument({
       projectId,
       type: 'note',
-      src: `file-${Math.random().toString(36).slice(2)}.md`,
+      name: src0,
+      src: src0,
       content: 'hello world',
       metadata: { a: 1 },
     })
@@ -53,8 +55,8 @@ const DATABASE_URL = process.env.DATABASE_URL || ''
     expect(missing).toBeUndefined()
 
     // create multiple and clear by project
-    await db.addDocument({ projectId, type: 'x', src: 'a', content: 'a' })
-    await db.addDocument({ projectId, type: 'x', src: 'b', content: 'b' })
+    await db.addDocument({ projectId, type: 'x', name: 'a', src: 'a', content: 'a' })
+    await db.addDocument({ projectId, type: 'x', name: 'b', src: 'b', content: 'b' })
     await db.clearDocuments([projectId])
     const afterClear = await db.matchDocuments({ projectIds: [projectId], limit: 10 })
     expect(afterClear.length).toBe(0)

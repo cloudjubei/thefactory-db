@@ -69,6 +69,7 @@ SELECT
   id,
   project_id AS "projectId",
   type,
+  name,
   content,
   src,
   to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS "createdAt",
@@ -83,6 +84,7 @@ SELECT
   id,
   project_id AS "projectId",
   type,
+  name,
   content,
   src,
   to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS "createdAt",
@@ -93,12 +95,13 @@ WHERE src = $1;
 `;
 
 const insertDocument = `
-INSERT INTO documents (project_id, type, content, src, embedding, metadata)
-VALUES ($1, $2, $3, $4, $5::vector, $6::jsonb)
+INSERT INTO documents (project_id, type, name, content, src, embedding, metadata)
+VALUES ($1, $2, $3, $4, $5, $6::vector, $7::jsonb)
 RETURNING 
   id,
   project_id AS "projectId",
   type,
+  name,
   content,
   src,
   to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS "createdAt",
@@ -109,15 +112,17 @@ RETURNING
 const updateDocument = `
 UPDATE documents SET
   type = COALESCE($2, type),
-  content = COALESCE($3, content),
-  src = COALESCE($4, src),
-  embedding = COALESCE($5::vector, embedding),
-  metadata = COALESCE($6::jsonb, metadata)
+  name = COALESCE($3, name),
+  content = COALESCE($4, content),
+  src = COALESCE($5, src),
+  embedding = COALESCE($6::vector, embedding),
+  metadata = COALESCE($7::jsonb, metadata)
 WHERE id = $1
 RETURNING 
   id,
   project_id AS "projectId",
   type,
+  name,
   content,
   src,
   to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS "createdAt",
@@ -138,6 +143,7 @@ CREATE TABLE IF NOT EXISTS documents (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   project_id text NOT NULL,
   type text NOT NULL,
+  name text NOT NULL,
   content text,
   fts tsvector GENERATED ALWAYS AS (
     CASE WHEN content IS NULL OR content = '' THEN NULL ELSE to_tsvector('english', content) END
@@ -236,6 +242,7 @@ RETURNS TABLE (
   id uuid,
   project_id text,
   type text,
+  name text,
   content text,
   src text,
   created_at timestamptz,
@@ -272,19 +279,29 @@ base_documents AS (
     )
   )
 ),
+-- Prefer matching on document name and src basename, plus content FTS
+src_basename AS (
+  SELECT d.id,
+         coalesce(
+           nullif(regexp_replace(
+             coalesce(substring(d.src from '([^/]+)$'), d.src),
+             '\\.[^.]+$',
+             '',
+             'g'
+           ), ''),
+           ''
+         ) AS base
+  FROM base_documents d
+),
 token_scores AS (
   SELECT d.id,
          MAX(
            COALESCE(ts_rank_cd(d.fts, websearch_to_tsquery('english', t.token)), 0.0) * 0.5 +
-           COALESCE(
-             ts_rank_cd(
-               to_tsvector('simple', regexp_replace(d.src, '[^a-zA-Z0-9]+', ' ', 'g')),
-               websearch_to_tsquery('simple', t.token)
-             ),
-             0.0
-           ) * 1.5
+           COALESCE(ts_rank_cd(to_tsvector('simple', n.base), websearch_to_tsquery('simple', t.token)), 0.0) * 1.5 +
+           COALESCE(ts_rank_cd(to_tsvector('simple', d.name), websearch_to_tsquery('simple', t.token)), 0.0) * 1.5
          ) AS token_max_score
   FROM base_documents d
+  JOIN src_basename n ON n.id = d.id
   CROSS JOIN tokens t
   GROUP BY d.id
 ),
@@ -316,6 +333,7 @@ scored AS (
 SELECT d.id,
        d.project_id,
        d.type,
+       d.name,
        d.content,
        d.src,
        d.created_at,
@@ -455,6 +473,7 @@ SELECT
   id,
   project_id AS "projectId",
   type,
+  name,
   content,
   src,
   to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS "createdAt",
@@ -505,6 +524,7 @@ SELECT
   id,
   project_id AS "projectId",
   type,
+  name,
   content,
   src,
   to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS "createdAt",

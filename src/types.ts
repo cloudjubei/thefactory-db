@@ -16,6 +16,7 @@ export type Document = {
   id: string;
   projectId: string;
   type: string;
+  name: string;
   content: string;
   src: string;
   createdAt: string;
@@ -29,6 +30,7 @@ export type Document = {
 export type DocumentInput = {
   projectId: string;
   type: string;
+  name: string;
   content: string;
   src: string;
   metadata?: Record<string, any>;

@@ -42,7 +42,7 @@ describe('TheFactoryDb validation and edges', () => {
     // invalid content type
     // @ts-expect-error invalid
     await expect(
-      db.addDocument({ projectId: 'p', type: 't', src: 's', content: 123 }),
+      db.addDocument({ projectId: 'p', type: 't', name: 'n', src: 's', content: 123 }),
     ).rejects.toThrow()
   })
 
