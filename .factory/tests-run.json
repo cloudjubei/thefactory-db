@@ -1,0 +1,278 @@
+{
+  "status": "fail",
+  "tests": [
+    {
+      "status": "fail",
+      "filePath": "tests/connection.test.ts",
+      "failures": [],
+      "skips": [],
+      "rawText": "node:internal/modules/esm/resolve:274\n    throw new ERR_MODULE_NOT_FOUND(\n          ^\n\nError [ERR_MODULE_NOT_FOUND]: Cannot find module '/private/var/folders/25/4dns7s115_q13z992np622qw0000gn/T/thefactory-tools-Bh2mWj/workspace/node_modules/.bin/dist/cli.js' imported from /private/var/folders/25/4dns7s115_q13z992np622qw0000gn/T/thefactory-tools-Bh2mWj/workspace/node_modules/.bin/vitest\n    at finalizeResolution (node:internal/modules/esm/resolve:274:11)\n    at moduleResolve (node:internal/modules/esm/resolve:859:10)\n    at defaultResolve (node:internal/modules/esm/resolve:983:11)\n    at ModuleLoader.defaultResolve (node:internal/modules/esm/loader:801:12)\n    at #cachedDefaultResolve (node:internal/modules/esm/loader:725:25)\n    at ModuleLoader.resolve (node:internal/modules/esm/loader:708:38)\n    at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:309:38)\n    at #link (node:internal/modules/esm/module_job:202:49) {\n  code: 'ERR_MODULE_NOT_FOUND',\n  url: 'file:///private/var/folders/25/4dns7s115_q13z992np622qw0000gn/T/thefactory-tools-Bh2mWj/workspace/node_modules/.bin/dist/cli.js'\n}\n\nNode.js v24.3.0\n",
+      "summary": {
+        "total": 0,
+        "passed": 0,
+        "failed": 0,
+        "skipped": 0,
+        "durationMs": 723
+      }
+    },
+    {
+      "status": "fail",
+      "filePath": "tests/e2e/codebase-hybrid-search.e2e.test.ts",
+      "failures": [],
+      "skips": [],
+      "rawText": "node:internal/modules/esm/resolve:274\n    throw new ERR_MODULE_NOT_FOUND(\n          ^\n\nError [ERR_MODULE_NOT_FOUND]: Cannot find module '/private/var/folders/25/4dns7s115_q13z992np622qw0000gn/T/thefactory-tools-Bh2mWj/workspace/node_modules/.bin/dist/cli.js' imported from /private/var/folders/25/4dns7s115_q13z992np622qw0000gn/T/thefactory-tools-Bh2mWj/workspace/node_modules/.bin/vitest\n    at finalizeResolution (node:internal/modules/esm/resolve:274:11)\n    at moduleResolve (node:internal/modules/esm/resolve:859:10)\n    at defaultResolve (node:internal/modules/esm/resolve:983:11)\n    at ModuleLoader.defaultResolve (node:internal/modules/esm/loader:801:12)\n    at #cachedDefaultResolve (node:internal/modules/esm/loader:725:25)\n    at ModuleLoader.resolve (node:internal/modules/esm/loader:708:38)\n    at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:309:38)\n    at #link (node:internal/modules/esm/module_job:202:49) {\n  code: 'ERR_MODULE_NOT_FOUND',\n  url: 'file:///private/var/folders/25/4dns7s115_q13z992np622qw0000gn/T/thefactory-tools-Bh2mWj/workspace/node_modules/.bin/dist/cli.js'\n}\n\nNode.js v24.3.0\n",
+      "summary": {
+        "total": 0,
+        "passed": 0,
+        "failed": 0,
+        "skipped": 0,
+        "durationMs": 231
+      }
+    },
+    {
+      "status": "fail",
+      "filePath": "tests/e2e/documents-hybrid-advanced.e2e.test.ts",
+      "failures": [],
+      "skips": [],
+      "rawText": "node:internal/modules/esm/resolve:274\n    throw new ERR_MODULE_NOT_FOUND(\n          ^\n\nError [ERR_MODULE_NOT_FOUND]: Cannot find module '/private/var/folders/25/4dns7s115_q13z992np622qw0000gn/T/thefactory-tools-Bh2mWj/workspace/node_modules/.bin/dist/cli.js' imported from /private/var/folders/25/4dns7s115_q13z992np622qw0000gn/T/thefactory-tools-Bh2mWj/workspace/node_modules/.bin/vitest\n    at finalizeResolution (node:internal/modules/esm/resolve:274:11)\n    at moduleResolve (node:internal/modules/esm/resolve:859:10)\n    at defaultResolve (node:internal/modules/esm/resolve:983:11)\n    at ModuleLoader.defaultResolve (node:internal/modules/esm/loader:801:12)\n    at #cachedDefaultResolve (node:internal/modules/esm/loader:725:25)\n    at ModuleLoader.resolve (node:internal/modules/esm/loader:708:38)\n    at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:309:38)\n    at #link (node:internal/modules/esm/module_job:202:49) {\n  code: 'ERR_MODULE_NOT_FOUND',\n  url: 'file:///private/var/folders/25/4dns7s115_q13z992np622qw0000gn/T/thefactory-tools-Bh2mWj/workspace/node_modules/.bin/dist/cli.js'\n}\n\nNode.js v24.3.0\n",
+      "summary": {
+        "total": 0,
+        "passed": 0,
+        "failed": 0,
+        "skipped": 0,
+        "durationMs": 232
+      }
+    },
+    {
+      "status": "fail",
+      "filePath": "tests/e2e/documents-hybrid.e2e.test.ts",
+      "failures": [],
+      "skips": [],
+      "rawText": "node:internal/modules/esm/resolve:274\n    throw new ERR_MODULE_NOT_FOUND(\n          ^\n\nError [ERR_MODULE_NOT_FOUND]: Cannot find module '/private/var/folders/25/4dns7s115_q13z992np622qw0000gn/T/thefactory-tools-Bh2mWj/workspace/node_modules/.bin/dist/cli.js' imported from /private/var/folders/25/4dns7s115_q13z992np622qw0000gn/T/thefactory-tools-Bh2mWj/workspace/node_modules/.bin/vitest\n    at finalizeResolution (node:internal/modules/esm/resolve:274:11)\n    at moduleResolve (node:internal/modules/esm/resolve:859:10)\n    at defaultResolve (node:internal/modules/esm/resolve:983:11)\n    at ModuleLoader.defaultResolve (node:internal/modules/esm/loader:801:12)\n    at #cachedDefaultResolve (node:internal/modules/esm/loader:725:25)\n    at ModuleLoader.resolve (node:internal/modules/esm/loader:708:38)\n    at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:309:38)\n    at #link (node:internal/modules/esm/module_job:202:49) {\n  code: 'ERR_MODULE_NOT_FOUND',\n  url: 'file:///private/var/folders/25/4dns7s115_q13z992np622qw0000gn/T/thefactory-tools-Bh2mWj/workspace/node_modules/.bin/dist/cli.js'\n}\n\nNode.js v24.3.0\n",
+      "summary": {
+        "total": 0,
+        "passed": 0,
+        "failed": 0,
+        "skipped": 0,
+        "durationMs": 223
+      }
+    },
+    {
+      "status": "fail",
+      "filePath": "tests/e2e/documents-indexing.e2e.test.ts",
+      "failures": [],
+      "skips": [],
+      "rawText": "node:internal/modules/esm/resolve:274\n    throw new ERR_MODULE_NOT_FOUND(\n          ^\n\nError [ERR_MODULE_NOT_FOUND]: Cannot find module '/private/var/folders/25/4dns7s115_q13z992np622qw0000gn/T/thefactory-tools-Bh2mWj/workspace/node_modules/.bin/dist/cli.js' imported from /private/var/folders/25/4dns7s115_q13z992np622qw0000gn/T/thefactory-tools-Bh2mWj/workspace/node_modules/.bin/vitest\n    at finalizeResolution (node:internal/modules/esm/resolve:274:11)\n    at moduleResolve (node:internal/modules/esm/resolve:859:10)\n    at defaultResolve (node:internal/modules/esm/resolve:983:11)\n    at ModuleLoader.defaultResolve (node:internal/modules/esm/loader:801:12)\n    at #cachedDefaultResolve (node:internal/modules/esm/loader:725:25)\n    at ModuleLoader.resolve (node:internal/modules/esm/loader:708:38)\n    at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:309:38)\n    at #link (node:internal/modules/esm/module_job:202:49) {\n  code: 'ERR_MODULE_NOT_FOUND',\n  url: 'file:///private/var/folders/25/4dns7s115_q13z992np622qw0000gn/T/thefactory-tools-Bh2mWj/workspace/node_modules/.bin/dist/cli.js'\n}\n\nNode.js v24.3.0\n",
+      "summary": {
+        "total": 0,
+        "passed": 0,
+        "failed": 0,
+        "skipped": 0,
+        "durationMs": 219
+      }
+    },
+    {
+      "status": "fail",
+      "filePath": "tests/e2e/entities-hybrid-advanced.e2e.test.ts",
+      "failures": [],
+      "skips": [],
+      "rawText": "node:internal/modules/esm/resolve:274\n    throw new ERR_MODULE_NOT_FOUND(\n          ^\n\nError [ERR_MODULE_NOT_FOUND]: Cannot find module '/private/var/folders/25/4dns7s115_q13z992np622qw0000gn/T/thefactory-tools-Bh2mWj/workspace/node_modules/.bin/dist/cli.js' imported from /private/var/folders/25/4dns7s115_q13z992np622qw0000gn/T/thefactory-tools-Bh2mWj/workspace/node_modules/.bin/vitest\n    at finalizeResolution (node:internal/modules/esm/resolve:274:11)\n    at moduleResolve (node:internal/modules/esm/resolve:859:10)\n    at defaultResolve (node:internal/modules/esm/resolve:983:11)\n    at ModuleLoader.defaultResolve (node:internal/modules/esm/loader:801:12)\n    at #cachedDefaultResolve (node:internal/modules/esm/loader:725:25)\n    at ModuleLoader.resolve (node:internal/modules/esm/loader:708:38)\n    at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:309:38)\n    at #link (node:internal/modules/esm/module_job:202:49) {\n  code: 'ERR_MODULE_NOT_FOUND',\n  url: 'file:///private/var/folders/25/4dns7s115_q13z992np622qw0000gn/T/thefactory-tools-Bh2mWj/workspace/node_modules/.bin/dist/cli.js'\n}\n\nNode.js v24.3.0\n",
+      "summary": {
+        "total": 0,
+        "passed": 0,
+        "failed": 0,
+        "skipped": 0,
+        "durationMs": 217
+      }
+    },
+    {
+      "status": "fail",
+      "filePath": "tests/e2e/entities-hybrid.e2e.test.ts",
+      "failures": [],
+      "skips": [],
+      "rawText": "node:internal/modules/esm/resolve:274\n    throw new ERR_MODULE_NOT_FOUND(\n          ^\n\nError [ERR_MODULE_NOT_FOUND]: Cannot find module '/private/var/folders/25/4dns7s115_q13z992np622qw0000gn/T/thefactory-tools-Bh2mWj/workspace/node_modules/.bin/dist/cli.js' imported from /private/var/folders/25/4dns7s115_q13z992np622qw0000gn/T/thefactory-tools-Bh2mWj/workspace/node_modules/.bin/vitest\n    at finalizeResolution (node:internal/modules/esm/resolve:274:11)\n    at moduleResolve (node:internal/modules/esm/resolve:859:10)\n    at defaultResolve (node:internal/modules/esm/resolve:983:11)\n    at ModuleLoader.defaultResolve (node:internal/modules/esm/loader:801:12)\n    at #cachedDefaultResolve (node:internal/modules/esm/loader:725:25)\n    at ModuleLoader.resolve (node:internal/modules/esm/loader:708:38)\n    at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:309:38)\n    at #link (node:internal/modules/esm/module_job:202:49) {\n  code: 'ERR_MODULE_NOT_FOUND',\n  url: 'file:///private/var/folders/25/4dns7s115_q13z992np622qw0000gn/T/thefactory-tools-Bh2mWj/workspace/node_modules/.bin/dist/cli.js'\n}\n\nNode.js v24.3.0\n",
+      "summary": {
+        "total": 0,
+        "passed": 0,
+        "failed": 0,
+        "skipped": 0,
+        "durationMs": 217
+      }
+    },
+    {
+      "status": "fail",
+      "filePath": "tests/e2e/entities-indexing.e2e.test.ts",
+      "failures": [],
+      "skips": [],
+      "rawText": "node:internal/modules/esm/resolve:274\n    throw new ERR_MODULE_NOT_FOUND(\n          ^\n\nError [ERR_MODULE_NOT_FOUND]: Cannot find module '/private/var/folders/25/4dns7s115_q13z992np622qw0000gn/T/thefactory-tools-Bh2mWj/workspace/node_modules/.bin/dist/cli.js' imported from /private/var/folders/25/4dns7s115_q13z992np622qw0000gn/T/thefactory-tools-Bh2mWj/workspace/node_modules/.bin/vitest\n    at finalizeResolution (node:internal/modules/esm/resolve:274:11)\n    at moduleResolve (node:internal/modules/esm/resolve:859:10)\n    at defaultResolve (node:internal/modules/esm/resolve:983:11)\n    at ModuleLoader.defaultResolve (node:internal/modules/esm/loader:801:12)\n    at #cachedDefaultResolve (node:internal/modules/esm/loader:725:25)\n    at ModuleLoader.resolve (node:internal/modules/esm/loader:708:38)\n    at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:309:38)\n    at #link (node:internal/modules/esm/module_job:202:49) {\n  code: 'ERR_MODULE_NOT_FOUND',\n  url: 'file:///private/var/folders/25/4dns7s115_q13z992np622qw0000gn/T/thefactory-tools-Bh2mWj/workspace/node_modules/.bin/dist/cli.js'\n}\n\nNode.js v24.3.0\n",
+      "summary": {
+        "total": 0,
+        "passed": 0,
+        "failed": 0,
+        "skipped": 0,
+        "durationMs": 210
+      }
+    },
+    {
+      "status": "fail",
+      "filePath": "tests/e2e/updates-and-fts.e2e.test.ts",
+      "failures": [],
+      "skips": [],
+      "rawText": "node:internal/modules/esm/resolve:274\n    throw new ERR_MODULE_NOT_FOUND(\n          ^\n\nError [ERR_MODULE_NOT_FOUND]: Cannot find module '/private/var/folders/25/4dns7s115_q13z992np622qw0000gn/T/thefactory-tools-Bh2mWj/workspace/node_modules/.bin/dist/cli.js' imported from /private/var/folders/25/4dns7s115_q13z992np622qw0000gn/T/thefactory-tools-Bh2mWj/workspace/node_modules/.bin/vitest\n    at finalizeResolution (node:internal/modules/esm/resolve:274:11)\n    at moduleResolve (node:internal/modules/esm/resolve:859:10)\n    at defaultResolve (node:internal/modules/esm/resolve:983:11)\n    at ModuleLoader.defaultResolve (node:internal/modules/esm/loader:801:12)\n    at #cachedDefaultResolve (node:internal/modules/esm/loader:725:25)\n    at ModuleLoader.resolve (node:internal/modules/esm/loader:708:38)\n    at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:309:38)\n    at #link (node:internal/modules/esm/module_job:202:49) {\n  code: 'ERR_MODULE_NOT_FOUND',\n  url: 'file:///private/var/folders/25/4dns7s115_q13z992np622qw0000gn/T/thefactory-tools-Bh2mWj/workspace/node_modules/.bin/dist/cli.js'\n}\n\nNode.js v24.3.0\n",
+      "summary": {
+        "total": 0,
+        "passed": 0,
+        "failed": 0,
+        "skipped": 0,
+        "durationMs": 210
+      }
+    },
+    {
+      "status": "fail",
+      "filePath": "tests/embeddings-options.test.ts",
+      "failures": [],
+      "skips": [],
+      "rawText": "node:internal/modules/esm/resolve:274\n    throw new ERR_MODULE_NOT_FOUND(\n          ^\n\nError [ERR_MODULE_NOT_FOUND]: Cannot find module '/private/var/folders/25/4dns7s115_q13z992np622qw0000gn/T/thefactory-tools-Bh2mWj/workspace/node_modules/.bin/dist/cli.js' imported from /private/var/folders/25/4dns7s115_q13z992np622qw0000gn/T/thefactory-tools-Bh2mWj/workspace/node_modules/.bin/vitest\n    at finalizeResolution (node:internal/modules/esm/resolve:274:11)\n    at moduleResolve (node:internal/modules/esm/resolve:859:10)\n    at defaultResolve (node:internal/modules/esm/resolve:983:11)\n    at ModuleLoader.defaultResolve (node:internal/modules/esm/loader:801:12)\n    at #cachedDefaultResolve (node:internal/modules/esm/loader:725:25)\n    at ModuleLoader.resolve (node:internal/modules/esm/loader:708:38)\n    at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:309:38)\n    at #link (node:internal/modules/esm/module_job:202:49) {\n  code: 'ERR_MODULE_NOT_FOUND',\n  url: 'file:///private/var/folders/25/4dns7s115_q13z992np622qw0000gn/T/thefactory-tools-Bh2mWj/workspace/node_modules/.bin/dist/cli.js'\n}\n\nNode.js v24.3.0\n",
+      "summary": {
+        "total": 0,
+        "passed": 0,
+        "failed": 0,
+        "skipped": 0,
+        "durationMs": 202
+      }
+    },
+    {
+      "status": "fail",
+      "filePath": "tests/embeddings.test.ts",
+      "failures": [],
+      "skips": [],
+      "rawText": "node:internal/modules/esm/resolve:274\n    throw new ERR_MODULE_NOT_FOUND(\n          ^\n\nError [ERR_MODULE_NOT_FOUND]: Cannot find module '/private/var/folders/25/4dns7s115_q13z992np622qw0000gn/T/thefactory-tools-Bh2mWj/workspace/node_modules/.bin/dist/cli.js' imported from /private/var/folders/25/4dns7s115_q13z992np622qw0000gn/T/thefactory-tools-Bh2mWj/workspace/node_modules/.bin/vitest\n    at finalizeResolution (node:internal/modules/esm/resolve:274:11)\n    at moduleResolve (node:internal/modules/esm/resolve:859:10)\n    at defaultResolve (node:internal/modules/esm/resolve:983:11)\n    at ModuleLoader.defaultResolve (node:internal/modules/esm/loader:801:12)\n    at #cachedDefaultResolve (node:internal/modules/esm/loader:725:25)\n    at ModuleLoader.resolve (node:internal/modules/esm/loader:708:38)\n    at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:309:38)\n    at #link (node:internal/modules/esm/module_job:202:49) {\n  code: 'ERR_MODULE_NOT_FOUND',\n  url: 'file:///private/var/folders/25/4dns7s115_q13z992np622qw0000gn/T/thefactory-tools-Bh2mWj/workspace/node_modules/.bin/dist/cli.js'\n}\n\nNode.js v24.3.0\n",
+      "summary": {
+        "total": 0,
+        "passed": 0,
+        "failed": 0,
+        "skipped": 0,
+        "durationMs": 201
+      }
+    },
+    {
+      "status": "fail",
+      "filePath": "tests/hybrid-search-advanced.test.ts",
+      "failures": [],
+      "skips": [],
+      "rawText": "node:internal/modules/esm/resolve:274\n    throw new ERR_MODULE_NOT_FOUND(\n          ^\n\nError [ERR_MODULE_NOT_FOUND]: Cannot find module '/private/var/folders/25/4dns7s115_q13z992np622qw0000gn/T/thefactory-tools-Bh2mWj/workspace/node_modules/.bin/dist/cli.js' imported from /private/var/folders/25/4dns7s115_q13z992np622qw0000gn/T/thefactory-tools-Bh2mWj/workspace/node_modules/.bin/vitest\n    at finalizeResolution (node:internal/modules/esm/resolve:274:11)\n    at moduleResolve (node:internal/modules/esm/resolve:859:10)\n    at defaultResolve (node:internal/modules/esm/resolve:983:11)\n    at ModuleLoader.defaultResolve (node:internal/modules/esm/loader:801:12)\n    at #cachedDefaultResolve (node:internal/modules/esm/loader:725:25)\n    at ModuleLoader.resolve (node:internal/modules/esm/loader:708:38)\n    at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:309:38)\n    at #link (node:internal/modules/esm/module_job:202:49) {\n  code: 'ERR_MODULE_NOT_FOUND',\n  url: 'file:///private/var/folders/25/4dns7s115_q13z992np622qw0000gn/T/thefactory-tools-Bh2mWj/workspace/node_modules/.bin/dist/cli.js'\n}\n\nNode.js v24.3.0\n",
+      "summary": {
+        "total": 0,
+        "passed": 0,
+        "failed": 0,
+        "skipped": 0,
+        "durationMs": 209
+      }
+    },
+    {
+      "status": "fail",
+      "filePath": "tests/index-validation.test.ts",
+      "failures": [],
+      "skips": [],
+      "rawText": "node:internal/modules/esm/resolve:274\n    throw new ERR_MODULE_NOT_FOUND(\n          ^\n\nError [ERR_MODULE_NOT_FOUND]: Cannot find module '/private/var/folders/25/4dns7s115_q13z992np622qw0000gn/T/thefactory-tools-Bh2mWj/workspace/node_modules/.bin/dist/cli.js' imported from /private/var/folders/25/4dns7s115_q13z992np622qw0000gn/T/thefactory-tools-Bh2mWj/workspace/node_modules/.bin/vitest\n    at finalizeResolution (node:internal/modules/esm/resolve:274:11)\n    at moduleResolve (node:internal/modules/esm/resolve:859:10)\n    at defaultResolve (node:internal/modules/esm/resolve:983:11)\n    at ModuleLoader.defaultResolve (node:internal/modules/esm/loader:801:12)\n    at #cachedDefaultResolve (node:internal/modules/esm/loader:725:25)\n    at ModuleLoader.resolve (node:internal/modules/esm/loader:708:38)\n    at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:309:38)\n    at #link (node:internal/modules/esm/module_job:202:49) {\n  code: 'ERR_MODULE_NOT_FOUND',\n  url: 'file:///private/var/folders/25/4dns7s115_q13z992np622qw0000gn/T/thefactory-tools-Bh2mWj/workspace/node_modules/.bin/dist/cli.js'\n}\n\nNode.js v24.3.0\n",
+      "summary": {
+        "total": 0,
+        "passed": 0,
+        "failed": 0,
+        "skipped": 0,
+        "durationMs": 217
+      }
+    },
+    {
+      "status": "fail",
+      "filePath": "tests/index.test.ts",
+      "failures": [],
+      "skips": [],
+      "rawText": "node:internal/modules/esm/resolve:274\n    throw new ERR_MODULE_NOT_FOUND(\n          ^\n\nError [ERR_MODULE_NOT_FOUND]: Cannot find module '/private/var/folders/25/4dns7s115_q13z992np622qw0000gn/T/thefactory-tools-Bh2mWj/workspace/node_modules/.bin/dist/cli.js' imported from /private/var/folders/25/4dns7s115_q13z992np622qw0000gn/T/thefactory-tools-Bh2mWj/workspace/node_modules/.bin/vitest\n    at finalizeResolution (node:internal/modules/esm/resolve:274:11)\n    at moduleResolve (node:internal/modules/esm/resolve:859:10)\n    at defaultResolve (node:internal/modules/esm/resolve:983:11)\n    at ModuleLoader.defaultResolve (node:internal/modules/esm/loader:801:12)\n    at #cachedDefaultResolve (node:internal/modules/esm/loader:725:25)\n    at ModuleLoader.resolve (node:internal/modules/esm/loader:708:38)\n    at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:309:38)\n    at #link (node:internal/modules/esm/module_job:202:49) {\n  code: 'ERR_MODULE_NOT_FOUND',\n  url: 'file:///private/var/folders/25/4dns7s115_q13z992np622qw0000gn/T/thefactory-tools-Bh2mWj/workspace/node_modules/.bin/dist/cli.js'\n}\n\nNode.js v24.3.0\n",
+      "summary": {
+        "total": 0,
+        "passed": 0,
+        "failed": 0,
+        "skipped": 0,
+        "durationMs": 215
+      }
+    },
+    {
+      "status": "fail",
+      "filePath": "tests/json-utils.test.ts",
+      "failures": [],
+      "skips": [],
+      "rawText": "node:internal/modules/esm/resolve:274\n    throw new ERR_MODULE_NOT_FOUND(\n          ^\n\nError [ERR_MODULE_NOT_FOUND]: Cannot find module '/private/var/folders/25/4dns7s115_q13z992np622qw0000gn/T/thefactory-tools-Bh2mWj/workspace/node_modules/.bin/dist/cli.js' imported from /private/var/folders/25/4dns7s115_q13z992np622qw0000gn/T/thefactory-tools-Bh2mWj/workspace/node_modules/.bin/vitest\n    at finalizeResolution (node:internal/modules/esm/resolve:274:11)\n    at moduleResolve (node:internal/modules/esm/resolve:859:10)\n    at defaultResolve (node:internal/modules/esm/resolve:983:11)\n    at ModuleLoader.defaultResolve (node:internal/modules/esm/loader:801:12)\n    at #cachedDefaultResolve (node:internal/modules/esm/loader:725:25)\n    at ModuleLoader.resolve (node:internal/modules/esm/loader:708:38)\n    at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:309:38)\n    at #link (node:internal/modules/esm/module_job:202:49) {\n  code: 'ERR_MODULE_NOT_FOUND',\n  url: 'file:///private/var/folders/25/4dns7s115_q13z992np622qw0000gn/T/thefactory-tools-Bh2mWj/workspace/node_modules/.bin/dist/cli.js'\n}\n\nNode.js v24.3.0\n",
+      "summary": {
+        "total": 0,
+        "passed": 0,
+        "failed": 0,
+        "skipped": 0,
+        "durationMs": 216
+      }
+    },
+    {
+      "status": "fail",
+      "filePath": "tests/logger.test.ts",
+      "failures": [],
+      "skips": [],
+      "rawText": "node:internal/modules/esm/resolve:274\n    throw new ERR_MODULE_NOT_FOUND(\n          ^\n\nError [ERR_MODULE_NOT_FOUND]: Cannot find module '/private/var/folders/25/4dns7s115_q13z992np622qw0000gn/T/thefactory-tools-Bh2mWj/workspace/node_modules/.bin/dist/cli.js' imported from /private/var/folders/25/4dns7s115_q13z992np622qw0000gn/T/thefactory-tools-Bh2mWj/workspace/node_modules/.bin/vitest\n    at finalizeResolution (node:internal/modules/esm/resolve:274:11)\n    at moduleResolve (node:internal/modules/esm/resolve:859:10)\n    at defaultResolve (node:internal/modules/esm/resolve:983:11)\n    at ModuleLoader.defaultResolve (node:internal/modules/esm/loader:801:12)\n    at #cachedDefaultResolve (node:internal/modules/esm/loader:725:25)\n    at ModuleLoader.resolve (node:internal/modules/esm/loader:708:38)\n    at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:309:38)\n    at #link (node:internal/modules/esm/module_job:202:49) {\n  code: 'ERR_MODULE_NOT_FOUND',\n  url: 'file:///private/var/folders/25/4dns7s115_q13z992np622qw0000gn/T/thefactory-tools-Bh2mWj/workspace/node_modules/.bin/dist/cli.js'\n}\n\nNode.js v24.3.0\n",
+      "summary": {
+        "total": 0,
+        "passed": 0,
+        "failed": 0,
+        "skipped": 0,
+        "durationMs": 215
+      }
+    },
+    {
+      "status": "fail",
+      "filePath": "tests/tokenizer.test.ts",
+      "failures": [],
+      "skips": [],
+      "rawText": "node:internal/modules/esm/resolve:274\n    throw new ERR_MODULE_NOT_FOUND(\n          ^\n\nError [ERR_MODULE_NOT_FOUND]: Cannot find module '/private/var/folders/25/4dns7s115_q13z992np622qw0000gn/T/thefactory-tools-Bh2mWj/workspace/node_modules/.bin/dist/cli.js' imported from /private/var/folders/25/4dns7s115_q13z992np622qw0000gn/T/thefactory-tools-Bh2mWj/workspace/node_modules/.bin/vitest\n    at finalizeResolution (node:internal/modules/esm/resolve:274:11)\n    at moduleResolve (node:internal/modules/esm/resolve:859:10)\n    at defaultResolve (node:internal/modules/esm/resolve:983:11)\n    at ModuleLoader.defaultResolve (node:internal/modules/esm/loader:801:12)\n    at #cachedDefaultResolve (node:internal/modules/esm/loader:725:25)\n    at ModuleLoader.resolve (node:internal/modules/esm/loader:708:38)\n    at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:309:38)\n    at #link (node:internal/modules/esm/module_job:202:49) {\n  code: 'ERR_MODULE_NOT_FOUND',\n  url: 'file:///private/var/folders/25/4dns7s115_q13z992np622qw0000gn/T/thefactory-tools-Bh2mWj/workspace/node_modules/.bin/dist/cli.js'\n}\n\nNode.js v24.3.0\n",
+      "summary": {
+        "total": 0,
+        "passed": 0,
+        "failed": 0,
+        "skipped": 0,
+        "durationMs": 264
+      }
+    },
+    {
+      "status": "fail",
+      "filePath": "tests/utils.test.ts",
+      "failures": [],
+      "skips": [],
+      "rawText": "node:internal/modules/esm/resolve:274\n    throw new ERR_MODULE_NOT_FOUND(\n          ^\n\nError [ERR_MODULE_NOT_FOUND]: Cannot find module '/private/var/folders/25/4dns7s115_q13z992np622qw0000gn/T/thefactory-tools-Bh2mWj/workspace/node_modules/.bin/dist/cli.js' imported from /private/var/folders/25/4dns7s115_q13z992np622qw0000gn/T/thefactory-tools-Bh2mWj/workspace/node_modules/.bin/vitest\n    at finalizeResolution (node:internal/modules/esm/resolve:274:11)\n    at moduleResolve (node:internal/modules/esm/resolve:859:10)\n    at defaultResolve (node:internal/modules/esm/resolve:983:11)\n    at ModuleLoader.defaultResolve (node:internal/modules/esm/loader:801:12)\n    at #cachedDefaultResolve (node:internal/modules/esm/loader:725:25)\n    at ModuleLoader.resolve (node:internal/modules/esm/loader:708:38)\n    at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:309:38)\n    at #link (node:internal/modules/esm/module_job:202:49) {\n  code: 'ERR_MODULE_NOT_FOUND',\n  url: 'file:///private/var/folders/25/4dns7s115_q13z992np622qw0000gn/T/thefactory-tools-Bh2mWj/workspace/node_modules/.bin/dist/cli.js'\n}\n\nNode.js v24.3.0\n",
+      "summary": {
+        "total": 0,
+        "passed": 0,
+        "failed": 0,
+        "skipped": 0,
+        "durationMs": 212
+      }
+    },
+    {
+      "status": "fail",
+      "filePath": "tests/validation.test.ts",
+      "failures": [],
+      "skips": [],
+      "rawText": "node:internal/modules/esm/resolve:274\n    throw new ERR_MODULE_NOT_FOUND(\n          ^\n\nError [ERR_MODULE_NOT_FOUND]: Cannot find module '/private/var/folders/25/4dns7s115_q13z992np622qw0000gn/T/thefactory-tools-Bh2mWj/workspace/node_modules/.bin/dist/cli.js' imported from /private/var/folders/25/4dns7s115_q13z992np622qw0000gn/T/thefactory-tools-Bh2mWj/workspace/node_modules/.bin/vitest\n    at finalizeResolution (node:internal/modules/esm/resolve:274:11)\n    at moduleResolve (node:internal/modules/esm/resolve:859:10)\n    at defaultResolve (node:internal/modules/esm/resolve:983:11)\n    at ModuleLoader.defaultResolve (node:internal/modules/esm/loader:801:12)\n    at #cachedDefaultResolve (node:internal/modules/esm/loader:725:25)\n    at ModuleLoader.resolve (node:internal/modules/esm/loader:708:38)\n    at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:309:38)\n    at #link (node:internal/modules/esm/module_job:202:49) {\n  code: 'ERR_MODULE_NOT_FOUND',\n  url: 'file:///private/var/folders/25/4dns7s115_q13z992np622qw0000gn/T/thefactory-tools-Bh2mWj/workspace/node_modules/.bin/dist/cli.js'\n}\n\nNode.js v24.3.0\n",
+      "summary": {
+        "total": 0,
+        "passed": 0,
+        "failed": 0,
+        "skipped": 0,
+        "durationMs": 215
+      }
+    }
+  ],
+  "summary": {
+    "total": 0,
+    "passed": 0,
+    "failed": 0,
+    "skipped": 0,
+    "durationMs": 4648
+  }
+}

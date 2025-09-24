@@ -279,7 +279,8 @@ full_text AS (
                ),
                0.0
              ) * 1.5
-           ) DESC
+           ) DESC,
+           id ASC
          ) AS rank_ix
   FROM base_documents
   WHERE (
@@ -293,7 +294,7 @@ full_text AS (
 semantic AS (
   SELECT id,
          row_number() OVER (
-           ORDER BY embedding <-> query_embedding
+           ORDER BY embedding <-> query_embedding, id ASC
          ) AS rank_ix
   FROM base_documents
   WHERE embedding IS NOT NULL
@@ -329,7 +330,7 @@ SELECT d.id,
        ) AS keyword_score
 FROM scored
 JOIN base_documents d ON d.id = scored.id
-ORDER BY similarity DESC
+ORDER BY similarity DESC, d.id ASC
 LIMIT match_count;
 $$;
 
@@ -380,7 +381,7 @@ WITH base_entities AS (
 full_text AS (
   SELECT id,
          row_number() OVER (
-           ORDER BY ts_rank_cd(fts, websearch_to_tsquery(query_text)) DESC
+           ORDER BY ts_rank_cd(fts, websearch_to_tsquery(query_text)) DESC, id ASC
          ) AS rank_ix
   FROM base_entities
   WHERE fts @@ websearch_to_tsquery(query_text)
@@ -389,7 +390,7 @@ full_text AS (
 semantic AS (
   SELECT id,
          row_number() OVER (
-           ORDER BY embedding <-> query_embedding
+           ORDER BY embedding <-> query_embedding, id ASC
          ) AS rank_ix
   FROM base_entities
   WHERE embedding IS NOT NULL
@@ -415,7 +416,7 @@ SELECT e.id,
        ts_rank_cd(e.fts, websearch_to_tsquery(query_text)) AS keyword_score
 FROM scored
 JOIN base_entities e ON e.id = scored.id
-ORDER BY similarity DESC
+ORDER BY similarity DESC, e.id ASC
 LIMIT match_count;
 $$;
 `;
