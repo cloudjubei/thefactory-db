@@ -24,7 +24,7 @@
     },
     "src/validation.ts": {
       "pct_statements": 100,
-      "pct_branch": 97.0873786407767,
+      "pct_branch": 92.66055045871559,
       "pct_functions": 100,
       "pct_lines": 100,
       "uncovered_lines": []
@@ -83,7 +83,7 @@
   },
   "summary": {
     "pct_statements": 92.98029556650246,
-    "pct_branch": 92.02533224724627,
+    "pct_branch": 91.39292822123753,
     "pct_functions": 97.14285714285714,
     "pct_lines": 92.98029556650246
   },

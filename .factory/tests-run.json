@@ -1,297 +1,571 @@
 {
-  "status": "fail",
+  "status": "ok",
   "tests": [
     {
-      "status": "fail",
+      "status": "ok",
       "filePath": "tests/connection.test.ts",
-      "passes": [],
+      "passes": [
+        {
+          "testName": "tests/connection.test.ts > openPostgres > should connect, initialize schema, and return a client 2ms"
+        },
+        {
+          "testName": "tests/connection.test.ts > openPostgres > should close the connection and re-throw if schema initialization fails 1ms"
+        },
+        {
+          "testName": "tests/connection.test.ts > openPostgres > should not throw if SQL scripts are not found 0ms"
+        }
+      ],
       "failures": [],
       "skips": [],
-      "rawText": "node:internal/modules/esm/resolve:274\n    throw new ERR_MODULE_NOT_FOUND(\n          ^\n\nError [ERR_MODULE_NOT_FOUND]: Cannot find module '/private/var/folders/25/4dns7s115_q13z992np622qw0000gn/T/thefactory-tools-erYSxA/workspace/node_modules/.bin/dist/cli.js' imported from /private/var/folders/25/4dns7s115_q13z992np622qw0000gn/T/thefactory-tools-erYSxA/workspace/node_modules/.bin/vitest\n    at finalizeResolution (node:internal/modules/esm/resolve:274:11)\n    at moduleResolve (node:internal/modules/esm/resolve:859:10)\n    at defaultResolve (node:internal/modules/esm/resolve:983:11)\n    at ModuleLoader.defaultResolve (node:internal/modules/esm/loader:801:12)\n    at #cachedDefaultResolve (node:internal/modules/esm/loader:725:25)\n    at ModuleLoader.resolve (node:internal/modules/esm/loader:708:38)\n    at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:309:38)\n    at #link (node:internal/modules/esm/module_job:202:49) {\n  code: 'ERR_MODULE_NOT_FOUND',\n  url: 'file:///private/var/folders/25/4dns7s115_q13z992np622qw0000gn/T/thefactory-tools-erYSxA/workspace/node_modules/.bin/dist/cli.js'\n}\n\nNode.js v24.3.0\n",
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/connection.test.ts > openPostgres > should connect, initialize schema, and return a client 2ms\n ✓ tests/connection.test.ts > openPostgres > should close the connection and re-throw if schema initialization fails 1ms\n ✓ tests/connection.test.ts > openPostgres > should not throw if SQL scripts are not found 0ms\n\n Test Files  1 passed (1)\n      Tests  3 passed (3)\n   Start at  18:34:37\n   Duration  219ms (transform 30ms, setup 0ms, collect 27ms, tests 3ms, environment 0ms, prepare 45ms)\n\n",
       "summary": {
-        "total": 0,
-        "passed": 0,
+        "total": 3,
+        "passed": 3,
         "failed": 0,
         "skipped": 0,
-        "durationMs": 397
+        "durationMs": 219
       }
     },
     {
-      "status": "fail",
+      "status": "skipped",
       "filePath": "tests/e2e/codebase-hybrid-search.e2e.test.ts",
       "passes": [],
       "failures": [],
-      "skips": [],
-      "rawText": "node:internal/modules/esm/resolve:274\n    throw new ERR_MODULE_NOT_FOUND(\n          ^\n\nError [ERR_MODULE_NOT_FOUND]: Cannot find module '/private/var/folders/25/4dns7s115_q13z992np622qw0000gn/T/thefactory-tools-erYSxA/workspace/node_modules/.bin/dist/cli.js' imported from /private/var/folders/25/4dns7s115_q13z992np622qw0000gn/T/thefactory-tools-erYSxA/workspace/node_modules/.bin/vitest\n    at finalizeResolution (node:internal/modules/esm/resolve:274:11)\n    at moduleResolve (node:internal/modules/esm/resolve:859:10)\n    at defaultResolve (node:internal/modules/esm/resolve:983:11)\n    at ModuleLoader.defaultResolve (node:internal/modules/esm/loader:801:12)\n    at #cachedDefaultResolve (node:internal/modules/esm/loader:725:25)\n    at ModuleLoader.resolve (node:internal/modules/esm/loader:708:38)\n    at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:309:38)\n    at #link (node:internal/modules/esm/module_job:202:49) {\n  code: 'ERR_MODULE_NOT_FOUND',\n  url: 'file:///private/var/folders/25/4dns7s115_q13z992np622qw0000gn/T/thefactory-tools-erYSxA/workspace/node_modules/.bin/dist/cli.js'\n}\n\nNode.js v24.3.0\n",
+      "skips": [
+        {
+          "testName": "(1)"
+        },
+        {
+          "testName": "(5)"
+        }
+      ],
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ↓ tests/e2e/codebase-hybrid-search.e2e.test.ts > E2E: Codebase Hybrid Search (real DB) > w=1 (text-only): \"hybrid search function\" should return SQL and source files\n ↓ tests/e2e/codebase-hybrid-search.e2e.test.ts > E2E: Codebase Hybrid Search (real DB) > w=0 (semantic-only): \"hybrid search function\" should prioritize semantically relevant files\n ↓ tests/e2e/codebase-hybrid-search.e2e.test.ts > E2E: Codebase Hybrid Search (real DB) > w=0.5 (balanced): \"hybrid search function\" results should be a mix\n ↓ tests/e2e/codebase-hybrid-search.e2e.test.ts > E2E: Codebase Hybrid Search (real DB) > w=1 (text-only): \"pgvector\" should return md files, tests and scripts\n ↓ tests/e2e/codebase-hybrid-search.e2e.test.ts > E2E: Codebase Hybrid Search (real DB) > w=0 (semantic-only): \"pgvector\" should find files related to vector databases\n\n Test Files  1 skipped (1)\n      Tests  5 skipped (5)\n   Start at  18:34:38\n   Duration  414ms (transform 61ms, setup 0ms, collect 193ms, tests 0ms, environment 0ms, prepare 44ms)\n\n",
       "summary": {
-        "total": 0,
+        "total": 5,
         "passed": 0,
         "failed": 0,
-        "skipped": 0,
-        "durationMs": 223
+        "skipped": 5,
+        "durationMs": 414
       }
     },
     {
-      "status": "fail",
+      "status": "skipped",
       "filePath": "tests/e2e/documents-hybrid-advanced.e2e.test.ts",
       "passes": [],
       "failures": [],
-      "skips": [],
-      "rawText": "node:internal/modules/esm/resolve:274\n    throw new ERR_MODULE_NOT_FOUND(\n          ^\n\nError [ERR_MODULE_NOT_FOUND]: Cannot find module '/private/var/folders/25/4dns7s115_q13z992np622qw0000gn/T/thefactory-tools-erYSxA/workspace/node_modules/.bin/dist/cli.js' imported from /private/var/folders/25/4dns7s115_q13z992np622qw0000gn/T/thefactory-tools-erYSxA/workspace/node_modules/.bin/vitest\n    at finalizeResolution (node:internal/modules/esm/resolve:274:11)\n    at moduleResolve (node:internal/modules/esm/resolve:859:10)\n    at defaultResolve (node:internal/modules/esm/resolve:983:11)\n    at ModuleLoader.defaultResolve (node:internal/modules/esm/loader:801:12)\n    at #cachedDefaultResolve (node:internal/modules/esm/loader:725:25)\n    at ModuleLoader.resolve (node:internal/modules/esm/loader:708:38)\n    at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:309:38)\n    at #link (node:internal/modules/esm/module_job:202:49) {\n  code: 'ERR_MODULE_NOT_FOUND',\n  url: 'file:///private/var/folders/25/4dns7s115_q13z992np622qw0000gn/T/thefactory-tools-erYSxA/workspace/node_modules/.bin/dist/cli.js'\n}\n\nNode.js v24.3.0\n",
+      "skips": [
+        {
+          "testName": "(1)"
+        },
+        {
+          "testName": "(9)"
+        }
+      ],
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ↓ tests/e2e/documents-hybrid-advanced.e2e.test.ts > E2E: Documents Hybrid Search Advanced (real DB) > w=0 (semantic-only): semantic-only docs should outrank title-only docs and appear near the top-10\n ↓ tests/e2e/documents-hybrid-advanced.e2e.test.ts > E2E: Documents Hybrid Search Advanced (real DB) > w=0.2: both signals contribute; semantic-only present near top and title-only starts to surface\n ↓ tests/e2e/documents-hybrid-advanced.e2e.test.ts > E2E: Documents Hybrid Search Advanced (real DB) > w=0.5: balanced; both semantic-only and title-only appear in top-10\n ↓ tests/e2e/documents-hybrid-advanced.e2e.test.ts > E2E: Documents Hybrid Search Advanced (real DB) > w=0.8: title-only (filename) should be stronger and appear in top-5\n ↓ tests/e2e/documents-hybrid-advanced.e2e.test.ts > E2E: Documents Hybrid Search Advanced (real DB) > w=1 (text-only): filename (src) match enables retrieval even with unrelated content\n ↓ tests/e2e/documents-hybrid-advanced.e2e.test.ts > E2E: Documents Hybrid Search Advanced (real DB) > filename (src) contributes to textScore: top results include src hits when textWeight=1\n ↓ tests/e2e/documents-hybrid-advanced.e2e.test.ts > E2E: Documents Keyword List Search > with textWeight=1, should only return documents with all keywords\n ↓ tests/e2e/documents-hybrid-advanced.e2e.test.ts > E2E: Documents Keyword List Search > with textWeight=0, should return semantically similar documents\n ↓ tests/e2e/documents-hybrid-advanced.e2e.test.ts > E2E: Documents Keyword List Search > with textWeight=1 and no matching documents, should return something but with a score of 0\n\n Test Files  1 skipped (1)\n      Tests  9 skipped (9)\n   Start at  18:34:39\n   Duration  408ms (transform 66ms, setup 0ms, collect 175ms, tests 0ms, environment 0ms, prepare 53ms)\n\n",
       "summary": {
-        "total": 0,
+        "total": 9,
         "passed": 0,
         "failed": 0,
-        "skipped": 0,
-        "durationMs": 203
+        "skipped": 9,
+        "durationMs": 408
       }
     },
     {
-      "status": "fail",
+      "status": "skipped",
       "filePath": "tests/e2e/documents-hybrid.e2e.test.ts",
       "passes": [],
       "failures": [],
-      "skips": [],
-      "rawText": "node:internal/modules/esm/resolve:274\n    throw new ERR_MODULE_NOT_FOUND(\n          ^\n\nError [ERR_MODULE_NOT_FOUND]: Cannot find module '/private/var/folders/25/4dns7s115_q13z992np622qw0000gn/T/thefactory-tools-erYSxA/workspace/node_modules/.bin/dist/cli.js' imported from /private/var/folders/25/4dns7s115_q13z992np622qw0000gn/T/thefactory-tools-erYSxA/workspace/node_modules/.bin/vitest\n    at finalizeResolution (node:internal/modules/esm/resolve:274:11)\n    at moduleResolve (node:internal/modules/esm/resolve:859:10)\n    at defaultResolve (node:internal/modules/esm/resolve:983:11)\n    at ModuleLoader.defaultResolve (node:internal/modules/esm/loader:801:12)\n    at #cachedDefaultResolve (node:internal/modules/esm/loader:725:25)\n    at ModuleLoader.resolve (node:internal/modules/esm/loader:708:38)\n    at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:309:38)\n    at #link (node:internal/modules/esm/module_job:202:49) {\n  code: 'ERR_MODULE_NOT_FOUND',\n  url: 'file:///private/var/folders/25/4dns7s115_q13z992np622qw0000gn/T/thefactory-tools-erYSxA/workspace/node_modules/.bin/dist/cli.js'\n}\n\nNode.js v24.3.0\n",
+      "skips": [
+        {
+          "testName": "(1)"
+        },
+        {
+          "testName": "(2)"
+        }
+      ],
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ↓ tests/e2e/documents-hybrid.e2e.test.ts > E2E: Documents Hybrid Search (real DB) > ranks content, title-only (src), and semantic-only documents across weights\n ↓ tests/e2e/documents-hybrid.e2e.test.ts > E2E: Documents Hybrid Search (real DB) > supports matchDocuments filtering by project\n\n Test Files  1 skipped (1)\n      Tests  2 skipped (2)\n   Start at  18:34:40\n   Duration  542ms (transform 73ms, setup 0ms, collect 206ms, tests 0ms, environment 0ms, prepare 58ms)\n\n",
       "summary": {
-        "total": 0,
+        "total": 2,
         "passed": 0,
         "failed": 0,
-        "skipped": 0,
-        "durationMs": 228
+        "skipped": 2,
+        "durationMs": 542
       }
     },
     {
-      "status": "fail",
+      "status": "skipped",
       "filePath": "tests/e2e/documents-indexing.e2e.test.ts",
       "passes": [],
       "failures": [],
-      "skips": [],
-      "rawText": "node:internal/modules/esm/resolve:274\n    throw new ERR_MODULE_NOT_FOUND(\n          ^\n\nError [ERR_MODULE_NOT_FOUND]: Cannot find module '/private/var/folders/25/4dns7s115_q13z992np622qw0000gn/T/thefactory-tools-erYSxA/workspace/node_modules/.bin/dist/cli.js' imported from /private/var/folders/25/4dns7s115_q13z992np622qw0000gn/T/thefactory-tools-erYSxA/workspace/node_modules/.bin/vitest\n    at finalizeResolution (node:internal/modules/esm/resolve:274:11)\n    at moduleResolve (node:internal/modules/esm/resolve:859:10)\n    at defaultResolve (node:internal/modules/esm/resolve:983:11)\n    at ModuleLoader.defaultResolve (node:internal/modules/esm/loader:801:12)\n    at #cachedDefaultResolve (node:internal/modules/esm/loader:725:25)\n    at ModuleLoader.resolve (node:internal/modules/esm/loader:708:38)\n    at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:309:38)\n    at #link (node:internal/modules/esm/module_job:202:49) {\n  code: 'ERR_MODULE_NOT_FOUND',\n  url: 'file:///private/var/folders/25/4dns7s115_q13z992np622qw0000gn/T/thefactory-tools-erYSxA/workspace/node_modules/.bin/dist/cli.js'\n}\n\nNode.js v24.3.0\n",
+      "skips": [
+        {
+          "testName": "(1)"
+        },
+        {
+          "testName": "(1)"
+        }
+      ],
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ↓ tests/e2e/documents-indexing.e2e.test.ts > E2E: Documents Indexing (real DB) > add/get/update/delete/getBySrc/clear\n\n Test Files  1 skipped (1)\n      Tests  1 skipped (1)\n   Start at  18:34:41\n   Duration  407ms (transform 56ms, setup 0ms, collect 160ms, tests 0ms, environment 0ms, prepare 49ms)\n\n",
       "summary": {
-        "total": 0,
+        "total": 1,
         "passed": 0,
         "failed": 0,
-        "skipped": 0,
-        "durationMs": 205
+        "skipped": 1,
+        "durationMs": 407
       }
     },
     {
-      "status": "fail",
+      "status": "skipped",
       "filePath": "tests/e2e/entities-hybrid-advanced.e2e.test.ts",
       "passes": [],
       "failures": [],
-      "skips": [],
-      "rawText": "node:internal/modules/esm/resolve:274\n    throw new ERR_MODULE_NOT_FOUND(\n          ^\n\nError [ERR_MODULE_NOT_FOUND]: Cannot find module '/private/var/folders/25/4dns7s115_q13z992np622qw0000gn/T/thefactory-tools-erYSxA/workspace/node_modules/.bin/dist/cli.js' imported from /private/var/folders/25/4dns7s115_q13z992np622qw0000gn/T/thefactory-tools-erYSxA/workspace/node_modules/.bin/vitest\n    at finalizeResolution (node:internal/modules/esm/resolve:274:11)\n    at moduleResolve (node:internal/modules/esm/resolve:859:10)\n    at defaultResolve (node:internal/modules/esm/resolve:983:11)\n    at ModuleLoader.defaultResolve (node:internal/modules/esm/loader:801:12)\n    at #cachedDefaultResolve (node:internal/modules/esm/loader:725:25)\n    at ModuleLoader.resolve (node:internal/modules/esm/loader:708:38)\n    at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:309:38)\n    at #link (node:internal/modules/esm/module_job:202:49) {\n  code: 'ERR_MODULE_NOT_FOUND',\n  url: 'file:///private/var/folders/25/4dns7s115_q13z992np622qw0000gn/T/thefactory-tools-erYSxA/workspace/node_modules/.bin/dist/cli.js'\n}\n\nNode.js v24.3.0\n",
+      "skips": [
+        {
+          "testName": "(1)"
+        },
+        {
+          "testName": "(9)"
+        }
+      ],
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ↓ tests/e2e/entities-hybrid-advanced.e2e.test.ts > E2E: Entities Hybrid Search Advanced (real DB) > w=0 (semantic-only): semantic entities appear above controls and near top\n ↓ tests/e2e/entities-hybrid-advanced.e2e.test.ts > E2E: Entities Hybrid Search Advanced (real DB) > w=0.2: both signals; semantic and keyword groups in top-10\n ↓ tests/e2e/entities-hybrid-advanced.e2e.test.ts > E2E: Entities Hybrid Search Advanced (real DB) > w=0.5: balanced; both groups present in top-8\n ↓ tests/e2e/entities-hybrid-advanced.e2e.test.ts > E2E: Entities Hybrid Search Advanced (real DB) > w=0.8: keyword dominance increases; keyword beats semantic\n ↓ tests/e2e/entities-hybrid-advanced.e2e.test.ts > E2E: Entities Hybrid Search Advanced (real DB) > w=1 (text-only): keyword entities dominate top-3\n ↓ tests/e2e/entities-hybrid-advanced.e2e.test.ts > E2E: Entities Hybrid Search Advanced (real DB) > does not use metadata for search\n ↓ tests/e2e/entities-hybrid-advanced.e2e.test.ts > E2E: Entities Keyword List Search > with textWeight=1, should only return entities with all keywords\n ↓ tests/e2e/entities-hybrid-advanced.e2e.test.ts > E2E: Entities Keyword List Search > with textWeight=0, should return semantically similar entities\n ↓ tests/e2e/entities-hybrid-advanced.e2e.test.ts > E2E: Entities Keyword List Search > with textWeight=1 and no matching entities, should not match noMatch\n\n Test Files  1 skipped (1)\n      Tests  9 skipped (9)\n   Start at  18:34:42\n   Duration  328ms (transform 50ms, setup 0ms, collect 146ms, tests 0ms, environment 0ms, prepare 43ms)\n\n",
       "summary": {
-        "total": 0,
+        "total": 9,
         "passed": 0,
         "failed": 0,
-        "skipped": 0,
-        "durationMs": 209
+        "skipped": 9,
+        "durationMs": 328
       }
     },
     {
-      "status": "fail",
+      "status": "skipped",
       "filePath": "tests/e2e/entities-hybrid.e2e.test.ts",
       "passes": [],
       "failures": [],
-      "skips": [],
-      "rawText": "node:internal/modules/esm/resolve:274\n    throw new ERR_MODULE_NOT_FOUND(\n          ^\n\nError [ERR_MODULE_NOT_FOUND]: Cannot find module '/private/var/folders/25/4dns7s115_q13z992np622qw0000gn/T/thefactory-tools-erYSxA/workspace/node_modules/.bin/dist/cli.js' imported from /private/var/folders/25/4dns7s115_q13z992np622qw0000gn/T/thefactory-tools-erYSxA/workspace/node_modules/.bin/vitest\n    at finalizeResolution (node:internal/modules/esm/resolve:274:11)\n    at moduleResolve (node:internal/modules/esm/resolve:859:10)\n    at defaultResolve (node:internal/modules/esm/resolve:983:11)\n    at ModuleLoader.defaultResolve (node:internal/modules/esm/loader:801:12)\n    at #cachedDefaultResolve (node:internal/modules/esm/loader:725:25)\n    at ModuleLoader.resolve (node:internal/modules/esm/loader:708:38)\n    at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:309:38)\n    at #link (node:internal/modules/esm/module_job:202:49) {\n  code: 'ERR_MODULE_NOT_FOUND',\n  url: 'file:///private/var/folders/25/4dns7s115_q13z992np622qw0000gn/T/thefactory-tools-erYSxA/workspace/node_modules/.bin/dist/cli.js'\n}\n\nNode.js v24.3.0\n",
+      "skips": [
+        {
+          "testName": "(1)"
+        },
+        {
+          "testName": "(2)"
+        }
+      ],
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ↓ tests/e2e/entities-hybrid.e2e.test.ts > E2E: Entities Hybrid Search (real DB) > hybrid search returns results and respects weights\n ↓ tests/e2e/entities-hybrid.e2e.test.ts > E2E: Entities Hybrid Search (real DB) > does not use metadata for search\n\n Test Files  1 skipped (1)\n      Tests  2 skipped (2)\n   Start at  18:34:43\n   Duration  358ms (transform 54ms, setup 0ms, collect 154ms, tests 0ms, environment 0ms, prepare 36ms)\n\n",
       "summary": {
-        "total": 0,
+        "total": 2,
         "passed": 0,
         "failed": 0,
-        "skipped": 0,
-        "durationMs": 197
+        "skipped": 2,
+        "durationMs": 358
       }
     },
     {
-      "status": "fail",
+      "status": "skipped",
       "filePath": "tests/e2e/entities-indexing.e2e.test.ts",
       "passes": [],
       "failures": [],
-      "skips": [],
-      "rawText": "node:internal/modules/esm/resolve:274\n    throw new ERR_MODULE_NOT_FOUND(\n          ^\n\nError [ERR_MODULE_NOT_FOUND]: Cannot find module '/private/var/folders/25/4dns7s115_q13z992np622qw0000gn/T/thefactory-tools-erYSxA/workspace/node_modules/.bin/dist/cli.js' imported from /private/var/folders/25/4dns7s115_q13z992np622qw0000gn/T/thefactory-tools-erYSxA/workspace/node_modules/.bin/vitest\n    at finalizeResolution (node:internal/modules/esm/resolve:274:11)\n    at moduleResolve (node:internal/modules/esm/resolve:859:10)\n    at defaultResolve (node:internal/modules/esm/resolve:983:11)\n    at ModuleLoader.defaultResolve (node:internal/modules/esm/loader:801:12)\n    at #cachedDefaultResolve (node:internal/modules/esm/loader:725:25)\n    at ModuleLoader.resolve (node:internal/modules/esm/loader:708:38)\n    at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:309:38)\n    at #link (node:internal/modules/esm/module_job:202:49) {\n  code: 'ERR_MODULE_NOT_FOUND',\n  url: 'file:///private/var/folders/25/4dns7s115_q13z992np622qw0000gn/T/thefactory-tools-erYSxA/workspace/node_modules/.bin/dist/cli.js'\n}\n\nNode.js v24.3.0\n",
+      "skips": [
+        {
+          "testName": "(1)"
+        },
+        {
+          "testName": "(1)"
+        }
+      ],
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ↓ tests/e2e/entities-indexing.e2e.test.ts > E2E: Entities Indexing (real DB) > add/get/update/delete/match/clear\n\n Test Files  1 skipped (1)\n      Tests  1 skipped (1)\n   Start at  18:34:44\n   Duration  337ms (transform 46ms, setup 0ms, collect 144ms, tests 0ms, environment 0ms, prepare 36ms)\n\n",
       "summary": {
-        "total": 0,
+        "total": 1,
         "passed": 0,
         "failed": 0,
-        "skipped": 0,
-        "durationMs": 197
+        "skipped": 1,
+        "durationMs": 337
       }
     },
     {
-      "status": "fail",
+      "status": "skipped",
       "filePath": "tests/e2e/updates-and-fts.e2e.test.ts",
       "passes": [],
       "failures": [],
-      "skips": [],
-      "rawText": "node:internal/modules/esm/resolve:274\n    throw new ERR_MODULE_NOT_FOUND(\n          ^\n\nError [ERR_MODULE_NOT_FOUND]: Cannot find module '/private/var/folders/25/4dns7s115_q13z992np622qw0000gn/T/thefactory-tools-erYSxA/workspace/node_modules/.bin/dist/cli.js' imported from /private/var/folders/25/4dns7s115_q13z992np622qw0000gn/T/thefactory-tools-erYSxA/workspace/node_modules/.bin/vitest\n    at finalizeResolution (node:internal/modules/esm/resolve:274:11)\n    at moduleResolve (node:internal/modules/esm/resolve:859:10)\n    at defaultResolve (node:internal/modules/esm/resolve:983:11)\n    at ModuleLoader.defaultResolve (node:internal/modules/esm/loader:801:12)\n    at #cachedDefaultResolve (node:internal/modules/esm/loader:725:25)\n    at ModuleLoader.resolve (node:internal/modules/esm/loader:708:38)\n    at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:309:38)\n    at #link (node:internal/modules/esm/module_job:202:49) {\n  code: 'ERR_MODULE_NOT_FOUND',\n  url: 'file:///private/var/folders/25/4dns7s115_q13z992np622qw0000gn/T/thefactory-tools-erYSxA/workspace/node_modules/.bin/dist/cli.js'\n}\n\nNode.js v24.3.0\n",
+      "skips": [
+        {
+          "testName": "(1)"
+        },
+        {
+          "testName": "(2)"
+        }
+      ],
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ↓ tests/e2e/updates-and-fts.e2e.test.ts > E2E: Updates and FTS regeneration (real DB) > documents: updates should regenerate updatedAt\n ↓ tests/e2e/updates-and-fts.e2e.test.ts > E2E: Updates and FTS regeneration (real DB) > entities: updates should regenerate updatedAt and FTS on content changes\n\n Test Files  1 skipped (1)\n      Tests  2 skipped (2)\n   Start at  18:34:45\n   Duration  353ms (transform 55ms, setup 0ms, collect 143ms, tests 0ms, environment 0ms, prepare 40ms)\n\n",
       "summary": {
-        "total": 0,
+        "total": 2,
         "passed": 0,
         "failed": 0,
-        "skipped": 0,
-        "durationMs": 199
+        "skipped": 2,
+        "durationMs": 353
       }
     },
     {
-      "status": "fail",
+      "status": "ok",
       "filePath": "tests/embeddings-options.test.ts",
-      "passes": [],
+      "passes": [
+        {
+          "testName": "tests/embeddings-options.test.ts > embeddings options > normalize: false returns non-unit vector 1ms"
+        }
+      ],
       "failures": [],
       "skips": [],
-      "rawText": "node:internal/modules/esm/resolve:274\n    throw new ERR_MODULE_NOT_FOUND(\n          ^\n\nError [ERR_MODULE_NOT_FOUND]: Cannot find module '/private/var/folders/25/4dns7s115_q13z992np622qw0000gn/T/thefactory-tools-erYSxA/workspace/node_modules/.bin/dist/cli.js' imported from /private/var/folders/25/4dns7s115_q13z992np622qw0000gn/T/thefactory-tools-erYSxA/workspace/node_modules/.bin/vitest\n    at finalizeResolution (node:internal/modules/esm/resolve:274:11)\n    at moduleResolve (node:internal/modules/esm/resolve:859:10)\n    at defaultResolve (node:internal/modules/esm/resolve:983:11)\n    at ModuleLoader.defaultResolve (node:internal/modules/esm/loader:801:12)\n    at #cachedDefaultResolve (node:internal/modules/esm/loader:725:25)\n    at ModuleLoader.resolve (node:internal/modules/esm/loader:708:38)\n    at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:309:38)\n    at #link (node:internal/modules/esm/module_job:202:49) {\n  code: 'ERR_MODULE_NOT_FOUND',\n  url: 'file:///private/var/folders/25/4dns7s115_q13z992np622qw0000gn/T/thefactory-tools-erYSxA/workspace/node_modules/.bin/dist/cli.js'\n}\n\nNode.js v24.3.0\n",
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/embeddings-options.test.ts > embeddings options > normalize: false returns non-unit vector 1ms\n\n Test Files  1 passed (1)\n      Tests  1 passed (1)\n   Start at  18:34:46\n   Duration  243ms (transform 25ms, setup 0ms, collect 24ms, tests 2ms, environment 0ms, prepare 38ms)\n\n",
       "summary": {
-        "total": 0,
-        "passed": 0,
+        "total": 1,
+        "passed": 1,
         "failed": 0,
         "skipped": 0,
-        "durationMs": 204
+        "durationMs": 243
       }
     },
     {
-      "status": "fail",
+      "status": "ok",
       "filePath": "tests/embeddings.test.ts",
-      "passes": [],
+      "passes": [
+        {
+          "testName": "tests/embeddings.test.ts > createLocalEmbeddingProvider > embeds text and normalizes vectors to unit length by default 2ms"
+        },
+        {
+          "testName": "tests/embeddings.test.ts > createLocalEmbeddingProvider > respects custom model and revision options 0ms"
+        },
+        {
+          "testName": "tests/embeddings.test.ts > createLocalEmbeddingProvider > handles array-shaped outputs without .data field 0ms"
+        }
+      ],
       "failures": [],
       "skips": [],
-      "rawText": "node:internal/modules/esm/resolve:274\n    throw new ERR_MODULE_NOT_FOUND(\n          ^\n\nError [ERR_MODULE_NOT_FOUND]: Cannot find module '/private/var/folders/25/4dns7s115_q13z992np622qw0000gn/T/thefactory-tools-erYSxA/workspace/node_modules/.bin/dist/cli.js' imported from /private/var/folders/25/4dns7s115_q13z992np622qw0000gn/T/thefactory-tools-erYSxA/workspace/node_modules/.bin/vitest\n    at finalizeResolution (node:internal/modules/esm/resolve:274:11)\n    at moduleResolve (node:internal/modules/esm/resolve:859:10)\n    at defaultResolve (node:internal/modules/esm/resolve:983:11)\n    at ModuleLoader.defaultResolve (node:internal/modules/esm/loader:801:12)\n    at #cachedDefaultResolve (node:internal/modules/esm/loader:725:25)\n    at ModuleLoader.resolve (node:internal/modules/esm/loader:708:38)\n    at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:309:38)\n    at #link (node:internal/modules/esm/module_job:202:49) {\n  code: 'ERR_MODULE_NOT_FOUND',\n  url: 'file:///private/var/folders/25/4dns7s115_q13z992np622qw0000gn/T/thefactory-tools-erYSxA/workspace/node_modules/.bin/dist/cli.js'\n}\n\nNode.js v24.3.0\n",
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/embeddings.test.ts > createLocalEmbeddingProvider > embeds text and normalizes vectors to unit length by default 2ms\n ✓ tests/embeddings.test.ts > createLocalEmbeddingProvider > respects custom model and revision options 0ms\n ✓ tests/embeddings.test.ts > createLocalEmbeddingProvider > handles array-shaped outputs without .data field 0ms\n\n Test Files  1 passed (1)\n      Tests  3 passed (3)\n   Start at  18:34:46\n   Duration  717ms (transform 53ms, setup 0ms, collect 37ms, tests 3ms, environment 0ms, prepare 412ms)\n\n",
       "summary": {
-        "total": 0,
-        "passed": 0,
+        "total": 3,
+        "passed": 3,
         "failed": 0,
         "skipped": 0,
-        "durationMs": 205
+        "durationMs": 717
       }
     },
     {
-      "status": "fail",
+      "status": "ok",
       "filePath": "tests/hybrid-search-advanced.test.ts",
-      "passes": [],
+      "passes": [
+        {
+          "testName": "tests/hybrid-search-advanced.test.ts > Advanced Hybrid Search > Non-code docs: title-only vs content-only vs semantic-only across weights 3ms"
+        },
+        {
+          "testName": "tests/hybrid-search-advanced.test.ts > Advanced Hybrid Search > Project files ingestion: can search across repository files for hybrid-related queries 24ms"
+        },
+        {
+          "testName": "tests/hybrid-search-advanced.test.ts > Advanced Hybrid Search > Keyword list search: should match documents based on keyword presence 1ms"
+        }
+      ],
       "failures": [],
       "skips": [],
-      "rawText": "node:internal/modules/esm/resolve:274\n    throw new ERR_MODULE_NOT_FOUND(\n          ^\n\nError [ERR_MODULE_NOT_FOUND]: Cannot find module '/private/var/folders/25/4dns7s115_q13z992np622qw0000gn/T/thefactory-tools-erYSxA/workspace/node_modules/.bin/dist/cli.js' imported from /private/var/folders/25/4dns7s115_q13z992np622qw0000gn/T/thefactory-tools-erYSxA/workspace/node_modules/.bin/vitest\n    at finalizeResolution (node:internal/modules/esm/resolve:274:11)\n    at moduleResolve (node:internal/modules/esm/resolve:859:10)\n    at defaultResolve (node:internal/modules/esm/resolve:983:11)\n    at ModuleLoader.defaultResolve (node:internal/modules/esm/loader:801:12)\n    at #cachedDefaultResolve (node:internal/modules/esm/loader:725:25)\n    at ModuleLoader.resolve (node:internal/modules/esm/loader:708:38)\n    at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:309:38)\n    at #link (node:internal/modules/esm/module_job:202:49) {\n  code: 'ERR_MODULE_NOT_FOUND',\n  url: 'file:///private/var/folders/25/4dns7s115_q13z992np622qw0000gn/T/thefactory-tools-erYSxA/workspace/node_modules/.bin/dist/cli.js'\n}\n\nNode.js v24.3.0\n",
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/hybrid-search-advanced.test.ts > Advanced Hybrid Search > Non-code docs: title-only vs content-only vs semantic-only across weights 3ms\n ✓ tests/hybrid-search-advanced.test.ts > Advanced Hybrid Search > Project files ingestion: can search across repository files for hybrid-related queries 24ms\n ✓ tests/hybrid-search-advanced.test.ts > Advanced Hybrid Search > Keyword list search: should match documents based on keyword presence 1ms\n\n Test Files  1 passed (1)\n      Tests  3 passed (3)\n   Start at  18:34:47\n   Duration  390ms (transform 69ms, setup 0ms, collect 170ms, tests 28ms, environment 0ms, prepare 55ms)\n\n",
       "summary": {
-        "total": 0,
-        "passed": 0,
+        "total": 3,
+        "passed": 3,
         "failed": 0,
         "skipped": 0,
-        "durationMs": 221
+        "durationMs": 390
       }
     },
     {
-      "status": "fail",
+      "status": "ok",
       "filePath": "tests/index-validation.test.ts",
-      "passes": [],
+      "passes": [
+        {
+          "testName": "tests/index-validation.test.ts > TheFactoryDb validation and edges > addDocument rejects invalid input 2ms"
+        },
+        {
+          "testName": "tests/index-validation.test.ts > TheFactoryDb validation and edges > updateDocument rejects invalid patch 0ms"
+        },
+        {
+          "testName": "tests/index-validation.test.ts > TheFactoryDb validation and edges > addEntity rejects invalid input 0ms"
+        },
+        {
+          "testName": "tests/index-validation.test.ts > TheFactoryDb validation and edges > updateEntity rejects invalid patch 0ms"
+        },
+        {
+          "testName": "tests/index-validation.test.ts > TheFactoryDb validation and edges > searchDocuments validates input and early-returns on empty query 1ms"
+        },
+        {
+          "testName": "tests/index-validation.test.ts > TheFactoryDb validation and edges > searchEntities validates input and clamps weights/limit 0ms"
+        },
+        {
+          "testName": "tests/index-validation.test.ts > TheFactoryDb validation and edges > matchDocuments rejects invalid options 0ms"
+        },
+        {
+          "testName": "tests/index-validation.test.ts > TheFactoryDb validation and edges > matchEntities accepts undefined options and builds null filter 1ms"
+        },
+        {
+          "testName": "tests/index-validation.test.ts > TheFactoryDb validation and edges > clearDocuments without projectIds clears all 0ms"
+        },
+        {
+          "testName": "tests/index-validation.test.ts > TheFactoryDb validation and edges > updateEntity without content change does not compute embedding 0ms"
+        }
+      ],
       "failures": [],
       "skips": [],
-      "rawText": "node:internal/modules/esm/resolve:274\n    throw new ERR_MODULE_NOT_FOUND(\n          ^\n\nError [ERR_MODULE_NOT_FOUND]: Cannot find module '/private/var/folders/25/4dns7s115_q13z992np622qw0000gn/T/thefactory-tools-erYSxA/workspace/node_modules/.bin/dist/cli.js' imported from /private/var/folders/25/4dns7s115_q13z992np622qw0000gn/T/thefactory-tools-erYSxA/workspace/node_modules/.bin/vitest\n    at finalizeResolution (node:internal/modules/esm/resolve:274:11)\n    at moduleResolve (node:internal/modules/esm/resolve:859:10)\n    at defaultResolve (node:internal/modules/esm/resolve:983:11)\n    at ModuleLoader.defaultResolve (node:internal/modules/esm/loader:801:12)\n    at #cachedDefaultResolve (node:internal/modules/esm/loader:725:25)\n    at ModuleLoader.resolve (node:internal/modules/esm/loader:708:38)\n    at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:309:38)\n    at #link (node:internal/modules/esm/module_job:202:49) {\n  code: 'ERR_MODULE_NOT_FOUND',\n  url: 'file:///private/var/folders/25/4dns7s115_q13z992np622qw0000gn/T/thefactory-tools-erYSxA/workspace/node_modules/.bin/dist/cli.js'\n}\n\nNode.js v24.3.0\n",
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/index-validation.test.ts > TheFactoryDb validation and edges > addDocument rejects invalid input 2ms\n ✓ tests/index-validation.test.ts > TheFactoryDb validation and edges > updateDocument rejects invalid patch 0ms\n ✓ tests/index-validation.test.ts > TheFactoryDb validation and edges > addEntity rejects invalid input 0ms\n ✓ tests/index-validation.test.ts > TheFactoryDb validation and edges > updateEntity rejects invalid patch 0ms\n ✓ tests/index-validation.test.ts > TheFactoryDb validation and edges > searchDocuments validates input and early-returns on empty query 1ms\n ✓ tests/index-validation.test.ts > TheFactoryDb validation and edges > searchEntities validates input and clamps weights/limit 0ms\n ✓ tests/index-validation.test.ts > TheFactoryDb validation and edges > matchDocuments rejects invalid options 0ms\n ✓ tests/index-validation.test.ts > TheFactoryDb validation and edges > matchEntities accepts undefined options and builds null filter 1ms\n ✓ tests/index-validation.test.ts > TheFactoryDb validation and edges > clearDocuments without projectIds clears all 0ms\n ✓ tests/index-validation.test.ts > TheFactoryDb validation and edges > updateEntity without content change does not compute embedding 0ms\n\n Test Files  1 passed (1)\n      Tests  10 passed (10)\n   Start at  18:34:48\n   Duration  355ms (transform 58ms, setup 0ms, collect 162ms, tests 6ms, environment 0ms, prepare 40ms)\n\n",
       "summary": {
-        "total": 0,
-        "passed": 0,
+        "total": 10,
+        "passed": 10,
         "failed": 0,
         "skipped": 0,
-        "durationMs": 194
+        "durationMs": 355
       }
     },
     {
-      "status": "fail",
+      "status": "ok",
       "filePath": "tests/index.test.ts",
-      "passes": [],
+      "passes": [
+        {
+          "testName": "tests/index.test.ts > TheFactoryDb > Entities > addEntity should insert a new entity 2ms"
+        },
+        {
+          "testName": "tests/index.test.ts > TheFactoryDb > Entities > getEntityById should return an entity if found 0ms"
+        },
+        {
+          "testName": "tests/index.test.ts > TheFactoryDb > Entities > getEntityById should return undefined if not found 0ms"
+        },
+        {
+          "testName": "tests/index.test.ts > TheFactoryDb > Entities > updateEntity should update an existing entity 0ms"
+        },
+        {
+          "testName": "tests/index.test.ts > TheFactoryDb > Entities > deleteEntity should return true if deleted 0ms"
+        },
+        {
+          "testName": "tests/index.test.ts > TheFactoryDb > Entities > searchEntities should perform a search 0ms"
+        },
+        {
+          "testName": "tests/index.test.ts > TheFactoryDb > Entities > matchEntities should find entities by content 0ms"
+        },
+        {
+          "testName": "tests/index.test.ts > TheFactoryDb > Entities > clearEntities should clear all entities 0ms"
+        },
+        {
+          "testName": "tests/index.test.ts > TheFactoryDb > Documents > addDocument should insert a new document 0ms"
+        },
+        {
+          "testName": "tests/index.test.ts > TheFactoryDb > Documents > getDocumentById should return a document if found 0ms"
+        },
+        {
+          "testName": "tests/index.test.ts > TheFactoryDb > Documents > getDocumentById should return undefined if not found 0ms"
+        },
+        {
+          "testName": "tests/index.test.ts > TheFactoryDb > Documents > updateDocument should update an existing document 0ms"
+        },
+        {
+          "testName": "tests/index.test.ts > TheFactoryDb > Documents > deleteDocument should return true if deleted 0ms"
+        },
+        {
+          "testName": "tests/index.test.ts > TheFactoryDb > Documents > searchDocuments should perform a search 0ms"
+        },
+        {
+          "testName": "tests/index.test.ts > TheFactoryDb > Documents > matchDocuments should find documents by filters 0ms"
+        },
+        {
+          "testName": "tests/index.test.ts > TheFactoryDb > Documents > clearDocuments should clear documents by project 0ms"
+        },
+        {
+          "testName": "tests/index.test.ts > TheFactoryDb > close should end the database connection 0ms"
+        },
+        {
+          "testName": "tests/index.test.ts > TheFactoryDb > raw should return the raw client 0ms"
+        }
+      ],
       "failures": [],
       "skips": [],
-      "rawText": "node:internal/modules/esm/resolve:274\n    throw new ERR_MODULE_NOT_FOUND(\n          ^\n\nError [ERR_MODULE_NOT_FOUND]: Cannot find module '/private/var/folders/25/4dns7s115_q13z992np622qw0000gn/T/thefactory-tools-erYSxA/workspace/node_modules/.bin/dist/cli.js' imported from /private/var/folders/25/4dns7s115_q13z992np622qw0000gn/T/thefactory-tools-erYSxA/workspace/node_modules/.bin/vitest\n    at finalizeResolution (node:internal/modules/esm/resolve:274:11)\n    at moduleResolve (node:internal/modules/esm/resolve:859:10)\n    at defaultResolve (node:internal/modules/esm/resolve:983:11)\n    at ModuleLoader.defaultResolve (node:internal/modules/esm/loader:801:12)\n    at #cachedDefaultResolve (node:internal/modules/esm/loader:725:25)\n    at ModuleLoader.resolve (node:internal/modules/esm/loader:708:38)\n    at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:309:38)\n    at #link (node:internal/modules/esm/module_job:202:49) {\n  code: 'ERR_MODULE_NOT_FOUND',\n  url: 'file:///private/var/folders/25/4dns7s115_q13z992np622qw0000gn/T/thefactory-tools-erYSxA/workspace/node_modules/.bin/dist/cli.js'\n}\n\nNode.js v24.3.0\n",
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/index.test.ts > TheFactoryDb > Entities > addEntity should insert a new entity 2ms\n ✓ tests/index.test.ts > TheFactoryDb > Entities > getEntityById should return an entity if found 0ms\n ✓ tests/index.test.ts > TheFactoryDb > Entities > getEntityById should return undefined if not found 0ms\n ✓ tests/index.test.ts > TheFactoryDb > Entities > updateEntity should update an existing entity 0ms\n ✓ tests/index.test.ts > TheFactoryDb > Entities > deleteEntity should return true if deleted 0ms\n ✓ tests/index.test.ts > TheFactoryDb > Entities > searchEntities should perform a search 0ms\n ✓ tests/index.test.ts > TheFactoryDb > Entities > matchEntities should find entities by content 0ms\n ✓ tests/index.test.ts > TheFactoryDb > Entities > clearEntities should clear all entities 0ms\n ✓ tests/index.test.ts > TheFactoryDb > Documents > addDocument should insert a new document 0ms\n ✓ tests/index.test.ts > TheFactoryDb > Documents > getDocumentById should return a document if found 0ms\n ✓ tests/index.test.ts > TheFactoryDb > Documents > getDocumentById should return undefined if not found 0ms\n ✓ tests/index.test.ts > TheFactoryDb > Documents > updateDocument should update an existing document 0ms\n ✓ tests/index.test.ts > TheFactoryDb > Documents > deleteDocument should return true if deleted 0ms\n ✓ tests/index.test.ts > TheFactoryDb > Documents > searchDocuments should perform a search 0ms\n ✓ tests/index.test.ts > TheFactoryDb > Documents > matchDocuments should find documents by filters 0ms\n ✓ tests/index.test.ts > TheFactoryDb > Documents > clearDocuments should clear documents by project 0ms\n ✓ tests/index.test.ts > TheFactoryDb > close should end the database connection 0ms\n ✓ tests/index.test.ts > TheFactoryDb > raw should return the raw client 0ms\n\n Test Files  1 passed (1)\n      Tests  18 passed (18)\n   Start at  18:34:49\n   Duration  352ms (transform 58ms, setup 0ms, collect 158ms, tests 7ms, environment 0ms, prepare 33ms)\n\n",
       "summary": {
-        "total": 0,
-        "passed": 0,
+        "total": 18,
+        "passed": 18,
+        "failed": 0,
+        "skipped": 0,
+        "durationMs": 352
+      }
+    },
+    {
+      "status": "ok",
+      "filePath": "tests/json-utils.test.ts",
+      "passes": [
+        {
+          "testName": "tests/json-utils.test.ts > stringifyJsonValues > flattens nested objects and arrays into value-only string 1ms"
+        },
+        {
+          "testName": "tests/json-utils.test.ts > stringifyJsonValues > handles primitive values 0ms"
+        },
+        {
+          "testName": "tests/json-utils.test.ts > stringifyJsonValues > ignores functions and symbols and non-finite numbers 0ms"
+        },
+        {
+          "testName": "tests/json-utils.test.ts > stringifyJsonValues > handles cycles gracefully 0ms"
+        },
+        {
+          "testName": "tests/json-utils.test.ts > stringifyJsonValues > stable ordering regardless of original insertion order 0ms"
+        }
+      ],
+      "failures": [],
+      "skips": [],
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/json-utils.test.ts > stringifyJsonValues > flattens nested objects and arrays into value-only string 1ms\n ✓ tests/json-utils.test.ts > stringifyJsonValues > handles primitive values 0ms\n ✓ tests/json-utils.test.ts > stringifyJsonValues > ignores functions and symbols and non-finite numbers 0ms\n ✓ tests/json-utils.test.ts > stringifyJsonValues > handles cycles gracefully 0ms\n ✓ tests/json-utils.test.ts > stringifyJsonValues > stable ordering regardless of original insertion order 0ms\n\n Test Files  1 passed (1)\n      Tests  5 passed (5)\n   Start at  18:34:50\n   Duration  198ms (transform 21ms, setup 0ms, collect 19ms, tests 2ms, environment 0ms, prepare 37ms)\n\n",
+      "summary": {
+        "total": 5,
+        "passed": 5,
+        "failed": 0,
+        "skipped": 0,
+        "durationMs": 198
+      }
+    },
+    {
+      "status": "ok",
+      "filePath": "tests/logger.test.ts",
+      "passes": [
+        {
+          "testName": "tests/logger.test.ts > createLogger > should log debug messages when level is debug 1ms"
+        },
+        {
+          "testName": "tests/logger.test.ts > createLogger > should log info messages when level is info 0ms"
+        },
+        {
+          "testName": "tests/logger.test.ts > createLogger > should log warn messages when level is warn 0ms"
+        },
+        {
+          "testName": "tests/logger.test.ts > createLogger > should log error messages when level is error 0ms"
+        },
+        {
+          "testName": "tests/logger.test.ts > createLogger > should not log any messages when level is silent 0ms"
+        },
+        {
+          "testName": "tests/logger.test.ts > createLogger > should default to info level if no level is provided 0ms"
+        },
+        {
+          "testName": "tests/logger.test.ts > createLogger > should only log messages at or above the specified log level 0ms"
+        }
+      ],
+      "failures": [],
+      "skips": [],
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/logger.test.ts > createLogger > should log debug messages when level is debug 1ms\n ✓ tests/logger.test.ts > createLogger > should log info messages when level is info 0ms\n ✓ tests/logger.test.ts > createLogger > should log warn messages when level is warn 0ms\n ✓ tests/logger.test.ts > createLogger > should log error messages when level is error 0ms\n ✓ tests/logger.test.ts > createLogger > should not log any messages when level is silent 0ms\n ✓ tests/logger.test.ts > createLogger > should default to info level if no level is provided 0ms\n ✓ tests/logger.test.ts > createLogger > should only log messages at or above the specified log level 0ms\n\n Test Files  1 passed (1)\n      Tests  7 passed (7)\n   Start at  18:34:51\n   Duration  208ms (transform 21ms, setup 0ms, collect 20ms, tests 3ms, environment 0ms, prepare 34ms)\n\n",
+      "summary": {
+        "total": 7,
+        "passed": 7,
         "failed": 0,
         "skipped": 0,
         "durationMs": 208
       }
     },
     {
-      "status": "fail",
-      "filePath": "tests/json-utils.test.ts",
-      "passes": [],
-      "failures": [],
-      "skips": [],
-      "rawText": "node:internal/modules/esm/resolve:274\n    throw new ERR_MODULE_NOT_FOUND(\n          ^\n\nError [ERR_MODULE_NOT_FOUND]: Cannot find module '/private/var/folders/25/4dns7s115_q13z992np622qw0000gn/T/thefactory-tools-erYSxA/workspace/node_modules/.bin/dist/cli.js' imported from /private/var/folders/25/4dns7s115_q13z992np622qw0000gn/T/thefactory-tools-erYSxA/workspace/node_modules/.bin/vitest\n    at finalizeResolution (node:internal/modules/esm/resolve:274:11)\n    at moduleResolve (node:internal/modules/esm/resolve:859:10)\n    at defaultResolve (node:internal/modules/esm/resolve:983:11)\n    at ModuleLoader.defaultResolve (node:internal/modules/esm/loader:801:12)\n    at #cachedDefaultResolve (node:internal/modules/esm/loader:725:25)\n    at ModuleLoader.resolve (node:internal/modules/esm/loader:708:38)\n    at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:309:38)\n    at #link (node:internal/modules/esm/module_job:202:49) {\n  code: 'ERR_MODULE_NOT_FOUND',\n  url: 'file:///private/var/folders/25/4dns7s115_q13z992np622qw0000gn/T/thefactory-tools-erYSxA/workspace/node_modules/.bin/dist/cli.js'\n}\n\nNode.js v24.3.0\n",
-      "summary": {
-        "total": 0,
-        "passed": 0,
-        "failed": 0,
-        "skipped": 0,
-        "durationMs": 204
-      }
-    },
-    {
-      "status": "fail",
-      "filePath": "tests/logger.test.ts",
-      "passes": [],
-      "failures": [],
-      "skips": [],
-      "rawText": "node:internal/modules/esm/resolve:274\n    throw new ERR_MODULE_NOT_FOUND(\n          ^\n\nError [ERR_MODULE_NOT_FOUND]: Cannot find module '/private/var/folders/25/4dns7s115_q13z992np622qw0000gn/T/thefactory-tools-erYSxA/workspace/node_modules/.bin/dist/cli.js' imported from /private/var/folders/25/4dns7s115_q13z992np622qw0000gn/T/thefactory-tools-erYSxA/workspace/node_modules/.bin/vitest\n    at finalizeResolution (node:internal/modules/esm/resolve:274:11)\n    at moduleResolve (node:internal/modules/esm/resolve:859:10)\n    at defaultResolve (node:internal/modules/esm/resolve:983:11)\n    at ModuleLoader.defaultResolve (node:internal/modules/esm/loader:801:12)\n    at #cachedDefaultResolve (node:internal/modules/esm/loader:725:25)\n    at ModuleLoader.resolve (node:internal/modules/esm/loader:708:38)\n    at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:309:38)\n    at #link (node:internal/modules/esm/module_job:202:49) {\n  code: 'ERR_MODULE_NOT_FOUND',\n  url: 'file:///private/var/folders/25/4dns7s115_q13z992np622qw0000gn/T/thefactory-tools-erYSxA/workspace/node_modules/.bin/dist/cli.js'\n}\n\nNode.js v24.3.0\n",
-      "summary": {
-        "total": 0,
-        "passed": 0,
-        "failed": 0,
-        "skipped": 0,
-        "durationMs": 204
-      }
-    },
-    {
-      "status": "fail",
+      "status": "ok",
       "filePath": "tests/tokenizer.test.ts",
-      "passes": [],
+      "passes": [
+        {
+          "testName": "tests/tokenizer.test.ts > tokenizer > uses tiktoken strategy when available 1ms"
+        },
+        {
+          "testName": "tests/tokenizer.test.ts > tokenizer > falls back to whitespace strategy when tiktoken fails 0ms"
+        },
+        {
+          "testName": "tests/tokenizer.test.ts > tokenizer > toFtsText normalizes text 1ms"
+        }
+      ],
       "failures": [],
       "skips": [],
-      "rawText": "node:internal/modules/esm/resolve:274\n    throw new ERR_MODULE_NOT_FOUND(\n          ^\n\nError [ERR_MODULE_NOT_FOUND]: Cannot find module '/private/var/folders/25/4dns7s115_q13z992np622qw0000gn/T/thefactory-tools-erYSxA/workspace/node_modules/.bin/dist/cli.js' imported from /private/var/folders/25/4dns7s115_q13z992np622qw0000gn/T/thefactory-tools-erYSxA/workspace/node_modules/.bin/vitest\n    at finalizeResolution (node:internal/modules/esm/resolve:274:11)\n    at moduleResolve (node:internal/modules/esm/resolve:859:10)\n    at defaultResolve (node:internal/modules/esm/resolve:983:11)\n    at ModuleLoader.defaultResolve (node:internal/modules/esm/loader:801:12)\n    at #cachedDefaultResolve (node:internal/modules/esm/loader:725:25)\n    at ModuleLoader.resolve (node:internal/modules/esm/loader:708:38)\n    at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:309:38)\n    at #link (node:internal/modules/esm/module_job:202:49) {\n  code: 'ERR_MODULE_NOT_FOUND',\n  url: 'file:///private/var/folders/25/4dns7s115_q13z992np622qw0000gn/T/thefactory-tools-erYSxA/workspace/node_modules/.bin/dist/cli.js'\n}\n\nNode.js v24.3.0\n",
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/tokenizer.test.ts > tokenizer > uses tiktoken strategy when available 1ms\n ✓ tests/tokenizer.test.ts > tokenizer > falls back to whitespace strategy when tiktoken fails 0ms\n ✓ tests/tokenizer.test.ts > tokenizer > toFtsText normalizes text 1ms\n\n Test Files  1 passed (1)\n      Tests  3 passed (3)\n   Start at  18:34:51\n   Duration  209ms (transform 25ms, setup 0ms, collect 26ms, tests 3ms, environment 0ms, prepare 35ms)\n\n",
       "summary": {
-        "total": 0,
-        "passed": 0,
+        "total": 3,
+        "passed": 3,
         "failed": 0,
         "skipped": 0,
-        "durationMs": 216
+        "durationMs": 209
       }
     },
     {
-      "status": "fail",
+      "status": "ok",
       "filePath": "tests/utils.test.ts",
-      "passes": [],
+      "passes": [
+        {
+          "testName": "tests/utils.test.ts > utils.readSql > returns SQL string for known keys 1ms"
+        },
+        {
+          "testName": "tests/utils.test.ts > utils.readSql > returns undefined for unknown keys 0ms"
+        },
+        {
+          "testName": "tests/utils.test.ts > utils.base64ToUtf8 > decodes plain base64 strings 0ms"
+        },
+        {
+          "testName": "tests/utils.test.ts > utils.base64ToUtf8 > decodes data URI base64 strings 0ms"
+        }
+      ],
       "failures": [],
       "skips": [],
-      "rawText": "node:internal/modules/esm/resolve:274\n    throw new ERR_MODULE_NOT_FOUND(\n          ^\n\nError [ERR_MODULE_NOT_FOUND]: Cannot find module '/private/var/folders/25/4dns7s115_q13z992np622qw0000gn/T/thefactory-tools-erYSxA/workspace/node_modules/.bin/dist/cli.js' imported from /private/var/folders/25/4dns7s115_q13z992np622qw0000gn/T/thefactory-tools-erYSxA/workspace/node_modules/.bin/vitest\n    at finalizeResolution (node:internal/modules/esm/resolve:274:11)\n    at moduleResolve (node:internal/modules/esm/resolve:859:10)\n    at defaultResolve (node:internal/modules/esm/resolve:983:11)\n    at ModuleLoader.defaultResolve (node:internal/modules/esm/loader:801:12)\n    at #cachedDefaultResolve (node:internal/modules/esm/loader:725:25)\n    at ModuleLoader.resolve (node:internal/modules/esm/loader:708:38)\n    at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:309:38)\n    at #link (node:internal/modules/esm/module_job:202:49) {\n  code: 'ERR_MODULE_NOT_FOUND',\n  url: 'file:///private/var/folders/25/4dns7s115_q13z992np622qw0000gn/T/thefactory-tools-erYSxA/workspace/node_modules/.bin/dist/cli.js'\n}\n\nNode.js v24.3.0\n",
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/utils.test.ts > utils.readSql > returns SQL string for known keys 1ms\n ✓ tests/utils.test.ts > utils.readSql > returns undefined for unknown keys 0ms\n ✓ tests/utils.test.ts > utils.base64ToUtf8 > decodes plain base64 strings 0ms\n ✓ tests/utils.test.ts > utils.base64ToUtf8 > decodes data URI base64 strings 0ms\n\n Test Files  1 passed (1)\n      Tests  4 passed (4)\n   Start at  18:34:52\n   Duration  223ms (transform 26ms, setup 0ms, collect 25ms, tests 2ms, environment 0ms, prepare 39ms)\n\n",
       "summary": {
-        "total": 0,
-        "passed": 0,
+        "total": 4,
+        "passed": 4,
         "failed": 0,
         "skipped": 0,
-        "durationMs": 199
+        "durationMs": 223
       }
     },
     {
-      "status": "fail",
+      "status": "ok",
       "filePath": "tests/validation.test.ts",
-      "passes": [],
+      "passes": [
+        {
+          "testName": "tests/validation.test.ts > validation > assertDocumentInput > accepts valid input 1ms"
+        },
+        {
+          "testName": "tests/validation.test.ts > validation > assertDocumentInput > rejects invalid shapes 0ms"
+        },
+        {
+          "testName": "tests/validation.test.ts > validation > assertDocumentPatch > accepts valid patch values 0ms"
+        },
+        {
+          "testName": "tests/validation.test.ts > validation > assertDocumentPatch > rejects invalid patch 0ms"
+        },
+        {
+          "testName": "tests/validation.test.ts > validation > assertEntityInput > accepts valid entity input 0ms"
+        },
+        {
+          "testName": "tests/validation.test.ts > validation > assertEntityInput > rejects invalid entity input 0ms"
+        },
+        {
+          "testName": "tests/validation.test.ts > validation > assertEntityPatch > accepts valid patches 0ms"
+        },
+        {
+          "testName": "tests/validation.test.ts > validation > assertEntityPatch > rejects invalid patches 0ms"
+        },
+        {
+          "testName": "tests/validation.test.ts > validation > assertMatchParams > accepts valid options 0ms"
+        },
+        {
+          "testName": "tests/validation.test.ts > validation > assertMatchParams > rejects invalid options 0ms"
+        },
+        {
+          "testName": "tests/validation.test.ts > validation > assertSearchParams > accepts valid search params 0ms"
+        },
+        {
+          "testName": "tests/validation.test.ts > validation > assertSearchParams > rejects invalid search params 0ms"
+        }
+      ],
       "failures": [],
       "skips": [],
-      "rawText": "node:internal/modules/esm/resolve:274\n    throw new ERR_MODULE_NOT_FOUND(\n          ^\n\nError [ERR_MODULE_NOT_FOUND]: Cannot find module '/private/var/folders/25/4dns7s115_q13z992np622qw0000gn/T/thefactory-tools-erYSxA/workspace/node_modules/.bin/dist/cli.js' imported from /private/var/folders/25/4dns7s115_q13z992np622qw0000gn/T/thefactory-tools-erYSxA/workspace/node_modules/.bin/vitest\n    at finalizeResolution (node:internal/modules/esm/resolve:274:11)\n    at moduleResolve (node:internal/modules/esm/resolve:859:10)\n    at defaultResolve (node:internal/modules/esm/resolve:983:11)\n    at ModuleLoader.defaultResolve (node:internal/modules/esm/loader:801:12)\n    at #cachedDefaultResolve (node:internal/modules/esm/loader:725:25)\n    at ModuleLoader.resolve (node:internal/modules/esm/loader:708:38)\n    at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:309:38)\n    at #link (node:internal/modules/esm/module_job:202:49) {\n  code: 'ERR_MODULE_NOT_FOUND',\n  url: 'file:///private/var/folders/25/4dns7s115_q13z992np622qw0000gn/T/thefactory-tools-erYSxA/workspace/node_modules/.bin/dist/cli.js'\n}\n\nNode.js v24.3.0\n",
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/validation.test.ts > validation > assertDocumentInput > accepts valid input 1ms\n ✓ tests/validation.test.ts > validation > assertDocumentInput > rejects invalid shapes 0ms\n ✓ tests/validation.test.ts > validation > assertDocumentPatch > accepts valid patch values 0ms\n ✓ tests/validation.test.ts > validation > assertDocumentPatch > rejects invalid patch 0ms\n ✓ tests/validation.test.ts > validation > assertEntityInput > accepts valid entity input 0ms\n ✓ tests/validation.test.ts > validation > assertEntityInput > rejects invalid entity input 0ms\n ✓ tests/validation.test.ts > validation > assertEntityPatch > accepts valid patches 0ms\n ✓ tests/validation.test.ts > validation > assertEntityPatch > rejects invalid patches 0ms\n ✓ tests/validation.test.ts > validation > assertMatchParams > accepts valid options 0ms\n ✓ tests/validation.test.ts > validation > assertMatchParams > rejects invalid options 0ms\n ✓ tests/validation.test.ts > validation > assertSearchParams > accepts valid search params 0ms\n ✓ tests/validation.test.ts > validation > assertSearchParams > rejects invalid search params 0ms\n\n Test Files  1 passed (1)\n      Tests  12 passed (12)\n   Start at  18:34:53\n   Duration  257ms (transform 26ms, setup 0ms, collect 25ms, tests 4ms, environment 0ms, prepare 35ms)\n\n",
       "summary": {
-        "total": 0,
-        "passed": 0,
+        "total": 12,
+        "passed": 12,
         "failed": 0,
         "skipped": 0,
-        "durationMs": 195
+        "durationMs": 257
       }
     }
   ],
   "summary": {
-    "total": 0,
-    "passed": 0,
+    "total": 100,
+    "passed": 69,
     "failed": 0,
-    "skipped": 0,
-    "durationMs": 4108
+    "skipped": 31,
+    "durationMs": 6518
   }
 }
