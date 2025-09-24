@@ -1,18 +1,6 @@
 import { pipeline, env } from '@xenova/transformers'
 
-// Ensure reproducible embeddings by disabling web workers and enforcing single-threaded WASM backend.
-// This may affect performance but is crucial for deterministic outputs, especially in testing environments.
 env.useWebWorker = false
-// Force deterministic ONNX WASM execution
-try {
-  // @ts-ignore - runtime-config only, types may not expose nested props
-  if (env.backends && env.backends.onnx && env.backends.onnx.wasm) {
-    // @ts-ignore
-    env.backends.onnx.wasm.numThreads = 1
-    // @ts-ignore
-    env.backends.onnx.wasm.proxy = 'none'
-  }
-} catch {}
 
 export interface EmbeddingProvider {
   readonly name: string
