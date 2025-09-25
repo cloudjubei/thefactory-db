@@ -247,8 +247,9 @@ CREATE OR REPLACE FUNCTION hybrid_search_documents(
   query_embedding   vector,
   match_count       integer,
   filter            jsonb DEFAULT '{}'::jsonb,
-  full_text_weight  float  DEFAULT 0.5,
-  semantic_weight   float  DEFAULT 0.5,
+  literal_weight    float  DEFAULT 0.3,
+  full_text_weight  float  DEFAULT 0.3,
+  semantic_weight   float  DEFAULT 0.4,
   rrf_k             integer DEFAULT 50
 )
 RETURNS TABLE (
@@ -264,18 +265,12 @@ RETURNS TABLE (
   rrf_score double precision,
   similarity float,
   cosine_similarity float,
-  keyword_score float
+  keyword_score float,
+  literal_score float
 )
 LANGUAGE sql AS
 $$
-WITH tokens_query AS (
-  SELECT to_tsquery('english', string_agg(lexeme, ' | ')) AS ts_query
-  FROM (
-    SELECT unnest(string_to_array(trim(coalesce(query_text, '')), ' ')) AS lexeme
-  ) AS query_tokens
-  WHERE lexeme <> ''
-),
-base_documents AS (
+WITH base_documents AS (
   SELECT *
   FROM documents
   WHERE (
@@ -294,21 +289,55 @@ base_documents AS (
     )
   )
 ),
+-- This CTE sanitizes the query for the full-text search
+sanitized_query AS (
+  SELECT regexp_replace(trim(coalesce(query_text, '')), '[^[:alnum:] ]+', '', 'g') AS cleaned_text
+),
+-- This CTE creates the OR-based tsquery from the sanitized text
+or_ts_query AS (
+  SELECT 
+    CASE WHEN query_tokens.cleaned_text = '' THEN NULL ELSE to_tsquery('english', string_agg(lexeme, ' | ')) END AS ts_query
+  FROM (
+    SELECT t.cleaned_text, unnest(string_to_array(t.cleaned_text, ' ')) AS lexeme
+    FROM sanitized_query t
+  ) AS query_tokens
+  WHERE lexeme <> ''
+  GROUP BY query_tokens.cleaned_text
+),
+-- The CTE for the full-text (OR) search and ranking
 token_scores AS (
-  SELECT d.id, d.name,
+  SELECT d.id, d.name, d.updated_at,
          ts_rank_cd(d.fts, t.ts_query) AS token_score
   FROM base_documents d
-  CROSS JOIN tokens_query t
+  CROSS JOIN or_ts_query t
   WHERE d.fts @@ t.ts_query
 ),
+-- CTE for literal match counts and ranking
+literal_search AS (
+  SELECT d.id,
+         COALESCE(SUM((LENGTH(d.content) - LENGTH(REPLACE(d.content, t.lexeme, ''))) / LENGTH(t.lexeme)), 0) +
+         COALESCE(SUM((LENGTH(d.name) - LENGTH(REPLACE(d.name, t.lexeme, ''))) / LENGTH(t.lexeme)), 0) AS literal_count,
+         row_number() OVER (ORDER BY (
+            COALESCE(SUM((LENGTH(d.content) - LENGTH(REPLACE(d.content, t.lexeme, ''))) / LENGTH(t.lexeme)), 0) +
+            COALESCE(SUM((LENGTH(d.name) - LENGTH(REPLACE(d.name, t.lexeme, ''))) / LENGTH(t.lexeme)), 0)
+         ) DESC) AS rank_ix
+  FROM base_documents d
+  CROSS JOIN (
+    SELECT unnest(string_to_array(trim(coalesce(query_text, '')), ' ')) AS lexeme
+  ) AS t
+  WHERE LENGTH(t.lexeme) > 0
+  GROUP BY d.id
+),
+-- Rank documents based on full-text score
 full_text as (  
   SELECT ts.id,
     row_number() over (
-      ORDER BY ts.token_score DESC, ts.name ASC
+      ORDER BY ts.token_score DESC, ts.name, ts.updated_at ASC
     ) as rank_ix
   FROM token_scores ts
   limit least(match_count, 30) * 2
 ),
+-- Rank documents based on semantic similarity
 semantic AS (
   SELECT id,
          row_number() OVER (
@@ -318,13 +347,17 @@ semantic AS (
   WHERE embedding IS NOT NULL
   LIMIT LEAST(match_count, 30) * 2
 ),
+-- Combine ranks using RRF
 scored AS (
-  SELECT COALESCE(ft.id, s.id) AS id,
+  SELECT COALESCE(ft.id, s.id, ls.id) AS id,
          COALESCE(1.0 / (rrf_k + ft.rank_ix), 0.0) * full_text_weight +
-         COALESCE(1.0 / (rrf_k + s.rank_ix), 0.0) * semantic_weight AS rrf_score
+         COALESCE(1.0 / (rrf_k + s.rank_ix), 0.0) * semantic_weight +
+         COALESCE(1.0 / (rrf_k + ls.rank_ix), 0.0) * literal_weight AS rrf_score
   FROM full_text ft
   FULL JOIN semantic s ON ft.id = s.id
+  FULL JOIN literal_search ls ON ls.id = COALESCE(ft.id, s.id)
 )
+-- Final result with combined keyword score
 SELECT d.id,
        d.project_id,
        d.type,
@@ -335,15 +368,18 @@ SELECT d.id,
        d.updated_at,
        d.metadata,
        scored.rrf_score,
-       scored.rrf_score / ((full_text_weight + semantic_weight) / (rrf_k + 1)::float) AS similarity,
-       1 - (embedding <=> query_embedding) / 2 AS cosine_similarity,
-       COALESCE(ts.token_score, 0.0) AS keyword_score
+       scored.rrf_score / ((full_text_weight + semantic_weight + literal_weight) / (rrf_k + 1)::float) AS similarity,
+       COALESCE(1 - (embedding <=> query_embedding) / 2, 0) AS cosine_similarity,
+       COALESCE(ts.token_score, 0.0) AS keyword_score,
+       COALESCE(ls.literal_count, 0) AS literal_score
 FROM scored
 JOIN base_documents d ON d.id = scored.id
 LEFT JOIN token_scores ts ON ts.id = d.id
-ORDER BY similarity DESC, d.name ASC
+LEFT JOIN literal_search ls ON ls.id = d.id
+ORDER BY scored.rrf_score DESC, d.name ASC, d.updated_at DESC
 LIMIT match_count;
 $$;
+
 
 -- Entities content
 CREATE OR REPLACE FUNCTION hybrid_search_entities(
@@ -351,8 +387,9 @@ CREATE OR REPLACE FUNCTION hybrid_search_entities(
   query_embedding   vector,
   match_count       integer,
   filter            jsonb DEFAULT '{}'::jsonb,
-  full_text_weight  float  DEFAULT 0.5,
-  semantic_weight   float  DEFAULT 0.5,
+  literal_weight    float  DEFAULT 0.3,
+  full_text_weight  float  DEFAULT 0.3,
+  semantic_weight   float  DEFAULT 0.4,
   rrf_k             integer DEFAULT 50
 )
 RETURNS TABLE (
@@ -366,18 +403,12 @@ RETURNS TABLE (
   rrf_score double precision,
   similarity float,
   cosine_similarity float,
-  keyword_score float
+  keyword_score float,
+  literal_score float
 )
 LANGUAGE sql AS
 $$
-WITH tokens_query AS (
-  SELECT to_tsquery('english', string_agg(lexeme, ' | ')) AS ts_query
-  FROM (
-    SELECT unnest(string_to_array(trim(coalesce(query_text, '')), ' ')) AS lexeme
-  ) AS query_tokens
-  WHERE lexeme <> ''
-),
-base_entities AS (
+WITH base_entities AS (
   SELECT *
   FROM entities
   WHERE (
@@ -396,17 +427,49 @@ base_entities AS (
     )
   )
 ),
+-- This CTE sanitizes the query for the full-text search
+sanitized_query AS (
+  SELECT regexp_replace(trim(coalesce(query_text, '')), '[^[:alnum:] ]+', '', 'g') AS cleaned_text
+),
+-- This CTE creates the OR-based tsquery from the sanitized text
+or_ts_query AS (
+  SELECT 
+    CASE WHEN query_tokens.cleaned_text = '' THEN NULL ELSE to_tsquery('english', string_agg(lexeme, ' | ')) END AS ts_query
+  FROM (
+    SELECT t.cleaned_text, unnest(string_to_array(t.cleaned_text, ' ')) AS lexeme
+    FROM sanitized_query t
+  ) AS query_tokens
+  WHERE lexeme <> ''
+  GROUP BY query_tokens.cleaned_text
+),
+-- The CTE for the full-text (OR) search and ranking
 token_scores AS (
   SELECT e.id, e.type, e.updated_at,
          ts_rank_cd(e.fts, t.ts_query) AS token_score
   FROM base_entities e
-  CROSS JOIN tokens_query t
+  CROSS JOIN or_ts_query t
   WHERE e.fts @@ t.ts_query
+),
+-- CTE for literal match counts and ranking
+literal_search AS (
+  SELECT e.id,
+         COALESCE(SUM((LENGTH(e.content::text) - LENGTH(REPLACE(e.content::text, t.lexeme, ''))) / LENGTH(t.lexeme)), 0) +
+         COALESCE(SUM((LENGTH(e.type) - LENGTH(REPLACE(e.type, t.lexeme, ''))) / LENGTH(t.lexeme)), 0) AS literal_count,
+         row_number() OVER (ORDER BY (
+            COALESCE(SUM((LENGTH(e.content::text) - LENGTH(REPLACE(e.content::text, t.lexeme, ''))) / LENGTH(t.lexeme)), 0) +
+            COALESCE(SUM((LENGTH(e.type) - LENGTH(REPLACE(e.type, t.lexeme, ''))) / LENGTH(t.lexeme)), 0)
+         ) DESC) AS rank_ix
+  FROM base_entities e
+  CROSS JOIN (
+    SELECT unnest(string_to_array(trim(coalesce(query_text, '')), ' ')) AS lexeme
+  ) AS t
+  WHERE LENGTH(t.lexeme) > 0
+  GROUP BY e.id
 ),
 full_text as (  
   SELECT ts.id,
     row_number() over (
-      ORDER BY ts.token_score DESC, ts.type ASC, ts.updated_at ASC
+      ORDER BY ts.token_score DESC, ts.type ASC, ts.updated_at DESC
     ) as rank_ix
   FROM token_scores ts
   limit least(match_count, 30) * 2
@@ -421,11 +484,13 @@ semantic AS (
   LIMIT LEAST(match_count, 30) * 2
 ),
 scored AS (
-  SELECT COALESCE(ft.id, s.id) AS id,
+  SELECT COALESCE(ft.id, s.id, ls.id) AS id,
          COALESCE(1.0 / (rrf_k + ft.rank_ix), 0.0) * full_text_weight +
-         COALESCE(1.0 / (rrf_k + s.rank_ix), 0.0) * semantic_weight AS rrf_score
+         COALESCE(1.0 / (rrf_k + s.rank_ix), 0.0) * semantic_weight +
+         COALESCE(1.0 / (rrf_k + ls.rank_ix), 0.0) * literal_weight AS rrf_score
   FROM full_text ft
   FULL JOIN semantic s ON ft.id = s.id
+  FULL JOIN literal_search ls ON ls.id = COALESCE(ft.id, s.id)
 )
 SELECT e.id,
        e.project_id,
@@ -435,13 +500,15 @@ SELECT e.id,
        e.updated_at,
        e.metadata,
        scored.rrf_score,
-       scored.rrf_score / ((full_text_weight + semantic_weight) / (rrf_k + 1)::float) AS similarity,
-       1 - (embedding <=> query_embedding) / 2 AS cosine_similarity,
-       COALESCE(ts.token_score, 0.0) AS keyword_score
+       scored.rrf_score / ((full_text_weight + semantic_weight + literal_weight) / (rrf_k + 1)::float) AS similarity,
+       COALESCE(1 - (embedding <=> query_embedding) / 2, 0) AS cosine_similarity,
+       COALESCE(ts.token_score, 0.0) AS keyword_score,
+       COALESCE(ls.literal_count, 0) AS literal_score
 FROM scored
 JOIN base_entities e ON e.id = scored.id
 LEFT JOIN token_scores ts ON ts.id = e.id
-ORDER BY similarity DESC, e.id ASC
+LEFT JOIN literal_search ls ON ls.id = e.id
+ORDER BY similarity DESC, e.type ASC, e.updated_at DESC
 LIMIT match_count;
 $$;
 `
@@ -458,10 +525,11 @@ SELECT
   to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS "createdAt",
   to_char(updated_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS "updatedAt",
   to_jsonb(metadata) AS metadata,
-  keyword_score as "textScore",
+  literal_score as "textScore",
+  keyword_score as "keywordScore",
   cosine_similarity as "vecScore",
   similarity as "totalScore"
-FROM hybrid_search_entities($1, $2::vector, $3::int, $4::jsonb, $5::float, $6::float, $7::int);
+FROM hybrid_search_entities($1, $2::vector, $3::int, $4::jsonb, $5::float, $6::float, $7::float, $8::int);
 `
 
 const searchDocumentsQuery = `
@@ -475,10 +543,11 @@ SELECT
   to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS "createdAt",
   to_char(updated_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS "updatedAt",
   to_jsonb(metadata) AS metadata,
-  keyword_score as "textScore",
+  literal_score as "textScore",
+  keyword_score as "keywordScore",
   cosine_similarity as "vecScore",
   similarity as "totalScore"
-FROM hybrid_search_documents($1, $2::vector, $3::int, $4::jsonb, $5::float, $6::float, $7::int);
+FROM hybrid_search_documents($1, $2::vector, $3::int, $4::jsonb, $5::float, $6::float, $7::float, $8::int);
 `
 
 // ----------------------------------------------------------

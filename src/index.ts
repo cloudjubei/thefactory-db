@@ -161,8 +161,9 @@ export async function openDatabase({
     if (query.length <= 0) return []
     const qvecArr = await embeddingProvider.embed(query)
     const qvec = toVectorLiteral(qvecArr)
-    const textWeight = Math.min(1, Math.max(0, params.textWeight ?? 0.5))
-    const semWeight = 1 - textWeight
+    const textWeight = Math.min(1, Math.max(0, params.textWeight ?? 0.5)) / 2
+    const keywordWeight = textWeight
+    const semWeight = 1 - (textWeight + keywordWeight)
     const limit = Math.max(1, Math.min(1000, params.limit ?? 20))
 
     const filter: any = {}
@@ -176,6 +177,7 @@ export async function openDatabase({
       limit,
       Object.keys(filter).length ? JSON.stringify(filter) : JSON.stringify({}),
       textWeight,
+      keywordWeight,
       semWeight,
       50,
     ])
@@ -323,8 +325,9 @@ export async function openDatabase({
     if (query.length <= 0) return []
     const qvecArr = await embeddingProvider.embed(query)
     const qvec = toVectorLiteral(qvecArr)
-    const textWeight = Math.min(1, Math.max(0, params.textWeight ?? 0.5))
-    const semWeight = 1 - textWeight
+    const textWeight = Math.min(1, Math.max(0, params.textWeight ?? 0.5)) / 2
+    const keywordWeight = textWeight
+    const semWeight = 1 - (textWeight + keywordWeight)
     const limit = Math.max(1, Math.min(1000, params.limit ?? 20))
 
     const filter: any = {}
@@ -338,6 +341,7 @@ export async function openDatabase({
       limit,
       Object.keys(filter).length ? JSON.stringify(filter) : JSON.stringify({}),
       textWeight,
+      keywordWeight,
       semWeight,
       50,
     ])

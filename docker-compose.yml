@@ -38,7 +38,7 @@ services:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
       PGPASSWORD: password
-    entrypoint: ["/bin/bash", "-c"]
+    entrypoint: ['/bin/bash', '-c']
     command: |
       set -e
       until pg_isready -h db -p 5432 -U "$POSTGRES_USER"; do
@@ -50,7 +50,7 @@ services:
         psql -h db -U "$POSTGRES_USER" -d postgres -c 'CREATE DATABASE "thefactory-db"'
       echo "[db-init] ensuring vector extension..."
       psql -h db -U "$POSTGRES_USER" -d "thefactory-db" -c 'CREATE EXTENSION IF NOT EXISTS vector'
-    restart: "no"
+    restart: 'no'
 
 volumes:
   postgres_data:
