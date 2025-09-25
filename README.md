@@ -119,8 +119,6 @@ docker compose up -d db db-init
 docker exec -it thefactory-db-postgres psql -U user -d "thefactory-db"
 ```
 
-- The Compose file enables durable write settings (fsync, synchronous_commit, full_page_writes). If you hard stop the container, these settings help ensure committed updates persist across sessions.
-
 ## Usage
 
 ```typescript
