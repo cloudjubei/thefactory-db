@@ -93,9 +93,6 @@ export async function openDatabase({
   const db = await openPostgres(connectionString)
   const embeddingProvider = await createLocalEmbeddingProvider()
 
-  // ---------------------
-  // Entities (json)
-  // ---------------------
   async function addEntity(e: EntityInput): Promise<Entity> {
     assertEntityInput(e)
     logger.info('addEntity', { projectId: e.projectId, type: e.type })
@@ -261,6 +258,12 @@ export async function openDatabase({
     assertDocumentPatch(patch)
     const exists = await getDocumentById(id)
     if (!exists) return
+    logger.info('updateDocument', {
+      projectId: exists.projectId,
+      type: exists.type,
+      name: exists.name,
+      src: exists.src,
+    })
 
     let embeddingLiteral: string | null = null
     let newContent: string | null = null
