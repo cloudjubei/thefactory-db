@@ -258,14 +258,7 @@ export async function openDatabase({
     patch: Partial<DocumentInput>,
   ): Promise<Document | undefined> {
     assertDocumentPatch(patch)
-    const exists = await getDocumentById(id)
-    if (!exists) return
-    logger.info('updateDocument', {
-      projectId: exists.projectId,
-      type: exists.type,
-      name: exists.name,
-      src: exists.src,
-    })
+    logger.info('updateDocument', { id, name: patch.name, projectId: patch.projectId })
 
     let embeddingLiteral: string | null = null
     let newContent: string | null = null
@@ -285,9 +278,13 @@ export async function openDatabase({
       embeddingLiteral,
       patch.metadata ?? null,
     ])
-    const row = r.rows[0]
-    if (!row) return undefined
-    return row as Document
+    const updatedDocument = r.rows[0]
+
+    if (!updatedDocument) {
+      logger.warn('updateDocument failed: document not found', { id })
+      return
+    }
+    return updatedDocument as Document
   }
 
   async function deleteDocument(id: string): Promise<boolean> {
