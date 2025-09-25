@@ -168,9 +168,9 @@
       ],
       "blockers": [],
       "createdAt": "2025-09-25T10:23:04.562Z",
-      "updatedAt": "2025-09-25T10:43:18.086Z",
+      "updatedAt": "2025-09-25T11:22:35.809Z",
       "rejection": "A check of all the code shows that it's all sound and correct. It was pointed out that it must be an issue with the database setup.\nAll setup information is described in the @README.md and the current database where this error shows was setup using Option 2: Docker .\nPerhaps the @docker-compose.yml is incorrect and missing some configuration?",
-      "completedAt": "2025-09-25T10:43:18.086Z"
+      "completedAt": "2025-09-25T11:22:35.809Z"
     }
   ],
   "featureIdToDisplayIndex": {

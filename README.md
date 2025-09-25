@@ -89,7 +89,7 @@ This repo includes a ready-to-use Docker Compose setup with `pgvector` and a boo
 docker compose up -d db db-init
 ```
 
-- `db` runs the PostgreSQL server with `pgvector`.
+- `db` runs the PostgreSQL server with `pgvector` and exposes it on host port 55432 to avoid clashing with any local Postgres on 5432.
 - `db-init` waits for the DB, creates the database if missing, and enables the `vector` extension. You can safely re-run it:
 
 ```bash
@@ -99,12 +99,12 @@ docker compose run --rm db-init
 2. Connection URL
 
 ```
-postgresql://user:password@localhost:5432/thefactory-db
+postgresql://user:password@localhost:55432/thefactory-db
 ```
 
 3. Troubleshooting / resetting
 
-- If you previously started Postgres with a volume that did not have the database, `db-init` will create it for you.
+- Ensure you are connecting to the Dockerized Postgres (port 55432), not a locally installed Postgres on 5432. Mismatched connections can make it appear like updates are "in-memory" only when you are actually reading from a different server on subsequent runs.
 - To completely reset the database (including deleting all data):
 
 ```bash
@@ -118,6 +118,8 @@ docker compose up -d db db-init
 ```bash
 docker exec -it thefactory-db-postgres psql -U user -d "thefactory-db"
 ```
+
+- The Compose file enables durable write settings (fsync, synchronous_commit, full_page_writes). If you hard stop the container, these settings help ensure committed updates persist across sessions.
 
 ## Usage
 
@@ -161,11 +163,11 @@ Two simple scripts are included for convenience (run after `npm run build` so `d
 - Clear all (or by project):
 
 ```bash
-node scripts/clear.ts -- --url postgresql://user:password@localhost:5432/thefactory-db --p my-project
+node scripts/clear.ts -- --url postgresql://user:password@localhost:55432/thefactory-db --p my-project
 ```
 
 - Count selected documents:
 
 ```bash
-node scripts/count.ts -- --url postgresql://user:password@localhost:5432/thefactory-db
+node scripts/count.ts -- --url postgresql://user:password@localhost:55432/thefactory-db
 ```
