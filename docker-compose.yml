@@ -12,6 +12,7 @@ services:
       - '5432:5432'
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    command: postgres -c fsync=on
 
   # One-off bootstrap job that ensures the database exists and vector extension is available.
   # This runs against an already-initialized cluster and is safe to re-run.
