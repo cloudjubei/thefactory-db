@@ -1,6 +1,6 @@
 {
   "id": "67749a79-fda3-4c2b-9c35-b644c761b895",
-  "status": "-",
+  "status": "=",
   "title": "Ongoing Improvements",
   "description": "Various ongoing improvements to the project",
   "features": [
@@ -158,7 +158,7 @@
     },
     {
       "id": "ccdb0e7c-d4e5-44d1-bd98-c0ff8be8f9c4",
-      "status": "-",
+      "status": "+",
       "title": "Calling `updateDocument` only updates the document 'in-memory'",
       "description": "A document gets correctly stored when calling `addDocument` in @src/index.ts , but when calling `updateDocument` then retrieving the document via `getDocumentById` works during that db connection session. On a subsequent open connection the old document (the initial one inserted via `addDocument` ) is retrieved. It's as if the document only gets stored in some running memory but never gets flushed out to disk.",
       "context": [
@@ -168,8 +168,9 @@
       ],
       "blockers": [],
       "createdAt": "2025-09-25T10:23:04.562Z",
-      "updatedAt": "2025-09-25T13:35:33.512Z",
-      "rejection": "A check of all the code shows that it's all sound and correct. It was pointed out that it must be an issue with the database setup.\nAll setup information is described in the @README.md and the current database where this error shows was setup using Option 2: Docker .\nPerhaps the @docker-compose.yml is incorrect and missing some configuration?\nThis was already checked twice and yet there's still the same issue.\nSomething is clearly missing."
+      "updatedAt": "2025-09-25T13:37:53.755Z",
+      "rejection": "A check of all the code shows that it's all sound and correct. It was pointed out that it must be an issue with the database setup.\nAll setup information is described in the @README.md and the current database where this error shows was setup using Option 2: Docker .\nPerhaps the @docker-compose.yml is incorrect and missing some configuration?\nThis was already checked twice and yet there's still the same issue.\nSomething is clearly missing.",
+      "completedAt": "2025-09-25T13:37:53.755Z"
     }
   ],
   "featureIdToDisplayIndex": {
