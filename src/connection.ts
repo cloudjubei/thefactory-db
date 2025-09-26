@@ -1,24 +1,24 @@
-import { readSql } from './utils.js';
-import { Client } from 'pg';
+import { readSql } from './utils.js'
+import { Client } from 'pg'
 
 /**
  * Represents the raw database client from the `pg` library.
  */
-export type DB = Client;
+export type DB = Client
 
 /**
  * Initializes the database schema by executing the necessary SQL scripts.
  * @param client - The database client to use for initialization.
  */
 async function initSchema(client: DB) {
-  const schemaSql = readSql('schema');
-  const hybridSql = readSql('hybridSearch');
+  const schemaSql = readSql('schema')
+  const hybridSql = readSql('hybridSearch')
 
   if (schemaSql) {
-    await client.query(schemaSql);
+    await client.query(schemaSql)
   }
   if (hybridSql) {
-    await client.query(hybridSql);
+    await client.query(hybridSql)
   }
 }
 
@@ -32,7 +32,7 @@ export async function openPostgres(connectionString: string): Promise<DB> {
   const client = new Client({ connectionString });
   await client.connect();
   try {
-    await initSchema(client);
+    await initSchema(client)
   } catch (e) {
     await client.end(); // close connection if init fails
     throw e;

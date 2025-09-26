@@ -91,19 +91,43 @@ SELECT
   to_char(updated_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS "updatedAt",
   to_jsonb(metadata) AS metadata
 FROM documents
-WHERE src = $1;
+WHERE project_id = $1 AND src = $2;
+`
+const upsertDocument = `
+INSERT INTO documents (project_id, type, src, name, content, embedding, metadata)
+VALUES ($1, $2, $3, $4, $5, $6::vector, $7::jsonb)
+ON CONFLICT (project_id, src)
+DO UPDATE SET
+  type = EXCLUDED.type,
+  name = EXCLUDED.name,
+  content = EXCLUDED.content,
+  embedding = EXCLUDED.embedding,
+  metadata = EXCLUDED.metadata,
+  updated_at = now()
+WHERE documents.content_hash IS DISTINCT FROM encode(digest(EXCLUDED.content, 'sha1'), 'hex')
+RETURNING
+  id,
+  project_id AS "projectId",
+  type,
+  src,
+  name,
+  content,
+  to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS "createdAt",
+  to_char(updated_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS "updatedAt",
+  to_jsonb(metadata) AS metadata;
 `
 
 const insertDocument = `
-INSERT INTO documents (project_id, type, name, content, src, embedding, metadata)
+INSERT INTO documents (project_id, type, src, name, content, embedding, metadata)
 VALUES ($1, $2, $3, $4, $5, $6::vector, $7::jsonb)
 RETURNING 
   id,
   project_id AS "projectId",
   type,
+  src,
   name,
   content,
-  src,
+  content_hash AS "contentHash",
   to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS "createdAt",
   to_char(updated_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS "updatedAt",
   to_jsonb(metadata) AS metadata;
@@ -112,9 +136,9 @@ RETURNING
 const updateDocument = `
 UPDATE documents SET
   type = COALESCE($2, type),
-  name = COALESCE($3, name),
-  content = COALESCE($4, content),
-  src = COALESCE($5, src),
+  src = COALESCE($3, src),
+  name = COALESCE($4, name),
+  content = COALESCE($5, content),
   embedding = COALESCE($6::vector, embedding),
   metadata = COALESCE($7::jsonb, metadata)
 WHERE id = $1
@@ -122,9 +146,10 @@ RETURNING
   id,
   project_id AS "projectId",
   type,
+  src,
   name,
   content,
-  src,
+  content_hash AS "contentHash",
   to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS "createdAt",
   to_char(updated_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS "updatedAt",
   to_jsonb(metadata) AS metadata;
@@ -156,20 +181,21 @@ CREATE TABLE IF NOT EXISTS documents (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   project_id text NOT NULL,
   type text NOT NULL,
+  src text NOT NULL,
   name text NOT NULL,
   content text,
+  content_hash text,
   fts tsvector GENERATED ALWAYS AS (
     to_tsvector('english', tokenize_code(name)) || to_tsvector('english', coalesce(tokenize_code(content), ''))
   ) STORED,
   embedding vector(384),
-  src text NOT NULL,
   metadata jsonb,
   created_at timestamptz NOT NULL DEFAULT now(),
   updated_at timestamptz NOT NULL DEFAULT now()
 );
 
 -- Basic indexes for documents
-CREATE INDEX IF NOT EXISTS documents_project_id_idx ON documents USING btree(project_id);
+CREATE UNIQUE INDEX IF NOT EXISTS documents_project_src_unique_idx ON documents (project_id, src);
 CREATE INDEX IF NOT EXISTS documents_type_idx ON documents USING btree(type);
 CREATE INDEX IF NOT EXISTS documents_fts_idx ON documents USING GIN(fts);
 -- Vector index HNSW preferred, fallback to IVFFLAT
@@ -197,6 +223,23 @@ DROP TRIGGER IF EXISTS documents_set_updated_at ON documents;
 CREATE TRIGGER documents_set_updated_at
 BEFORE UPDATE ON documents
 FOR EACH ROW EXECUTE FUNCTION set_updated_at();
+
+CREATE OR REPLACE FUNCTION set_document_content_hash()
+RETURNS trigger AS $$
+BEGIN
+  -- Check if the content is new or has changed to avoid unnecessary computation
+  IF (TG_OP = 'INSERT' OR NEW.content IS DISTINCT FROM OLD.content) THEN
+    -- Calculate the sha1 hash of the content and store it as a hex string
+    NEW.content_hash = encode(digest(NEW.content, 'sha1'), 'hex');
+  END IF;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS documents_set_content_hash ON documents;
+CREATE TRIGGER documents_set_content_hash
+BEFORE INSERT OR UPDATE ON documents
+FOR EACH ROW EXECUTE FUNCTION set_document_content_hash();
 
 -- Entities table
 CREATE TABLE IF NOT EXISTS entities (
@@ -589,9 +632,9 @@ SELECT
   id,
   project_id AS "projectId",
   type,
+  src,
   name,
   content,
-  src,
   to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS "createdAt",
   to_char(updated_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS "updatedAt",
   to_jsonb(metadata) AS metadata
@@ -633,6 +676,7 @@ const SQLS: Record<string, string> = {
   deleteDocument: deleteDocument,
   getDocumentById: getDocumentById,
   getDocumentBySrc: getDocumentBySrc,
+  upsertDocument: upsertDocument,
   insertDocument: insertDocument,
   updateDocument: updateDocument,
   searchDocumentsQuery: searchDocumentsQuery,

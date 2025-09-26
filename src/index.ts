@@ -11,6 +11,7 @@ import type {
   DocumentWithScore,
   EntityPatch,
   MatchParams,
+  DocumentPatch,
 } from './types.js'
 import { createLocalEmbeddingProvider } from './utils/embeddings.js'
 import { readSql } from './utils.js'
@@ -51,6 +52,7 @@ const SQL_DOCS = {
   getById: () => readSql('getDocumentById')!,
   getBySrc: () => readSql('getDocumentBySrc')!,
   deleteById: () => readSql('deleteDocument')!,
+  upsert: () => readSql('upsertDocument')!,
   update: () => readSql('updateDocument')!,
   searchDocuments: () => readSql('searchDocumentsQuery')!,
   matchDocuments: () => readSql('matchDocuments')!,
@@ -74,7 +76,9 @@ export interface TheFactoryDb {
   // Documents (text)
   addDocument(d: DocumentInput): Promise<Document>
   getDocumentById(id: string): Promise<Document | undefined>
-  getDocumentBySrc(src: string): Promise<Document | undefined>
+  getDocumentBySrc(projectId: string, src: string): Promise<Document | undefined>
+  upsertDocuments(inputs: Partial<DocumentInput>[]): Promise<Document[]>
+  upsertDocument(input: Partial<DocumentInput>): Promise<Document | undefined>
   updateDocument(id: string, patch: Partial<DocumentInput>): Promise<Document | undefined>
   deleteDocument(id: string): Promise<boolean>
   searchDocuments(params: SearchParams): Promise<DocumentWithScore[]>
@@ -82,7 +86,6 @@ export interface TheFactoryDb {
   clearDocuments(projectIds?: string[]): Promise<void>
 
   close(): Promise<void>
-  raw(): DB
 }
 
 export async function openDatabase({
@@ -230,9 +233,9 @@ export async function openDatabase({
     const out = await db.query(SQL_DOCS.insert(), [
       d.projectId,
       d.type,
+      d.src,
       d.name,
       content,
-      d.src,
       toVectorLiteral(embedding),
       d.metadata ?? null,
     ])
@@ -246,19 +249,100 @@ export async function openDatabase({
     return row as Document
   }
 
-  async function getDocumentBySrc(src: string): Promise<Document | undefined> {
-    const r = await db.query(SQL_DOCS.getBySrc(), [src])
+  async function getDocumentBySrc(projectId: string, src: string): Promise<Document | undefined> {
+    const r = await db.query(SQL_DOCS.getBySrc(), [projectId, src])
     const row = r.rows[0]
     if (!row) return undefined
     return row as Document
   }
 
-  async function updateDocument(
-    id: string,
-    patch: Partial<DocumentInput>,
-  ): Promise<Document | undefined> {
+  async function upsertDocuments(inputs: Partial<DocumentInput>[]): Promise<Document[]> {
+    if (!inputs || inputs.length === 0) {
+      return []
+    }
+    logger.info(`upsertDocuments: a batch of ${inputs.length} documents`)
+
+    const upsertedDocs: Document[] = []
+
+    try {
+      await db.query('BEGIN')
+
+      for (const input of inputs) {
+        let embeddingLiteral: string | null = null
+        let newContent: string | null = null
+
+        if (input.content !== undefined) {
+          newContent = input.content ?? ''
+          const emb = await embeddingProvider.embed(newContent)
+          embeddingLiteral = toVectorLiteral(emb)
+        }
+
+        const result = await db.query(SQL_DOCS.upsert(), [
+          input.projectId ?? null,
+          input.type ?? null,
+          input.src ?? null,
+          input.name ?? null,
+          newContent,
+          embeddingLiteral,
+          input.metadata ?? null,
+        ])
+
+        // If a row was returned, it means it was inserted or updated
+        if (result.rows[0]) {
+          upsertedDocs.push(result.rows[0] as Document)
+        }
+      }
+      await db.query('COMMIT')
+
+      logger.info(
+        `Successfully upserted ${upsertedDocs.length} documents.`,
+        upsertedDocs.map((d) => d.src),
+      )
+      return upsertedDocs
+    } catch (e) {
+      logger.error('Error in batch upsert, rolling back transaction', e)
+      await db.query('ROLLBACK')
+      throw e
+    } finally {
+    }
+  }
+
+  async function upsertDocument(input: Partial<DocumentInput>): Promise<Document | undefined> {
+    logger.info('upsertDocument', { src: input.src })
+
+    let embeddingLiteral: string | null = null
+    let newContent: string | null = null
+
+    if (input.content !== undefined) {
+      newContent = input.content ?? ''
+      const emb = await embeddingProvider.embed(newContent)
+      embeddingLiteral = toVectorLiteral(emb)
+    }
+
+    const result = await db.query(SQL_DOCS.upsert(), [
+      input.projectId ?? null,
+      input.type ?? null,
+      input.src ?? null,
+      input.name ?? null,
+      newContent,
+      embeddingLiteral,
+      input.metadata ?? null,
+    ])
+
+    const upsertedDocument = result.rows[0]
+
+    if (upsertedDocument) {
+      logger.info('Document was upserted', { src: input.src })
+      return upsertedDocument as Document
+    } else {
+      logger.info('Skipped document update (content unchanged)', { src: input.src })
+      return undefined
+    }
+  }
+
+  async function updateDocument(id: string, patch: DocumentPatch): Promise<Document | undefined> {
     assertDocumentPatch(patch)
-    logger.info('updateDocument', { id, name: patch.name, projectId: patch.projectId })
+    logger.info('updateDocument', { id, name: patch.name })
 
     let embeddingLiteral: string | null = null
     let newContent: string | null = null
@@ -272,9 +356,9 @@ export async function openDatabase({
     const r = await db.query(SQL_DOCS.update(), [
       id,
       patch.type ?? null,
+      patch.src ?? null,
       patch.name ?? null,
       newContent,
-      patch.src ?? null,
       embeddingLiteral,
       patch.metadata ?? null,
     ])
@@ -372,13 +456,15 @@ export async function openDatabase({
     addDocument,
     getDocumentById,
     getDocumentBySrc,
+    upsertDocuments,
+    upsertDocument,
     updateDocument,
     deleteDocument,
     searchDocuments,
     matchDocuments,
     clearDocuments,
     close,
-    raw: () => db,
+    // raw: () => db,
   }
 }
 

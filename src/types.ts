@@ -30,11 +30,13 @@ export type Document = {
 export type DocumentInput = {
   projectId: string
   type: string
+  src: string
   name: string
   content: string
-  src: string
   metadata?: Record<string, any>
 }
+
+export type DocumentPatch = Omit<Partial<DocumentInput>, 'projectId'>
 
 /**
  * A document augmented with search relevance scores.
