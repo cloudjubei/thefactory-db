@@ -1,16 +1,16 @@
 import { readSql } from './utils.js'
-import { Client } from 'pg'
+import { Pool, PoolClient } from 'pg'
 
 /**
  * Represents the raw database client from the `pg` library.
  */
-export type DB = Client
+export type DB = Pool
 
 /**
  * Initializes the database schema by executing the necessary SQL scripts.
  * @param client - The database client to use for initialization.
  */
-async function initSchema(client: DB) {
+async function initSchema(client: PoolClient) {
   const schemaSql = readSql('schema')
   const hybridSql = readSql('hybridSearch')
 
@@ -29,13 +29,18 @@ async function initSchema(client: DB) {
  * @throws Will throw an error if the connection or schema initialization fails.
  */
 export async function openPostgres(connectionString: string): Promise<DB> {
-  const client = new Client({ connectionString });
-  await client.connect();
+  // 1. Create a pool instead of a client
+  const pool = new Pool({ connectionString })
+
+  const client = await pool.connect()
   try {
     await initSchema(client)
   } catch (e) {
-    await client.end(); // close connection if init fails
-    throw e;
+    await pool.end() // Close all connections in the pool if init fails
+    throw e
+  } finally {
+    client.release()
   }
-  return client;
+
+  return pool
 }
