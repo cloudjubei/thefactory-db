@@ -1,4 +1,4 @@
-import { readSql } from './utils.js'
+import { SQL } from './utils.js'
 import { Pool, PoolClient } from 'pg'
 
 /**
@@ -11,8 +11,8 @@ export type DB = Pool
  * @param client - The database client to use for initialization.
  */
 async function initSchema(client: PoolClient) {
-  const schemaSql = readSql('schema')
-  const hybridSql = readSql('hybridSearch')
+  const schemaSql = SQL.schema
+  const hybridSql = SQL.hybridSearch
 
   if (schemaSql) {
     await client.query(schemaSql)

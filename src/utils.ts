@@ -1,18 +1,3 @@
-export function readSql(name: string): string | undefined {
-  return SQLS[name]
-}
-
-export function base64ToUtf8(base64: string) {
-  if (base64.startsWith('data:')) {
-    const base64Data = base64.split(',')[1]
-    return atob(base64Data)
-  }
-  return atob(base64)
-}
-
-// -----------------------------
-// CRUD SQL for Entities (jsonb)
-// -----------------------------
 const deleteEntity = `DELETE FROM entities WHERE id = $1;`
 
 const getEntityById = `
@@ -657,30 +642,28 @@ const clearEntities = `TRUNCATE TABLE entities RESTART IDENTITY;`
 const clearDocumentsByProject = `DELETE FROM documents WHERE project_id = ANY($1::text[]);`
 const clearEntitiesByProject = `DELETE FROM entities WHERE project_id = ANY($1::text[]);`
 
-const SQLS: Record<string, string> = {
-  // Schema and functions
-  schema: schema,
-  hybridSearch: hybridSearch,
+export const SQL = {
+  schema,
+  hybridSearch,
 
-  // Entities
-  deleteEntity: deleteEntity,
-  getEntityById: getEntityById,
-  insertEntity: insertEntity,
-  updateEntity: updateEntity,
-  searchEntitiesQuery: searchEntitiesQuery,
-  matchEntities: matchEntities,
-  clearEntities: clearEntities,
-  clearEntitiesByProject: clearEntitiesByProject,
+  deleteEntity,
+  getEntityById,
+  insertEntity,
+  updateEntity,
+  searchEntitiesQuery,
+  matchEntities,
+  clearEntities,
+  clearEntitiesByProject,
 
   // Documents
-  deleteDocument: deleteDocument,
-  getDocumentById: getDocumentById,
-  getDocumentBySrc: getDocumentBySrc,
-  upsertDocument: upsertDocument,
-  insertDocument: insertDocument,
-  updateDocument: updateDocument,
-  searchDocumentsQuery: searchDocumentsQuery,
-  matchDocuments: matchDocuments,
-  clearDocuments: clearDocuments,
-  clearDocumentsByProject: clearDocumentsByProject,
+  deleteDocument,
+  getDocumentById,
+  getDocumentBySrc,
+  upsertDocument,
+  insertDocument,
+  updateDocument,
+  searchDocumentsQuery,
+  matchDocuments,
+  clearDocuments,
+  clearDocumentsByProject,
 }
