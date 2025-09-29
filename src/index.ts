@@ -234,6 +234,9 @@ export async function openDatabase({
     }
     logger.info(`upsertDocuments: a batch of ${inputs.length} documents`)
 
+    // const contents = inputs.map(d => d.content ?? ''); //TODO: batch improvement
+    // const embeddings = await embeddingProvider.embedBatch(contents); //TODO: batch improvement
+
     const upsertedDocs: Document[] = []
 
     try {
@@ -244,6 +247,8 @@ export async function openDatabase({
         let newContent: string | null = null
 
         if (input.content !== undefined) {
+          // embeddingLiteral = toVectorLiteral(embeddings[i]) //TODO: batch improvement
+
           newContent = input.content ?? ''
           const emb = await embeddingProvider.embed(newContent)
           embeddingLiteral = toVectorLiteral(emb)
