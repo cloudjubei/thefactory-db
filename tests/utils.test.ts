@@ -1,20 +1,15 @@
-import { describe, it, expect, beforeAll, afterAll } from 'vitest'
-import * as utils from '../src/utils'
+import { describe, it, expect } from 'vitest'
+import { SQL } from '../src/utils'
 
-// Polyfill atob for Node environment
-const originalAtob = (globalThis as any).atob
-beforeAll(() => {
-  ;(globalThis as any).atob = (b64: string) => Buffer.from(b64, 'base64').toString('binary')
-})
-afterAll(() => {
-  ;(globalThis as any).atob = originalAtob
-})
+// Basic sanity checks for embedded SQL registry
 
-describe('utils.readSql', () => {
-  it('returns SQL string for known keys', () => {
-    const keys = [
+describe('utils.SQL registry', () => {
+  it('contains required SQL keys and non-empty strings', () => {
+    const requiredKeys = [
+      // schema and hybrid
       'schema',
       'hybridSearch',
+      // entities
       'insertEntity',
       'getEntityById',
       'deleteEntity',
@@ -23,39 +18,23 @@ describe('utils.readSql', () => {
       'matchEntities',
       'clearEntities',
       'clearEntitiesByProject',
+      // documents
       'insertDocument',
       'getDocumentById',
       'getDocumentBySrc',
       'deleteDocument',
       'updateDocument',
+      'upsertDocument',
       'searchDocumentsQuery',
       'matchDocuments',
       'clearDocuments',
       'clearDocumentsByProject',
-    ]
-    for (const k of keys) {
-      const sql = utils.readSql(k)
+    ] as const
+
+    for (const k of requiredKeys) {
+      const sql = (SQL as any)[k]
       expect(typeof sql).toBe('string')
-      expect(sql).toBeTruthy()
+      expect(sql.length).toBeGreaterThan(0)
     }
-  })
-
-  it('returns undefined for unknown keys', () => {
-    const sql = utils.readSql('not-a-real-key')
-    expect(sql).toBeUndefined()
-  })
-})
-
-describe('utils.base64ToUtf8', () => {
-  it('decodes plain base64 strings', () => {
-    const helloB64 = Buffer.from('hello world').toString('base64')
-    expect(utils.base64ToUtf8(helloB64)).toBe('hello world')
-  })
-
-  it('decodes data URI base64 strings', () => {
-    const txt = 'sample text!'
-    const b64 = Buffer.from(txt).toString('base64')
-    const dataUri = `data:text/plain;base64,${b64}`
-    expect(utils.base64ToUtf8(dataUri)).toBe(txt)
   })
 })

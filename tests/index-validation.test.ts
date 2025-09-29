@@ -3,12 +3,13 @@ import { openDatabase } from '../src/index'
 import { openPostgres } from '../src/connection'
 import { createLogger } from '../src/logger'
 import { createLocalEmbeddingProvider } from '../src/utils/embeddings'
-import { readSql } from '../src/utils'
 
 vi.mock('../src/connection')
 vi.mock('../src/logger')
 vi.mock('../src/utils/embeddings')
-vi.mock('../src/utils')
+vi.mock('../src/utils', () => ({
+  SQL: new Proxy({}, { get: () => 'FAKE_SQL' }),
+}))
 
 /**
  * Tests focusing on validation and edge cases in the public API
@@ -31,7 +32,6 @@ describe('TheFactoryDb validation and edges', () => {
     vi.mocked(openPostgres).mockResolvedValue(mockDbClient)
     vi.mocked(createLogger).mockReturnValue(mockLogger)
     vi.mocked(createLocalEmbeddingProvider).mockResolvedValue(mockEmbeddingProvider)
-    vi.mocked(readSql).mockReturnValue('FAKE_SQL')
     mockEmbeddingProvider.embed.mockResolvedValue(new Float32Array([0.1, 0.2, 0.3]))
   })
 
@@ -90,10 +90,11 @@ describe('TheFactoryDb validation and edges', () => {
     await db.searchEntities({ query: 'q', textWeight: -5, limit: -1 })
     expect(mockDbClient.query).toHaveBeenCalled()
     const args = mockDbClient.query.mock.calls[0][1]
-    // args: [query, qvec, limit, filterJSON, textWeight, semWeight, 50]
+    // args: [query, qvec, limit, filterJSON, textWeight, keywordWeight, semWeight, 50]
     expect(args[2]).toBe(1) // limit clamped to at least 1
-    expect(args[4]).toBe(0) // textWeight clamped to [0,1]
-    expect(args[5]).toBe(1) // semWeight = 1 - textWeight
+    expect(args[4]).toBe(0) // textWeight (halved) clamped to [0,1] then /2
+    expect(args[5]).toBe(0) // keywordWeight mirrors textWeight
+    expect(args[6]).toBe(1) // semWeight = 1 - (text + keyword)
   })
 
   it('matchDocuments rejects invalid options', async () => {
