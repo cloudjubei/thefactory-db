@@ -59,6 +59,7 @@ export interface TheFactoryDb {
   clearDocuments(projectIds?: string[]): Promise<void>
 
   close(): Promise<void>
+  raw(): DB
 }
 
 export async function openDatabase({
@@ -433,7 +434,7 @@ export async function openDatabase({
     matchDocuments,
     clearDocuments,
     close,
-    // raw: () => db,
+    raw: () => db,
   }
 }
 
