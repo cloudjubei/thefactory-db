@@ -213,8 +213,7 @@ CREATE OR REPLACE FUNCTION set_document_content_hash()
 RETURNS trigger AS $$
 BEGIN
   -- Check if the content is new or has changed to avoid unnecessary computation
-  IF (TG_OP = 'INSERT' OR NEW.content IS DISTINCT FROM OLD.content) THEN
-    -- Calculate the sha1 hash of the content and store it as a hex string
+  IF NEW.content IS NOT NULL THEN
     NEW.content_hash = encode(digest(NEW.content, 'sha1'), 'hex');
   END IF;
   RETURN NEW;
