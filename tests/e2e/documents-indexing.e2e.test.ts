@@ -41,7 +41,8 @@ const DATABASE_URL = process.env.DATABASE_URL || ''
     const byId = await db.getDocumentById(created.id)
     expect(byId?.id).toBe(created.id)
 
-    const bySrc = await db.getDocumentBySrc(created.src)
+    // get by src requires projectId
+    const bySrc = await db.getDocumentBySrc(projectId, created.src)
     expect(bySrc?.id).toBe(created.id)
 
     const updated = await db.updateDocument(created.id, { content: 'updated', metadata: { b: 2 } })
@@ -60,5 +61,49 @@ const DATABASE_URL = process.env.DATABASE_URL || ''
     await db.clearDocuments([projectId])
     const afterClear = await db.matchDocuments({ projectIds: [projectId], limit: 10 })
     expect(afterClear.length).toBe(0)
+  })
+
+  it('upsertDocuments in a batch', async () => {
+    const projectId = `e2e-docs-batch-${Date.now()}`
+    await db.clearDocuments([projectId])
+
+    // 1. Initial batch insert
+    const initialDocs = [
+      { projectId, type: 'post', src: 'p1', name: 'Post 1', content: 'This is the first post.' },
+      { projectId, type: 'post', src: 'p2', name: 'Post 2', content: 'This is the second post.' },
+      { projectId, type: 'post', src: 'p3', name: 'Post 3', content: 'This is the third post.' },
+    ]
+
+    const upserted = await db.upsertDocuments(initialDocs)
+    expect(upserted.length).toBe(3)
+    expect(upserted[0].src).toBe('p1')
+    expect(upserted[1].src).toBe('p2')
+    expect(upserted[2].src).toBe('p3')
+
+    const allDocs = await db.matchDocuments({ projectIds: [projectId], limit: 10 })
+    expect(allDocs.length).toBe(3)
+
+    // 2. Mixed batch: update 2, insert 1 new, 1 unchanged
+    const mixedDocs = [
+      { projectId, type: 'post', src: 'p1', name: 'Post 1', content: 'This is the first post.' }, // unchanged
+      { projectId, type: 'post', src: 'p2', name: 'Post 2 Updated', content: 'This is the second post, updated.' }, // updated
+      { projectId, type: 'post', src: 'p3', name: 'Post 3 Updated', content: 'This is the third post, updated.' }, // updated
+      { projectId, type: 'post', src: 'p4', name: 'Post 4', content: 'This is a new fourth post.' }, // new
+    ]
+
+    const upsertedMixed = await db.upsertDocuments(mixedDocs)
+    expect(upsertedMixed.length).toBe(3)
+    expect(upsertedMixed.map((d) => d.src).sort()).toEqual(['p2', 'p3', 'p4'])
+
+    const allDocsAfterUpdate = await db.matchDocuments({ projectIds: [projectId], limit: 10 })
+    expect(allDocsAfterUpdate.length).toBe(4)
+
+    const p2 = await db.getDocumentBySrc(projectId, 'p2')
+    expect(p2?.name).toBe('Post 2 Updated')
+
+    const p4 = await db.getDocumentBySrc(projectId, 'p4')
+    expect(p4?.name).toBe('Post 4')
+
+    await db.clearDocuments([projectId])
   })
 })

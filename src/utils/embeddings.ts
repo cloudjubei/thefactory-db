@@ -71,23 +71,47 @@ export async function createLocalEmbeddingProvider(options?: {
       return []
     }
     const extractor = await getExtractor()
-    const output: Tensor = await extractor(texts, { pooling: 'mean', normalize: false })
+    const output: any = await extractor(texts, { pooling: 'mean', normalize: false })
 
-    const batchSize = output.dims[0]
-    const embeddingDim = output.dims[1]
-    const embeddings: Float32Array[] = []
-
-    for (let i = 0; i < batchSize; i++) {
-      const start = i * embeddingDim
-      const end = start + embeddingDim
-      let embedding = output.data.slice(start, end) as Float32Array
-      if (normalize) {
-        embedding = l2norm(embedding)
-      }
-      embeddings.push(embedding)
+    if (!output) {
+      throw new Error('Embedding failed: received null or undefined output from model.')
     }
 
-    return embeddings
+    // Handle Tensor-like output (e.g. from transformers.js node backend)
+    // It has dims=[batch_size, model_dim] and a flat data array
+    if (output.dims && output.data && output.dims.length === 2) {
+      const batchSize = output.dims[0]
+      const embeddingDim = output.dims[1]
+      const embeddings: Float32Array[] = []
+
+      for (let i = 0; i < batchSize; i++) {
+        const start = i * embeddingDim
+        const end = start + embeddingDim
+        let embedding = new Float32Array(output.data.slice(start, end))
+        if (normalize) {
+          embedding = l2norm(embedding)
+        }
+        embeddings.push(embedding)
+      }
+      return embeddings
+    }
+
+    // Handle nested array output (e.g. from mock or some backends)
+    if (Array.isArray(output) && output.length > 0 && Array.isArray(output[0])) {
+      return output.map((row: number[]) => {
+        let embedding = new Float32Array(row)
+        if (normalize) {
+          embedding = l2norm(embedding)
+        }
+        return embedding
+      })
+    }
+
+    const outputType = Array.isArray(output) ? 'array' : typeof output
+    const outputShape = output.dims ? `dims=${JSON.stringify(output.dims)}` : `length=${output.length}`
+    const message = `Unsupported embedding output format for batch. Expected a 2D Tensor or a nested array. Got ${outputType} with ${outputShape}.`
+    console.error(message, { output })
+    throw new Error(message)
   }
 
   // Dimension is not known synchronously until first run. Expose common default of MiniLM (384).
