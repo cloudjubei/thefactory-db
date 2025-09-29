@@ -17,6 +17,7 @@ import type {
 import { createLocalEmbeddingProvider } from './utils/embeddings.js'
 import { SQL } from './utils.js'
 import { stringifyJsonValues } from './utils/json.js'
+import { hash } from './utils/hash.js'
 import {
   assertDocumentInput,
   assertDocumentPatch,
@@ -50,8 +51,8 @@ export interface TheFactoryDb {
   addDocument(d: DocumentInput): Promise<Document>
   getDocumentById(id: string): Promise<Document | undefined>
   getDocumentBySrc(projectId: string, src: string): Promise<Document | undefined>
-  upsertDocuments(inputs: Partial<DocumentInput>[]): Promise<Document[]>
-  upsertDocument(input: Partial<DocumentInput>): Promise<Document | undefined>
+  upsertDocuments(inputs: DocumentUpsertInput[]): Promise<Document[]>
+  upsertDocument(input: DocumentUpsertInput): Promise<Document | undefined>
   updateDocument(id: string, patch: Partial<DocumentInput>): Promise<Document | undefined>
   deleteDocument(id: string): Promise<boolean>
   searchDocuments(params: SearchParams): Promise<DocumentWithScore[]>
@@ -234,31 +235,47 @@ export async function openDatabase({
     if (!inputs || inputs.length === 0) {
       return []
     }
-    logger.info(`upsertDocuments: a batch of ${inputs.length} documents`)
+    logger.info(`upsertDocuments: received a batch of ${inputs.length} documents`)
 
-    // const contents = inputs.map((d) => d.content ?? '')
-    // const embeddings = await embeddingProvider.embedBatch(contents)
+    const projectId = inputs[0].projectId
+    const srcs = inputs.map((doc) => doc.src)
+    const existingDocsResult = await db.query(SQL.getDocumentsBySrc, [projectId, srcs])
+    const existingHashes = new Map<string, string>(
+      existingDocsResult.rows.map((row) => [row.src, row.contentHash]),
+    )
 
+    const docsToUpsert = inputs.filter((doc) => {
+      const newHash = hash(doc.content ?? '')
+      const oldHash = existingHashes.get(doc.src)
+      return newHash !== oldHash
+    })
+
+    if (docsToUpsert.length === 0) {
+      logger.info('upsertDocuments: no documents needed updating.')
+      return []
+    }
+
+    logger.info(`upsertDocuments: ${docsToUpsert.length} of ${inputs.length} need updating.`)
+
+    const contents = docsToUpsert.map((d) => d.content ?? '')
+    const embeddings = await embeddingProvider.embedBatch(contents)
     const upsertedDocs: Document[] = []
 
     try {
       await db.query('BEGIN')
-
-      for (let i = 0; i < inputs.length; i++) {
-        const input = inputs[i]
-        const content = input.content
-        // const embedding = embeddings[i]
-        const embedding = await embeddingProvider.embed(content)
+      for (let i = 0; i < docsToUpsert.length; i++) {
+        const doc = docsToUpsert[i]
+        const embedding = embeddings[i]
         const embeddingLiteral = toVectorLiteral(embedding)
 
         const result = await db.query(SQL.upsertDocument, [
-          input.projectId ?? null,
-          input.type ?? null,
-          input.src ?? null,
-          input.name ?? null,
-          content,
+          doc.projectId,
+          doc.type,
+          doc.src,
+          doc.name,
+          doc.content,
           embeddingLiteral,
-          input.metadata ?? null,
+          doc.metadata ?? null,
         ])
 
         if (result.rows[0]) {
@@ -281,35 +298,8 @@ export async function openDatabase({
 
   async function upsertDocument(input: DocumentUpsertInput): Promise<Document | undefined> {
     logger.info('upsertDocument', { src: input.src })
-
-    let embeddingLiteral: string | null = null
-    let newContent: string | null = null
-
-    if (input.content !== undefined) {
-      newContent = input.content ?? ''
-      const emb = await embeddingProvider.embed(newContent)
-      embeddingLiteral = toVectorLiteral(emb)
-    }
-
-    const result = await db.query(SQL.upsertDocument, [
-      input.projectId ?? null,
-      input.type ?? null,
-      input.src ?? null,
-      input.name ?? null,
-      newContent,
-      embeddingLiteral,
-      input.metadata ?? null,
-    ])
-
-    const upsertedDocument = result.rows[0]
-
-    if (upsertedDocument) {
-      logger.info('Document was upserted', { src: input.src })
-      return upsertedDocument as Document
-    } else {
-      logger.info('Skipped document update (content unchanged)', { src: input.src })
-      return undefined
-    }
+    const results = await upsertDocuments([input])
+    return results[0]
   }
 
   async function updateDocument(id: string, patch: DocumentPatch): Promise<Document | undefined> {

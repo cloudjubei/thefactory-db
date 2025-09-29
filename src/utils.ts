@@ -78,6 +78,15 @@ SELECT
 FROM documents
 WHERE project_id = $1 AND src = $2;
 `
+
+const getDocumentsBySrc = `
+SELECT
+  src,
+  content_hash AS "contentHash"
+FROM documents
+WHERE project_id = $1 AND src = ANY($2);
+`
+
 const upsertDocument = `
 INSERT INTO documents (project_id, type, src, name, content, embedding, metadata)
 VALUES ($1, $2, $3, $4, $5, $6::vector, $7::jsonb)
@@ -97,6 +106,7 @@ RETURNING
   src,
   name,
   content,
+  content_hash as "contentHash",
   to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS "createdAt",
   to_char(updated_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS "updatedAt",
   to_jsonb(metadata) AS metadata;
@@ -658,6 +668,7 @@ export const SQL = {
   deleteDocument,
   getDocumentById,
   getDocumentBySrc,
+  getDocumentsBySrc,
   upsertDocument,
   insertDocument,
   updateDocument,

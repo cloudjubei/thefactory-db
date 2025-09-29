@@ -28,6 +28,7 @@
   - `src/utils/embeddings.ts`: Local embedding provider wrapper around Transformers.js.
   - `src/utils/json.ts`: JSON value stringifier used for entity embeddings/FTS.
   - `src/utils/tokenizer.ts`: Tokenizer helpers and FTS normalization utilities.
+  - `src/utils/hash.ts`: Hashing utility for content checks.
 - `docs/`: Human-facing documentation for this package (this file).
   - `docs/CODE_STANDARD.md`: Coding standards, architectural patterns, and best practices.
   - `docs/sql/`: Reference SQL scripts (schema and hybrid search) for humans. Runtime uses embedded SQL in `src/utils.ts`.
@@ -44,6 +45,7 @@ Two tables are maintained:
   - `type` (text not null)
   - `name` (text not null) — human-friendly title used for keyword ranking
   - `content` (text)
+  - `content_hash` (text) — SHA1 hash of content, used to avoid re-embedding unchanged documents.
   - `fts` (tsvector, generated from `content`)
   - `embedding` (vector(384))
   - `src` (text not null)

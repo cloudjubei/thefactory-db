@@ -19,6 +19,7 @@ export type Document = {
   name: string
   content: string
   src: string
+  contentHash: string
   createdAt: string
   updatedAt: string
   metadata?: Record<string, any>
