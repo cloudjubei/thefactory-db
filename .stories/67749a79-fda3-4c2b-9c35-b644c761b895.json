@@ -1,6 +1,6 @@
 {
   "id": "67749a79-fda3-4c2b-9c35-b644c761b895",
-  "status": "=",
+  "status": "-",
   "title": "Ongoing Improvements",
   "description": "Various ongoing improvements to the project",
   "features": [
@@ -158,7 +158,7 @@
     },
     {
       "id": "04391c02-652b-4dad-b59a-2eda2bccf1d3",
-      "status": "+",
+      "status": "-",
       "title": "Batching of embeddings",
       "description": "In @src/index.ts in the function `upsertDocuments` we are embedding the content of many documents at once and this takes a long time. So we require this improvement - the @src/utils/embeddings.ts needs to allow batched embeddings, so that it can quicker do the whole batch in one go. Sample code for the usage of this is commented out in `upsertDocuments` .",
       "context": [
@@ -167,9 +167,8 @@
       ],
       "blockers": [],
       "createdAt": "2025-09-29T20:28:01.709Z",
-      "updatedAt": "2025-09-29T22:51:45.265Z",
-      "rejection": "The latest addition of `embedBatchAsync` and using it in `upsertDocuments` causes a crash.\nThere need to be appropriate unit tests and e2e tests following how others are done in the `tests` folder that will test out this functionality once it's fixed.",
-      "completedAt": "2025-09-29T22:51:45.265Z"
+      "updatedAt": "2025-09-29T23:39:37.787Z",
+      "rejection": "The latest addition of `embedBatchAsync` and using it in `upsertDocuments` causes a crash - thus it was commented out.\nThere need to be appropriate unit tests and e2e tests following how others are done in the `tests` folder that will test out this functionality from @src/utils/embeddings.ts . It should of course be fixed so the tests pass and the code can run."
     },
     {
       "id": "77101a35-86dd-42f7-b42b-5c30fedc7713",
@@ -181,8 +180,9 @@
       ],
       "blockers": [],
       "createdAt": "2025-09-29T22:45:51.048Z",
-      "updatedAt": "2025-09-29T22:49:28.605Z",
-      "completedAt": "2025-09-29T22:49:28.605Z"
+      "updatedAt": "2025-09-29T23:42:00.630Z",
+      "rejection": "The implementation saved is not ideal - we should keep the hashing functionality inside the SQL statements. Thus the function that we need to call should be called `getChangingDocuments` and it should accept the projectId + src + content, it will take the content, compute the hash, and only return the stored value of that document if the hash is different.\nThen inside `upsertDocuments` the documents can be filtered by source to see which ones should be passed on to get embeddings and get upserted.",
+      "completedAt": "2025-09-29T23:42:00.630Z"
     }
   ],
   "featureIdToDisplayIndex": {

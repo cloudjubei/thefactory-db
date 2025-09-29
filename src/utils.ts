@@ -79,12 +79,14 @@ FROM documents
 WHERE project_id = $1 AND src = $2;
 `
 
-const getDocumentsBySrc = `
-SELECT
-  src,
-  content_hash AS "contentHash"
-FROM documents
-WHERE project_id = $1 AND src = ANY($2);
+const getChangingDocuments = `
+WITH input_docs(src, content) AS (
+  SELECT * FROM unnest($2::text[], $3::text[])
+)
+SELECT i.src
+FROM input_docs i
+LEFT JOIN documents d ON d.project_id = $1 AND d.src = i.src
+WHERE d.id IS NULL OR d.content_hash IS DISTINCT FROM encode(digest(i.content, 'sha1'), 'hex');
 `
 
 const upsertDocument = `
@@ -668,7 +670,7 @@ export const SQL = {
   deleteDocument,
   getDocumentById,
   getDocumentBySrc,
-  getDocumentsBySrc,
+  getChangingDocuments,
   upsertDocument,
   insertDocument,
   updateDocument,

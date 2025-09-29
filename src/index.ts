@@ -17,7 +17,6 @@ import type {
 import { createLocalEmbeddingProvider } from './utils/embeddings.js'
 import { SQL } from './utils.js'
 import { stringifyJsonValues } from './utils/json.js'
-import { hash } from './utils/hash.js'
 import {
   assertDocumentInput,
   assertDocumentPatch,
@@ -231,6 +230,16 @@ export async function openDatabase({
     return row as Document
   }
 
+  async function getChangingDocuments(
+    projectId: string,
+    inputs: DocumentUpsertInput[],
+  ): Promise<Set<string>> {
+    const srcs = inputs.map((doc) => doc.src)
+    const contents = inputs.map((doc) => doc.content ?? '')
+    const result = await db.query(SQL.getChangingDocuments, [projectId, srcs, contents])
+    return new Set(result.rows.map((row) => row.src))
+  }
+
   async function upsertDocuments(inputs: DocumentUpsertInput[]): Promise<Document[]> {
     if (!inputs || inputs.length === 0) {
       return []
@@ -238,22 +247,14 @@ export async function openDatabase({
     logger.info(`upsertDocuments: received a batch of ${inputs.length} documents`)
 
     const projectId = inputs[0].projectId
-    const srcs = inputs.map((doc) => doc.src)
-    const existingDocsResult = await db.query(SQL.getDocumentsBySrc, [projectId, srcs])
-    const existingHashes = new Map<string, string>(
-      existingDocsResult.rows.map((row) => [row.src, row.contentHash]),
-    )
+    const changingSrcs = await getChangingDocuments(projectId, inputs)
 
-    const docsToUpsert = inputs.filter((doc) => {
-      const newHash = hash(doc.content ?? '')
-      const oldHash = existingHashes.get(doc.src)
-      return newHash !== oldHash
-    })
-
-    if (docsToUpsert.length === 0) {
+    if (changingSrcs.size === 0) {
       logger.info('upsertDocuments: no documents needed updating.')
       return []
     }
+
+    const docsToUpsert = inputs.filter((doc) => changingSrcs.has(doc.src))
 
     logger.info(`upsertDocuments: ${docsToUpsert.length} of ${inputs.length} need updating.`)
 
