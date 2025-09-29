@@ -1,0 +1,64 @@
+{
+  "id": "902f88c6-aecd-4fc4-ae5c-ddb30a35768b",
+  "status": "-",
+  "title": "TESTING",
+  "description": "Ongoing Testing improvements",
+  "features": [
+    {
+      "id": "179ea7c6-df7b-45ae-81ab-3bc19d3f0a36",
+      "status": "-",
+      "title": "Add tests for src/connection.ts",
+      "description": "Improve test coverage for @src/connection.ts.\nTarget uncovered lines: 12-14, 16-22, 35-42, 44-45.",
+      "context": [
+        "src/connection.ts"
+      ],
+      "blockers": [],
+      "createdAt": "2025-09-29T19:11:22.508Z",
+      "updatedAt": "2025-09-29T19:11:22.508Z"
+    },
+    {
+      "id": "a3a9f8e3-12be-421b-9a1a-995da993fd98",
+      "status": "-",
+      "title": "Add tests for src/utils/tokenizer.ts",
+      "description": "Improve test coverage for @src/utils/tokenizer.ts.\nTarget uncovered lines: 49, 53-56, 81-86, 88-89.",
+      "context": [
+        "src/utils/tokenizer.ts"
+      ],
+      "blockers": [],
+      "createdAt": "2025-09-29T19:11:32.553Z",
+      "updatedAt": "2025-09-29T19:11:32.553Z"
+    },
+    {
+      "id": "73c252d6-deb6-43da-b508-d4f9259b3ab4",
+      "status": "-",
+      "title": "Add tests for src/utils/json.ts",
+      "description": "Improve test coverage for @src/utils/json.ts.\nTarget uncovered lines: 18, 28-29, 73, 81.",
+      "context": [
+        "src/utils/json.ts"
+      ],
+      "blockers": [],
+      "createdAt": "2025-09-29T19:11:39.404Z",
+      "updatedAt": "2025-09-29T19:11:39.404Z"
+    },
+    {
+      "id": "05555563-a308-4e2f-9c2a-ca5383d6ce26",
+      "status": "-",
+      "title": "Add tests for src/utils/embeddings.ts",
+      "description": "Improve test coverage for @src/utils/embeddings.ts.\nTarget uncovered lines: 54-56, 58-63.",
+      "context": [
+        "src/utils/embeddings.ts"
+      ],
+      "blockers": [],
+      "createdAt": "2025-09-29T19:11:41.137Z",
+      "updatedAt": "2025-09-29T19:11:41.137Z"
+    }
+  ],
+  "featureIdToDisplayIndex": {
+    "179ea7c6-df7b-45ae-81ab-3bc19d3f0a36": 1,
+    "a3a9f8e3-12be-421b-9a1a-995da993fd98": 2,
+    "73c252d6-deb6-43da-b508-d4f9259b3ab4": 3,
+    "05555563-a308-4e2f-9c2a-ca5383d6ce26": 4
+  },
+  "createdAt": "2025-09-29T19:11:02.269Z",
+  "updatedAt": "2025-09-29T19:11:02.269Z"
+}

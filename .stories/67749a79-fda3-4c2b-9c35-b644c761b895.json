@@ -155,21 +155,6 @@
       "createdAt": "2025-09-24T02:37:08.544Z",
       "updatedAt": "2025-09-24T02:42:00.191Z",
       "completedAt": "2025-09-24T02:42:00.191Z"
-    },
-    {
-      "id": "ccdb0e7c-d4e5-44d1-bd98-c0ff8be8f9c4",
-      "status": "-",
-      "title": "Calling `updateDocument` only updates the document 'in-memory'",
-      "description": "A document gets correctly stored when calling `addDocument` in @src/index.ts , but when calling `updateDocument` then retrieving the document via `getDocumentById` works during that db connection session. On a subsequent open connection the old document (the initial one inserted via `addDocument` ) is retrieved. It's as if the document only gets stored in some running memory but never gets flushed out to disk.",
-      "context": [
-        "src/index.ts",
-        "README.md",
-        "docker-compose.yml"
-      ],
-      "blockers": [],
-      "createdAt": "2025-09-25T10:23:04.562Z",
-      "updatedAt": "2025-09-26T01:09:54.723Z",
-      "rejection": "A check of all the code shows that it's all sound and correct. It was pointed out that it must be an issue with the database setup.\nAll setup information is described in the @README.md and the current database where this error shows was setup using Option 2: Docker .\nPerhaps the @docker-compose.yml is incorrect and missing some configuration?\nThis was already checked twice and yet there's still the same issue.\nSomething is clearly missing."
     }
   ],
   "featureIdToDisplayIndex": {
@@ -185,8 +170,7 @@
     "ad2a782a-d8f1-4560-83f5-2e972c9ed02f": 10,
     "057eb355-399f-443b-b98d-6c2f46a953da": 11,
     "4c2bf377-ffe0-4ad3-8b2d-f3cc9ba32592": 12,
-    "734c141d-83b8-4a4c-8ed5-75ef2d5ea874": 13,
-    "ccdb0e7c-d4e5-44d1-bd98-c0ff8be8f9c4": 14
+    "734c141d-83b8-4a4c-8ed5-75ef2d5ea874": 13
   },
   "createdAt": "2025-09-19T01:04:36.087Z",
   "updatedAt": "2025-09-19T01:04:36.087Z"
