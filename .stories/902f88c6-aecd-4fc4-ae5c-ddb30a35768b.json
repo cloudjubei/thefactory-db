@@ -1,6 +1,6 @@
 {
   "id": "902f88c6-aecd-4fc4-ae5c-ddb30a35768b",
-  "status": "-",
+  "status": "+",
   "title": "TESTING",
   "description": "Ongoing Testing improvements",
   "features": [
@@ -58,7 +58,7 @@
     },
     {
       "id": "71cfcb76-53c2-4e16-8272-b544f5c5033c",
-      "status": "-",
+      "status": "+",
       "title": "Tests are wrong",
       "description": "@tests/hybrid-search-advanced.test.ts , @tests/index-validation.test.ts , @tests/index.test.ts and @tests/utils.test.ts are wrong and failing because a lot of the code involved has been updated. Go over every single test case - scrutinize it and fix it.",
       "context": [
@@ -69,7 +69,8 @@
       ],
       "blockers": [],
       "createdAt": "2025-09-29T20:06:36.684Z",
-      "updatedAt": "2025-09-29T20:08:07.008Z"
+      "updatedAt": "2025-09-29T20:35:00.098Z",
+      "completedAt": "2025-09-29T20:35:00.098Z"
     }
   ],
   "featureIdToDisplayIndex": {
@@ -80,5 +81,6 @@
     "71cfcb76-53c2-4e16-8272-b544f5c5033c": 5
   },
   "createdAt": "2025-09-29T19:11:02.269Z",
-  "updatedAt": "2025-09-29T19:11:02.269Z"
+  "updatedAt": "2025-09-29T19:11:02.269Z",
+  "completedAt": "2025-09-29T20:35:00.098Z"
 }

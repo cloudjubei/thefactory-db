@@ -3,15 +3,16 @@ import { openDatabase } from '../src/index'
 import { openPostgres } from '../src/connection'
 import { createLogger } from '../src/logger'
 import { createLocalEmbeddingProvider } from '../src/utils/embeddings'
-import { readSql } from '../src/utils'
 import { stringifyJsonValues } from '../src/utils/json'
 
 // Mock dependencies
 vi.mock('../src/connection')
 vi.mock('../src/logger')
 vi.mock('../src/utils/embeddings')
-vi.mock('../src/utils')
 vi.mock('../src/utils/json')
+vi.mock('../src/utils', () => ({
+  SQL: new Proxy({}, { get: () => 'FAKE_SQL' }),
+}))
 
 describe('TheFactoryDb', () => {
   let mockDbClient: any
@@ -42,7 +43,6 @@ describe('TheFactoryDb', () => {
     vi.mocked(openPostgres).mockResolvedValue(mockDbClient)
     vi.mocked(createLogger).mockReturnValue(mockLogger)
     vi.mocked(createLocalEmbeddingProvider).mockResolvedValue(mockEmbeddingProvider)
-    vi.mocked(readSql).mockReturnValue('FAKE_SQL')
     vi.mocked(stringifyJsonValues).mockImplementation((val) => JSON.stringify(val))
     mockEmbeddingProvider.embed.mockResolvedValue(new Float32Array([0.1, 0.2, 0.3]))
   })
@@ -100,9 +100,9 @@ describe('TheFactoryDb', () => {
 
       const result = await db.updateEntity('123', patch)
 
-      expect(mockDbClient.query).toHaveBeenCalledWith('FAKE_SQL', ['123']) // for getEntityById
+      expect(mockDbClient.query).toHaveBeenNthCalledWith(1, 'FAKE_SQL', ['123']) // for getEntityById
       expect(mockEmbeddingProvider.embed).toHaveBeenCalledWith(JSON.stringify({ b: 2 }))
-      expect(mockDbClient.query).toHaveBeenCalledWith('FAKE_SQL', [
+      expect(mockDbClient.query).toHaveBeenNthCalledWith(2, 'FAKE_SQL', [
         '123',
         null,
         { b: 2 },
@@ -136,8 +136,9 @@ describe('TheFactoryDb', () => {
         '[0.1,0.2,0.3]',
         20,
         JSON.stringify({ projectIds: ['p1'] }),
-        0.5,
-        0.5,
+        0.25, // textWeight / 2
+        0.25, // keywordWeight = textWeight
+        0.5,  // semWeight = 1 - (text+keyword)
         50,
       ])
       expect(result).toEqual([{ id: '1' }])
@@ -177,9 +178,9 @@ describe('TheFactoryDb', () => {
       expect(mockDbClient.query).toHaveBeenCalledWith('FAKE_SQL', [
         'p1',
         't1',
+        's1',
         'Title',
         'hello',
-        's1',
         '[0.1,0.2,0.3]',
         null,
       ])
@@ -217,14 +218,14 @@ describe('TheFactoryDb', () => {
 
       const result = await db.updateDocument('123', patch)
 
-      expect(mockDbClient.query).toHaveBeenCalledWith('FAKE_SQL', ['123']) // for getDocumentById
+      expect(mockDbClient.query).toHaveBeenNthCalledWith(1, 'FAKE_SQL', ['123']) // for getDocumentById
       expect(mockEmbeddingProvider.embed).toHaveBeenCalledWith('new')
-      expect(mockDbClient.query).toHaveBeenCalledWith('FAKE_SQL', [
+      expect(mockDbClient.query).toHaveBeenNthCalledWith(2, 'FAKE_SQL', [
         '123',
         null,
         null,
-        'new',
         null,
+        'new',
         '[0.1,0.2,0.3]',
         null,
       ])
@@ -254,7 +255,8 @@ describe('TheFactoryDb', () => {
         '[0.1,0.2,0.3]',
         20,
         JSON.stringify({ projectIds: ['p1'] }),
-        0.5,
+        0.25,
+        0.25,
         0.5,
         50,
       ])
@@ -285,11 +287,5 @@ describe('TheFactoryDb', () => {
     const db = await openDatabase({ connectionString: 'test' })
     await db.close()
     expect(mockDbClient.end).toHaveBeenCalledOnce()
-  })
-
-  it('raw should return the raw client', async () => {
-    const db = await openDatabase({ connectionString: 'test' })
-    const rawClient = db.raw()
-    expect(rawClient).toBe(mockDbClient)
   })
 })
