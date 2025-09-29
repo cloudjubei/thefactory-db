@@ -235,32 +235,29 @@ export async function openDatabase({
     }
     logger.info(`upsertDocuments: a batch of ${inputs.length} documents`)
 
-    // const contents = inputs.map(d => d.content ?? ''); //TODO: batch improvement
-    // const embeddings = await embeddingProvider.embedBatch(contents); //TODO: batch improvement
+    const contents = inputs.map((d) => d.content ?? '')
+    const embeddings = await embeddingProvider.embedBatch(contents)
 
     const upsertedDocs: Document[] = []
 
     try {
       await db.query('BEGIN')
 
-      for (const input of inputs) {
-        // embeddingLiteral = toVectorLiteral(embeddings[i]) //TODO: batch improvement
-
-        const content = input.content
-        const emb = await embeddingProvider.embed(content)
-        const embeddingLiteral = toVectorLiteral(emb)
+      for (let i = 0; i < inputs.length; i++) {
+        const input = inputs[i]
+        const embedding = embeddings[i]
+        const embeddingLiteral = toVectorLiteral(embedding)
 
         const result = await db.query(SQL.upsertDocument, [
           input.projectId ?? null,
           input.type ?? null,
           input.src ?? null,
           input.name ?? null,
-          content,
+          input.content ?? '',
           embeddingLiteral,
           input.metadata ?? null,
         ])
 
-        // If a row was returned, it means it was inserted or updated
         if (result.rows[0]) {
           upsertedDocs.push(result.rows[0] as Document)
         }
@@ -276,7 +273,6 @@ export async function openDatabase({
       logger.error('Error in batch upsert, rolling back transaction', e)
       await db.query('ROLLBACK')
       throw e
-    } finally {
     }
   }
 

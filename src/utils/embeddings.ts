@@ -1,9 +1,10 @@
-import { pipeline, env } from '@xenova/transformers'
+import { pipeline, env, Tensor } from '@xenova/transformers'
 
 export interface EmbeddingProvider {
   readonly name: string
   readonly dimension: number
   embed(text: string): Promise<Float32Array> | Float32Array
+  embedBatch(texts: string[]): Promise<Float32Array[]>
 }
 
 // Embedding provider using Transformers.js with a sentence embedding model
@@ -65,6 +66,30 @@ export async function createLocalEmbeddingProvider(options?: {
     return normalize ? l2norm(data) : data
   }
 
+  async function embedBatchAsync(texts: string[]): Promise<Float32Array[]> {
+    if (!texts || texts.length === 0) {
+      return []
+    }
+    const extractor = await getExtractor()
+    const output: Tensor = await extractor(texts, { pooling: 'mean', normalize: false })
+
+    const batchSize = output.dims[0]
+    const embeddingDim = output.dims[1]
+    const embeddings: Float32Array[] = []
+
+    for (let i = 0; i < batchSize; i++) {
+      const start = i * embeddingDim
+      const end = start + embeddingDim
+      let embedding = output.data.slice(start, end) as Float32Array
+      if (normalize) {
+        embedding = l2norm(embedding)
+      }
+      embeddings.push(embedding)
+    }
+
+    return embeddings
+  }
+
   // Dimension is not known synchronously until first run. Expose common default of MiniLM (384).
   // Consumers can read provider.dimension after first embed if they need exact size.
   let dimension = 384
@@ -77,6 +102,14 @@ export async function createLocalEmbeddingProvider(options?: {
       const vec = await embedAsync(text)
       dimension = vec.length
       return vec
+    },
+    async embedBatch(texts: string[]): Promise<Float32Array[]> {
+      if (!texts || texts.length === 0) return []
+      const vecs = await embedBatchAsync(texts)
+      if (vecs.length > 0) {
+        dimension = vecs[0].length
+      }
+      return vecs
     },
   }
 
