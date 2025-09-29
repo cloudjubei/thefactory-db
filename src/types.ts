@@ -35,6 +35,7 @@ export type DocumentInput = {
   content: string
   metadata?: Record<string, any>
 }
+export type DocumentUpsertInput = DocumentInput & Pick<DocumentInput, 'content' | 'src'>
 
 export type DocumentPatch = Omit<Partial<DocumentInput>, 'projectId'>
 

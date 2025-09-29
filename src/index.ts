@@ -12,6 +12,7 @@ import type {
   EntityPatch,
   MatchParams,
   DocumentPatch,
+  DocumentUpsertInput,
 } from './types.js'
 import { createLocalEmbeddingProvider } from './utils/embeddings.js'
 import { SQL } from './utils.js'
@@ -228,7 +229,7 @@ export async function openDatabase({
     return row as Document
   }
 
-  async function upsertDocuments(inputs: Partial<DocumentInput>[]): Promise<Document[]> {
+  async function upsertDocuments(inputs: DocumentUpsertInput[]): Promise<Document[]> {
     if (!inputs || inputs.length === 0) {
       return []
     }
@@ -243,23 +244,18 @@ export async function openDatabase({
       await db.query('BEGIN')
 
       for (const input of inputs) {
-        let embeddingLiteral: string | null = null
-        let newContent: string | null = null
+        // embeddingLiteral = toVectorLiteral(embeddings[i]) //TODO: batch improvement
 
-        if (input.content !== undefined) {
-          // embeddingLiteral = toVectorLiteral(embeddings[i]) //TODO: batch improvement
-
-          newContent = input.content ?? ''
-          const emb = await embeddingProvider.embed(newContent)
-          embeddingLiteral = toVectorLiteral(emb)
-        }
+        const content = input.content
+        const emb = await embeddingProvider.embed(content)
+        const embeddingLiteral = toVectorLiteral(emb)
 
         const result = await db.query(SQL.upsertDocument, [
           input.projectId ?? null,
           input.type ?? null,
           input.src ?? null,
           input.name ?? null,
-          newContent,
+          content,
           embeddingLiteral,
           input.metadata ?? null,
         ])
