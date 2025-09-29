@@ -236,8 +236,8 @@ export async function openDatabase({
     }
     logger.info(`upsertDocuments: a batch of ${inputs.length} documents`)
 
-    const contents = inputs.map((d) => d.content ?? '')
-    const embeddings = await embeddingProvider.embedBatch(contents)
+    // const contents = inputs.map((d) => d.content ?? '')
+    // const embeddings = await embeddingProvider.embedBatch(contents)
 
     const upsertedDocs: Document[] = []
 
@@ -246,7 +246,9 @@ export async function openDatabase({
 
       for (let i = 0; i < inputs.length; i++) {
         const input = inputs[i]
-        const embedding = embeddings[i]
+        const content = input.content
+        // const embedding = embeddings[i]
+        const embedding = await embeddingProvider.embed(content)
         const embeddingLiteral = toVectorLiteral(embedding)
 
         const result = await db.query(SQL.upsertDocument, [
@@ -254,7 +256,7 @@ export async function openDatabase({
           input.type ?? null,
           input.src ?? null,
           input.name ?? null,
-          input.content ?? '',
+          content,
           embeddingLiteral,
           input.metadata ?? null,
         ])
@@ -277,7 +279,7 @@ export async function openDatabase({
     }
   }
 
-  async function upsertDocument(input: Partial<DocumentInput>): Promise<Document | undefined> {
+  async function upsertDocument(input: DocumentUpsertInput): Promise<Document | undefined> {
     logger.info('upsertDocument', { src: input.src })
 
     let embeddingLiteral: string | null = null

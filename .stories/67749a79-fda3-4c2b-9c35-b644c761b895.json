@@ -1,6 +1,6 @@
 {
   "id": "67749a79-fda3-4c2b-9c35-b644c761b895",
-  "status": "=",
+  "status": "-",
   "title": "Ongoing Improvements",
   "description": "Various ongoing improvements to the project",
   "features": [
@@ -158,17 +158,29 @@
     },
     {
       "id": "04391c02-652b-4dad-b59a-2eda2bccf1d3",
-      "status": "+",
+      "status": "-",
       "title": "Batching of embeddings",
-      "description": "In @src/index.ts in the function `upsertDocuments` we are embedding the content of many documents at once and this takes a long time. So we require 2 improvements to this:\n1) the @src/utils/embeddings.ts needs to allow batched embeddings, so that it can quicker do the whole batch in one go. Sample code for the usage of this is commented out in `upsertDocuments` .\n2) before proceeding into the embeddings, there should be a function that would accept the src/ids of the documents and their contents and would return all the documents that would be updated (thus requiring embeddings) and then only these documents would be passed on.",
+      "description": "In @src/index.ts in the function `upsertDocuments` we are embedding the content of many documents at once and this takes a long time. So we require this improvement - the @src/utils/embeddings.ts needs to allow batched embeddings, so that it can quicker do the whole batch in one go. Sample code for the usage of this is commented out in `upsertDocuments` .",
       "context": [
         "src/index.ts",
         "src/utils/embeddings.ts"
       ],
       "blockers": [],
       "createdAt": "2025-09-29T20:28:01.709Z",
-      "updatedAt": "2025-09-29T21:26:35.440Z",
-      "completedAt": "2025-09-29T21:26:35.440Z"
+      "updatedAt": "2025-09-29T22:44:49.775Z",
+      "rejection": "The latest addition of `embedBatchAsync` and using it in `upsertDocuments` causes a crash.\nThere need to be appropriate unit tests and e2e tests following how others are done in the `tests` folder that will test out this functionality once it's fixed."
+    },
+    {
+      "id": "77101a35-86dd-42f7-b42b-5c30fedc7713",
+      "status": "-",
+      "title": "Check hashes before embeddings",
+      "description": "In `upsertDocuments` in @src/index.ts before proceeding into the embeddings, there should be a function that would accept the src/ids of the documents and their contents and would return all the documents that would be updated (thus requiring embeddings) and then only these documents would be passed onto the embeddings and the actual upsert. The embeddings are the bottleneck, so we need to make sure that as few documents as possible get re-embedded - thus we need a pre-emptive hash check.",
+      "context": [
+        "src/index.ts"
+      ],
+      "blockers": [],
+      "createdAt": "2025-09-29T22:45:51.048Z",
+      "updatedAt": "2025-09-29T22:45:51.048Z"
     }
   ],
   "featureIdToDisplayIndex": {
@@ -185,7 +197,8 @@
     "057eb355-399f-443b-b98d-6c2f46a953da": 11,
     "4c2bf377-ffe0-4ad3-8b2d-f3cc9ba32592": 12,
     "734c141d-83b8-4a4c-8ed5-75ef2d5ea874": 13,
-    "04391c02-652b-4dad-b59a-2eda2bccf1d3": 14
+    "77101a35-86dd-42f7-b42b-5c30fedc7713": 14,
+    "04391c02-652b-4dad-b59a-2eda2bccf1d3": 15
   },
   "createdAt": "2025-09-19T01:04:36.087Z",
   "updatedAt": "2025-09-19T01:04:36.087Z"
