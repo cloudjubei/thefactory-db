@@ -6,7 +6,7 @@
   "features": [
     {
       "id": "179ea7c6-df7b-45ae-81ab-3bc19d3f0a36",
-      "status": "-",
+      "status": "+",
       "title": "Add tests for src/connection.ts",
       "description": "Improve test coverage for @src/connection.ts.\nTarget uncovered lines: 12-14, 16-22, 35-42, 44-45.",
       "context": [
@@ -14,11 +14,12 @@
       ],
       "blockers": [],
       "createdAt": "2025-09-29T19:11:22.508Z",
-      "updatedAt": "2025-09-29T19:11:22.508Z"
+      "updatedAt": "2025-09-29T19:17:58.932Z",
+      "completedAt": "2025-09-29T19:17:58.932Z"
     },
     {
       "id": "a3a9f8e3-12be-421b-9a1a-995da993fd98",
-      "status": "-",
+      "status": "+",
       "title": "Add tests for src/utils/tokenizer.ts",
       "description": "Improve test coverage for @src/utils/tokenizer.ts.\nTarget uncovered lines: 49, 53-56, 81-86, 88-89.",
       "context": [
@@ -26,11 +27,12 @@
       ],
       "blockers": [],
       "createdAt": "2025-09-29T19:11:32.553Z",
-      "updatedAt": "2025-09-29T19:11:32.553Z"
+      "updatedAt": "2025-09-29T19:20:17.479Z",
+      "completedAt": "2025-09-29T19:20:17.479Z"
     },
     {
       "id": "73c252d6-deb6-43da-b508-d4f9259b3ab4",
-      "status": "-",
+      "status": "+",
       "title": "Add tests for src/utils/json.ts",
       "description": "Improve test coverage for @src/utils/json.ts.\nTarget uncovered lines: 18, 28-29, 73, 81.",
       "context": [
@@ -38,11 +40,12 @@
       ],
       "blockers": [],
       "createdAt": "2025-09-29T19:11:39.404Z",
-      "updatedAt": "2025-09-29T19:11:39.404Z"
+      "updatedAt": "2025-09-29T19:23:28.768Z",
+      "completedAt": "2025-09-29T19:23:28.768Z"
     },
     {
       "id": "05555563-a308-4e2f-9c2a-ca5383d6ce26",
-      "status": "-",
+      "status": "+",
       "title": "Add tests for src/utils/embeddings.ts",
       "description": "Improve test coverage for @src/utils/embeddings.ts.\nTarget uncovered lines: 54-56, 58-63.",
       "context": [
@@ -50,14 +53,31 @@
       ],
       "blockers": [],
       "createdAt": "2025-09-29T19:11:41.137Z",
-      "updatedAt": "2025-09-29T19:11:41.137Z"
+      "updatedAt": "2025-09-29T19:26:29.024Z",
+      "completedAt": "2025-09-29T19:26:29.024Z"
+    },
+    {
+      "id": "71cfcb76-53c2-4e16-8272-b544f5c5033c",
+      "status": "-",
+      "title": "Tests are wrong",
+      "description": "@tests/hybrid-search-advanced.test.ts , @tests/index-validation.test.ts , @tests/index.test.ts and @tests/utils.test.ts are wrong and failing because a lot of the code involved has been updated. Go over every single test case - scrutinize it and fix it.",
+      "context": [
+        "tests/hybrid-search-advanced.test.ts",
+        "tests/index-validation.test.ts",
+        "tests/index.test.ts",
+        "tests/utils.test.ts"
+      ],
+      "blockers": [],
+      "createdAt": "2025-09-29T20:06:36.684Z",
+      "updatedAt": "2025-09-29T20:08:07.008Z"
     }
   ],
   "featureIdToDisplayIndex": {
     "179ea7c6-df7b-45ae-81ab-3bc19d3f0a36": 1,
     "a3a9f8e3-12be-421b-9a1a-995da993fd98": 2,
     "73c252d6-deb6-43da-b508-d4f9259b3ab4": 3,
-    "05555563-a308-4e2f-9c2a-ca5383d6ce26": 4
+    "05555563-a308-4e2f-9c2a-ca5383d6ce26": 4,
+    "71cfcb76-53c2-4e16-8272-b544f5c5033c": 5
   },
   "createdAt": "2025-09-29T19:11:02.269Z",
   "updatedAt": "2025-09-29T19:11:02.269Z"

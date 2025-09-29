@@ -31,14 +31,24 @@ describe('tokenizer', () => {
     expect((jsTiktoken as any).getEncoding).toHaveBeenCalled()
   })
 
-  it('falls back to whitespace strategy when tiktoken fails', () => {
+  it('falls back to whitespace strategy when tiktoken fails (fresh encoding forces getEncoding call)', () => {
     ;(jsTiktoken as any).getEncoding.mockImplementationOnce(() => {
       throw new Error('fail')
     })
-    const res = tokenize('Hello, WORLD! 123')
-    // words: ['hello', 'world', '123'] -> hashes positive ints
+    const res = tokenize('Hello, WORLD! 123', { encoding: 'fresh-encoding' })
+    // words -> ['hello', 'world', '123'] -> whitespace fallback uses hashing
     expect(res.tokenCount).toBe(3)
-    expect(res.tokens.every((t: number) => Number.isInteger(t) && t >= 0)).toBe(true)
+    // ensure produced tokens are 31-bit positive integers (clamped)
+    expect(res.tokens.every((t: number) => Number.isInteger(t) && t >= 0 && t <= 0x7fffffff)).toBe(true)
+  })
+
+  it('explicit whitespace strategy maps identical words to identical token ids', () => {
+    const res = tokenize('Foo foo FOO', { strategy: 'whitespace' })
+    expect(res.tokenCount).toBe(3)
+    // all tokens should be identical because words normalize to same token
+    expect(new Set(res.tokens).size).toBe(1)
+    expect(res.tokens[0]).toBeGreaterThanOrEqual(0)
+    expect(res.tokens[0]).toBeLessThanOrEqual(0x7fffffff)
   })
 
   it('toFtsText normalizes text', () => {

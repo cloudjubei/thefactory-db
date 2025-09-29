@@ -1,29 +1,29 @@
 {
-  "status": "ok",
+  "status": "fail",
   "tests": [
     {
       "status": "ok",
       "filePath": "tests/connection.test.ts",
       "passes": [
         {
-          "testName": "tests/connection.test.ts > openPostgres > should connect, initialize schema, and return a client 2ms"
+          "testName": "tests/connection.test.ts > openPostgres (connection) > connects, initializes schema (schema + hybrid), releases client, and returns pool 2ms"
         },
         {
-          "testName": "tests/connection.test.ts > openPostgres > should close the connection and re-throw if schema initialization fails 1ms"
+          "testName": "tests/connection.test.ts > openPostgres (connection) > ends pool and rethrows if schema initialization fails; always releases client 1ms"
         },
         {
-          "testName": "tests/connection.test.ts > openPostgres > should not throw if SQL scripts are not found 0ms"
+          "testName": "tests/connection.test.ts > openPostgres (connection) > does nothing when SQL strings are not present (no schema/hybrid), still releases client 0ms"
         }
       ],
       "failures": [],
       "skips": [],
-      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/connection.test.ts > openPostgres > should connect, initialize schema, and return a client 2ms\n ✓ tests/connection.test.ts > openPostgres > should close the connection and re-throw if schema initialization fails 1ms\n ✓ tests/connection.test.ts > openPostgres > should not throw if SQL scripts are not found 0ms\n\n Test Files  1 passed (1)\n      Tests  3 passed (3)\n   Start at  18:34:37\n   Duration  219ms (transform 30ms, setup 0ms, collect 27ms, tests 3ms, environment 0ms, prepare 45ms)\n\n",
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/connection.test.ts > openPostgres (connection) > connects, initializes schema (schema + hybrid), releases client, and returns pool 2ms\n ✓ tests/connection.test.ts > openPostgres (connection) > ends pool and rethrows if schema initialization fails; always releases client 1ms\n ✓ tests/connection.test.ts > openPostgres (connection) > does nothing when SQL strings are not present (no schema/hybrid), still releases client 0ms\n\n Test Files  1 passed (1)\n      Tests  3 passed (3)\n   Start at  22:03:27\n   Duration  346ms (transform 41ms, setup 0ms, collect 41ms, tests 3ms, environment 0ms, prepare 52ms)\n\n",
       "summary": {
         "total": 3,
         "passed": 3,
         "failed": 0,
         "skipped": 0,
-        "durationMs": 219
+        "durationMs": 346
       }
     },
     {
@@ -39,13 +39,13 @@
           "testName": "(5)"
         }
       ],
-      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ↓ tests/e2e/codebase-hybrid-search.e2e.test.ts > E2E: Codebase Hybrid Search (real DB) > w=1 (text-only): \"hybrid search function\" should return SQL and source files\n ↓ tests/e2e/codebase-hybrid-search.e2e.test.ts > E2E: Codebase Hybrid Search (real DB) > w=0 (semantic-only): \"hybrid search function\" should prioritize semantically relevant files\n ↓ tests/e2e/codebase-hybrid-search.e2e.test.ts > E2E: Codebase Hybrid Search (real DB) > w=0.5 (balanced): \"hybrid search function\" results should be a mix\n ↓ tests/e2e/codebase-hybrid-search.e2e.test.ts > E2E: Codebase Hybrid Search (real DB) > w=1 (text-only): \"pgvector\" should return md files, tests and scripts\n ↓ tests/e2e/codebase-hybrid-search.e2e.test.ts > E2E: Codebase Hybrid Search (real DB) > w=0 (semantic-only): \"pgvector\" should find files related to vector databases\n\n Test Files  1 skipped (1)\n      Tests  5 skipped (5)\n   Start at  18:34:38\n   Duration  414ms (transform 61ms, setup 0ms, collect 193ms, tests 0ms, environment 0ms, prepare 44ms)\n\n",
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ↓ tests/e2e/codebase-hybrid-search.e2e.test.ts > E2E: Codebase Hybrid Search (real DB) > w=1 (text-only): \"hybrid search function\" should return SQL and source files\n ↓ tests/e2e/codebase-hybrid-search.e2e.test.ts > E2E: Codebase Hybrid Search (real DB) > w=0 (semantic-only): \"hybrid search function\" should prioritize semantically relevant files\n ↓ tests/e2e/codebase-hybrid-search.e2e.test.ts > E2E: Codebase Hybrid Search (real DB) > w=0.5 (balanced): \"hybrid search function\" results should be a mix\n ↓ tests/e2e/codebase-hybrid-search.e2e.test.ts > E2E: Codebase Hybrid Search (real DB) > w=1 (text-only): \"pgvector\" should return md files, tests and scripts\n ↓ tests/e2e/codebase-hybrid-search.e2e.test.ts > E2E: Codebase Hybrid Search (real DB) > w=0 (semantic-only): \"pgvector\" should find files related to vector databases\n\n Test Files  1 skipped (1)\n      Tests  5 skipped (5)\n   Start at  22:03:28\n   Duration  379ms (transform 57ms, setup 0ms, collect 177ms, tests 0ms, environment 0ms, prepare 45ms)\n\n",
       "summary": {
         "total": 5,
         "passed": 0,
         "failed": 0,
         "skipped": 5,
-        "durationMs": 414
+        "durationMs": 379
       }
     },
     {
@@ -61,13 +61,13 @@
           "testName": "(9)"
         }
       ],
-      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ↓ tests/e2e/documents-hybrid-advanced.e2e.test.ts > E2E: Documents Hybrid Search Advanced (real DB) > w=0 (semantic-only): semantic-only docs should outrank title-only docs and appear near the top-10\n ↓ tests/e2e/documents-hybrid-advanced.e2e.test.ts > E2E: Documents Hybrid Search Advanced (real DB) > w=0.2: both signals contribute; semantic-only present near top and title-only starts to surface\n ↓ tests/e2e/documents-hybrid-advanced.e2e.test.ts > E2E: Documents Hybrid Search Advanced (real DB) > w=0.5: balanced; both semantic-only and title-only appear in top-10\n ↓ tests/e2e/documents-hybrid-advanced.e2e.test.ts > E2E: Documents Hybrid Search Advanced (real DB) > w=0.8: title-only (filename) should be stronger and appear in top-5\n ↓ tests/e2e/documents-hybrid-advanced.e2e.test.ts > E2E: Documents Hybrid Search Advanced (real DB) > w=1 (text-only): filename (src) match enables retrieval even with unrelated content\n ↓ tests/e2e/documents-hybrid-advanced.e2e.test.ts > E2E: Documents Hybrid Search Advanced (real DB) > filename (src) contributes to textScore: top results include src hits when textWeight=1\n ↓ tests/e2e/documents-hybrid-advanced.e2e.test.ts > E2E: Documents Keyword List Search > with textWeight=1, should only return documents with all keywords\n ↓ tests/e2e/documents-hybrid-advanced.e2e.test.ts > E2E: Documents Keyword List Search > with textWeight=0, should return semantically similar documents\n ↓ tests/e2e/documents-hybrid-advanced.e2e.test.ts > E2E: Documents Keyword List Search > with textWeight=1 and no matching documents, should return something but with a score of 0\n\n Test Files  1 skipped (1)\n      Tests  9 skipped (9)\n   Start at  18:34:39\n   Duration  408ms (transform 66ms, setup 0ms, collect 175ms, tests 0ms, environment 0ms, prepare 53ms)\n\n",
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ↓ tests/e2e/documents-hybrid-advanced.e2e.test.ts > E2E: Documents Hybrid Search Advanced (real DB) > w=0 (semantic-only): semantic-only docs should outrank title-only docs and appear near the top-10\n ↓ tests/e2e/documents-hybrid-advanced.e2e.test.ts > E2E: Documents Hybrid Search Advanced (real DB) > w=0.2: both signals contribute; semantic-only present near top and title-only starts to surface\n ↓ tests/e2e/documents-hybrid-advanced.e2e.test.ts > E2E: Documents Hybrid Search Advanced (real DB) > w=0.5: balanced; both semantic-only and title-only appear in top-10\n ↓ tests/e2e/documents-hybrid-advanced.e2e.test.ts > E2E: Documents Hybrid Search Advanced (real DB) > w=0.8: title-only (filename) should be stronger and appear in top-5\n ↓ tests/e2e/documents-hybrid-advanced.e2e.test.ts > E2E: Documents Hybrid Search Advanced (real DB) > w=1 (text-only): filename (src) match enables retrieval even with unrelated content\n ↓ tests/e2e/documents-hybrid-advanced.e2e.test.ts > E2E: Documents Hybrid Search Advanced (real DB) > filename (src) contributes to textScore: top results include src hits when textWeight=1\n ↓ tests/e2e/documents-hybrid-advanced.e2e.test.ts > E2E: Documents Keyword List Search > with textWeight=1, should only return documents with all keywords\n ↓ tests/e2e/documents-hybrid-advanced.e2e.test.ts > E2E: Documents Keyword List Search > with textWeight=0, should return semantically similar documents\n ↓ tests/e2e/documents-hybrid-advanced.e2e.test.ts > E2E: Documents Keyword List Search > with textWeight=1 and no matching documents, should return something but with a score of 0\n\n Test Files  1 skipped (1)\n      Tests  9 skipped (9)\n   Start at  22:03:29\n   Duration  328ms (transform 57ms, setup 0ms, collect 151ms, tests 0ms, environment 0ms, prepare 43ms)\n\n",
       "summary": {
         "total": 9,
         "passed": 0,
         "failed": 0,
         "skipped": 9,
-        "durationMs": 408
+        "durationMs": 328
       }
     },
     {
@@ -83,13 +83,13 @@
           "testName": "(2)"
         }
       ],
-      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ↓ tests/e2e/documents-hybrid.e2e.test.ts > E2E: Documents Hybrid Search (real DB) > ranks content, title-only (src), and semantic-only documents across weights\n ↓ tests/e2e/documents-hybrid.e2e.test.ts > E2E: Documents Hybrid Search (real DB) > supports matchDocuments filtering by project\n\n Test Files  1 skipped (1)\n      Tests  2 skipped (2)\n   Start at  18:34:40\n   Duration  542ms (transform 73ms, setup 0ms, collect 206ms, tests 0ms, environment 0ms, prepare 58ms)\n\n",
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ↓ tests/e2e/documents-hybrid.e2e.test.ts > E2E: Documents Hybrid Search (real DB) > ranks content, title-only (src), and semantic-only documents across weights\n ↓ tests/e2e/documents-hybrid.e2e.test.ts > E2E: Documents Hybrid Search (real DB) > supports matchDocuments filtering by project\n\n Test Files  1 skipped (1)\n      Tests  2 skipped (2)\n   Start at  22:03:30\n   Duration  318ms (transform 46ms, setup 0ms, collect 138ms, tests 0ms, environment 0ms, prepare 40ms)\n\n",
       "summary": {
         "total": 2,
         "passed": 0,
         "failed": 0,
         "skipped": 2,
-        "durationMs": 542
+        "durationMs": 318
       }
     },
     {
@@ -105,13 +105,13 @@
           "testName": "(1)"
         }
       ],
-      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ↓ tests/e2e/documents-indexing.e2e.test.ts > E2E: Documents Indexing (real DB) > add/get/update/delete/getBySrc/clear\n\n Test Files  1 skipped (1)\n      Tests  1 skipped (1)\n   Start at  18:34:41\n   Duration  407ms (transform 56ms, setup 0ms, collect 160ms, tests 0ms, environment 0ms, prepare 49ms)\n\n",
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ↓ tests/e2e/documents-indexing.e2e.test.ts > E2E: Documents Indexing (real DB) > add/get/update/delete/getBySrc/clear\n\n Test Files  1 skipped (1)\n      Tests  1 skipped (1)\n   Start at  22:03:31\n   Duration  327ms (transform 46ms, setup 0ms, collect 138ms, tests 0ms, environment 0ms, prepare 34ms)\n\n",
       "summary": {
         "total": 1,
         "passed": 0,
         "failed": 0,
         "skipped": 1,
-        "durationMs": 407
+        "durationMs": 327
       }
     },
     {
@@ -127,13 +127,13 @@
           "testName": "(9)"
         }
       ],
-      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ↓ tests/e2e/entities-hybrid-advanced.e2e.test.ts > E2E: Entities Hybrid Search Advanced (real DB) > w=0 (semantic-only): semantic entities appear above controls and near top\n ↓ tests/e2e/entities-hybrid-advanced.e2e.test.ts > E2E: Entities Hybrid Search Advanced (real DB) > w=0.2: both signals; semantic and keyword groups in top-10\n ↓ tests/e2e/entities-hybrid-advanced.e2e.test.ts > E2E: Entities Hybrid Search Advanced (real DB) > w=0.5: balanced; both groups present in top-8\n ↓ tests/e2e/entities-hybrid-advanced.e2e.test.ts > E2E: Entities Hybrid Search Advanced (real DB) > w=0.8: keyword dominance increases; keyword beats semantic\n ↓ tests/e2e/entities-hybrid-advanced.e2e.test.ts > E2E: Entities Hybrid Search Advanced (real DB) > w=1 (text-only): keyword entities dominate top-3\n ↓ tests/e2e/entities-hybrid-advanced.e2e.test.ts > E2E: Entities Hybrid Search Advanced (real DB) > does not use metadata for search\n ↓ tests/e2e/entities-hybrid-advanced.e2e.test.ts > E2E: Entities Keyword List Search > with textWeight=1, should only return entities with all keywords\n ↓ tests/e2e/entities-hybrid-advanced.e2e.test.ts > E2E: Entities Keyword List Search > with textWeight=0, should return semantically similar entities\n ↓ tests/e2e/entities-hybrid-advanced.e2e.test.ts > E2E: Entities Keyword List Search > with textWeight=1 and no matching entities, should not match noMatch\n\n Test Files  1 skipped (1)\n      Tests  9 skipped (9)\n   Start at  18:34:42\n   Duration  328ms (transform 50ms, setup 0ms, collect 146ms, tests 0ms, environment 0ms, prepare 43ms)\n\n",
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ↓ tests/e2e/entities-hybrid-advanced.e2e.test.ts > E2E: Entities Hybrid Search Advanced (real DB) > w=0 (semantic-only): semantic entities appear above controls and near top\n ↓ tests/e2e/entities-hybrid-advanced.e2e.test.ts > E2E: Entities Hybrid Search Advanced (real DB) > w=0.2: both signals; semantic and keyword groups in top-10\n ↓ tests/e2e/entities-hybrid-advanced.e2e.test.ts > E2E: Entities Hybrid Search Advanced (real DB) > w=0.5: balanced; both groups present in top-8\n ↓ tests/e2e/entities-hybrid-advanced.e2e.test.ts > E2E: Entities Hybrid Search Advanced (real DB) > w=0.8: keyword dominance increases; keyword beats semantic\n ↓ tests/e2e/entities-hybrid-advanced.e2e.test.ts > E2E: Entities Hybrid Search Advanced (real DB) > w=1 (text-only): keyword entities dominate top-3\n ↓ tests/e2e/entities-hybrid-advanced.e2e.test.ts > E2E: Entities Hybrid Search Advanced (real DB) > does not use metadata for search\n ↓ tests/e2e/entities-hybrid-advanced.e2e.test.ts > E2E: Entities Keyword List Search > with textWeight=1, should only return entities with all keywords\n ↓ tests/e2e/entities-hybrid-advanced.e2e.test.ts > E2E: Entities Keyword List Search > with textWeight=0, should return semantically similar entities\n ↓ tests/e2e/entities-hybrid-advanced.e2e.test.ts > E2E: Entities Keyword List Search > with textWeight=1 and no matching entities, should not match noMatch\n\n Test Files  1 skipped (1)\n      Tests  9 skipped (9)\n   Start at  22:03:32\n   Duration  337ms (transform 53ms, setup 0ms, collect 145ms, tests 0ms, environment 0ms, prepare 40ms)\n\n",
       "summary": {
         "total": 9,
         "passed": 0,
         "failed": 0,
         "skipped": 9,
-        "durationMs": 328
+        "durationMs": 337
       }
     },
     {
@@ -149,13 +149,13 @@
           "testName": "(2)"
         }
       ],
-      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ↓ tests/e2e/entities-hybrid.e2e.test.ts > E2E: Entities Hybrid Search (real DB) > hybrid search returns results and respects weights\n ↓ tests/e2e/entities-hybrid.e2e.test.ts > E2E: Entities Hybrid Search (real DB) > does not use metadata for search\n\n Test Files  1 skipped (1)\n      Tests  2 skipped (2)\n   Start at  18:34:43\n   Duration  358ms (transform 54ms, setup 0ms, collect 154ms, tests 0ms, environment 0ms, prepare 36ms)\n\n",
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ↓ tests/e2e/entities-hybrid.e2e.test.ts > E2E: Entities Hybrid Search (real DB) > hybrid search returns results and respects weights\n ↓ tests/e2e/entities-hybrid.e2e.test.ts > E2E: Entities Hybrid Search (real DB) > does not use metadata for search\n\n Test Files  1 skipped (1)\n      Tests  2 skipped (2)\n   Start at  22:03:32\n   Duration  328ms (transform 47ms, setup 0ms, collect 141ms, tests 0ms, environment 0ms, prepare 35ms)\n\n",
       "summary": {
         "total": 2,
         "passed": 0,
         "failed": 0,
         "skipped": 2,
-        "durationMs": 358
+        "durationMs": 328
       }
     },
     {
@@ -171,13 +171,13 @@
           "testName": "(1)"
         }
       ],
-      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ↓ tests/e2e/entities-indexing.e2e.test.ts > E2E: Entities Indexing (real DB) > add/get/update/delete/match/clear\n\n Test Files  1 skipped (1)\n      Tests  1 skipped (1)\n   Start at  18:34:44\n   Duration  337ms (transform 46ms, setup 0ms, collect 144ms, tests 0ms, environment 0ms, prepare 36ms)\n\n",
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ↓ tests/e2e/entities-indexing.e2e.test.ts > E2E: Entities Indexing (real DB) > add/get/update/delete/match/clear\n\n Test Files  1 skipped (1)\n      Tests  1 skipped (1)\n   Start at  22:03:33\n   Duration  322ms (transform 47ms, setup 0ms, collect 138ms, tests 0ms, environment 0ms, prepare 34ms)\n\n",
       "summary": {
         "total": 1,
         "passed": 0,
         "failed": 0,
         "skipped": 1,
-        "durationMs": 337
+        "durationMs": 322
       }
     },
     {
@@ -193,13 +193,38 @@
           "testName": "(2)"
         }
       ],
-      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ↓ tests/e2e/updates-and-fts.e2e.test.ts > E2E: Updates and FTS regeneration (real DB) > documents: updates should regenerate updatedAt\n ↓ tests/e2e/updates-and-fts.e2e.test.ts > E2E: Updates and FTS regeneration (real DB) > entities: updates should regenerate updatedAt and FTS on content changes\n\n Test Files  1 skipped (1)\n      Tests  2 skipped (2)\n   Start at  18:34:45\n   Duration  353ms (transform 55ms, setup 0ms, collect 143ms, tests 0ms, environment 0ms, prepare 40ms)\n\n",
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ↓ tests/e2e/updates-and-fts.e2e.test.ts > E2E: Updates and FTS regeneration (real DB) > documents: updates should regenerate updatedAt\n ↓ tests/e2e/updates-and-fts.e2e.test.ts > E2E: Updates and FTS regeneration (real DB) > entities: updates should regenerate updatedAt and FTS on content changes\n\n Test Files  1 skipped (1)\n      Tests  2 skipped (2)\n   Start at  22:03:34\n   Duration  353ms (transform 58ms, setup 0ms, collect 152ms, tests 0ms, environment 0ms, prepare 45ms)\n\n",
       "summary": {
         "total": 2,
         "passed": 0,
         "failed": 0,
         "skipped": 2,
         "durationMs": 353
+      }
+    },
+    {
+      "status": "ok",
+      "filePath": "tests/embeddings-branches.test.ts",
+      "passes": [
+        {
+          "testName": "tests/embeddings-branches.test.ts > embeddings additional branches > handles object output with index 0 containing an array (output?.[0] path) 1ms"
+        },
+        {
+          "testName": "tests/embeddings-branches.test.ts > embeddings additional branches > handles tensor-like output with to('cpu') returning an array (Array.isArray(maybe) true path) 1ms"
+        },
+        {
+          "testName": "tests/embeddings-branches.test.ts > embeddings additional branches > handles tensor-like output with to('cpu') returning an object with data (Array.isArray(maybe) false path) 0ms"
+        }
+      ],
+      "failures": [],
+      "skips": [],
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/embeddings-branches.test.ts > embeddings additional branches > handles object output with index 0 containing an array (output?.[0] path) 1ms\n ✓ tests/embeddings-branches.test.ts > embeddings additional branches > handles tensor-like output with to('cpu') returning an array (Array.isArray(maybe) true path) 1ms\n ✓ tests/embeddings-branches.test.ts > embeddings additional branches > handles tensor-like output with to('cpu') returning an object with data (Array.isArray(maybe) false path) 0ms\n\n Test Files  1 passed (1)\n      Tests  3 passed (3)\n   Start at  22:03:35\n   Duration  209ms (transform 25ms, setup 0ms, collect 26ms, tests 3ms, environment 0ms, prepare 40ms)\n\n",
+      "summary": {
+        "total": 3,
+        "passed": 3,
+        "failed": 0,
+        "skipped": 0,
+        "durationMs": 209
       }
     },
     {
@@ -212,13 +237,13 @@
       ],
       "failures": [],
       "skips": [],
-      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/embeddings-options.test.ts > embeddings options > normalize: false returns non-unit vector 1ms\n\n Test Files  1 passed (1)\n      Tests  1 passed (1)\n   Start at  18:34:46\n   Duration  243ms (transform 25ms, setup 0ms, collect 24ms, tests 2ms, environment 0ms, prepare 38ms)\n\n",
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/embeddings-options.test.ts > embeddings options > normalize: false returns non-unit vector 1ms\n\n Test Files  1 passed (1)\n      Tests  1 passed (1)\n   Start at  22:03:36\n   Duration  235ms (transform 25ms, setup 0ms, collect 22ms, tests 1ms, environment 0ms, prepare 49ms)\n\n",
       "summary": {
         "total": 1,
         "passed": 1,
         "failed": 0,
         "skipped": 0,
-        "durationMs": 243
+        "durationMs": 235
       }
     },
     {
@@ -237,154 +262,252 @@
       ],
       "failures": [],
       "skips": [],
-      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/embeddings.test.ts > createLocalEmbeddingProvider > embeds text and normalizes vectors to unit length by default 2ms\n ✓ tests/embeddings.test.ts > createLocalEmbeddingProvider > respects custom model and revision options 0ms\n ✓ tests/embeddings.test.ts > createLocalEmbeddingProvider > handles array-shaped outputs without .data field 0ms\n\n Test Files  1 passed (1)\n      Tests  3 passed (3)\n   Start at  18:34:46\n   Duration  717ms (transform 53ms, setup 0ms, collect 37ms, tests 3ms, environment 0ms, prepare 412ms)\n\n",
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/embeddings.test.ts > createLocalEmbeddingProvider > embeds text and normalizes vectors to unit length by default 2ms\n ✓ tests/embeddings.test.ts > createLocalEmbeddingProvider > respects custom model and revision options 0ms\n ✓ tests/embeddings.test.ts > createLocalEmbeddingProvider > handles array-shaped outputs without .data field 0ms\n\n Test Files  1 passed (1)\n      Tests  3 passed (3)\n   Start at  22:03:36\n   Duration  230ms (transform 25ms, setup 0ms, collect 26ms, tests 3ms, environment 0ms, prepare 41ms)\n\n",
       "summary": {
         "total": 3,
         "passed": 3,
         "failed": 0,
         "skipped": 0,
-        "durationMs": 717
+        "durationMs": 230
       }
     },
     {
-      "status": "ok",
+      "status": "fail",
       "filePath": "tests/hybrid-search-advanced.test.ts",
-      "passes": [
+      "passes": [],
+      "failures": [
         {
-          "testName": "tests/hybrid-search-advanced.test.ts > Advanced Hybrid Search > Non-code docs: title-only vs content-only vs semantic-only across weights 3ms"
+          "testName": "Advanced Hybrid Search > Non-code docs: title-only vs content-only vs semantic-only across weights",
+          "message": "failed",
+          "stack": "FAIL  tests/hybrid-search-advanced.test.ts > Advanced Hybrid Search > Non-code docs: title-only vs content-only vs semantic-only across weights"
         },
         {
-          "testName": "tests/hybrid-search-advanced.test.ts > Advanced Hybrid Search > Project files ingestion: can search across repository files for hybrid-related queries 24ms"
+          "testName": "Advanced Hybrid Search > Project files ingestion: can search across repository files for hybrid-related queries",
+          "message": "failed",
+          "stack": "FAIL  tests/hybrid-search-advanced.test.ts > Advanced Hybrid Search > Project files ingestion: can search across repository files for hybrid-related queries"
         },
         {
-          "testName": "tests/hybrid-search-advanced.test.ts > Advanced Hybrid Search > Keyword list search: should match documents based on keyword presence 1ms"
+          "testName": "Advanced Hybrid Search > Keyword list search: should match documents based on keyword presence",
+          "message": "TypeError: Cannot read properties of undefined (reading 'mockImplementation')\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯",
+          "stack": "FAIL  tests/hybrid-search-advanced.test.ts > Advanced Hybrid Search > Keyword list search: should match documents based on keyword presence\n❯ tests/hybrid-search-advanced.test.ts:343:34\n    341|     ;(createLocalEmbeddingProvider as unknown as any).mockResolvedValu…\n    342|     // Return SQL name so our mock can route\n    343|     ;(readSql as unknown as any).mockImplementation((name: string) => …\n       |                                  ^\n    344|   })\n    345|",
+          "line": 343,
+          "column": 34
         }
       ],
-      "failures": [],
       "skips": [],
-      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/hybrid-search-advanced.test.ts > Advanced Hybrid Search > Non-code docs: title-only vs content-only vs semantic-only across weights 3ms\n ✓ tests/hybrid-search-advanced.test.ts > Advanced Hybrid Search > Project files ingestion: can search across repository files for hybrid-related queries 24ms\n ✓ tests/hybrid-search-advanced.test.ts > Advanced Hybrid Search > Keyword list search: should match documents based on keyword presence 1ms\n\n Test Files  1 passed (1)\n      Tests  3 passed (3)\n   Start at  18:34:47\n   Duration  390ms (transform 69ms, setup 0ms, collect 170ms, tests 28ms, environment 0ms, prepare 55ms)\n\n",
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n × tests/hybrid-search-advanced.test.ts > Advanced Hybrid Search > Non-code docs: title-only vs content-only vs semantic-only across weights 3ms\n   → Cannot read properties of undefined (reading 'mockImplementation')\n × tests/hybrid-search-advanced.test.ts > Advanced Hybrid Search > Project files ingestion: can search across repository files for hybrid-related queries 0ms\n   → Cannot read properties of undefined (reading 'mockImplementation')\n × tests/hybrid-search-advanced.test.ts > Advanced Hybrid Search > Keyword list search: should match documents based on keyword presence 0ms\n   → Cannot read properties of undefined (reading 'mockImplementation')\n\n Test Files  1 failed (1)\n      Tests  3 failed (3)\n   Start at  22:03:37\n   Duration  453ms (transform 79ms, setup 0ms, collect 191ms, tests 4ms, environment 0ms, prepare 42ms)\n\n\n\n⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯\n\n FAIL  tests/hybrid-search-advanced.test.ts > Advanced Hybrid Search > Non-code docs: title-only vs content-only vs semantic-only across weights\n FAIL  tests/hybrid-search-advanced.test.ts > Advanced Hybrid Search > Project files ingestion: can search across repository files for hybrid-related queries\n FAIL  tests/hybrid-search-advanced.test.ts > Advanced Hybrid Search > Keyword list search: should match documents based on keyword presence\nTypeError: Cannot read properties of undefined (reading 'mockImplementation')\n ❯ tests/hybrid-search-advanced.test.ts:343:34\n    341|     ;(createLocalEmbeddingProvider as unknown as any).mockResolvedValu…\n    342|     // Return SQL name so our mock can route\n    343|     ;(readSql as unknown as any).mockImplementation((name: string) => …\n       |                                  ^\n    344|   })\n    345| \n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯\n\n",
       "summary": {
         "total": 3,
-        "passed": 3,
-        "failed": 0,
+        "passed": 0,
+        "failed": 3,
         "skipped": 0,
-        "durationMs": 390
+        "durationMs": 453
       }
     },
     {
-      "status": "ok",
+      "status": "fail",
       "filePath": "tests/index-validation.test.ts",
-      "passes": [
+      "passes": [],
+      "failures": [
         {
-          "testName": "tests/index-validation.test.ts > TheFactoryDb validation and edges > addDocument rejects invalid input 2ms"
+          "testName": "TheFactoryDb validation and edges > addDocument rejects invalid input",
+          "message": "failed",
+          "stack": "FAIL  tests/index-validation.test.ts > TheFactoryDb validation and edges > addDocument rejects invalid input"
         },
         {
-          "testName": "tests/index-validation.test.ts > TheFactoryDb validation and edges > updateDocument rejects invalid patch 0ms"
+          "testName": "TheFactoryDb validation and edges > updateDocument rejects invalid patch",
+          "message": "failed",
+          "stack": "FAIL  tests/index-validation.test.ts > TheFactoryDb validation and edges > updateDocument rejects invalid patch"
         },
         {
-          "testName": "tests/index-validation.test.ts > TheFactoryDb validation and edges > addEntity rejects invalid input 0ms"
+          "testName": "TheFactoryDb validation and edges > addEntity rejects invalid input",
+          "message": "failed",
+          "stack": "FAIL  tests/index-validation.test.ts > TheFactoryDb validation and edges > addEntity rejects invalid input"
         },
         {
-          "testName": "tests/index-validation.test.ts > TheFactoryDb validation and edges > updateEntity rejects invalid patch 0ms"
+          "testName": "TheFactoryDb validation and edges > updateEntity rejects invalid patch",
+          "message": "failed",
+          "stack": "FAIL  tests/index-validation.test.ts > TheFactoryDb validation and edges > updateEntity rejects invalid patch"
         },
         {
-          "testName": "tests/index-validation.test.ts > TheFactoryDb validation and edges > searchDocuments validates input and early-returns on empty query 1ms"
+          "testName": "TheFactoryDb validation and edges > searchDocuments validates input and early-returns on empty query",
+          "message": "failed",
+          "stack": "FAIL  tests/index-validation.test.ts > TheFactoryDb validation and edges > searchDocuments validates input and early-returns on empty query"
         },
         {
-          "testName": "tests/index-validation.test.ts > TheFactoryDb validation and edges > searchEntities validates input and clamps weights/limit 0ms"
+          "testName": "TheFactoryDb validation and edges > searchEntities validates input and clamps weights/limit",
+          "message": "failed",
+          "stack": "FAIL  tests/index-validation.test.ts > TheFactoryDb validation and edges > searchEntities validates input and clamps weights/limit"
         },
         {
-          "testName": "tests/index-validation.test.ts > TheFactoryDb validation and edges > matchDocuments rejects invalid options 0ms"
+          "testName": "TheFactoryDb validation and edges > matchDocuments rejects invalid options",
+          "message": "failed",
+          "stack": "FAIL  tests/index-validation.test.ts > TheFactoryDb validation and edges > matchDocuments rejects invalid options"
         },
         {
-          "testName": "tests/index-validation.test.ts > TheFactoryDb validation and edges > matchEntities accepts undefined options and builds null filter 1ms"
+          "testName": "TheFactoryDb validation and edges > matchEntities accepts undefined options and builds null filter",
+          "message": "failed",
+          "stack": "FAIL  tests/index-validation.test.ts > TheFactoryDb validation and edges > matchEntities accepts undefined options and builds null filter"
         },
         {
-          "testName": "tests/index-validation.test.ts > TheFactoryDb validation and edges > clearDocuments without projectIds clears all 0ms"
+          "testName": "TheFactoryDb validation and edges > clearDocuments without projectIds clears all",
+          "message": "failed",
+          "stack": "FAIL  tests/index-validation.test.ts > TheFactoryDb validation and edges > clearDocuments without projectIds clears all"
         },
         {
-          "testName": "tests/index-validation.test.ts > TheFactoryDb validation and edges > updateEntity without content change does not compute embedding 0ms"
+          "testName": "TheFactoryDb validation and edges > updateEntity without content change does not compute embedding",
+          "message": "TypeError: Cannot read properties of undefined (reading 'mockReturnValue')\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/10]⎯",
+          "stack": "FAIL  tests/index-validation.test.ts > TheFactoryDb validation and edges > updateEntity without content change does not compute embedding\n❯ tests/index-validation.test.ts:34:22\n     32|     vi.mocked(createLogger).mockReturnValue(mockLogger)\n     33|     vi.mocked(createLocalEmbeddingProvider).mockResolvedValue(mockEmbe…\n     34|     vi.mocked(readSql).mockReturnValue('FAKE_SQL')\n       |                      ^\n     35|     mockEmbeddingProvider.embed.mockResolvedValue(new Float32Array([0.…\n     36|   })",
+          "line": 34,
+          "column": 22
         }
       ],
-      "failures": [],
       "skips": [],
-      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/index-validation.test.ts > TheFactoryDb validation and edges > addDocument rejects invalid input 2ms\n ✓ tests/index-validation.test.ts > TheFactoryDb validation and edges > updateDocument rejects invalid patch 0ms\n ✓ tests/index-validation.test.ts > TheFactoryDb validation and edges > addEntity rejects invalid input 0ms\n ✓ tests/index-validation.test.ts > TheFactoryDb validation and edges > updateEntity rejects invalid patch 0ms\n ✓ tests/index-validation.test.ts > TheFactoryDb validation and edges > searchDocuments validates input and early-returns on empty query 1ms\n ✓ tests/index-validation.test.ts > TheFactoryDb validation and edges > searchEntities validates input and clamps weights/limit 0ms\n ✓ tests/index-validation.test.ts > TheFactoryDb validation and edges > matchDocuments rejects invalid options 0ms\n ✓ tests/index-validation.test.ts > TheFactoryDb validation and edges > matchEntities accepts undefined options and builds null filter 1ms\n ✓ tests/index-validation.test.ts > TheFactoryDb validation and edges > clearDocuments without projectIds clears all 0ms\n ✓ tests/index-validation.test.ts > TheFactoryDb validation and edges > updateEntity without content change does not compute embedding 0ms\n\n Test Files  1 passed (1)\n      Tests  10 passed (10)\n   Start at  18:34:48\n   Duration  355ms (transform 58ms, setup 0ms, collect 162ms, tests 6ms, environment 0ms, prepare 40ms)\n\n",
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n × tests/index-validation.test.ts > TheFactoryDb validation and edges > addDocument rejects invalid input 3ms\n   → Cannot read properties of undefined (reading 'mockReturnValue')\n × tests/index-validation.test.ts > TheFactoryDb validation and edges > updateDocument rejects invalid patch 0ms\n   → Cannot read properties of undefined (reading 'mockReturnValue')\n × tests/index-validation.test.ts > TheFactoryDb validation and edges > addEntity rejects invalid input 0ms\n   → Cannot read properties of undefined (reading 'mockReturnValue')\n × tests/index-validation.test.ts > TheFactoryDb validation and edges > updateEntity rejects invalid patch 0ms\n   → Cannot read properties of undefined (reading 'mockReturnValue')\n × tests/index-validation.test.ts > TheFactoryDb validation and edges > searchDocuments validates input and early-returns on empty query 0ms\n   → Cannot read properties of undefined (reading 'mockReturnValue')\n × tests/index-validation.test.ts > TheFactoryDb validation and edges > searchEntities validates input and clamps weights/limit 0ms\n   → Cannot read properties of undefined (reading 'mockReturnValue')\n × tests/index-validation.test.ts > TheFactoryDb validation and edges > matchDocuments rejects invalid options 0ms\n   → Cannot read properties of undefined (reading 'mockReturnValue')\n × tests/index-validation.test.ts > TheFactoryDb validation and edges > matchEntities accepts undefined options and builds null filter 0ms\n   → Cannot read properties of undefined (reading 'mockReturnValue')\n × tests/index-validation.test.ts > TheFactoryDb validation and edges > clearDocuments without projectIds clears all 0ms\n   → Cannot read properties of undefined (reading 'mockReturnValue')\n × tests/index-validation.test.ts > TheFactoryDb validation and edges > updateEntity without content change does not compute embedding 0ms\n   → Cannot read properties of undefined (reading 'mockReturnValue')\n\n Test Files  1 failed (1)\n      Tests  10 failed (10)\n   Start at  22:03:38\n   Duration  361ms (transform 54ms, setup 0ms, collect 157ms, tests 6ms, environment 0ms, prepare 40ms)\n\n\n\n⎯⎯⎯⎯⎯⎯ Failed Tests 10 ⎯⎯⎯⎯⎯⎯⎯\n\n FAIL  tests/index-validation.test.ts > TheFactoryDb validation and edges > addDocument rejects invalid input\n FAIL  tests/index-validation.test.ts > TheFactoryDb validation and edges > updateDocument rejects invalid patch\n FAIL  tests/index-validation.test.ts > TheFactoryDb validation and edges > addEntity rejects invalid input\n FAIL  tests/index-validation.test.ts > TheFactoryDb validation and edges > updateEntity rejects invalid patch\n FAIL  tests/index-validation.test.ts > TheFactoryDb validation and edges > searchDocuments validates input and early-returns on empty query\n FAIL  tests/index-validation.test.ts > TheFactoryDb validation and edges > searchEntities validates input and clamps weights/limit\n FAIL  tests/index-validation.test.ts > TheFactoryDb validation and edges > matchDocuments rejects invalid options\n FAIL  tests/index-validation.test.ts > TheFactoryDb validation and edges > matchEntities accepts undefined options and builds null filter\n FAIL  tests/index-validation.test.ts > TheFactoryDb validation and edges > clearDocuments without projectIds clears all\n FAIL  tests/index-validation.test.ts > TheFactoryDb validation and edges > updateEntity without content change does not compute embedding\nTypeError: Cannot read properties of undefined (reading 'mockReturnValue')\n ❯ tests/index-validation.test.ts:34:22\n     32|     vi.mocked(createLogger).mockReturnValue(mockLogger)\n     33|     vi.mocked(createLocalEmbeddingProvider).mockResolvedValue(mockEmbe…\n     34|     vi.mocked(readSql).mockReturnValue('FAKE_SQL')\n       |                      ^\n     35|     mockEmbeddingProvider.embed.mockResolvedValue(new Float32Array([0.…\n     36|   })\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/10]⎯\n\n",
       "summary": {
         "total": 10,
-        "passed": 10,
-        "failed": 0,
+        "passed": 0,
+        "failed": 10,
         "skipped": 0,
-        "durationMs": 355
+        "durationMs": 361
+      }
+    },
+    {
+      "status": "fail",
+      "filePath": "tests/index.test.ts",
+      "passes": [],
+      "failures": [
+        {
+          "testName": "TheFactoryDb > Entities > addEntity should insert a new entity",
+          "message": "failed",
+          "stack": "FAIL  tests/index.test.ts > TheFactoryDb > Entities > addEntity should insert a new entity"
+        },
+        {
+          "testName": "TheFactoryDb > Entities > getEntityById should return an entity if found",
+          "message": "failed",
+          "stack": "FAIL  tests/index.test.ts > TheFactoryDb > Entities > getEntityById should return an entity if found"
+        },
+        {
+          "testName": "TheFactoryDb > Entities > getEntityById should return undefined if not found",
+          "message": "failed",
+          "stack": "FAIL  tests/index.test.ts > TheFactoryDb > Entities > getEntityById should return undefined if not found"
+        },
+        {
+          "testName": "TheFactoryDb > Entities > updateEntity should update an existing entity",
+          "message": "failed",
+          "stack": "FAIL  tests/index.test.ts > TheFactoryDb > Entities > updateEntity should update an existing entity"
+        },
+        {
+          "testName": "TheFactoryDb > Entities > deleteEntity should return true if deleted",
+          "message": "failed",
+          "stack": "FAIL  tests/index.test.ts > TheFactoryDb > Entities > deleteEntity should return true if deleted"
+        },
+        {
+          "testName": "TheFactoryDb > Entities > searchEntities should perform a search",
+          "message": "failed",
+          "stack": "FAIL  tests/index.test.ts > TheFactoryDb > Entities > searchEntities should perform a search"
+        },
+        {
+          "testName": "TheFactoryDb > Entities > matchEntities should find entities by content",
+          "message": "failed",
+          "stack": "FAIL  tests/index.test.ts > TheFactoryDb > Entities > matchEntities should find entities by content"
+        },
+        {
+          "testName": "TheFactoryDb > Entities > clearEntities should clear all entities",
+          "message": "failed",
+          "stack": "FAIL  tests/index.test.ts > TheFactoryDb > Entities > clearEntities should clear all entities"
+        },
+        {
+          "testName": "TheFactoryDb > Documents > addDocument should insert a new document",
+          "message": "failed",
+          "stack": "FAIL  tests/index.test.ts > TheFactoryDb > Documents > addDocument should insert a new document"
+        },
+        {
+          "testName": "TheFactoryDb > Documents > getDocumentById should return a document if found",
+          "message": "failed",
+          "stack": "FAIL  tests/index.test.ts > TheFactoryDb > Documents > getDocumentById should return a document if found"
+        },
+        {
+          "testName": "TheFactoryDb > Documents > getDocumentById should return undefined if not found",
+          "message": "failed",
+          "stack": "FAIL  tests/index.test.ts > TheFactoryDb > Documents > getDocumentById should return undefined if not found"
+        },
+        {
+          "testName": "TheFactoryDb > Documents > updateDocument should update an existing document",
+          "message": "failed",
+          "stack": "FAIL  tests/index.test.ts > TheFactoryDb > Documents > updateDocument should update an existing document"
+        },
+        {
+          "testName": "TheFactoryDb > Documents > deleteDocument should return true if deleted",
+          "message": "failed",
+          "stack": "FAIL  tests/index.test.ts > TheFactoryDb > Documents > deleteDocument should return true if deleted"
+        },
+        {
+          "testName": "TheFactoryDb > Documents > searchDocuments should perform a search",
+          "message": "failed",
+          "stack": "FAIL  tests/index.test.ts > TheFactoryDb > Documents > searchDocuments should perform a search"
+        },
+        {
+          "testName": "TheFactoryDb > Documents > matchDocuments should find documents by filters",
+          "message": "failed",
+          "stack": "FAIL  tests/index.test.ts > TheFactoryDb > Documents > matchDocuments should find documents by filters"
+        },
+        {
+          "testName": "TheFactoryDb > Documents > clearDocuments should clear documents by project",
+          "message": "TypeError: Cannot read properties of undefined (reading 'mockReturnValue')\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/18]⎯",
+          "stack": "FAIL  tests/index.test.ts > TheFactoryDb > Documents > clearDocuments should clear documents by project\n❯ tests/index.test.ts:45:22\n     43|     vi.mocked(createLogger).mockReturnValue(mockLogger)\n     44|     vi.mocked(createLocalEmbeddingProvider).mockResolvedValue(mockEmbe…\n     45|     vi.mocked(readSql).mockReturnValue('FAKE_SQL')\n       |                      ^\n     46|     vi.mocked(stringifyJsonValues).mockImplementation((val) => JSON.st…\n     47|     mockEmbeddingProvider.embed.mockResolvedValue(new Float32Array([0.…",
+          "line": 45,
+          "column": 22
+        },
+        {
+          "testName": "TheFactoryDb > close should end the database connection",
+          "message": "failed",
+          "stack": "FAIL  tests/index.test.ts > TheFactoryDb > close should end the database connection"
+        },
+        {
+          "testName": "TheFactoryDb > raw should return the raw client",
+          "message": "TypeError: Cannot read properties of undefined (reading 'mockReturnValue')\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/18]⎯",
+          "stack": "FAIL  tests/index.test.ts > TheFactoryDb > raw should return the raw client\n❯ tests/index.test.ts:45:22\n     43|     vi.mocked(createLogger).mockReturnValue(mockLogger)\n     44|     vi.mocked(createLocalEmbeddingProvider).mockResolvedValue(mockEmbe…\n     45|     vi.mocked(readSql).mockReturnValue('FAKE_SQL')\n       |                      ^\n     46|     vi.mocked(stringifyJsonValues).mockImplementation((val) => JSON.st…\n     47|     mockEmbeddingProvider.embed.mockResolvedValue(new Float32Array([0.…",
+          "line": 45,
+          "column": 22
+        }
+      ],
+      "skips": [],
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n × tests/index.test.ts > TheFactoryDb > Entities > addEntity should insert a new entity 3ms\n   → Cannot read properties of undefined (reading 'mockReturnValue')\n × tests/index.test.ts > TheFactoryDb > Entities > getEntityById should return an entity if found 0ms\n   → Cannot read properties of undefined (reading 'mockReturnValue')\n × tests/index.test.ts > TheFactoryDb > Entities > getEntityById should return undefined if not found 0ms\n   → Cannot read properties of undefined (reading 'mockReturnValue')\n × tests/index.test.ts > TheFactoryDb > Entities > updateEntity should update an existing entity 0ms\n   → Cannot read properties of undefined (reading 'mockReturnValue')\n × tests/index.test.ts > TheFactoryDb > Entities > deleteEntity should return true if deleted 0ms\n   → Cannot read properties of undefined (reading 'mockReturnValue')\n × tests/index.test.ts > TheFactoryDb > Entities > searchEntities should perform a search 0ms\n   → Cannot read properties of undefined (reading 'mockReturnValue')\n × tests/index.test.ts > TheFactoryDb > Entities > matchEntities should find entities by content 0ms\n   → Cannot read properties of undefined (reading 'mockReturnValue')\n × tests/index.test.ts > TheFactoryDb > Entities > clearEntities should clear all entities 0ms\n   → Cannot read properties of undefined (reading 'mockReturnValue')\n × tests/index.test.ts > TheFactoryDb > Documents > addDocument should insert a new document 0ms\n   → Cannot read properties of undefined (reading 'mockReturnValue')\n × tests/index.test.ts > TheFactoryDb > Documents > getDocumentById should return a document if found 0ms\n   → Cannot read properties of undefined (reading 'mockReturnValue')\n × tests/index.test.ts > TheFactoryDb > Documents > getDocumentById should return undefined if not found 0ms\n   → Cannot read properties of undefined (reading 'mockReturnValue')\n × tests/index.test.ts > TheFactoryDb > Documents > updateDocument should update an existing document 0ms\n   → Cannot read properties of undefined (reading 'mockReturnValue')\n × tests/index.test.ts > TheFactoryDb > Documents > deleteDocument should return true if deleted 0ms\n   → Cannot read properties of undefined (reading 'mockReturnValue')\n × tests/index.test.ts > TheFactoryDb > Documents > searchDocuments should perform a search 0ms\n   → Cannot read properties of undefined (reading 'mockReturnValue')\n × tests/index.test.ts > TheFactoryDb > Documents > matchDocuments should find documents by filters 0ms\n   → Cannot read properties of undefined (reading 'mockReturnValue')\n × tests/index.test.ts > TheFactoryDb > Documents > clearDocuments should clear documents by project 0ms\n   → Cannot read properties of undefined (reading 'mockReturnValue')\n × tests/index.test.ts > TheFactoryDb > close should end the database connection 0ms\n   → Cannot read properties of undefined (reading 'mockReturnValue')\n × tests/index.test.ts > TheFactoryDb > raw should return the raw client 1ms\n   → Cannot read properties of undefined (reading 'mockReturnValue')\n\n Test Files  1 failed (1)\n      Tests  18 failed (18)\n   Start at  22:03:39\n   Duration  339ms (transform 56ms, setup 0ms, collect 150ms, tests 8ms, environment 0ms, prepare 38ms)\n\n\n\n⎯⎯⎯⎯⎯⎯ Failed Tests 18 ⎯⎯⎯⎯⎯⎯⎯\n\n FAIL  tests/index.test.ts > TheFactoryDb > Entities > addEntity should insert a new entity\n FAIL  tests/index.test.ts > TheFactoryDb > Entities > getEntityById should return an entity if found\n FAIL  tests/index.test.ts > TheFactoryDb > Entities > getEntityById should return undefined if not found\n FAIL  tests/index.test.ts > TheFactoryDb > Entities > updateEntity should update an existing entity\n FAIL  tests/index.test.ts > TheFactoryDb > Entities > deleteEntity should return true if deleted\n FAIL  tests/index.test.ts > TheFactoryDb > Entities > searchEntities should perform a search\n FAIL  tests/index.test.ts > TheFactoryDb > Entities > matchEntities should find entities by content\n FAIL  tests/index.test.ts > TheFactoryDb > Entities > clearEntities should clear all entities\n FAIL  tests/index.test.ts > TheFactoryDb > Documents > addDocument should insert a new document\n FAIL  tests/index.test.ts > TheFactoryDb > Documents > getDocumentById should return a document if found\n FAIL  tests/index.test.ts > TheFactoryDb > Documents > getDocumentById should return undefined if not found\n FAIL  tests/index.test.ts > TheFactoryDb > Documents > updateDocument should update an existing document\n FAIL  tests/index.test.ts > TheFactoryDb > Documents > deleteDocument should return true if deleted\n FAIL  tests/index.test.ts > TheFactoryDb > Documents > searchDocuments should perform a search\n FAIL  tests/index.test.ts > TheFactoryDb > Documents > matchDocuments should find documents by filters\n FAIL  tests/index.test.ts > TheFactoryDb > Documents > clearDocuments should clear documents by project\nTypeError: Cannot read properties of undefined (reading 'mockReturnValue')\n ❯ tests/index.test.ts:45:22\n     43|     vi.mocked(createLogger).mockReturnValue(mockLogger)\n     44|     vi.mocked(createLocalEmbeddingProvider).mockResolvedValue(mockEmbe…\n     45|     vi.mocked(readSql).mockReturnValue('FAKE_SQL')\n       |                      ^\n     46|     vi.mocked(stringifyJsonValues).mockImplementation((val) => JSON.st…\n     47|     mockEmbeddingProvider.embed.mockResolvedValue(new Float32Array([0.…\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/18]⎯\n\n FAIL  tests/index.test.ts > TheFactoryDb > close should end the database connection\n FAIL  tests/index.test.ts > TheFactoryDb > raw should return the raw client\nTypeError: Cannot read properties of undefined (reading 'mockReturnValue')\n ❯ tests/index.test.ts:45:22\n     43|     vi.mocked(createLogger).mockReturnValue(mockLogger)\n     44|     vi.mocked(createLocalEmbeddingProvider).mockResolvedValue(mockEmbe…\n     45|     vi.mocked(readSql).mockReturnValue('FAKE_SQL')\n       |                      ^\n     46|     vi.mocked(stringifyJsonValues).mockImplementation((val) => JSON.st…\n     47|     mockEmbeddingProvider.embed.mockResolvedValue(new Float32Array([0.…\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/18]⎯\n\n",
+      "summary": {
+        "total": 18,
+        "passed": 0,
+        "failed": 18,
+        "skipped": 0,
+        "durationMs": 339
       }
     },
     {
       "status": "ok",
-      "filePath": "tests/index.test.ts",
+      "filePath": "tests/json-utils-coverage.test.ts",
       "passes": [
         {
-          "testName": "tests/index.test.ts > TheFactoryDb > Entities > addEntity should insert a new entity 2ms"
+          "testName": "tests/json-utils-coverage.test.ts > stringifyJsonValues (coverage additions) > handles bigint primitives by stringifying them 1ms"
         },
         {
-          "testName": "tests/index.test.ts > TheFactoryDb > Entities > getEntityById should return an entity if found 0ms"
+          "testName": "tests/json-utils-coverage.test.ts > stringifyJsonValues (coverage additions) > ignores properties that throw on access (property getter throws) 0ms"
         },
         {
-          "testName": "tests/index.test.ts > TheFactoryDb > Entities > getEntityById should return undefined if not found 0ms"
+          "testName": "tests/json-utils-coverage.test.ts > stringifyJsonValues (coverage additions) > swallows unexpected traversal errors at top level (outer try/catch) 0ms"
         },
         {
-          "testName": "tests/index.test.ts > TheFactoryDb > Entities > updateEntity should update an existing entity 0ms"
-        },
-        {
-          "testName": "tests/index.test.ts > TheFactoryDb > Entities > deleteEntity should return true if deleted 0ms"
-        },
-        {
-          "testName": "tests/index.test.ts > TheFactoryDb > Entities > searchEntities should perform a search 0ms"
-        },
-        {
-          "testName": "tests/index.test.ts > TheFactoryDb > Entities > matchEntities should find entities by content 0ms"
-        },
-        {
-          "testName": "tests/index.test.ts > TheFactoryDb > Entities > clearEntities should clear all entities 0ms"
-        },
-        {
-          "testName": "tests/index.test.ts > TheFactoryDb > Documents > addDocument should insert a new document 0ms"
-        },
-        {
-          "testName": "tests/index.test.ts > TheFactoryDb > Documents > getDocumentById should return a document if found 0ms"
-        },
-        {
-          "testName": "tests/index.test.ts > TheFactoryDb > Documents > getDocumentById should return undefined if not found 0ms"
-        },
-        {
-          "testName": "tests/index.test.ts > TheFactoryDb > Documents > updateDocument should update an existing document 0ms"
-        },
-        {
-          "testName": "tests/index.test.ts > TheFactoryDb > Documents > deleteDocument should return true if deleted 0ms"
-        },
-        {
-          "testName": "tests/index.test.ts > TheFactoryDb > Documents > searchDocuments should perform a search 0ms"
-        },
-        {
-          "testName": "tests/index.test.ts > TheFactoryDb > Documents > matchDocuments should find documents by filters 0ms"
-        },
-        {
-          "testName": "tests/index.test.ts > TheFactoryDb > Documents > clearDocuments should clear documents by project 0ms"
-        },
-        {
-          "testName": "tests/index.test.ts > TheFactoryDb > close should end the database connection 0ms"
-        },
-        {
-          "testName": "tests/index.test.ts > TheFactoryDb > raw should return the raw client 0ms"
+          "testName": "tests/json-utils-coverage.test.ts > stringifyJsonValues (coverage additions) > omits empty strings from output (string case else branch) 0ms"
         }
       ],
       "failures": [],
       "skips": [],
-      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/index.test.ts > TheFactoryDb > Entities > addEntity should insert a new entity 2ms\n ✓ tests/index.test.ts > TheFactoryDb > Entities > getEntityById should return an entity if found 0ms\n ✓ tests/index.test.ts > TheFactoryDb > Entities > getEntityById should return undefined if not found 0ms\n ✓ tests/index.test.ts > TheFactoryDb > Entities > updateEntity should update an existing entity 0ms\n ✓ tests/index.test.ts > TheFactoryDb > Entities > deleteEntity should return true if deleted 0ms\n ✓ tests/index.test.ts > TheFactoryDb > Entities > searchEntities should perform a search 0ms\n ✓ tests/index.test.ts > TheFactoryDb > Entities > matchEntities should find entities by content 0ms\n ✓ tests/index.test.ts > TheFactoryDb > Entities > clearEntities should clear all entities 0ms\n ✓ tests/index.test.ts > TheFactoryDb > Documents > addDocument should insert a new document 0ms\n ✓ tests/index.test.ts > TheFactoryDb > Documents > getDocumentById should return a document if found 0ms\n ✓ tests/index.test.ts > TheFactoryDb > Documents > getDocumentById should return undefined if not found 0ms\n ✓ tests/index.test.ts > TheFactoryDb > Documents > updateDocument should update an existing document 0ms\n ✓ tests/index.test.ts > TheFactoryDb > Documents > deleteDocument should return true if deleted 0ms\n ✓ tests/index.test.ts > TheFactoryDb > Documents > searchDocuments should perform a search 0ms\n ✓ tests/index.test.ts > TheFactoryDb > Documents > matchDocuments should find documents by filters 0ms\n ✓ tests/index.test.ts > TheFactoryDb > Documents > clearDocuments should clear documents by project 0ms\n ✓ tests/index.test.ts > TheFactoryDb > close should end the database connection 0ms\n ✓ tests/index.test.ts > TheFactoryDb > raw should return the raw client 0ms\n\n Test Files  1 passed (1)\n      Tests  18 passed (18)\n   Start at  18:34:49\n   Duration  352ms (transform 58ms, setup 0ms, collect 158ms, tests 7ms, environment 0ms, prepare 33ms)\n\n",
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/json-utils-coverage.test.ts > stringifyJsonValues (coverage additions) > handles bigint primitives by stringifying them 1ms\n ✓ tests/json-utils-coverage.test.ts > stringifyJsonValues (coverage additions) > ignores properties that throw on access (property getter throws) 0ms\n ✓ tests/json-utils-coverage.test.ts > stringifyJsonValues (coverage additions) > swallows unexpected traversal errors at top level (outer try/catch) 0ms\n ✓ tests/json-utils-coverage.test.ts > stringifyJsonValues (coverage additions) > omits empty strings from output (string case else branch) 0ms\n\n Test Files  1 passed (1)\n      Tests  4 passed (4)\n   Start at  22:03:40\n   Duration  219ms (transform 23ms, setup 0ms, collect 21ms, tests 2ms, environment 0ms, prepare 43ms)\n\n",
       "summary": {
-        "total": 18,
-        "passed": 18,
+        "total": 4,
+        "passed": 4,
         "failed": 0,
         "skipped": 0,
-        "durationMs": 352
+        "durationMs": 219
       }
     },
     {
@@ -409,13 +532,13 @@
       ],
       "failures": [],
       "skips": [],
-      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/json-utils.test.ts > stringifyJsonValues > flattens nested objects and arrays into value-only string 1ms\n ✓ tests/json-utils.test.ts > stringifyJsonValues > handles primitive values 0ms\n ✓ tests/json-utils.test.ts > stringifyJsonValues > ignores functions and symbols and non-finite numbers 0ms\n ✓ tests/json-utils.test.ts > stringifyJsonValues > handles cycles gracefully 0ms\n ✓ tests/json-utils.test.ts > stringifyJsonValues > stable ordering regardless of original insertion order 0ms\n\n Test Files  1 passed (1)\n      Tests  5 passed (5)\n   Start at  18:34:50\n   Duration  198ms (transform 21ms, setup 0ms, collect 19ms, tests 2ms, environment 0ms, prepare 37ms)\n\n",
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/json-utils.test.ts > stringifyJsonValues > flattens nested objects and arrays into value-only string 1ms\n ✓ tests/json-utils.test.ts > stringifyJsonValues > handles primitive values 0ms\n ✓ tests/json-utils.test.ts > stringifyJsonValues > ignores functions and symbols and non-finite numbers 0ms\n ✓ tests/json-utils.test.ts > stringifyJsonValues > handles cycles gracefully 0ms\n ✓ tests/json-utils.test.ts > stringifyJsonValues > stable ordering regardless of original insertion order 0ms\n\n Test Files  1 passed (1)\n      Tests  5 passed (5)\n   Start at  22:03:41\n   Duration  333ms (transform 25ms, setup 0ms, collect 24ms, tests 2ms, environment 0ms, prepare 35ms)\n\n",
       "summary": {
         "total": 5,
         "passed": 5,
         "failed": 0,
         "skipped": 0,
-        "durationMs": 198
+        "durationMs": 333
       }
     },
     {
@@ -446,13 +569,13 @@
       ],
       "failures": [],
       "skips": [],
-      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/logger.test.ts > createLogger > should log debug messages when level is debug 1ms\n ✓ tests/logger.test.ts > createLogger > should log info messages when level is info 0ms\n ✓ tests/logger.test.ts > createLogger > should log warn messages when level is warn 0ms\n ✓ tests/logger.test.ts > createLogger > should log error messages when level is error 0ms\n ✓ tests/logger.test.ts > createLogger > should not log any messages when level is silent 0ms\n ✓ tests/logger.test.ts > createLogger > should default to info level if no level is provided 0ms\n ✓ tests/logger.test.ts > createLogger > should only log messages at or above the specified log level 0ms\n\n Test Files  1 passed (1)\n      Tests  7 passed (7)\n   Start at  18:34:51\n   Duration  208ms (transform 21ms, setup 0ms, collect 20ms, tests 3ms, environment 0ms, prepare 34ms)\n\n",
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/logger.test.ts > createLogger > should log debug messages when level is debug 1ms\n ✓ tests/logger.test.ts > createLogger > should log info messages when level is info 0ms\n ✓ tests/logger.test.ts > createLogger > should log warn messages when level is warn 0ms\n ✓ tests/logger.test.ts > createLogger > should log error messages when level is error 0ms\n ✓ tests/logger.test.ts > createLogger > should not log any messages when level is silent 0ms\n ✓ tests/logger.test.ts > createLogger > should default to info level if no level is provided 0ms\n ✓ tests/logger.test.ts > createLogger > should only log messages at or above the specified log level 0ms\n\n Test Files  1 passed (1)\n      Tests  7 passed (7)\n   Start at  22:03:41\n   Duration  230ms (transform 28ms, setup 0ms, collect 21ms, tests 3ms, environment 0ms, prepare 41ms)\n\n",
       "summary": {
         "total": 7,
         "passed": 7,
         "failed": 0,
         "skipped": 0,
-        "durationMs": 208
+        "durationMs": 230
       }
     },
     {
@@ -463,49 +586,68 @@
           "testName": "tests/tokenizer.test.ts > tokenizer > uses tiktoken strategy when available 1ms"
         },
         {
-          "testName": "tests/tokenizer.test.ts > tokenizer > falls back to whitespace strategy when tiktoken fails 0ms"
+          "testName": "tests/tokenizer.test.ts > tokenizer > falls back to whitespace strategy when tiktoken fails (fresh encoding forces getEncoding call) 1ms"
         },
         {
-          "testName": "tests/tokenizer.test.ts > tokenizer > toFtsText normalizes text 1ms"
+          "testName": "tests/tokenizer.test.ts > tokenizer > explicit whitespace strategy maps identical words to identical token ids 0ms"
+        },
+        {
+          "testName": "tests/tokenizer.test.ts > tokenizer > toFtsText normalizes text 0ms"
         }
       ],
       "failures": [],
       "skips": [],
-      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/tokenizer.test.ts > tokenizer > uses tiktoken strategy when available 1ms\n ✓ tests/tokenizer.test.ts > tokenizer > falls back to whitespace strategy when tiktoken fails 0ms\n ✓ tests/tokenizer.test.ts > tokenizer > toFtsText normalizes text 1ms\n\n Test Files  1 passed (1)\n      Tests  3 passed (3)\n   Start at  18:34:51\n   Duration  209ms (transform 25ms, setup 0ms, collect 26ms, tests 3ms, environment 0ms, prepare 35ms)\n\n",
-      "summary": {
-        "total": 3,
-        "passed": 3,
-        "failed": 0,
-        "skipped": 0,
-        "durationMs": 209
-      }
-    },
-    {
-      "status": "ok",
-      "filePath": "tests/utils.test.ts",
-      "passes": [
-        {
-          "testName": "tests/utils.test.ts > utils.readSql > returns SQL string for known keys 1ms"
-        },
-        {
-          "testName": "tests/utils.test.ts > utils.readSql > returns undefined for unknown keys 0ms"
-        },
-        {
-          "testName": "tests/utils.test.ts > utils.base64ToUtf8 > decodes plain base64 strings 0ms"
-        },
-        {
-          "testName": "tests/utils.test.ts > utils.base64ToUtf8 > decodes data URI base64 strings 0ms"
-        }
-      ],
-      "failures": [],
-      "skips": [],
-      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/utils.test.ts > utils.readSql > returns SQL string for known keys 1ms\n ✓ tests/utils.test.ts > utils.readSql > returns undefined for unknown keys 0ms\n ✓ tests/utils.test.ts > utils.base64ToUtf8 > decodes plain base64 strings 0ms\n ✓ tests/utils.test.ts > utils.base64ToUtf8 > decodes data URI base64 strings 0ms\n\n Test Files  1 passed (1)\n      Tests  4 passed (4)\n   Start at  18:34:52\n   Duration  223ms (transform 26ms, setup 0ms, collect 25ms, tests 2ms, environment 0ms, prepare 39ms)\n\n",
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/tokenizer.test.ts > tokenizer > uses tiktoken strategy when available 1ms\n ✓ tests/tokenizer.test.ts > tokenizer > falls back to whitespace strategy when tiktoken fails (fresh encoding forces getEncoding call) 1ms\n ✓ tests/tokenizer.test.ts > tokenizer > explicit whitespace strategy maps identical words to identical token ids 0ms\n ✓ tests/tokenizer.test.ts > tokenizer > toFtsText normalizes text 0ms\n\n Test Files  1 passed (1)\n      Tests  4 passed (4)\n   Start at  22:03:42\n   Duration  237ms (transform 29ms, setup 0ms, collect 27ms, tests 3ms, environment 0ms, prepare 55ms)\n\n",
       "summary": {
         "total": 4,
         "passed": 4,
         "failed": 0,
         "skipped": 0,
-        "durationMs": 223
+        "durationMs": 237
+      }
+    },
+    {
+      "status": "fail",
+      "filePath": "tests/utils.test.ts",
+      "passes": [],
+      "failures": [
+        {
+          "testName": "utils.readSql > returns SQL string for known keys",
+          "message": "TypeError: readSql is not a function\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯",
+          "stack": "FAIL  tests/utils.test.ts > utils.readSql > returns SQL string for known keys\n❯ tests/utils.test.ts:37:25\n     35|     ]\n     36|     for (const k of keys) {\n     37|       const sql = utils.readSql(k)\n       |                         ^\n     38|       expect(typeof sql).toBe('string')\n     39|       expect(sql).toBeTruthy()",
+          "line": 37,
+          "column": 25
+        },
+        {
+          "testName": "utils.readSql > returns undefined for unknown keys",
+          "message": "TypeError: readSql is not a function\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯",
+          "stack": "FAIL  tests/utils.test.ts > utils.readSql > returns undefined for unknown keys\n❯ tests/utils.test.ts:44:23\n     42|\n     43|   it('returns undefined for unknown keys', () => {\n     44|     const sql = utils.readSql('not-a-real-key')\n       |                       ^\n     45|     expect(sql).toBeUndefined()\n     46|   })",
+          "line": 44,
+          "column": 23
+        },
+        {
+          "testName": "utils.base64ToUtf8 > decodes plain base64 strings",
+          "message": "TypeError: base64ToUtf8 is not a function\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯",
+          "stack": "FAIL  tests/utils.test.ts > utils.base64ToUtf8 > decodes plain base64 strings\n❯ tests/utils.test.ts:52:18\n     50|   it('decodes plain base64 strings', () => {\n     51|     const helloB64 = Buffer.from('hello world').toString('base64')\n     52|     expect(utils.base64ToUtf8(helloB64)).toBe('hello world')\n       |                  ^\n     53|   })\n     54|",
+          "line": 52,
+          "column": 18
+        },
+        {
+          "testName": "utils.base64ToUtf8 > decodes data URI base64 strings",
+          "message": "TypeError: base64ToUtf8 is not a function\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/4]⎯",
+          "stack": "FAIL  tests/utils.test.ts > utils.base64ToUtf8 > decodes data URI base64 strings\n❯ tests/utils.test.ts:59:18\n     57|     const b64 = Buffer.from(txt).toString('base64')\n     58|     const dataUri = `data:text/plain;base64,${b64}`\n     59|     expect(utils.base64ToUtf8(dataUri)).toBe(txt)\n       |                  ^\n     60|   })\n     61| })",
+          "line": 59,
+          "column": 18
+        }
+      ],
+      "skips": [],
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n × tests/utils.test.ts > utils.readSql > returns SQL string for known keys 2ms\n   → readSql is not a function\n × tests/utils.test.ts > utils.readSql > returns undefined for unknown keys 0ms\n   → readSql is not a function\n × tests/utils.test.ts > utils.base64ToUtf8 > decodes plain base64 strings 0ms\n   → base64ToUtf8 is not a function\n × tests/utils.test.ts > utils.base64ToUtf8 > decodes data URI base64 strings 0ms\n   → base64ToUtf8 is not a function\n\n Test Files  1 failed (1)\n      Tests  4 failed (4)\n   Start at  22:03:43\n   Duration  226ms (transform 29ms, setup 0ms, collect 29ms, tests 4ms, environment 0ms, prepare 36ms)\n\n\n\n⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯\n\n FAIL  tests/utils.test.ts > utils.readSql > returns SQL string for known keys\nTypeError: readSql is not a function\n ❯ tests/utils.test.ts:37:25\n     35|     ]\n     36|     for (const k of keys) {\n     37|       const sql = utils.readSql(k)\n       |                         ^\n     38|       expect(typeof sql).toBe('string')\n     39|       expect(sql).toBeTruthy()\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯\n\n FAIL  tests/utils.test.ts > utils.readSql > returns undefined for unknown keys\nTypeError: readSql is not a function\n ❯ tests/utils.test.ts:44:23\n     42| \n     43|   it('returns undefined for unknown keys', () => {\n     44|     const sql = utils.readSql('not-a-real-key')\n       |                       ^\n     45|     expect(sql).toBeUndefined()\n     46|   })\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯\n\n FAIL  tests/utils.test.ts > utils.base64ToUtf8 > decodes plain base64 strings\nTypeError: base64ToUtf8 is not a function\n ❯ tests/utils.test.ts:52:18\n     50|   it('decodes plain base64 strings', () => {\n     51|     const helloB64 = Buffer.from('hello world').toString('base64')\n     52|     expect(utils.base64ToUtf8(helloB64)).toBe('hello world')\n       |                  ^\n     53|   })\n     54| \n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯\n\n FAIL  tests/utils.test.ts > utils.base64ToUtf8 > decodes data URI base64 strings\nTypeError: base64ToUtf8 is not a function\n ❯ tests/utils.test.ts:59:18\n     57|     const b64 = Buffer.from(txt).toString('base64')\n     58|     const dataUri = `data:text/plain;base64,${b64}`\n     59|     expect(utils.base64ToUtf8(dataUri)).toBe(txt)\n       |                  ^\n     60|   })\n     61| })\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/4]⎯\n\n",
+      "summary": {
+        "total": 4,
+        "passed": 0,
+        "failed": 4,
+        "skipped": 0,
+        "durationMs": 226
       }
     },
     {
@@ -551,21 +693,21 @@
       ],
       "failures": [],
       "skips": [],
-      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/validation.test.ts > validation > assertDocumentInput > accepts valid input 1ms\n ✓ tests/validation.test.ts > validation > assertDocumentInput > rejects invalid shapes 0ms\n ✓ tests/validation.test.ts > validation > assertDocumentPatch > accepts valid patch values 0ms\n ✓ tests/validation.test.ts > validation > assertDocumentPatch > rejects invalid patch 0ms\n ✓ tests/validation.test.ts > validation > assertEntityInput > accepts valid entity input 0ms\n ✓ tests/validation.test.ts > validation > assertEntityInput > rejects invalid entity input 0ms\n ✓ tests/validation.test.ts > validation > assertEntityPatch > accepts valid patches 0ms\n ✓ tests/validation.test.ts > validation > assertEntityPatch > rejects invalid patches 0ms\n ✓ tests/validation.test.ts > validation > assertMatchParams > accepts valid options 0ms\n ✓ tests/validation.test.ts > validation > assertMatchParams > rejects invalid options 0ms\n ✓ tests/validation.test.ts > validation > assertSearchParams > accepts valid search params 0ms\n ✓ tests/validation.test.ts > validation > assertSearchParams > rejects invalid search params 0ms\n\n Test Files  1 passed (1)\n      Tests  12 passed (12)\n   Start at  18:34:53\n   Duration  257ms (transform 26ms, setup 0ms, collect 25ms, tests 4ms, environment 0ms, prepare 35ms)\n\n",
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/validation.test.ts > validation > assertDocumentInput > accepts valid input 1ms\n ✓ tests/validation.test.ts > validation > assertDocumentInput > rejects invalid shapes 0ms\n ✓ tests/validation.test.ts > validation > assertDocumentPatch > accepts valid patch values 0ms\n ✓ tests/validation.test.ts > validation > assertDocumentPatch > rejects invalid patch 0ms\n ✓ tests/validation.test.ts > validation > assertEntityInput > accepts valid entity input 0ms\n ✓ tests/validation.test.ts > validation > assertEntityInput > rejects invalid entity input 0ms\n ✓ tests/validation.test.ts > validation > assertEntityPatch > accepts valid patches 0ms\n ✓ tests/validation.test.ts > validation > assertEntityPatch > rejects invalid patches 0ms\n ✓ tests/validation.test.ts > validation > assertMatchParams > accepts valid options 0ms\n ✓ tests/validation.test.ts > validation > assertMatchParams > rejects invalid options 0ms\n ✓ tests/validation.test.ts > validation > assertSearchParams > accepts valid search params 0ms\n ✓ tests/validation.test.ts > validation > assertSearchParams > rejects invalid search params 0ms\n\n Test Files  1 passed (1)\n      Tests  12 passed (12)\n   Start at  22:03:44\n   Duration  197ms (transform 25ms, setup 0ms, collect 23ms, tests 4ms, environment 0ms, prepare 36ms)\n\n",
       "summary": {
         "total": 12,
         "passed": 12,
         "failed": 0,
         "skipped": 0,
-        "durationMs": 257
+        "durationMs": 197
       }
     }
   ],
   "summary": {
-    "total": 100,
-    "passed": 69,
-    "failed": 0,
+    "total": 108,
+    "passed": 42,
+    "failed": 35,
     "skipped": 31,
-    "durationMs": 6518
+    "durationMs": 6307
   }
 }
