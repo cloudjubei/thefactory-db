@@ -17,14 +17,14 @@
     },
     "src/validation.ts": {
       "pct_statements": 100,
-      "pct_branch": 92.66055045871559,
+      "pct_branch": 92.72727272727272,
       "pct_functions": 100,
       "pct_lines": 100,
       "uncovered_lines": []
     },
     "src/utils/embeddings.ts": {
       "pct_statements": 99.23076923076923,
-      "pct_branch": 98.50746268656717,
+      "pct_branch": 98.55072463768117,
       "pct_functions": 100,
       "pct_lines": 99.23076923076923,
       "uncovered_lines": [
@@ -48,7 +48,7 @@
   },
   "summary": {
     "pct_statements": 99.87179487179488,
-    "pct_branch": 98.52800219088046,
+    "pct_branch": 98.546332894159,
     "pct_functions": 100,
     "pct_lines": 99.87179487179488
   },
