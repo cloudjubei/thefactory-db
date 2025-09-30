@@ -1,6 +1,6 @@
 {
   "id": "902f88c6-aecd-4fc4-ae5c-ddb30a35768b",
-  "status": "+",
+  "status": "-",
   "title": "TESTING",
   "description": "Ongoing Testing improvements",
   "features": [
@@ -71,6 +71,18 @@
       "createdAt": "2025-09-29T20:06:36.684Z",
       "updatedAt": "2025-09-29T20:35:00.098Z",
       "completedAt": "2025-09-29T20:35:00.098Z"
+    },
+    {
+      "id": "4c8c88de-f0e5-4bd7-8f7c-9c3ee45f101d",
+      "status": "-",
+      "title": "Add tests for src/utils/embeddings.ts",
+      "description": "Improve test coverage for @src/utils/embeddings.ts.\nTarget uncovered lines: 59-60, 83-84, 98-99, 105-106, 140-141.",
+      "context": [
+        "src/utils/embeddings.ts"
+      ],
+      "blockers": [],
+      "createdAt": "2025-09-30T01:11:19.431Z",
+      "updatedAt": "2025-09-30T01:11:19.431Z"
     }
   ],
   "featureIdToDisplayIndex": {
@@ -78,9 +90,9 @@
     "a3a9f8e3-12be-421b-9a1a-995da993fd98": 2,
     "73c252d6-deb6-43da-b508-d4f9259b3ab4": 3,
     "05555563-a308-4e2f-9c2a-ca5383d6ce26": 4,
-    "71cfcb76-53c2-4e16-8272-b544f5c5033c": 5
+    "71cfcb76-53c2-4e16-8272-b544f5c5033c": 5,
+    "4c8c88de-f0e5-4bd7-8f7c-9c3ee45f101d": 6
   },
   "createdAt": "2025-09-29T19:11:02.269Z",
-  "updatedAt": "2025-09-29T19:11:02.269Z",
-  "completedAt": "2025-09-29T20:35:00.098Z"
+  "updatedAt": "2025-09-29T19:11:02.269Z"
 }
