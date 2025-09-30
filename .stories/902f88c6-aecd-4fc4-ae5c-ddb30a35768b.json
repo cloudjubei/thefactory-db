@@ -1,6 +1,6 @@
 {
   "id": "902f88c6-aecd-4fc4-ae5c-ddb30a35768b",
-  "status": "-",
+  "status": "+",
   "title": "TESTING",
   "description": "Ongoing Testing improvements",
   "features": [
@@ -87,7 +87,7 @@
     },
     {
       "id": "bceaf5ad-5008-473a-a079-ed3cae2b05f6",
-      "status": "-",
+      "status": "+",
       "title": "Add tests for src/utils/embeddings.ts",
       "description": "Improve test coverage for @src/utils/embeddings.ts.\nTarget uncovered lines: 85.",
       "context": [
@@ -97,7 +97,8 @@
       "blockers": [],
       "rejection": "Additionally to the above - this test is failing in @tests/embeddings-branches.test.ts  :\n\nembeddings additional branches > unwrapOutput handles function that expects batch texts\nTypeError: Cannot assign to read only property 'length' of function '(texts) => {\n      return texts.map((t) => [t.length, t.length + 1, t.length + 2]);\n    }'\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯\ntests/embeddings-branches.test.ts:59:17\n    55    it('unwrapOutput handles function that expects batch texts', async () => {\n    56      const extractorFn = (texts: string[]) => {\n    57        return texts.map((t) => [t.length, t.length + 1, t.length + 2])\n    58      }\n>   59:17      extractorFn.length = 1 // Mock function expecting arguments\n    60      ;(pipeline as any).mockResolvedValueOnce(async () => () => extractorFn)\n    61      const provider = await createLocalEmbeddingProvider({ normalize: false })",
       "createdAt": "2025-09-30T10:21:50.155Z",
-      "updatedAt": "2025-09-30T10:21:50.155Z"
+      "updatedAt": "2025-09-30T10:23:08.412Z",
+      "completedAt": "2025-09-30T10:23:08.412Z"
     }
   ],
   "featureIdToDisplayIndex": {
@@ -110,5 +111,6 @@
     "bceaf5ad-5008-473a-a079-ed3cae2b05f6": 7
   },
   "createdAt": "2025-09-29T19:11:02.269Z",
-  "updatedAt": "2025-09-30T01:32:16.443Z"
+  "updatedAt": "2025-09-30T01:32:16.443Z",
+  "completedAt": "2025-09-30T10:23:08.412Z"
 }

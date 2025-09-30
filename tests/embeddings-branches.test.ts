@@ -56,7 +56,6 @@ describe('embeddings additional branches', () => {
     const extractorFn = (texts: string[]) => {
       return texts.map((t) => [t.length, t.length + 1, t.length + 2])
     }
-    extractorFn.length = 1 // Mock function expecting arguments
     ;(pipeline as any).mockResolvedValueOnce(async () => () => extractorFn)
     const provider = await createLocalEmbeddingProvider({ normalize: false })
     const vecs = await provider.embedBatch(['a', 'bb'])
