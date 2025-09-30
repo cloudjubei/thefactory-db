@@ -1,0 +1,42 @@
+{
+  "tests": [
+    {
+      "status": "fail",
+      "filePath": "e2e",
+      "passes": [],
+      "failures": [
+        {
+          "testName": "E2E: Codebase Hybrid Search (real DB) > w=1 (text-only): \"pgvector\" should return md files, tests and scripts",
+          "message": "AssertionError: expected [ 'README.md', …(9) ] to deeply equal [ 'README.md', …(9) ]\n\u001b[32m- Expected\u001b[39m\n\u001b[31m+ Received\u001b[39m\n\u001b[33m@@ -5,8 +5,8 @@\u001b[39m\n\u001b[2m    \"src/index.ts\",\u001b[22m\n\u001b[2m    \"docs/TESTING_E2E.md\",\u001b[22m\n\u001b[2m    \"scripts/example.ts\",\u001b[22m\n\u001b[2m    \"docs/CODE_STANDARD.md\",\u001b[22m\n\u001b[2m    \"tests/hybrid-search-advanced.test.ts\",\u001b[22m\n\u001b[32m-   \"docker-compose.yml\",\u001b[39m\n\u001b[2m    \"docker-compose.e2e.yml\",\u001b[22m\n\u001b[31m+   \"docker-compose.yml\",\u001b[39m\n\u001b[2m  ]\u001b[22m\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯",
+          "stack": "FAIL  tests/e2e/codebase-hybrid-search.e2e.test.ts > E2E: Codebase Hybrid Search (real DB) > w=1 (text-only): \"pgvector\" should return md files, tests and scripts\n❯ tests/e2e/codebase-hybrid-search.e2e.test.ts:131:18\n    129|     const res = await run('pgvector', 1)\n    130|     const srcs = res.map((r) => r.src)\n    131|     expect(srcs).toEqual([\n       |                  ^\n    132|       'README.md',\n    133|       'tests/e2e/codebase-hybrid-search.e2e.test.ts',",
+          "line": 131,
+          "column": 18
+        },
+        {
+          "testName": "E2E: Codebase Hybrid Search (real DB) > w=0 (semantic-only): \"pgvector\" should find files related to vector databases",
+          "message": "AssertionError: expected [ …(10) ] to deeply equal [ …(10) ]\n\u001b[32m- Expected\u001b[39m\n\u001b[31m+ Received\u001b[39m\n\u001b[33m@@ -2,11 +2,11 @@\u001b[39m\n\u001b[2m    \"tests/hybrid-search-advanced.test.ts\",\u001b[22m\n\u001b[2m    \"README.md\",\u001b[22m\n\u001b[2m    \"docker-compose.yml\",\u001b[22m\n\u001b[2m    \"tests/embeddings.test.ts\",\u001b[22m\n\u001b[2m    \"tests/connection.test.ts\",\u001b[22m\n\u001b[32m-   \"tests/embeddings-branches.test.ts\",\u001b[39m\n\u001b[2m    \"docker-compose.e2e.yml\",\u001b[22m\n\u001b[31m+   \"tests/embeddings-branches.test.ts\",\u001b[39m\n\u001b[2m    \"src/connection.ts\",\u001b[22m\n\u001b[2m    \"src/index.ts\",\u001b[22m\n\u001b[2m    \"src/utils/json.ts\",\u001b[22m\n\u001b[2m  ]\u001b[22m\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯",
+          "stack": "FAIL  tests/e2e/codebase-hybrid-search.e2e.test.ts > E2E: Codebase Hybrid Search (real DB) > w=0 (semantic-only): \"pgvector\" should find files related to vector databases\n❯ tests/e2e/codebase-hybrid-search.e2e.test.ts:147:18\n    145|     const res = await run('pgvector', 0)\n    146|     const srcs = res.map((r) => r.src)\n    147|     expect(srcs).toEqual([\n       |                  ^\n    148|       'tests/hybrid-search-advanced.test.ts',\n    149|       'README.md',",
+          "line": 147,
+          "column": 18
+        }
+      ],
+      "skips": [],
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ❯ tests/e2e/codebase-hybrid-search.e2e.test.ts (5 tests | 2 failed) 3185ms\n   ✓ E2E: Codebase Hybrid Search (real DB) > w=1 (text-only): \"hybrid search function\" should return SQL and source files 11ms\n   ✓ E2E: Codebase Hybrid Search (real DB) > w=0 (semantic-only): \"hybrid search function\" should prioritize semantically relevant files 7ms\n   ✓ E2E: Codebase Hybrid Search (real DB) > w=0.5 (balanced): \"hybrid search function\" results should be a mix 7ms\n   × E2E: Codebase Hybrid Search (real DB) > w=1 (text-only): \"pgvector\" should return md files, tests and scripts 10ms\n     → expected [ 'README.md', …(9) ] to deeply equal [ 'README.md', …(9) ]\n   × E2E: Codebase Hybrid Search (real DB) > w=0 (semantic-only): \"pgvector\" should find files related to vector databases 6ms\n     → expected [ …(10) ] to deeply equal [ …(10) ]\n ✓ tests/e2e/documents-hybrid-advanced.e2e.test.ts (9 tests) 373ms\n ✓ tests/e2e/documents-hybrid.e2e.test.ts (2 tests) 146ms\n ✓ tests/e2e/documents-indexing.e2e.test.ts (2 tests) 166ms\n ✓ tests/e2e/entities-hybrid-advanced.e2e.test.ts (9 tests) 342ms\n ✓ tests/e2e/entities-hybrid.e2e.test.ts (2 tests) 148ms\n ✓ tests/e2e/entities-indexing.e2e.test.ts (1 test) 123ms\n ✓ tests/e2e/updates-and-fts.e2e.test.ts (2 tests) 151ms\n\n Test Files  1 failed | 7 passed (8)\n      Tests  2 failed | 30 passed (32)\n   Start at  22:55:06\n   Duration  6.51s (transform 76ms, setup 0ms, collect 840ms, tests 4.63s, environment 1ms, prepare 250ms)\n\n\n\n⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯\n\n FAIL  tests/e2e/codebase-hybrid-search.e2e.test.ts > E2E: Codebase Hybrid Search (real DB) > w=1 (text-only): \"pgvector\" should return md files, tests and scripts\nAssertionError: expected [ 'README.md', …(9) ] to deeply equal [ 'README.md', …(9) ]\n\n\u001b[32m- Expected\u001b[39m\n\u001b[31m+ Received\u001b[39m\n\n\u001b[33m@@ -5,8 +5,8 @@\u001b[39m\n\u001b[2m    \"src/index.ts\",\u001b[22m\n\u001b[2m    \"docs/TESTING_E2E.md\",\u001b[22m\n\u001b[2m    \"scripts/example.ts\",\u001b[22m\n\u001b[2m    \"docs/CODE_STANDARD.md\",\u001b[22m\n\u001b[2m    \"tests/hybrid-search-advanced.test.ts\",\u001b[22m\n\u001b[32m-   \"docker-compose.yml\",\u001b[39m\n\u001b[2m    \"docker-compose.e2e.yml\",\u001b[22m\n\u001b[31m+   \"docker-compose.yml\",\u001b[39m\n\u001b[2m  ]\u001b[22m\n\n ❯ tests/e2e/codebase-hybrid-search.e2e.test.ts:131:18\n    129|     const res = await run('pgvector', 1)\n    130|     const srcs = res.map((r) => r.src)\n    131|     expect(srcs).toEqual([\n       |                  ^\n    132|       'README.md',\n    133|       'tests/e2e/codebase-hybrid-search.e2e.test.ts',\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯\n\n FAIL  tests/e2e/codebase-hybrid-search.e2e.test.ts > E2E: Codebase Hybrid Search (real DB) > w=0 (semantic-only): \"pgvector\" should find files related to vector databases\nAssertionError: expected [ …(10) ] to deeply equal [ …(10) ]\n\n\u001b[32m- Expected\u001b[39m\n\u001b[31m+ Received\u001b[39m\n\n\u001b[33m@@ -2,11 +2,11 @@\u001b[39m\n\u001b[2m    \"tests/hybrid-search-advanced.test.ts\",\u001b[22m\n\u001b[2m    \"README.md\",\u001b[22m\n\u001b[2m    \"docker-compose.yml\",\u001b[22m\n\u001b[2m    \"tests/embeddings.test.ts\",\u001b[22m\n\u001b[2m    \"tests/connection.test.ts\",\u001b[22m\n\u001b[32m-   \"tests/embeddings-branches.test.ts\",\u001b[39m\n\u001b[2m    \"docker-compose.e2e.yml\",\u001b[22m\n\u001b[31m+   \"tests/embeddings-branches.test.ts\",\u001b[39m\n\u001b[2m    \"src/connection.ts\",\u001b[22m\n\u001b[2m    \"src/index.ts\",\u001b[22m\n\u001b[2m    \"src/utils/json.ts\",\u001b[22m\n\u001b[2m  ]\u001b[22m\n\n ❯ tests/e2e/codebase-hybrid-search.e2e.test.ts:147:18\n    145|     const res = await run('pgvector', 0)\n    146|     const srcs = res.map((r) => r.src)\n    147|     expect(srcs).toEqual([\n       |                  ^\n    148|       'tests/hybrid-search-advanced.test.ts',\n    149|       'README.md',\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯\n\n",
+      "summary": {
+        "total": 32,
+        "passed": 30,
+        "failed": 2,
+        "skipped": 0,
+        "durationMs": 6510
+      }
+    }
+  ],
+  "status": "fail",
+  "summary": {
+    "total": 32,
+    "passed": 30,
+    "failed": 2,
+    "skipped": 0,
+    "durationMs": 6510
+  }
+}
