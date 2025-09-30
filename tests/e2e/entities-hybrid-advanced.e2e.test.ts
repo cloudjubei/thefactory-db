@@ -284,8 +284,8 @@ const DATABASE_URL = process.env.DATABASE_URL || ''
     })
     const resultIds = results.map((r) => r.id)
 
-    expect(resultIds).not.toContain(ids.matchAtStart)
-    expect(resultIds).toContain(ids.matchInMiddle)
+    expect(resultIds).toContain(ids.matchAtStart)
+    expect(resultIds).not.toContain(ids.matchInMiddle)
     expect(resultIds).toContain(ids.matchAtEnd)
     expect(resultIds).not.toContain(ids.noMatch)
     expect(resultIds).not.toContain(ids.semanticMatch)

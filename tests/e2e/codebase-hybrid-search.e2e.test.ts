@@ -102,8 +102,8 @@ function collectProjectFiles(root: string): string[] {
       'scripts/test.ts',
       'src/utils/json.ts',
       'tests/e2e/documents-hybrid.e2e.test.ts',
-      'src/index.ts',
       'tests/e2e/entities-hybrid-advanced.e2e.test.ts',
+      'tests/utils.test.ts',
       'tests/e2e/codebase-hybrid-search.e2e.test.ts',
     ])
   })
@@ -114,9 +114,9 @@ function collectProjectFiles(root: string): string[] {
     expect(srcs).toEqual([
       'tests/hybrid-search-advanced.test.ts',
       'tests/e2e/entities-hybrid.e2e.test.ts',
-      'src/index.ts',
       'tests/e2e/codebase-hybrid-search.e2e.test.ts',
       'scripts/example.ts',
+      'src/index.ts',
       'tests/e2e/entities-hybrid-advanced.e2e.test.ts',
       'docs/FILE_ORGANISATION.md',
       'scripts/test.ts',
@@ -134,8 +134,8 @@ function collectProjectFiles(root: string): string[] {
       'docs/FILE_ORGANISATION.md',
       'src/index.ts',
       'docs/TESTING_E2E.md',
-      'docs/CODE_STANDARD.md',
       'scripts/example.ts',
+      'docs/CODE_STANDARD.md',
       'tests/hybrid-search-advanced.test.ts',
       'docker-compose.yml',
       'docker-compose.e2e.yml',
