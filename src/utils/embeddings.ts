@@ -81,7 +81,9 @@ export async function createLocalEmbeddingProvider(options?: {
       const arr = (output[0] as number[]).flat(Infinity as any) as number[]
       data = new Float32Array(arr)
     } else if (output && (output.data instanceof Float32Array || Array.isArray(output.data))) {
-      const arr = Array.isArray(output.data) ? (output.data as number[]) : Array.from(output.data)
+      const arr: Iterable<number> = Array.isArray(output.data)
+        ? (output.data as number[])
+        : Array.from(output.data)
       data = new Float32Array(arr)
     } else {
       // Try to access tensor-like shape
@@ -95,9 +97,6 @@ export async function createLocalEmbeddingProvider(options?: {
   }
 
   async function embedBatchAsync(texts: string[]): Promise<Float32Array[]> {
-    if (!texts || texts.length === 0) {
-      return []
-    }
     const extractor = await getExtractor()
     const raw: any = await extractor(texts, { pooling: 'mean', normalize: false })
     const output: any = unwrapOutput(raw, texts)
@@ -116,7 +115,9 @@ export async function createLocalEmbeddingProvider(options?: {
       for (let i = 0; i < batchSize; i++) {
         const start = i * embeddingDim
         const end = start + embeddingDim
-        let embedding = new Float32Array((output.data as Float32Array | number[]).slice(start, end))
+        let embedding: Float32Array = new Float32Array(
+          (output.data as Float32Array | number[]).slice(start, end),
+        )
         if (normalize) {
           embedding = l2norm(embedding)
         }

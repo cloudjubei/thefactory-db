@@ -23,11 +23,22 @@
       "uncovered_lines": []
     },
     "src/utils/embeddings.ts": {
-      "pct_statements": 100,
-      "pct_branch": 89.28571428571429,
+      "pct_statements": 92.24806201550388,
+      "pct_branch": 77.35849056603774,
       "pct_functions": 100,
-      "pct_lines": 100,
-      "uncovered_lines": []
+      "pct_lines": 92.24806201550388,
+      "uncovered_lines": [
+        59,
+        60,
+        83,
+        84,
+        98,
+        99,
+        105,
+        106,
+        140,
+        141
+      ]
     },
     "src/utils/json.ts": {
       "pct_statements": 100,
@@ -45,10 +56,10 @@
     }
   },
   "summary": {
-    "pct_statements": 100,
-    "pct_branch": 96.99104412407165,
+    "pct_statements": 98.70801033591731,
+    "pct_branch": 95.00317350412554,
     "pct_functions": 100,
-    "pct_lines": 100
+    "pct_lines": 98.70801033591731
   },
   "message": "",
   "ignored_files": [
