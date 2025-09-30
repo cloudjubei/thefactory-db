@@ -97,9 +97,6 @@ export async function createLocalEmbeddingProvider(options?: {
   }
 
   async function embedBatchAsync(texts: string[]): Promise<Float32Array[]> {
-    if (!texts || texts.length === 0) {
-      return []
-    }
     const extractor = await getExtractor()
     const raw: any = await extractor(texts, { pooling: 'mean', normalize: false })
     const output: any = unwrapOutput(raw, texts)
