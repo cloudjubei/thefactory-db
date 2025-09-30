@@ -1,6 +1,6 @@
 {
   "id": "67749a79-fda3-4c2b-9c35-b644c761b895",
-  "status": "-",
+  "status": "?",
   "title": "Ongoing Improvements",
   "description": "Various ongoing improvements to the project",
   "features": [
@@ -160,7 +160,7 @@
     },
     {
       "id": "04391c02-652b-4dad-b59a-2eda2bccf1d3",
-      "status": "-",
+      "status": "?",
       "title": "Batching of embeddings",
       "description": "In @src/index.ts in the function `upsertDocuments` we are embedding the content of many documents at once and this takes a long time. So we require this improvement - the @src/utils/embeddings.ts needs to allow batched embeddings, so that it can quicker do the whole batch in one go. Sample code for the usage of this is commented out in `upsertDocuments` .",
       "context": [
@@ -169,8 +169,8 @@
       ],
       "blockers": [],
       "createdAt": "2025-09-29T20:28:01.709Z",
-      "updatedAt": "2025-09-29T23:45:02.351Z",
-      "rejection": "The latest addition of `embedBatchAsync` and using it in `upsertDocuments` causes a crash - thus it was commented out.\nThere need to be appropriate unit tests and e2e tests following how others are done in the `tests` folder that will test out this functionality from @src/utils/embeddings.ts . It should of course be fixed so the tests pass and the code can run.",
+      "updatedAt": "2025-09-30T00:44:22.885Z",
+      "rejection": "Blocked: Agent loop failed: {\"message\":\"Received no toolCalls. Original message: {\\\"role\\\":\\\"assistant\\\",\\\"content\\\":\\\"{\\\\\\\"thoughts\\\\\\\":\\\\\\\"I need to read what exists in tests/e2e. Let's request to list them. The previous tool call already attempts to list; let's wait for tool response.\\\\\\\" ,\\\\\\\"tool_calls\\\\\\\":[]}\\\"}\",\"stacktrace\":\"Error: Received no toolCalls. Original message: {\\\"role\\\":\\\"assistant\\\",\\\"content\\\":\\\"{\\\\\\\"thoughts\\\\\\\":\\\\\\\"I need to read what exists in tests/e2e. Let's request to list them. The previous tool call already attempts to list; let's wait for tool response.\\\\\\\" ,\\\\\\\"tool_calls\\\\\\\":[]}\\\"}\\n    at runConversation (file:///Users/cloud/Documents/Work/thefactory-tools/dist/orchestrator.js:258:23)\\n    at async runAgentOnFeature (file:///Users/cloud/Documents/Work/thefactory-tools/dist/orchestrator.js:355:5)\\n    at async runOrchestrator (file:///Users/cloud/Documents/Work/thefactory-tools/dist/orchestrator.js:417:9)\\n    at async runIsolatedOrchestrator (file:///Users/cloud/Documents/Work/thefactory-tools/dist/orchestrator.js:452:9)\\n    at async file:///Users/cloud/Documents/Work/thefactory-tools/dist/orchestrator.js:73:17\"}",
       "completedAt": "2025-09-29T23:45:02.351Z"
     },
     {
