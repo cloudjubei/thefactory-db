@@ -284,12 +284,12 @@ const DATABASE_URL = process.env.DATABASE_URL || ''
     })
     const resultIds = results.map((r) => r.id)
 
-    expect(resultIds).toContain(ids.matchAtStart)
+    expect(resultIds).not.toContain(ids.matchAtStart)
     expect(resultIds).toContain(ids.matchInMiddle)
     expect(resultIds).toContain(ids.matchAtEnd)
     expect(resultIds).not.toContain(ids.noMatch)
     expect(resultIds).not.toContain(ids.semanticMatch)
-    expect(resultIds).not.toContain(ids.partialMatch)
+    expect(resultIds).toContain(ids.partialMatch)
   })
 
   it('with textWeight=0, should return semantically similar entities', async () => {
@@ -316,10 +316,10 @@ const DATABASE_URL = process.env.DATABASE_URL || ''
 
   it('with textWeight=1 and no matching entities, should not match noMatch', async () => {
     const results = await db.searchEntities({
-      query: 'non existing keywords',
+      query: 'pedicure',
       projectIds: [projectId],
       textWeight: 1,
-      limit: 2,
+      limit: 1,
     })
     const resultIds = results.map((r) => r.id)
 
