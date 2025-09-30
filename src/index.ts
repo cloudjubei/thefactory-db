@@ -36,6 +36,31 @@ function toVectorLiteral(vec: number[] | Float32Array): string {
   return `[${nums.join(',')}]`
 }
 
+// Helper: when documents are recognized source or docs files, include name/src tokens in embeddings.
+const ENRICH_TYPES = new Set([
+  'md',
+  'markdown',
+  'mdx',
+  'txt',
+  'ts',
+  'tsx',
+  'js',
+  'jsx',
+  'cjs',
+  'mjs',
+  'json',
+  'sql',
+  'yml',
+  'yaml',
+  'toml',
+])
+function buildEmbeddingTextForDoc(type: string, content: string, name: string, src: string): string {
+  if (!ENRICH_TYPES.has(type)) return content
+  const srcTokens = src.replace(/[\\/._-]+/g, ' ')
+  const nameTokens = name.replace(/[\\/._-]+/g, ' ')
+  return `${content} ${nameTokens} ${srcTokens}`.trim()
+}
+
 export interface TheFactoryDb {
   // Entities (json)
   addEntity(e: EntityInput): Promise<Entity>
@@ -202,7 +227,8 @@ export async function openDatabase({
     assertDocumentInput(d)
     logger.info('addDocument', { projectId: d.projectId, type: d.type, name: d.name, src: d.src })
     const content = d.content ?? ''
-    const embedding = await embeddingProvider.embed(content)
+    const embInput = buildEmbeddingTextForDoc(d.type, content, d.name, d.src)
+    const embedding = await embeddingProvider.embed(embInput)
 
     const out = await db.query(SQL.insertDocument, [
       d.projectId,
@@ -258,8 +284,10 @@ export async function openDatabase({
 
     logger.info(`upsertDocuments: ${docsToUpsert.length} of ${inputs.length} need updating.`)
 
-    const contents = docsToUpsert.map((d) => d.content ?? '')
-    const embeddings = await embeddingProvider.embedBatch(contents)
+    const embInputs = docsToUpsert.map((d) =>
+      buildEmbeddingTextForDoc(d.type, d.content ?? '', d.name, d.src),
+    )
+    const embeddings = await embeddingProvider.embedBatch(embInputs)
     const upsertedDocs: Document[] = []
 
     try {
@@ -306,6 +334,10 @@ export async function openDatabase({
   async function updateDocument(id: string, patch: DocumentPatch): Promise<Document | undefined> {
     assertDocumentPatch(patch)
     logger.info('updateDocument', { id, name: patch.name })
+
+    // Check existence first to avoid unnecessary compute and to align with entity update behavior
+    const exists = await getDocumentById(id)
+    if (!exists) return
 
     let embeddingLiteral: string | null = null
     let newContent: string | null = null
