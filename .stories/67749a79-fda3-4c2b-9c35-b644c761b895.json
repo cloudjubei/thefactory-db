@@ -175,7 +175,7 @@
     },
     {
       "id": "77101a35-86dd-42f7-b42b-5c30fedc7713",
-      "status": "-",
+      "status": "+",
       "title": "Check hashes before embeddings",
       "description": "In `upsertDocuments` in @src/index.ts before proceeding into the embeddings, there should be a function that would accept the src/ids of the documents and their contents and would return all the documents that would be updated (thus requiring embeddings) and then only these documents would be passed onto the embeddings and the actual upsert. The embeddings are the bottleneck, so we need to make sure that as few documents as possible get re-embedded - thus we need a pre-emptive hash check.",
       "context": [
@@ -183,9 +183,9 @@
       ],
       "blockers": [],
       "createdAt": "2025-09-29T22:45:51.048Z",
-      "updatedAt": "2025-09-29T23:42:00.630Z",
+      "updatedAt": "2025-09-30T00:43:33.988Z",
       "rejection": "The implementation saved is not ideal - we should keep the hashing functionality inside the SQL statements. Thus the function that we need to call should be called `getChangingDocuments` and it should accept the projectId + src + content, it will take the content, compute the hash, and only return the stored value of that document if the hash is different.\nThen inside `upsertDocuments` the documents can be filtered by source to see which ones should be passed on to get embeddings and get upserted.",
-      "completedAt": "2025-09-29T23:42:00.630Z"
+      "completedAt": "2025-09-30T00:43:33.988Z"
     }
   ],
   "featureIdToDisplayIndex": {
