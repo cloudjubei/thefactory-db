@@ -84,6 +84,20 @@
       "createdAt": "2025-09-30T01:11:19.431Z",
       "updatedAt": "2025-09-30T01:13:21.590Z",
       "completedAt": "2025-09-30T01:13:21.590Z"
+    },
+    {
+      "id": "bceaf5ad-5008-473a-a079-ed3cae2b05f6",
+      "status": "-",
+      "title": "Add tests for src/utils/embeddings.ts",
+      "description": "Improve test coverage for @src/utils/embeddings.ts.\nTarget uncovered lines: 85.",
+      "context": [
+        "src/utils/embeddings.ts",
+        "tests/embeddings-branches.test.ts"
+      ],
+      "blockers": [],
+      "rejection": "Additionally to the above - this test is failing in @tests/embeddings-branches.test.ts  :\n\nembeddings additional branches > unwrapOutput handles function that expects batch texts\nTypeError: Cannot assign to read only property 'length' of function '(texts) => {\n      return texts.map((t) => [t.length, t.length + 1, t.length + 2]);\n    }'\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯\ntests/embeddings-branches.test.ts:59:17\n    55    it('unwrapOutput handles function that expects batch texts', async () => {\n    56      const extractorFn = (texts: string[]) => {\n    57        return texts.map((t) => [t.length, t.length + 1, t.length + 2])\n    58      }\n>   59:17      extractorFn.length = 1 // Mock function expecting arguments\n    60      ;(pipeline as any).mockResolvedValueOnce(async () => () => extractorFn)\n    61      const provider = await createLocalEmbeddingProvider({ normalize: false })",
+      "createdAt": "2025-09-30T10:21:50.155Z",
+      "updatedAt": "2025-09-30T10:21:50.155Z"
     }
   ],
   "featureIdToDisplayIndex": {
@@ -92,9 +106,9 @@
     "73c252d6-deb6-43da-b508-d4f9259b3ab4": 3,
     "05555563-a308-4e2f-9c2a-ca5383d6ce26": 4,
     "71cfcb76-53c2-4e16-8272-b544f5c5033c": 5,
-    "4c8c88de-f0e5-4bd7-8f7c-9c3ee45f101d": 6
+    "4c8c88de-f0e5-4bd7-8f7c-9c3ee45f101d": 6,
+    "bceaf5ad-5008-473a-a079-ed3cae2b05f6": 7
   },
   "createdAt": "2025-09-29T19:11:02.269Z",
-  "updatedAt": "2025-09-29T19:11:02.269Z",
-  "completedAt": "2025-09-30T01:13:21.590Z"
+  "updatedAt": "2025-09-30T01:32:16.443Z"
 }
