@@ -54,7 +54,12 @@ const ENRICH_TYPES = new Set([
   'yaml',
   'toml',
 ])
-function buildEmbeddingTextForDoc(type: string, content: string, name: string, src: string): string {
+function buildEmbeddingTextForDoc(
+  type: string,
+  content: string,
+  name: string,
+  src: string,
+): string {
   if (!ENRICH_TYPES.has(type)) return content
   const srcTokens = src.replace(/[\\/._-]+/g, ' ')
   const nameTokens = name.replace(/[\\/._-]+/g, ' ')
@@ -287,10 +292,11 @@ export async function openDatabase({
     const embInputs = docsToUpsert.map((d) =>
       buildEmbeddingTextForDoc(d.type, d.content ?? '', d.name, d.src),
     )
-    const embeddings = await embeddingProvider.embedBatch(embInputs)
-    const upsertedDocs: Document[] = []
 
     try {
+      const embeddings = await Promise.all(embInputs.map((e) => embeddingProvider.embed(e)))
+      // const embeddings = await embeddingProvider.embedBatch(embInputs)
+      const upsertedDocs: Document[] = []
       await db.query('BEGIN')
       for (let i = 0; i < docsToUpsert.length; i++) {
         const doc = docsToUpsert[i]
