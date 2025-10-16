@@ -8,7 +8,7 @@ const DATABASE_URL = process.env.DATABASE_URL || ''
 
 // Recursive file collector for project files, ignoring heavy dirs
 function collectProjectFiles(root: string): string[] {
-  const ignore = new Set(['node_modules', '.git', 'dist', 'coverage', '.stories'])
+  const ignore = new Set(['node_modules', '.git', 'dist', 'coverage', '.stories', 'tests'])
   const out: string[] = []
   function walk(p: string) {
     const entries = fs.readdirSync(p, { withFileTypes: true })
@@ -78,16 +78,16 @@ function collectProjectFiles(root: string): string[] {
     const res = await run('hybrid search function', 1)
     const srcs = res.map((r) => r.src)
     expect(srcs).toEqual([
-      'tests/e2e/entities-hybrid.e2e.test.ts',
+      'src/index.ts',
+      'src/utils.ts',
+      'docs/FILE_ORGANISATION.md',
+      'src/types.ts',
+      'README.md',
       'scripts/example.ts',
-      'tests/hybrid-search-advanced.test.ts',
-      'scripts/test.ts',
-      'tests/tokenizer.test.ts',
-      'tests/e2e/entities-hybrid-advanced.e2e.test.ts',
-      'tests/e2e/codebase-hybrid-search.e2e.test.ts',
-      'src/utils/json.ts',
-      'tests/e2e/documents-hybrid.e2e.test.ts',
-      'tests/utils.test.ts',
+      'src/validation.ts',
+      'src/utils/embeddings.ts',
+      'docs/TESTING_E2E.md',
+      'src/connection.ts',
     ])
   })
 
@@ -95,16 +95,16 @@ function collectProjectFiles(root: string): string[] {
     const res = await run('hybrid search function', 0)
     const srcs = res.map((r) => r.src)
     expect(srcs).toEqual([
-      'tests/e2e/entities-hybrid.e2e.test.ts',
-      'tests/hybrid-search-advanced.test.ts',
-      'tests/e2e/documents-hybrid.e2e.test.ts',
-      'tests/e2e/entities-hybrid-advanced.e2e.test.ts',
-      'tests/e2e/codebase-hybrid-search.e2e.test.ts',
-      'tests/e2e/documents-hybrid-advanced.e2e.test.ts',
       'scripts/example.ts',
-      'tests/tokenizer.test.ts',
       'scripts/test.ts',
       'src/utils/json.ts',
+      'scripts/count.ts',
+      'src/index.ts',
+      'scripts/clear.ts',
+      'docs/FILE_ORGANISATION.md',
+      'docs/TESTING_E2E.md',
+      'docs/CODE_STANDARD.md',
+      'src/utils/tokenizer.ts',
     ])
   })
 
@@ -112,16 +112,16 @@ function collectProjectFiles(root: string): string[] {
     const res = await run('hybrid search function', 0.5)
     const srcs = res.map((r) => r.src)
     expect(srcs).toEqual([
-      'tests/hybrid-search-advanced.test.ts',
-      'tests/e2e/entities-hybrid.e2e.test.ts',
-      'tests/e2e/codebase-hybrid-search.e2e.test.ts',
-      'tests/e2e/entities-hybrid-advanced.e2e.test.ts',
-      'tests/e2e/documents-hybrid-advanced.e2e.test.ts',
-      'tests/e2e/documents-hybrid.e2e.test.ts',
-      'scripts/example.ts',
       'src/index.ts',
+      'scripts/example.ts',
       'docs/FILE_ORGANISATION.md',
       'scripts/test.ts',
+      'src/utils/json.ts',
+      'src/utils.ts',
+      'docs/TESTING_E2E.md',
+      'src/types.ts',
+      'scripts/count.ts',
+      'src/validation.ts',
     ])
   })
 
@@ -130,31 +130,31 @@ function collectProjectFiles(root: string): string[] {
     const srcs = res.map((r) => r.src)
     expect(srcs).toEqual([
       'README.md',
-      'tests/e2e/codebase-hybrid-search.e2e.test.ts',
       'docs/FILE_ORGANISATION.md',
       'src/index.ts',
       'docs/TESTING_E2E.md',
       'docs/CODE_STANDARD.md',
       'scripts/example.ts',
-      'tests/hybrid-search-advanced.test.ts',
       'docker-compose.yml',
       'docker-compose.e2e.yml',
+      'src/connection.ts',
+      'src/utils/json.ts',
     ])
   })
   it('w=0 (semantic-only): "pgvector" should find files related to vector databases', async () => {
     const res = await run('pgvector', 0)
     const srcs = res.map((r) => r.src)
     expect(srcs).toEqual([
-      'tests/hybrid-search-advanced.test.ts',
       'README.md',
       'docker-compose.yml',
-      'tests/embeddings.test.ts',
-      'tests/connection.test.ts',
       'docker-compose.e2e.yml',
-      'tests/embeddings-branches.test.ts',
       'src/connection.ts',
       'src/utils/json.ts',
       'src/index.ts',
+      'scripts/example.ts',
+      'docs/TESTING_E2E.md',
+      '.gitignore',
+      '.prettierignore',
     ])
   })
 })

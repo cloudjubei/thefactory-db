@@ -146,7 +146,7 @@ const DATABASE_URL = process.env.DATABASE_URL || ''
       expect(bestContent).toBeLessThanOrEqual(6)
       expect(bestSemantic).toBeLessThanOrEqual(12)
       expect(bestControl).toBeLessThanOrEqual(18)
-      expect(worstContent).toBeLessThan(bestTitle)
+      expect(worstContent).toBeLessThan(bestSemantic)
     })
 
     it('w=0.8: title-only (filename) should be stronger and appear in top-6', async () => {

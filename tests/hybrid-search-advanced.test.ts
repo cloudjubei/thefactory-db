@@ -82,7 +82,7 @@ function cosine(a: Float32Array, b: Float32Array): number {
 
 // Recursive file collector for project files, ignoring heavy dirs
 function collectProjectFiles(root: string): string[] {
-  const ignore = new Set(['node_modules', '.git', 'dist', 'coverage', '.stories'])
+  const ignore = new Set(['node_modules', '.git', 'dist', 'coverage', '.stories', 'tests'])
   const out: string[] = []
   function walk(p: string) {
     const entries = fs.readdirSync(p, { withFileTypes: true })
@@ -273,16 +273,7 @@ function createMockDb() {
             textWeight,
             keywordWeight,
             semWeight,
-          ] = args as [
-            string,
-            string,
-            number,
-            string,
-            number,
-            number,
-            number,
-            number,
-          ]
+          ] = args as [string, string, number, string, number, number, number, number]
           const qvec = parseVectorLiteral(qvecLit)
           const limit = Math.max(1, Math.min(1000, limitRaw ?? 20))
           let filtered = docs.slice()
@@ -313,7 +304,11 @@ function createMockDb() {
             // Keep name bonus small so unit tests remain stable while still modeling a boost path
             const dirBoost = d.src.startsWith('docs/') || d.src.startsWith('src/') ? 1 : 0
             const nameBonus = (nameWeight ?? 0) * (0.01 * nh + 0.04 * dirBoost)
-            const total = (textWeight ?? 0.25) * ks + (keywordWeight ?? 0.25) * ks + (semWeight ?? 0.5) * vs + nameBonus
+            const total =
+              (textWeight ?? 0.25) * ks +
+              (keywordWeight ?? 0.25) * ks +
+              (semWeight ?? 0.5) * vs +
+              nameBonus
             return {
               id: d.id,
               projectId: d.projectId,
