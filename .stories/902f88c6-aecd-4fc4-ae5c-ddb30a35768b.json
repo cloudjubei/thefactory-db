@@ -131,17 +131,19 @@
       ],
       "blockers": [],
       "createdAt": "2025-10-16T21:43:12.719Z",
-      "updatedAt": "2025-10-16T21:59:19.317Z","completedAt": "2025-10-16T22:05:42.824Z"
+      "updatedAt": "2025-10-16T21:59:19.317Z",
+      "completedAt": "2025-10-16T22:05:42.824Z"
     },
     {
       "id": "6bee3989-1580-407e-8712-051ca1f2c021",
-      "status": "-",
+      "status": "+",
       "title": "when running tests there's console errors polluting the output",
       "description": "The below is visible - it shouldn't be:\n\nstderr | tests/embeddings.test.ts > createLocalEmbeddingProvider > embedBatch > throws an error for unsupported batch output format\nUnsupported embedding output format for batch. Expected a 2D Tensor or a nested array. Got array with length=3. { output: [ 1, 2, 3 ] }\n\nstderr | tests/embeddings-branches.test.ts > embeddings additional branches > embedBatchAsync throws on unsupported output format (e.g. flat array)\nUnsupported embedding output format for batch. Expected a 2D Tensor or a nested array. Got array with length=3. { output: [ 1, 2, 3 ] }\n\nstderr | tests/embeddings-branches.test.ts > embeddings additional branches > embedBatchAsync throws on unsupported output format (e.g. object without length)\nUnsupported embedding output format for batch. Expected a 2D Tensor or a nested array. Got object with length=n/a. { output: {} }\n\nstderr | tests/embeddings-branches.test.ts > embeddings additional branches > embedBatchAsync throws on unsupported tensor shape\nUnsupported embedding output format for batch. Expected a 2D Tensor or a nested array. Got object with dims=[1,2,3]. { output: { dims: [ 1, 2, 3 ], data: [ 1 ] } }",
       "context": [],
       "blockers": [],
       "createdAt": "2025-10-16T22:03:29.564Z",
-      "updatedAt": "2025-10-16T22:03:29.564Z"
+      "updatedAt": "2025-10-16T22:11:40.520Z",
+      "completedAt": "2025-10-16T22:11:40.520Z"
     }
   ],
   "featureIdToDisplayIndex": {

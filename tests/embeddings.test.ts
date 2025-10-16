@@ -164,7 +164,6 @@ describe('createLocalEmbeddingProvider', () => {
     })
 
     it('throws an error for unsupported batch output format', async () => {
-      const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
       // Return a flat array, which is not a valid batch output
       ;(pipeline as any).mockResolvedValueOnce(() => [1, 2, 3])
       const provider = await createLocalEmbeddingProvider()
@@ -172,8 +171,6 @@ describe('createLocalEmbeddingProvider', () => {
       await expect(provider.embedBatch(texts)).rejects.toThrow(
         /Unsupported embedding output format for batch/,
       )
-      expect(consoleErrorSpy).toHaveBeenCalled()
-      consoleErrorSpy.mockRestore()
     })
   })
 

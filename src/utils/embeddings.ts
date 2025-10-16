@@ -166,7 +166,6 @@ export async function createLocalEmbeddingProvider(options?: {
       ? `dims=${JSON.stringify(output.dims)}`
       : `length=${output?.length ?? 'n/a'}`
     const message = `Unsupported embedding output format for batch. Expected a 2D Tensor or a nested array. Got ${outputType} with ${outputShape}.`
-    console.error(message, { output })
     throw new Error(message)
   }
 
