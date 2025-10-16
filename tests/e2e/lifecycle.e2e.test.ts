@@ -1,9 +1,27 @@
 import { describe, it, expect } from 'vitest'
 import { createDatabase, destroyDatabase, createReusableDatabase, openDatabase } from '../../src/index'
 import { Pool } from 'pg'
+import Docker from 'dockerode'
+import net from 'node:net'
 
 const RUN = process.env.RUN_E2E === '1'
 const DATABASE_URL = process.env.DATABASE_URL || ''
+
+async function removeContainerIfExists(name: string): Promise<void> {
+  const docker = new Docker()
+  const list = await docker.listContainers({ all: true, filters: { name: [name] } as any })
+  const found = list.find((c) => c.Names?.some((n) => n === `/${name}`))
+  if (found) {
+    const container = docker.getContainer(found.Id)
+    try {
+      const inspect = await container.inspect()
+      if (inspect.State?.Running) await container.stop({ t: 5 })
+    } catch {}
+    try {
+      await container.remove({ force: true })
+    } catch {}
+  }
+}
 
 ;(RUN ? describe : describe.skip)('Lifecycle: Managed ephemeral container', () => {
   it('creates a fresh DB, can be used, and tears down idempotently', async () => {
@@ -61,7 +79,7 @@ const DATABASE_URL = process.env.DATABASE_URL || ''
 ;(RUN ? describe : describe.skip)('Reusable provisioning: persistent local instance', () => {
   it('provisions a persistent container and is idempotent', async () => {
     const first = await createReusableDatabase({ logLevel: 'warn' })
-    expect(first.connectionString).toContain('postgresql://')
+    expect(first.connectionString).toMatch(/^postgresql:\/\/thefactory:thefactory@localhost:\d+\/thefactorydb$/)
 
     // Can connect and run schema
     const db = await openDatabase({ connectionString: first.connectionString, logLevel: 'warn' })
@@ -71,4 +89,38 @@ const DATABASE_URL = process.env.DATABASE_URL || ''
     expect(second.connectionString).toBe(first.connectionString)
     expect(second.created).toBe(false)
   }, 180_000)
+
+  it('falls back to a different port if 5435 is occupied on first creation and persists mapping', async () => {
+    // Ensure a clean slate to test initial creation behavior
+    await removeContainerIfExists('thefactory-db')
+
+    // Attempt to occupy 5435 before the first creation
+    const blocker = net.createServer()
+    let blocked = false
+    await new Promise<void>((resolve) => {
+      blocker.once('error', () => resolve())
+      blocker.listen(5435, '127.0.0.1', () => {
+        blocked = true
+        resolve()
+      })
+    })
+
+    try {
+      const created = await createReusableDatabase({ logLevel: 'warn' })
+      expect(created.created).toBe(true)
+      expect(created.connectionString).toMatch(/^postgresql:\/\/thefactory:thefactory@localhost:\d+\/thefactorydb$/)
+
+      const m = created.connectionString.match(/localhost:(\d+)\//)
+      const port = Number(m?.[1] || '0')
+      if (blocked) {
+        expect(port).not.toBe(5435)
+      }
+
+      const again = await createReusableDatabase({ logLevel: 'warn' })
+      expect(again.created).toBe(false)
+      expect(again.connectionString).toBe(created.connectionString)
+    } finally {
+      await new Promise<void>((resolve) => blocker.close(() => resolve()))
+    }
+  }, 240_000)
 })

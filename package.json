@@ -22,6 +22,8 @@
   },
   "dependencies": {
     "@xenova/transformers": "^2.17.2",
+    "dockerode": "^4.0.2",
+    "get-port": "^7.0.0",
     "js-tiktoken": "^1.0.21",
     "pg": "^8.16.3",
     "uuid": "^13.0.0",

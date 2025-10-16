@@ -28,7 +28,7 @@
   - `src/runtime.ts`: Runtime lifecycle management.
     - Managed (default): Uses `testcontainers` to start `pgvector/pgvector:pg16`, waits for readiness, builds a connection string, and initializes the schema via `openDatabase()`. Teardown stops/removes the container.
     - External: Given a server connection string, creates a temporary database (`tfdb_<random>`) via the admin database (`postgres`), initializes schema, and on destroy drops the temporary database.
-    - Reusable provisioning: Ensures a persistent local container `thefactory-db` exists and is running on host port 5435 and initializes schema once.
+    - Reusable provisioning: Ensures a persistent local container `thefactory-db` exists and is running. It prefers mapping host port 5435 to container 5432; if 5435 is occupied at first creation, it automatically falls back to the first free host port and persists that mapping. Schema is initialized once on first creation.
   - `src/connection.ts`: Connection factory and schema init. Applies embedded SQL statements (schema + hybrid functions) defined in `src/utils.ts`.
   - `src/types.ts`: Shared TypeScript types for Documents and Entities, Search options and result row types, and `OpenDbOptions` and logger types.
   - `src/logger.ts`: Small logger abstraction with log level filtering.

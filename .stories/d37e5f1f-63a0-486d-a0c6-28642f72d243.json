@@ -34,12 +34,13 @@
     },
     {
       "id": "9f8f8e43-a014-49b4-95f3-7badb43825dc",
-      "status": "-",
+      "status": "+",
       "title": "Implement createReusableDatabase (managed persistent pgvector container)",
       "description": "- Add a new API: createReusableDatabase(options?: { logLevel?: LogLevel }): Promise<{ connectionString: string; created: boolean }>\n- Behavior:\n  - Use Docker to ensure a long-lived Postgres+pgvector container exists with deterministic configuration:\n    - image: 'pgvector/pgvector:pg16'\n    - container name: 'thefactory-db'\n    - env: POSTGRES_USER='thefactory', POSTGRES_PASSWORD='thefactory', POSTGRES_DB='thefactorydb'\n    - port mapping strategy: prefer host port 5435 -> container 5432; if 5435 is occupied, automatically fall back to the first free host port. Persist the chosen mapping (Docker keeps it), and always return the actual mapped port in the connection string.\n  - If the container exists and is running: inspect its port mapping and return 'postgresql://thefactory:thefactory@localhost:<hostPort>/thefactorydb' with created=false.\n  - If it exists but is stopped: start it, wait until ready (port + 'SELECT 1'), return the same connection string with created=false.\n  - If it does not exist: pull image if necessary, create and start the container with the port strategy above, wait until ready, then call openDatabase({ connectionString, logLevel }) to initialize schema and immediately close; return the connection string with created=true.\n- Implementation notes:\n  - Use Docker engine APIs (e.g., dockerode) to detect existing containers by name, read port bindings, and start/stop as needed. Avoid shelling out for portability.\n  - For finding a free port when 5435 is unavailable, use a reliable port-finder (e.g., get-port or portfinder) before container creation to request an explicit host binding.\n  - Idempotent and safe across multiple invocations; never drop data. Always return the exact connection string with the mapped host port.\n- Export from src/index.ts.\n- Add minimal unit/e2e tests covering:\n  - First call creates container (created=true) and returns a connection string.\n  - Second call returns same connection string (created=false).\n  - When 5435 is occupied, function still succeeds by selecting a different port and returns that port in the connection string.\n",
       "context": [],
       "createdAt": "2025-10-16T22:40:31.141Z",
-      "updatedAt": "2025-10-16T22:45:01.974Z"
+      "updatedAt": "2025-10-16T23:21:24.157Z",
+      "completedAt": "2025-10-16T23:21:24.157Z"
     }
   ],
   "featureIdToDisplayIndex": {

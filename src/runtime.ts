@@ -2,12 +2,11 @@ import { GenericContainer, StartedTestContainer, Wait } from 'testcontainers'
 import { Pool } from 'pg'
 import crypto from 'node:crypto'
 import { URL } from 'node:url'
-import { exec as execCb } from 'node:child_process'
-import { promisify } from 'node:util'
 import type { LogLevel } from './types.js'
 import type { TheFactoryDb } from './index.js'
-
-const exec = promisify(execCb)
+import Docker from 'dockerode'
+import type { ContainerCreateOptions, ContainerInspectInfo, ContainerInfo } from 'dockerode'
+import getPort from 'get-port'
 
 export type CreateDatabaseOptions = { connectionString?: string; logLevel?: LogLevel }
 
@@ -171,7 +170,7 @@ export async function createDatabase(opts?: CreateDatabaseOptions): Promise<{
   } catch (e: any) {
     // Common case: vector extension not available
     if (e?.message?.includes('extension') && e?.message?.includes('vector')) {
-      throw new Error('Initialization failed: pgvector extension ("vector") is not available on the server. Install pgvector on the server or use managed mode.')
+      throw new Error('Initialization failed: pgvector extension (\'vector\') is not available on the server. Install pgvector on the server or use managed mode.')
     }
     throw e
   }
@@ -238,62 +237,104 @@ export async function createReusableDatabase(options?: { logLevel?: LogLevel }):
   const user = 'thefactory'
   const password = 'thefactory'
   const dbName = 'thefactorydb'
-  const hostPort = 5435
-  const connectionString = buildPgUrl({ user, password, host: '127.0.0.1', port: hostPort, db: dbName })
 
-  // Check if container exists
-  const exists = await containerExistsByName(name)
-  if (exists) {
-    const running = await containerRunningByName(name)
+  const docker = new Docker()
+
+  // Find existing container by name
+  const containerInfo = await findContainerByName(docker, name)
+  if (containerInfo) {
+    const container = docker.getContainer(containerInfo.Id)
+    const inspect = await container.inspect()
+    const running = inspect.State?.Running === true
+    const hostPort = getMappedHostPort(inspect, 5432)
+    if (!hostPort) {
+      throw new Error('Existing container has no host port mapping for 5432/tcp')
+    }
+    const connectionString = buildPgUrl({ user, password, host: 'localhost', port: hostPort, db: dbName })
+
     if (!running) {
-      await dockerStart(name)
+      await container.start()
       await waitForReady(connectionString)
     }
-    // Ensure schema is initialized once (idempotent)
-    const { openDatabase } = await import('./index.js')
-    const db = await openDatabase({ connectionString, logLevel })
-    await db.close()
+
+    // Do not re-run schema init for existing container; it is idempotent but unnecessary
     return { connectionString, created: false }
   }
 
-  // Create container with fixed host port mapping using Docker CLI
-  await exec(
-    [
-      'docker run -d',
-      `--name ${name}`,
-      '-e', `POSTGRES_USER=${user}`,
-      '-e', `POSTGRES_PASSWORD=${password}`,
-      '-e', `POSTGRES_DB=${dbName}`,
-      '-p', `${hostPort}:5432`,
-      image,
-    ].join(' '),
-  )
+  // Ensure image is available (pull if necessary)
+  await ensureImage(docker, image)
+
+  // Prefer host port 5435; if unavailable, choose the first free port
+  const preferred = 5435
+  const selectedPort = await getPort({ port: preferred })
+
+  const createOptions: ContainerCreateOptions = {
+    name,
+    Image: image,
+    Env: [
+      `POSTGRES_USER=${user}`,
+      `POSTGRES_PASSWORD=${password}`,
+      `POSTGRES_DB=${dbName}`,
+    ],
+    ExposedPorts: {
+      '5432/tcp': {},
+    },
+    HostConfig: {
+      PortBindings: {
+        '5432/tcp': [
+          {
+            HostPort: String(selectedPort),
+          },
+        ],
+      },
+    },
+  }
+
+  const container = await docker.createContainer(createOptions)
+  await container.start()
+
+  // Re-inspect to obtain actual mapped port (Docker should respect explicit binding)
+  const inspect = await container.inspect()
+  const hostPort = getMappedHostPort(inspect, 5432)
+  if (!hostPort) throw new Error('Failed to determine mapped host port for container')
+
+  const connectionString = buildPgUrl({ user, password, host: 'localhost', port: hostPort, db: dbName })
 
   await waitForReady(connectionString)
+
+  // Initialize schema once on first creation
   const { openDatabase } = await import('./index.js')
   const db = await openDatabase({ connectionString, logLevel })
   await db.close()
+
   return { connectionString, created: true }
 }
 
-async function containerExistsByName(name: string): Promise<boolean> {
-  try {
-    await exec(`docker inspect ${name}`)
-    return true
-  } catch {
-    return false
-  }
+function getMappedHostPort(inspect: ContainerInspectInfo, containerPort: number): number | undefined {
+  const key = `${containerPort}/tcp`
+  const ports = inspect?.NetworkSettings?.Ports?.[key]
+  if (!ports || ports.length === 0) return undefined
+  const hp = ports[0]?.HostPort
+  if (!hp) return undefined
+  const parsed = Number.parseInt(hp, 10)
+  return Number.isFinite(parsed) ? parsed : undefined
 }
 
-async function containerRunningByName(name: string): Promise<boolean> {
-  try {
-    const { stdout } = await exec(`docker inspect -f '{{.State.Running}}' ${name}`)
-    return stdout.trim() === 'true'
-  } catch {
-    return false
-  }
+async function findContainerByName(docker: Docker, name: string): Promise<ContainerInfo | undefined> {
+  const list = await docker.listContainers({ all: true, filters: { name: [name] } as any })
+  return list.find((c) => c.Names?.some((n) => n === `/${name}`))
 }
 
-async function dockerStart(name: string): Promise<void> {
-  await exec(`docker start ${name}`)
+async function ensureImage(docker: Docker, image: string): Promise<void> {
+  try {
+    // Try to inspect image; if it exists, return
+    await docker.getImage(image).inspect()
+    return
+  } catch {
+    // pull image
+    const stream = await docker.pull(image)
+    await new Promise<void>((resolve, reject) => {
+      ;(docker as any).modem.followProgress(stream, (err: any) => (err ? reject(err) : resolve()))
+    })
+  }
 }

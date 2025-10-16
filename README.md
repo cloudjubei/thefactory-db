@@ -12,9 +12,9 @@ On-demand PostgreSQL with pgvector lifecycle is now built-in:
 
 - Managed ephemeral mode (default): start a temporary Postgres+pgvector container on demand; remove it on destroy.
 - External ephemeral mode: create a temporary database on an existing server; drop it on destroy.
-- Reusable provisioning (opt-in): create or reuse a local persistent container 'thefactory-db' on port 5435 and initialize schema once.
+- Reusable provisioning (opt-in): create or reuse a local persistent container 'thefactory-db' and initialize schema once.
 
-These flows are built on the image 'pgvector/pgvector:pg16' and the 'testcontainers' library.
+These flows are built on the image 'pgvector/pgvector:pg16' and the 'testcontainers' library for ephemeral flows; reusable provisioning uses the Docker Engine API.
 
 ## Requirements
 
@@ -86,13 +86,12 @@ await db.close()
 Behavior:
 - Manages a Docker container named 'thefactory-db' with:
   - POSTGRES_USER='thefactory', POSTGRES_PASSWORD='thefactory', POSTGRES_DB='thefactorydb'
-  - Host port 5435 mapped to container 5432
-- Idempotent: if the container exists and is running, returns the same URL; if stopped, starts it; if missing, creates it.
-- Initializes schema on first creation via openDatabase(), then closes the pool.
-- Does not destroy or drop data.
+  - Port mapping strategy: prefers host 5435 -> container 5432; if 5435 is occupied at first creation, automatically falls back to the first free host port and persists that mapping.
+- Idempotent: if the container exists and is running, returns the same URL; if stopped, starts it; if missing, creates it and initializes schema once via openDatabase(), then closes the pool.
+- Never destroys or drops data.
 
-Returned URL example:
-- 'postgresql://thefactory:thefactory@127.0.0.1:5435/thefactorydb'
+Returned URL example (actual port may differ if 5435 was busy at creation time):
+- 'postgresql://thefactory:thefactory@localhost:5435/thefactorydb'
 
 ## Development
 
