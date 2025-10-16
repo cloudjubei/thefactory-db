@@ -119,6 +119,30 @@
       "rejection": "FAIL  tests/e2e/codebase-hybrid-search.e2e.test.ts > E2E: Codebase Hybrid Search (real DB) > w=1 (text-only): \"hybrid search function\" should return SQL and source files\nAssertionError: expected [ …(10) ] to deeply equal [ …(10) ]\n\n- Expected\n+ Received\n\n  [\n-   \"tests/e2e/entities-hybrid.e2e.test.ts\",\n-   \"scripts/example.ts\",\n+   \"tests/e2e/codebase-hybrid-search.e2e.test.ts\",\n    \"tests/hybrid-search-advanced.test.ts\",\n-   \"scripts/test.ts\",\n-   \"tests/tokenizer.test.ts\",\n    \"tests/e2e/entities-hybrid-advanced.e2e.test.ts\",\n-   \"tests/e2e/codebase-hybrid-search.e2e.test.ts\",\n-   \"src/utils/json.ts\",\n+   \"tests/e2e/entities-hybrid.e2e.test.ts\",\n+   \"tests/e2e/documents-hybrid-advanced.e2e.test.ts\",\n    \"tests/e2e/documents-hybrid.e2e.test.ts\",\n-   \"tests/utils.test.ts\",\n+   \"src/index.ts\",\n+   \"src/utils.ts\",\n+   \"docs/FILE_ORGANISATION.md\",\n+   \"src/types.ts\",\n  ]\n\n ❯ tests/e2e/codebase-hybrid-search.e2e.test.ts:80:18\n     78|     const res = await run('hybrid search function', 1)\n     79|     const srcs = res.map((r) => r.src)\n     80|     expect(srcs).toEqual([\n       |                  ^\n     81|       'tests/e2e/entities-hybrid.e2e.test.ts',\n     82|       'scripts/example.ts',\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/5]⎯\n\n FAIL  tests/e2e/codebase-hybrid-search.e2e.test.ts > E2E: Codebase Hybrid Search (real DB) > w=1 (text-only): \"pgvector\" should return md files, tests and scripts\nAssertionError: expected [ 'README.md', …(9) ] to deeply equal [ 'README.md', …(9) ]\n\n- Expected\n+ Received\n\n@@ -2,11 +2,11 @@\n    \"README.md\",\n    \"tests/e2e/codebase-hybrid-search.e2e.test.ts\",\n    \"docs/FILE_ORGANISATION.md\",\n    \"src/index.ts\",\n    \"docs/TESTING_E2E.md\",\n-   \"docs/CODE_STANDARD.md\",\n    \"scripts/example.ts\",\n+   \"docs/CODE_STANDARD.md\",\n    \"tests/hybrid-search-advanced.test.ts\",\n+   \"docker-compose.e2e.yml\",\n    \"docker-compose.yml\",\n-   \"docker-compose.e2e.yml\",\n  ]\n\n ❯ tests/e2e/codebase-hybrid-search.e2e.test.ts:131:18\n    129|     const res = await run('pgvector', 1)\n    130|     const srcs = res.map((r) => r.src)\n    131|     expect(srcs).toEqual([\n       |                  ^\n    132|       'README.md',\n    133|       'tests/e2e/codebase-hybrid-search.e2e.test.ts',",
       "createdAt": "2025-10-16T19:34:48.774Z",
       "updatedAt": "2025-10-16T19:34:48.774Z"
+    },
+    {
+      "id": "511d8a8a-0b11-4283-8968-cc197379a597",
+      "status": "-",
+      "title": "Add tests for src/index.ts",
+      "description": "Improve test coverage for @src/index.ts .\nTarget uncovered lines: 221, 257-261, 264-271, 274-277, 279-280, 282-285, 287, 289, 291-293, 295-296, 298-303, 305-313, 315-319, 321-331, 334-337, 368-370 .",
+      "context": [
+        "src/index.ts"
+      ],
+      "blockers": [],
+      "createdAt": "2025-10-16T21:43:11.025Z",
+      "updatedAt": "2025-10-16T21:43:11.025Z"
+    },
+    {
+      "id": "66a5f346-51f3-4968-bd42-cf83508c4df7",
+      "status": "-",
+      "title": "Add tests for src/utils/embeddings.ts",
+      "description": "Improve test coverage for @src/utils/embeddings.ts .\nTarget uncovered lines: 109, 194-195, 197-205 .",
+      "context": [
+        "src/utils/embeddings.ts"
+      ],
+      "blockers": [],
+      "createdAt": "2025-10-16T21:43:12.719Z",
+      "updatedAt": "2025-10-16T21:43:12.719Z"
     }
   ],
   "featureIdToDisplayIndex": {
@@ -130,7 +154,9 @@
     "4c8c88de-f0e5-4bd7-8f7c-9c3ee45f101d": 6,
     "bceaf5ad-5008-473a-a079-ed3cae2b05f6": 7,
     "4488fcc8-1cb0-4a5a-b3c0-9b9743d839a3": 8,
-    "17221b6a-20ef-460d-bffc-62aee760c40f": 9
+    "17221b6a-20ef-460d-bffc-62aee760c40f": 9,
+    "511d8a8a-0b11-4283-8968-cc197379a597": 10,
+    "66a5f346-51f3-4968-bd42-cf83508c4df7": 11
   },
   "createdAt": "2025-09-29T19:11:02.269Z",
   "updatedAt": "2025-10-16T19:32:47.436Z"
