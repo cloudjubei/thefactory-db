@@ -6,13 +6,13 @@
       "passes": [],
       "failures": [],
       "skips": [],
-      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/e2e/documents-hybrid-advanced.e2e.test.ts (9 tests) 399ms\n ✓ tests/e2e/entities-hybrid-advanced.e2e.test.ts (9 tests) 381ms\n ✓ tests/e2e/codebase-hybrid-search.e2e.test.ts (5 tests) 3215ms\n ✓ tests/e2e/documents-indexing.e2e.test.ts (2 tests) 165ms\n ✓ tests/e2e/updates-and-fts.e2e.test.ts (2 tests) 143ms\n ✓ tests/e2e/documents-hybrid.e2e.test.ts (2 tests) 136ms\n ✓ tests/e2e/entities-hybrid.e2e.test.ts (2 tests) 138ms\n ✓ tests/e2e/entities-indexing.e2e.test.ts (1 test) 128ms\n\n Test Files  8 passed (8)\n      Tests  32 passed (32)\n   Start at  23:52:56\n   Duration  6.50s (transform 76ms, setup 0ms, collect 823ms, tests 4.70s, environment 1ms, prepare 243ms)\n\n",
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/e2e/codebase-hybrid-search.e2e.test.ts (5 tests) 2684ms\n ✓ tests/e2e/documents-hybrid-advanced.e2e.test.ts (9 tests) 406ms\n ✓ tests/e2e/entities-hybrid-advanced.e2e.test.ts (9 tests) 384ms\n ✓ tests/e2e/documents-indexing.e2e.test.ts (2 tests) 152ms\n ✓ tests/e2e/updates-and-fts.e2e.test.ts (2 tests) 143ms\n ✓ tests/e2e/entities-hybrid.e2e.test.ts (2 tests) 167ms\n ✓ tests/e2e/documents-hybrid.e2e.test.ts (2 tests) 155ms\n ✓ tests/e2e/entities-indexing.e2e.test.ts (1 test) 122ms\n\n Test Files  8 passed (8)\n      Tests  32 passed (32)\n   Start at  23:58:04\n   Duration  6.25s (transform 180ms, setup 0ms, collect 1.04s, tests 4.21s, environment 1ms, prepare 252ms)\n\n",
       "summary": {
         "total": 32,
         "passed": 32,
         "failed": 0,
         "skipped": 0,
-        "durationMs": 6500
+        "durationMs": 6250
       }
     }
   ],
@@ -22,6 +22,6 @@
     "passed": 32,
     "failed": 0,
     "skipped": 0,
-    "durationMs": 6500
+    "durationMs": 6250
   }
 }

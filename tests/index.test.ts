@@ -352,10 +352,12 @@ describe('TheFactoryDb', () => {
       ]
       const upsertedDoc = { ...inputs[0], id: '1' }
 
-      // Mock getChangingDocuments to return 's1'
-      mockDbClient.query.mockResolvedValueOnce({ rows: [{ src: 's1' }] })
-      // Mock the upsert query inside the transaction
-      mockDbClient.query.mockResolvedValueOnce({ rows: [upsertedDoc] })
+      // Mock query calls: getChangingDocuments, BEGIN, upsert, COMMIT
+      mockDbClient.query
+        .mockResolvedValueOnce({ rows: [{ src: 's1' }] })
+        .mockResolvedValueOnce({}) // for BEGIN
+        .mockResolvedValueOnce({ rows: [upsertedDoc] })
+        .mockResolvedValueOnce({}) // for COMMIT
 
       const result = await db.upsertDocuments(inputs)
 
@@ -396,10 +398,12 @@ describe('TheFactoryDb', () => {
       const input = { projectId: 'p1', src: 's1', content: 'c1', type: 't1', name: 'n1' }
       const upsertedDoc = { ...input, id: '1' }
 
-      // Mock getChangingDocuments
-      mockDbClient.query.mockResolvedValueOnce({ rows: [{ src: 's1' }] })
-      // Mock upsert
-      mockDbClient.query.mockResolvedValueOnce({ rows: [upsertedDoc] })
+      // Mock query calls: getChangingDocuments, BEGIN, upsert, COMMIT
+      mockDbClient.query
+        .mockResolvedValueOnce({ rows: [{ src: 's1' }] }) // For getChangingDocuments
+        .mockResolvedValueOnce({}) // For BEGIN
+        .mockResolvedValueOnce({ rows: [upsertedDoc] }) // For the upsert query
+        .mockResolvedValueOnce({}) // For COMMIT
 
       const result = await db.upsertDocument(input)
       expect(result).toEqual(upsertedDoc)
