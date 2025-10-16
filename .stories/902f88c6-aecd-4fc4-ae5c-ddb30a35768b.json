@@ -1,6 +1,6 @@
 {
   "id": "902f88c6-aecd-4fc4-ae5c-ddb30a35768b",
-  "status": "-",
+  "status": "=",
   "title": "TESTING",
   "description": "Ongoing Testing improvements",
   "features": [
@@ -123,7 +123,7 @@
     },
     {
       "id": "66a5f346-51f3-4968-bd42-cf83508c4df7",
-      "status": "-",
+      "status": "+",
       "title": "Add tests for src/utils/embeddings.ts",
       "description": "Improve test coverage for @src/utils/embeddings.ts .\nTarget uncovered lines: 109, 194-195, 197-205 .",
       "context": [
@@ -131,8 +131,7 @@
       ],
       "blockers": [],
       "createdAt": "2025-10-16T21:43:12.719Z",
-      "updatedAt": "2025-10-16T21:59:19.317Z",
-      "rejection": "FAIL  tests/embeddings.test.ts > createLocalEmbeddingProvider > close > disposes the pipeline instance after it has been used\nAssertionError: expected \"spy\" to be called 1 times, but got 0 times\n ❯ tests/embeddings.test.ts:188:27\n    186|       await provider.close()\n    187| \n    188|       expect(disposeMock).toHaveBeenCalledTimes(1)\n       |                           ^\n    189|     })\n    190|"
+      "updatedAt": "2025-10-16T21:59:19.317Z","completedAt": "2025-10-16T22:05:42.824Z"
     },
     {
       "id": "6bee3989-1580-407e-8712-051ca1f2c021",
