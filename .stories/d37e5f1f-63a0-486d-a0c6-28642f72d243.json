@@ -6,12 +6,13 @@
   "features": [
     {
       "id": "84bd08a5-2422-4830-ae36-07167b5f46aa",
-      "status": "-",
+      "status": "+",
       "title": "Implement on-demand DB lifecycle (managed via Testcontainers, external fallback)",
       "description": "Implementation plan (definitive, no optional toggles)\n- Add dependency 'testcontainers' core. Use image 'pgvector/pgvector:pg16'.\n- Create 'src/runtime.ts' implementing:\n  - export type CreateDatabaseOptions = { connectionString?: string; logLevel?: LogLevel }\n  - export async function createDatabase(opts?: CreateDatabaseOptions): Promise<{ client: TheFactoryDb; connectionString: string; destroy: () => Promise<void>; isManaged: boolean; dbName: string }>\n    - Managed (no connectionString): start a fresh container with random POSTGRES_USER/PASSWORD/DB; map random host port; Wait.forListeningPorts(); verify readiness via 'SELECT 1'; build connection string; call openDatabase(). Register for process-exit cleanup.\n    - External (connectionString provided): parse server URL; connect to 'postgres' (or admin DB) to CREATE DATABASE tfdb_<random>; construct a URL pointing at the new DB; call openDatabase() on it. Ensure pgvector extension availability during init (relies on schema SQL creating extension).\n  - export async function destroyDatabase(handle): Promise<void>\n    - Always close the pool. If managed, stop and remove the container. If external, DROP DATABASE <dbName> (connect to admin DB); ensure idempotency if called multiple times.\n  - Ensure we never attempt to DROP the database we are currently connected to: switch connections appropriately for DROP.\n- Update 'src/index.ts' to export { createDatabase, destroyDatabase } while keeping openDatabase().\n- Security: use cryptographically strong random passwords; ephemeral ports.\n- Readiness: in addition to Testcontainers wait, perform a 'SELECT 1' using 'pg' to catch race conditions.\n- Global safety: process on SIGINT/SIGTERM triggers cleanup of any managed containers started in this process.",
       "context": [],
       "createdAt": "2025-10-16T22:24:53.414Z",
-      "updatedAt": "2025-10-16T22:30:23.402Z"
+      "updatedAt": "2025-10-16T23:10:01.865Z",
+      "completedAt": "2025-10-16T23:10:01.865Z"
     },
     {
       "id": "7389a86f-9f9d-40a1-a6d0-d8692b5de1fe",

@@ -3,25 +3,34 @@
 ## Overview
 
 - `thefactory-db` is a PostgreSQL wrapper that provides FTS text search (tsvector) and vector similarity (pgvector) for hybrid search across two content models: Documents (text) and Entities (JSON).
-- It is designed to be reusable across projects. You can depend on it as a local file dependency ("thefactory-db": "file:../thefactory-db") or publish it to a private registry.
+- It is designed to be reusable across projects. You can depend on it as a local file dependency ('thefactory-db': 'file:../thefactory-db') or publish it to a private registry.
 - Database connection is provided via a Postgres connection string so multiple projects can access the same DB (ensure access strategy avoids concurrency hazards at the application layer).
 - For details on coding standards and architecture, please see [CODE_STANDARD.md](./CODE_STANDARD.md).
 
 ## Top-level Layout
 
-- `README.md`: Quick-start usage and utility scripts.
+- `README.md`: Quick-start usage and utility scripts. Includes lifecycle APIs for ephemeral managed/external DBs and reusable provisioning.
 - `package.json`, `tsconfig.json`: Build and TypeScript configuration.
 - `src/`: Source code for the database wrapper and types.
-  - `src/index.ts`: Public entry point. Exports `openDatabase(options)` which returns a `Database` API instance. The instance provides:
-    - Documents API (text content)
-      - `addDocument`, `getDocumentById`, `getDocumentBySrc`, `updateDocument`, `deleteDocument`
-      - `searchDocuments`, `matchDocuments`, `clearDocuments`
-    - Entities API (json content)
-      - `addEntity`, `getEntityById`, `updateEntity`, `deleteEntity`
-      - `searchEntities`, `matchEntities`, `clearEntities`
-    - `raw(): DB` — Gives low-level access for advanced SQL.
+  - `src/index.ts`: Public entry point. Exports:
+    - `openDatabase(options)` which returns a `TheFactoryDb` API instance. The instance provides:
+      - Documents API (text content)
+        - `addDocument`, `getDocumentById`, `getDocumentBySrc`, `updateDocument`, `deleteDocument`
+        - `searchDocuments`, `matchDocuments`, `clearDocuments`
+      - Entities API (json content)
+        - `addEntity`, `getEntityById`, `updateEntity`, `deleteEntity`
+        - `searchEntities`, `matchEntities`, `clearEntities`
+      - `raw(): DB` — Gives low-level access for advanced SQL.
+    - Runtime lifecycle APIs re-exported from `src/runtime.ts`:
+      - `createDatabase(options?)` — On-demand ephemeral DB (managed container by default or temporary DB on external server when a connection string is provided).
+      - `destroyDatabase(handle)` — Idempotent teardown of the ephemeral DB/container.
+      - `createReusableDatabase(options?)` — Idempotent provisioning of a long-lived local container named `thefactory-db` for reuse across runs.
+  - `src/runtime.ts`: Runtime lifecycle management.
+    - Managed (default): Uses `testcontainers` to start `pgvector/pgvector:pg16`, waits for readiness, builds a connection string, and initializes the schema via `openDatabase()`. Teardown stops/removes the container.
+    - External: Given a server connection string, creates a temporary database (`tfdb_<random>`) via the admin database (`postgres`), initializes schema, and on destroy drops the temporary database.
+    - Reusable provisioning: Ensures a persistent local container `thefactory-db` exists and is running on host port 5435 and initializes schema once.
   - `src/connection.ts`: Connection factory and schema init. Applies embedded SQL statements (schema + hybrid functions) defined in `src/utils.ts`.
-  - `src/types.ts`: Shared TypeScript types for Documents and Entities, Search options and result row types, and `OpenDbOptions`.
+  - `src/types.ts`: Shared TypeScript types for Documents and Entities, Search options and result row types, and `OpenDbOptions` and logger types.
   - `src/logger.ts`: Small logger abstraction with log level filtering.
   - `src/validation.ts`: Runtime input validation for public API methods. Ensures inbound parameters conform to expected shapes and types (documents, entities, search and match params). Tests verify malformed inputs are rejected.
   - `src/utils.ts`: Embedded SQL strings and small helpers (e.g., base64 decoding).
@@ -89,3 +98,4 @@ Embedding dimension is 384 and requires the `pgvector` extension.
 - Unit tests live under `tests/` and target near-100% coverage. They mock external dependencies (e.g., embeddings, PG client) for determinism and speed.
 - End-to-End tests live under `tests/e2e/` and run against a real PostgreSQL database with `pgvector`.
 - Public API parameters are validated at runtime by `src/validation.ts`. Malformed inputs are rejected with descriptive errors. Tests in `tests/validation.test.ts` and `tests/index-validation.test.ts` verify this behavior.
+- Lifecycle smoke tests under `tests/e2e/lifecycle.e2e.test.ts` cover managed/external ephemeral flows and reusable provisioning idempotency.

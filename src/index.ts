@@ -13,6 +13,7 @@ import type {
   MatchParams,
   DocumentPatch,
   DocumentUpsertInput,
+  LogLevel,
 } from './types.js'
 import { createLocalEmbeddingProvider } from './utils/embeddings.js'
 import { SQL } from './utils.js'
@@ -477,4 +478,6 @@ export async function openDatabase({
   }
 }
 
+export { createDatabase, destroyDatabase, createReusableDatabase } from './runtime.js'
 export type * from './types.js'
+export type { LogLevel }
