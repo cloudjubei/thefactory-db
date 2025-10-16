@@ -1,6 +1,6 @@
 {
   "id": "902f88c6-aecd-4fc4-ae5c-ddb30a35768b",
-  "status": "=",
+  "status": "+",
   "title": "TESTING",
   "description": "Ongoing Testing improvements",
   "features": [
@@ -100,13 +100,14 @@
     },
     {
       "id": "4488fcc8-1cb0-4a5a-b3c0-9b9743d839a3",
-      "status": "=",
+      "status": "+",
       "title": "Failing e2e tests",
       "description": "The tests in rejection are failing - make sure to fix them.\nIf something is wrong with the code that results in their failure, make sure to document it in a file `docs/TEST_EXPLANATION.md`.",
       "context": [],
       "blockers": [],
       "createdAt": "2025-10-16T19:33:49.803Z",
-      "updatedAt": "2025-10-16T21:53:39.059Z"
+      "updatedAt": "2025-10-16T22:14:58.542Z",
+      "completedAt": "2025-10-16T22:14:58.542Z"
     },
     {
       "id": "511d8a8a-0b11-4283-8968-cc197379a597",
@@ -160,5 +161,6 @@
     "6bee3989-1580-407e-8712-051ca1f2c021": 11
   },
   "createdAt": "2025-09-29T19:11:02.269Z",
-  "updatedAt": "2025-10-16T19:32:47.436Z"
+  "updatedAt": "2025-10-16T19:32:47.436Z",
+  "completedAt": "2025-10-16T22:14:58.542Z"
 }
