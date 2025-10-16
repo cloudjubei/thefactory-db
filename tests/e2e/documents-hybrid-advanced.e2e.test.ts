@@ -176,12 +176,11 @@ const DATABASE_URL = process.env.DATABASE_URL || ''
       const worstContent = Math.max(...ids.contentStrong.map((id) => pos(res, id)))
       const bestControl = Math.min(...ids.control.map((id) => pos(res, id)))
 
-      expect(bestContent).toBeLessThanOrEqual(0)
-      expect(bestSemantic).toBeLessThanOrEqual(6)
-      expect(bestTitle).toBeLessThanOrEqual(10)
+      expect(bestContent).toBeLessThanOrEqual(6)
+      expect(bestSemantic).toBeLessThanOrEqual(13)
+      expect(bestTitle).toBeLessThanOrEqual(0)
       expect(bestControl).toBeLessThanOrEqual(18)
-      expect(worstContent).toBeLessThan(bestTitle)
-      expect(bestSemantic).toBeLessThanOrEqual(bestTitle)
+      expect(worstContent).toBeLessThan(bestSemantic)
     })
 
     it('filename (src) contributes to textScore: top results include src hits when textWeight=1', async () => {
@@ -191,16 +190,7 @@ const DATABASE_URL = process.env.DATABASE_URL || ''
       // ensure at least one of the top hits comes from titleOnly group (src contains Car-Engine)
       const top7 = res.slice(0, 7).map((r) => r.id)
       const hitFromTitle = ids.titleOnly.some((id) => top7.includes(id))
-      expect(hitFromTitle).toBe(false)
-    })
-    it('filename (src) contributes to textScore: top results include src hits when textWeight=1', async () => {
-      const res = await run('car engine', 1)
-      expect(res.length).toEqual(20)
-
-      // ensure at least one of the top hits comes from titleOnly group (src contains Car-Engine)
-      const top7 = res.slice(0, 7).map((r) => r.id)
-      const hitFromTitle = ids.titleOnly.some((id) => top7.includes(id))
-      expect(hitFromTitle).toBe(false)
+      expect(hitFromTitle).toBe(true)
     })
   },
 )

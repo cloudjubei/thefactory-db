@@ -183,7 +183,9 @@ CREATE TABLE IF NOT EXISTS documents (
   content text,
   content_hash text,
   fts tsvector GENERATED ALWAYS AS (
-    to_tsvector('english', tokenize_code(name)) || to_tsvector('english', coalesce(tokenize_code(content), ''))
+    to_tsvector('english', tokenize_code(name))
+    || to_tsvector('english', coalesce(tokenize_code(content), ''))
+    || to_tsvector('english', tokenize_code(coalesce(src, '')))
   ) STORED,
   embedding vector(384),
   metadata jsonb,
@@ -356,11 +358,13 @@ token_scores AS (
 literal_search AS (
   SELECT d.id,
          COALESCE(SUM((LENGTH(d.content) - LENGTH(REPLACE(d.content, t.lexeme, ''))) / LENGTH(t.lexeme)), 0) +
-         COALESCE(SUM((LENGTH(d.name) - LENGTH(REPLACE(d.name, t.lexeme, ''))) / LENGTH(t.lexeme)), 0) AS literal_count,
+         COALESCE(SUM((LENGTH(d.name) - LENGTH(REPLACE(d.name, t.lexeme, ''))) / LENGTH(t.lexeme)), 0) +
+         COALESCE(SUM((LENGTH(d.src) - LENGTH(REPLACE(d.src, t.lexeme, ''))) / LENGTH(t.lexeme)), 0) AS literal_count,
          row_number() OVER (ORDER BY (
             COALESCE(SUM((LENGTH(d.content) - LENGTH(REPLACE(d.content, t.lexeme, ''))) / LENGTH(t.lexeme)), 0) +
-            COALESCE(SUM((LENGTH(d.name) - LENGTH(REPLACE(d.name, t.lexeme, ''))) / LENGTH(t.lexeme)), 0)
-         ) DESC) AS rank_ix
+            COALESCE(SUM((LENGTH(d.name) - LENGTH(REPLACE(d.name, t.lexeme, ''))) / LENGTH(t.lexeme)), 0) +
+            COALESCE(SUM((LENGTH(d.src) - LENGTH(REPLACE(d.src, t.lexeme, ''))) / LENGTH(t.lexeme)), 0)
+         ) DESC, d.name ASC, d.updated_at DESC) AS rank_ix
   FROM base_documents d
   CROSS JOIN (
     SELECT unnest(string_to_array(trim(coalesce(query_text, '')), ' ')) AS lexeme
@@ -424,7 +428,7 @@ FROM scored
 JOIN base_documents d ON d.id = scored.id
 LEFT JOIN token_scores ts ON ts.id = d.id
 LEFT JOIN literal_search ls ON ls.id = d.id
-ORDER BY rrf_score DESC, d.name ASC, d.updated_at DESC
+ORDER BY rrf_score DESC, cosine_similarity DESC, d.name ASC, d.updated_at DESC
 LIMIT match_count;
 $$;
 
@@ -435,6 +439,7 @@ CREATE OR REPLACE FUNCTION hybrid_search_entities(
   query_embedding   vector,
   match_count       integer,
   filter            jsonb DEFAULT '{}'::jsonb,
+  title_weight      float  DEFAULT 1.0,
   literal_weight    float  DEFAULT 0.3,
   full_text_weight  float  DEFAULT 0.3,
   semantic_weight   float  DEFAULT 0.4,
@@ -496,7 +501,7 @@ token_scores AS (
          ts_rank_cd(e.fts, t.ts_query) AS token_score
   FROM base_entities e
   CROSS JOIN or_ts_query t
-  WHERE e.fts @@ t.ts_query
+  WHERE t.ts_query IS NOT NULL AND e.fts @@ t.ts_query
 ),
 -- CTE for literal match counts and ranking
 literal_search AS (
@@ -506,7 +511,7 @@ literal_search AS (
          row_number() OVER (ORDER BY (
             COALESCE(SUM((LENGTH(e.content::text) - LENGTH(REPLACE(e.content::text, t.lexeme, ''))) / LENGTH(t.lexeme)), 0) +
             COALESCE(SUM((LENGTH(e.type) - LENGTH(REPLACE(e.type, t.lexeme, ''))) / LENGTH(t.lexeme)), 0)
-         ) DESC) AS rank_ix
+         ) DESC, e.type ASC, e.updated_at DESC) AS rank_ix
   FROM base_entities e
   CROSS JOIN (
     SELECT unnest(string_to_array(trim(coalesce(query_text, '')), ' ')) AS lexeme
@@ -547,8 +552,16 @@ SELECT e.id,
        e.created_at,
        e.updated_at,
        e.metadata,
-       scored.rrf_score,
-       scored.rrf_score / ((full_text_weight + semantic_weight + literal_weight) / (rrf_k + 1)::float) AS similarity,
+       -- apply title boost if the query matches the entity title tokens
+       (scored.rrf_score + CASE WHEN EXISTS (
+         SELECT 1 FROM or_ts_query t
+         WHERE t.ts_query IS NOT NULL AND to_tsvector('english', tokenize_code(COALESCE(e.content->>'title',''))) @@ t.ts_query
+       ) THEN title_weight ELSE 0 END) AS rrf_score,
+       (scored.rrf_score + CASE WHEN EXISTS (
+         SELECT 1 FROM or_ts_query t
+         WHERE t.ts_query IS NOT NULL AND to_tsvector('english', tokenize_code(COALESCE(e.content->>'title',''))) @@ t.ts_query
+       ) THEN title_weight ELSE 0 END)
+       / ((full_text_weight + semantic_weight + literal_weight) / (rrf_k + 1)::float) AS similarity,
        COALESCE(1 - (embedding <=> query_embedding) / 2, 0) AS cosine_similarity,
        COALESCE(ts.token_score, 0.0) AS keyword_score,
        COALESCE(ls.literal_count, 0) AS literal_score
@@ -556,7 +569,7 @@ FROM scored
 JOIN base_entities e ON e.id = scored.id
 LEFT JOIN token_scores ts ON ts.id = e.id
 LEFT JOIN literal_search ls ON ls.id = e.id
-ORDER BY similarity DESC, e.type ASC, e.updated_at DESC
+ORDER BY similarity DESC, cosine_similarity DESC, e.type ASC, e.updated_at DESC
 LIMIT match_count;
 $$;
 `
@@ -577,7 +590,7 @@ SELECT
   keyword_score as "keywordScore",
   cosine_similarity as "vecScore",
   similarity as "totalScore"
-FROM hybrid_search_entities($1, $2::vector, $3::int, $4::jsonb, $5::float, $6::float, $7::float, $8::int);
+FROM hybrid_search_entities($1, $2::vector, $3::int, $4::jsonb, $5::float, $6::float, $7::float, $8::float, $9::int);
 `
 
 const searchDocumentsQuery = `

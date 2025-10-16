@@ -168,10 +168,17 @@ export async function openDatabase({
     if (query.length <= 0) return []
     const qvecArr = await embeddingProvider.embed(query)
     const qvec = toVectorLiteral(qvecArr)
-    const textWeight = Math.min(1, Math.max(0, params.textWeight ?? 0.5)) / 2
+
+    // raw weight 0..1 as requested
+    const rawW = Math.min(1, Math.max(0, params.textWeight ?? 0.5))
+    // we split keyword signals equally into literal and full-text
+    const textWeight = rawW / 2
     const keywordWeight = textWeight
     const semWeight = 1 - (textWeight + keywordWeight)
     const limit = Math.max(1, Math.min(1000, params.limit ?? 20))
+
+    // Boost for prominent title field when text weight is high; scale with requested emphasis
+    const titleWeight = 10 * rawW
 
     const filter: any = {}
     if (params.types && params.types.length > 0) filter.types = params.types
@@ -183,6 +190,7 @@ export async function openDatabase({
       qvec,
       limit,
       Object.keys(filter).length ? JSON.stringify(filter) : JSON.stringify({}),
+      titleWeight,
       textWeight,
       keywordWeight,
       semWeight,
@@ -326,12 +334,8 @@ export async function openDatabase({
       return upsertedDocs
     } catch (e) {
       logger.error('Error in batch upsert, rolling back transaction', e)
-      try {
-        await client.query('ROLLBACK')
-      } catch {}
+      await db.query('ROLLBACK')
       throw e
-    } finally {
-      client.release()
     }
   }
 

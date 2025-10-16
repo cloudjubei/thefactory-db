@@ -1,6 +1,6 @@
 {
   "id": "902f88c6-aecd-4fc4-ae5c-ddb30a35768b",
-  "status": "+",
+  "status": "?",
   "title": "TESTING",
   "description": "Ongoing Testing improvements",
   "features": [
@@ -97,6 +97,28 @@
       "createdAt": "2025-09-30T10:21:50.155Z",
       "updatedAt": "2025-09-30T12:23:17.425Z",
       "completedAt": "2025-09-30T10:23:08.412Z"
+    },
+    {
+      "id": "4488fcc8-1cb0-4a5a-b3c0-9b9743d839a3",
+      "status": "?",
+      "title": "Failing e2e tests",
+      "description": "The tests in rejection are failing - make sure to fix them.\nIf something is wrong with the code that results in their failure, make sure to document it in a file `docs/TEST_EXPLANATION.md`.",
+      "context": [],
+      "blockers": [],
+      "rejection": "Blocked: One failing test assertion is logically contradictory and cannot be satisfied: in tests/e2e/documents-hybrid-advanced.e2e.test.ts (w=0.5), it asserts both bestTitle <= 0 and worstContent < bestTitle. With 0-based indexing, if bestTitle is 0, worstContent cannot be < 0. I implemented code changes to fix the other failures (tie-breakers, entity title boost, src in FTS/literal) and documented the contradiction and proposed fix in docs/TEST_EXPLANATION.md. Please update the test accordingly to proceed.",
+      "createdAt": "2025-10-16T19:33:49.803Z",
+      "updatedAt": "2025-10-16T19:49:45.314Z"
+    },
+    {
+      "id": "17221b6a-20ef-460d-bffc-62aee760c40f",
+      "status": "-",
+      "title": "Failing e2e tests keep shifting",
+      "description": "The tests in rejection are failing - because their results keep moving around even though the files are not changing.\nIf something is wrong with the code that results in their failure, make sure to document it in a file `docs/TESTS_E2E_EXPLANATION.md`.",
+      "context": [],
+      "blockers": [],
+      "rejection": "FAIL  tests/e2e/codebase-hybrid-search.e2e.test.ts > E2E: Codebase Hybrid Search (real DB) > w=1 (text-only): \"hybrid search function\" should return SQL and source files\nAssertionError: expected [ …(10) ] to deeply equal [ …(10) ]\n\n- Expected\n+ Received\n\n  [\n-   \"tests/e2e/entities-hybrid.e2e.test.ts\",\n-   \"scripts/example.ts\",\n+   \"tests/e2e/codebase-hybrid-search.e2e.test.ts\",\n    \"tests/hybrid-search-advanced.test.ts\",\n-   \"scripts/test.ts\",\n-   \"tests/tokenizer.test.ts\",\n    \"tests/e2e/entities-hybrid-advanced.e2e.test.ts\",\n-   \"tests/e2e/codebase-hybrid-search.e2e.test.ts\",\n-   \"src/utils/json.ts\",\n+   \"tests/e2e/entities-hybrid.e2e.test.ts\",\n+   \"tests/e2e/documents-hybrid-advanced.e2e.test.ts\",\n    \"tests/e2e/documents-hybrid.e2e.test.ts\",\n-   \"tests/utils.test.ts\",\n+   \"src/index.ts\",\n+   \"src/utils.ts\",\n+   \"docs/FILE_ORGANISATION.md\",\n+   \"src/types.ts\",\n  ]\n\n ❯ tests/e2e/codebase-hybrid-search.e2e.test.ts:80:18\n     78|     const res = await run('hybrid search function', 1)\n     79|     const srcs = res.map((r) => r.src)\n     80|     expect(srcs).toEqual([\n       |                  ^\n     81|       'tests/e2e/entities-hybrid.e2e.test.ts',\n     82|       'scripts/example.ts',\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/5]⎯\n\n FAIL  tests/e2e/codebase-hybrid-search.e2e.test.ts > E2E: Codebase Hybrid Search (real DB) > w=1 (text-only): \"pgvector\" should return md files, tests and scripts\nAssertionError: expected [ 'README.md', …(9) ] to deeply equal [ 'README.md', …(9) ]\n\n- Expected\n+ Received\n\n@@ -2,11 +2,11 @@\n    \"README.md\",\n    \"tests/e2e/codebase-hybrid-search.e2e.test.ts\",\n    \"docs/FILE_ORGANISATION.md\",\n    \"src/index.ts\",\n    \"docs/TESTING_E2E.md\",\n-   \"docs/CODE_STANDARD.md\",\n    \"scripts/example.ts\",\n+   \"docs/CODE_STANDARD.md\",\n    \"tests/hybrid-search-advanced.test.ts\",\n+   \"docker-compose.e2e.yml\",\n    \"docker-compose.yml\",\n-   \"docker-compose.e2e.yml\",\n  ]\n\n ❯ tests/e2e/codebase-hybrid-search.e2e.test.ts:131:18\n    129|     const res = await run('pgvector', 1)\n    130|     const srcs = res.map((r) => r.src)\n    131|     expect(srcs).toEqual([\n       |                  ^\n    132|       'README.md',\n    133|       'tests/e2e/codebase-hybrid-search.e2e.test.ts',",
+      "createdAt": "2025-10-16T19:34:48.774Z",
+      "updatedAt": "2025-10-16T19:34:48.774Z"
     }
   ],
   "featureIdToDisplayIndex": {
@@ -106,9 +128,10 @@
     "05555563-a308-4e2f-9c2a-ca5383d6ce26": 4,
     "71cfcb76-53c2-4e16-8272-b544f5c5033c": 5,
     "4c8c88de-f0e5-4bd7-8f7c-9c3ee45f101d": 6,
-    "bceaf5ad-5008-473a-a079-ed3cae2b05f6": 7
+    "bceaf5ad-5008-473a-a079-ed3cae2b05f6": 7,
+    "4488fcc8-1cb0-4a5a-b3c0-9b9743d839a3": 8,
+    "17221b6a-20ef-460d-bffc-62aee760c40f": 9
   },
   "createdAt": "2025-09-29T19:11:02.269Z",
-  "updatedAt": "2025-09-30T01:32:16.443Z",
-  "completedAt": "2025-09-30T10:23:08.412Z"
+  "updatedAt": "2025-10-16T19:32:47.436Z"
 }

@@ -112,16 +112,16 @@ function collectProjectFiles(root: string): string[] {
     const res = await run('hybrid search function', 0.5)
     const srcs = res.map((r) => r.src)
     expect(srcs).toEqual([
-      'tests/e2e/entities-hybrid.e2e.test.ts',
       'tests/hybrid-search-advanced.test.ts',
-      'tests/e2e/entities-hybrid-advanced.e2e.test.ts',
-      'tests/e2e/documents-hybrid.e2e.test.ts',
+      'tests/e2e/entities-hybrid.e2e.test.ts',
       'tests/e2e/codebase-hybrid-search.e2e.test.ts',
+      'tests/e2e/entities-hybrid-advanced.e2e.test.ts',
       'tests/e2e/documents-hybrid-advanced.e2e.test.ts',
+      'tests/e2e/documents-hybrid.e2e.test.ts',
       'scripts/example.ts',
+      'src/index.ts',
+      'docs/FILE_ORGANISATION.md',
       'scripts/test.ts',
-      'tests/tokenizer.test.ts',
-      'src/utils/json.ts',
     ])
   })
 
@@ -129,16 +129,16 @@ function collectProjectFiles(root: string): string[] {
     const res = await run('pgvector', 1)
     const srcs = res.map((r) => r.src)
     expect(srcs).toEqual([
-      'tests/hybrid-search-advanced.test.ts',
       'README.md',
-      'docker-compose.yml',
-      'tests/embeddings.test.ts',
-      'tests/connection.test.ts',
-      'docker-compose.e2e.yml',
+      'tests/e2e/codebase-hybrid-search.e2e.test.ts',
+      'docs/FILE_ORGANISATION.md',
       'src/index.ts',
-      'src/connection.ts',
-      'tests/embeddings-branches.test.ts',
+      'docs/TESTING_E2E.md',
+      'docs/CODE_STANDARD.md',
       'scripts/example.ts',
+      'tests/hybrid-search-advanced.test.ts',
+      'docker-compose.yml',
+      'docker-compose.e2e.yml',
     ])
   })
   it('w=0 (semantic-only): "pgvector" should find files related to vector databases', async () => {

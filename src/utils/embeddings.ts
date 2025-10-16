@@ -194,18 +194,14 @@ export async function createLocalEmbeddingProvider(options?: {
     async close() {
       try {
         const inst = extractorInstance ?? (ready ? await ready : null)
-        // Dispose pipeline/model resources if available (transformers.js >= 2 exposes dispose on pipeline/model)
+
         if (inst && typeof inst.dispose === 'function') {
           await inst.dispose()
         }
       } catch {
-        // ignore dispose errors
       } finally {
-        // Clear references to allow GC
         ready = null
         extractorInstance = null
-        // Yield to event loop to allow any worker teardown to complete
-        await new Promise((r) => setTimeout(r, 0))
       }
     },
   }
