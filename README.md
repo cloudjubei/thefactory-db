@@ -23,14 +23,13 @@ These flows are built on the image 'pgvector/pgvector:pg16' and the 'testcontain
 - Image 'pgvector/pgvector:pg16' (pulled automatically)
 - For external mode, the provided user must have CREATEDB privilege and pgvector 'vector' extension must be available/creatable.
 
-## APIs
+## On-demand database lifecycle
 
-- openDatabase(options)
-- createDatabase(options?)
-- destroyDatabase(handle)
-- createReusableDatabase(options?)
+This package can create, initialize, and tear down a database on demand. Pick one of the flows below.
 
-### Ephemeral managed mode (no connection string)
+### 1) Ephemeral managed (default)
+
+Docker required. Starts a fresh Postgres+pgvector container and removes it on destroy. No reuse, no persistence.
 
 ```ts
 import { createDatabase } from 'thefactory-db'
@@ -44,35 +43,41 @@ await client.addDocument({ projectId: 'proj1', type: 'note', src: 'a.txt', name:
 await destroy()
 ```
 
-Behavior:
-- Starts a fresh container with random credentials and DB name.
-- Waits for readiness, then initializes schema and hybrid search functions via openDatabase().
-- No reuse, no persistence; destroy() fully stops/removes the container.
+What happens:
+- Starts a fresh container from 'pgvector/pgvector:pg16' with random credentials and a random DB name.
+- Waits until ready, validates with SELECT 1, then initializes schema and hybrid search functions via openDatabase().
+- On destroy(), fully stops and removes the container. No state persists between runs.
 
-### Ephemeral external mode (existing server)
+### 2) Ephemeral external (existing server)
+
+Creates a temporary database on an existing server and drops it on destroy. Requires CREATEDB and the 'vector' extension.
 
 ```ts
-import { createDatabase, destroyDatabase } from 'thefactory-db'
+import { createDatabase } from 'thefactory-db'
 
-const serverUrl = 'postgresql://user:password@localhost:55432/thefactory-db'
+// Server-level URL; the database part is not used for the temporary DB (admin ops connect to 'postgres')
+const serverUrl = 'postgresql://user:password@localhost:55432/postgres'
+
 const handle = await createDatabase({ connectionString: serverUrl, logLevel: 'warn' })
 
 await handle.client.addDocument({ projectId: 'proj2', type: 'note', src: 'b.txt', name: 'b', content: 'hello ext' })
 
-// Drop the temporary database
-await destroyDatabase(handle.handle)
+// Drop the temporary database (idempotent)
+await handle.destroy()
 ```
 
-Behavior:
-- Generates a temporary database name like 'tfdb_<random>'.
-- Connects to admin DB 'postgres' to CREATE DATABASE, then opens/initializes the new DB.
-- On destroy, drops the temporary database after terminating its connections.
+What happens:
+- A temporary database name like 'tfdb_<random>' is generated.
+- Connects to the admin DB 'postgres' to CREATE DATABASE, then connects to the new DB and initializes schema.
+- On destroy(), terminates connections and DROP DATABASE for the temporary DB.
 
 Notes:
 - The provided user must be able to CREATE DATABASE.
-- The server must have the 'vector' extension installed (or creatable). If missing, initialization will fail with a clear error.
+- The server must have the 'vector' extension available/creatable. If missing, initialization fails with a clear error.
 
-### Reusable persistent provisioning (opt-in)
+### 3) Reusable database (managed persistent)
+
+Creates or reuses a long-lived local container named 'thefactory-db'. Intended for reuse across runs. This is separate from the ephemeral lifecycle and intentionally persistent.
 
 ```ts
 import { createReusableDatabase, openDatabase } from 'thefactory-db'
@@ -86,12 +91,54 @@ await db.close()
 Behavior:
 - Manages a Docker container named 'thefactory-db' with:
   - POSTGRES_USER='thefactory', POSTGRES_PASSWORD='thefactory', POSTGRES_DB='thefactorydb'
-  - Port mapping strategy: prefers host 5435 -> container 5432; if 5435 is occupied at first creation, automatically falls back to the first free host port and persists that mapping.
+  - Host port mapping strategy: prefers 5435 -> 5432; if 5435 is occupied at first creation, automatically falls back to the first free host port and persists that mapping.
 - Idempotent: if the container exists and is running, returns the same URL; if stopped, starts it; if missing, creates it and initializes schema once via openDatabase(), then closes the pool.
-- Never destroys or drops data.
+- Never destroys or drops data. Subsequent calls return the same stable connection string.
 
 Returned URL example (actual port may differ if 5435 was busy at creation time):
 - 'postgresql://thefactory:thefactory@localhost:5435/thefactorydb'
+
+## API summary
+
+- openDatabase(options)
+  - Connects to an existing DB and initializes schema. Returns a TheFactoryDb client with 'close()' and 'raw()'.
+
+- createDatabase(options?: { connectionString?: string; logLevel?: LogLevel })
+  - Returns: { client: TheFactoryDb; connectionString: string; destroy: () => Promise<void>; isManaged: boolean; dbName: string }
+  - Managed if 'connectionString' is omitted; external temporary DB if provided.
+
+- destroyDatabase(handle)
+  - Idempotent teardown of a handle returned by createDatabase(). Equivalent to 'await handle.destroy()'.
+
+- createReusableDatabase(options?: { logLevel?: LogLevel })
+  - Returns: { connectionString: string; created: boolean }
+  - Ensures the persistent 'thefactory-db' container exists and is running; initializes schema on first creation.
+
+## Troubleshooting
+
+- Docker unavailable (managed/reusable modes)
+  - Symptom: errors like 'Cannot connect to the Docker daemon' or 'Docker is not available'.
+  - Fix: Start Docker Desktop (macOS/Windows) or the Docker engine (Linux). On Linux, ensure your user is in the 'docker' group: 'sudo usermod -aG docker $USER' then re-login.
+
+- Port 5435 already in use (reusable mode)
+  - First creation prefers host port 5435. If occupied, the tool automatically chooses the first free port and persists it.
+  - To discover the mapped port: 'docker port thefactory-db 5432' or simply use the 'connectionString' returned by 'createReusableDatabase()'.
+  - To free 5435, stop the conflicting service or container using that port.
+
+- Missing pgvector (external mode)
+  - Symptom: 'ERROR: could not open extension control file' or 'extension "vector" does not exist'.
+  - Fix: Install/enable the 'vector' extension on your server and run 'CREATE EXTENSION IF NOT EXISTS vector;' in the target DB. The managed container image already includes pgvector.
+
+- Insufficient privileges (external mode)
+  - Symptom: 'ERROR: permission denied to create database'.
+  - Fix: Use a role with CREATEDB or superuser privileges. Example: 'ALTER ROLE myuser CREATEDB;'.
+
+- Manage the persistent 'thefactory-db' container
+  - List: 'docker ps -a --filter name=thefactory-db'
+  - Logs: 'docker logs thefactory-db'
+  - Stop/Start: 'docker stop thefactory-db' / 'docker start thefactory-db'
+  - Port mapping: 'docker port thefactory-db 5432'
+  - Remove (destructive): 'docker rm -f thefactory-db' (only if you intend to discard data)
 
 ## Development
 
@@ -116,7 +163,7 @@ RUN_E2E=1 vitest run tests/e2e/lifecycle.e2e.test.ts -t 'Managed'
 - External ephemeral (requires existing server and CREATEDB):
 
 ```bash
-RUN_E2E=1 DATABASE_URL=postgresql://user:password@localhost:65432/thefactory-db \
+RUN_E2E=1 DATABASE_URL=postgresql://user:password@localhost:65432/postgres \
   vitest run tests/e2e/lifecycle.e2e.test.ts -t 'External'
 ```
 

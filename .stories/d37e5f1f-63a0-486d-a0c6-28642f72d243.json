@@ -16,12 +16,13 @@
     },
     {
       "id": "7389a86f-9f9d-40a1-a6d0-d8692b5de1fe",
-      "status": "-",
+      "status": "+",
       "title": "Documentation: on-demand lifecycle usage (managed and external)",
       "description": "Docs plan (including reusable provisioning)\n- Add README section 'On-demand database lifecycle' with three flows:\n  1) Ephemeral managed (default): code snippet using createDatabase() and destroyDatabase(); explains Docker requirement and that the instance is fully removed on destroy.\n  2) Ephemeral external: code snippet passing a server-level connectionString; explains a temporary database is created and dropped automatically; requires CREATEDB and pgvector availability.\n  3) Reusable database (managed persistent): code snippet using createReusableDatabase(); explains it creates (or reuses) a local container 'thefactory-db' on port 5435 with user/password 'thefactory' and database 'thefactorydb', initializes schema on first run, and returns the stable connection string for reuse.\n- Troubleshooting: Docker unavailable; port 5435 already in use; missing pgvector; insufficient privileges for external mode; how to list/stop the 'thefactory-db' container if needed.\n- Clarify that reusable provisioning is separate from the ephemeral lifecycle and intentionally persistent.\n- Document the minimal APIs and returned fields.\n",
       "context": [],
       "createdAt": "2025-10-16T22:24:53.416Z",
-      "updatedAt": "2025-10-16T22:40:31.142Z"
+      "updatedAt": "2025-10-16T23:23:43.692Z",
+      "completedAt": "2025-10-16T23:23:43.692Z"
     },
     {
       "id": "412a255b-83b3-4c2c-b57d-5d5b0da46513",
