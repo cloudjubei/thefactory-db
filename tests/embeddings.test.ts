@@ -27,6 +27,19 @@ vi.mock('@xenova/transformers', () => {
         this.data = data
       }
     },
+    env: {
+      // mock env to avoid side-effects
+      useBrowserCache: true,
+      allowLocalModels: true,
+      backends: {
+        onnx: {
+          wasm: {
+            proxy: false,
+            numThreads: 1,
+          },
+        },
+      },
+    },
   }
 })
 
@@ -71,6 +84,22 @@ describe('createLocalEmbeddingProvider', () => {
     const len = l2normLength(vec)
     expect(len).toBeGreaterThan(0.999)
     expect(len).toBeLessThan(1.001)
+  })
+
+  it('handles tensor-like output with a .to() method', async () => {
+    const toMock = vi.fn(() => ({ data: [4, 5, 6] }))
+    ;(pipeline as any).mockResolvedValueOnce(async () => {
+      return () => ({
+        to: toMock,
+      })
+    })
+    const provider = await createLocalEmbeddingProvider()
+    const vec = await provider.embed('x')
+    expect(toMock).toHaveBeenCalledWith('cpu')
+    expect(vec).toEqual(expect.any(Float32Array))
+    expect(vec.length).toBe(3)
+    const len = l2normLength(vec)
+    expect(len).toBeGreaterThan(0.999)
   })
 
   describe('embedBatch', () => {
@@ -128,6 +157,66 @@ describe('createLocalEmbeddingProvider', () => {
       const provider = await createLocalEmbeddingProvider()
       const vecs = await provider.embedBatch([])
       expect(vecs.length).toBe(0)
+    })
+
+    it('throws an error for unsupported batch output format', async () => {
+      ;(pipeline as any).mockResolvedValueOnce(async () => {
+        // Return a flat array, which is not a valid batch output
+        return () => [1, 2, 3]
+      })
+      const provider = await createLocalEmbeddingProvider()
+      const texts = ['a', 'b']
+      await expect(provider.embedBatch(texts)).rejects.toThrow(
+        /Unsupported embedding output format for batch/,
+      )
+    })
+  })
+
+  describe('close', () => {
+    it('disposes the pipeline instance after it has been used', async () => {
+      const disposeMock = vi.fn()
+      ;(pipeline as any).mockResolvedValueOnce(async () => {
+        const extractor = async () => ({ data: new Float32Array([1, 2, 3]) })
+        ;(extractor as any).dispose = disposeMock
+        return extractor
+      })
+
+      const provider = await createLocalEmbeddingProvider()
+      await provider.embed('some text') // initialize
+      await provider.close()
+
+      expect(disposeMock).toHaveBeenCalledTimes(1)
+    })
+
+    it('does nothing if the pipeline was never created', async () => {
+      const provider = await createLocalEmbeddingProvider()
+      // We don't call embed, so pipeline is not initialized
+      await provider.close()
+      // No mocks to check, just ensuring no errors are thrown
+    })
+
+    it('does not throw if dispose method is missing', async () => {
+      // Mock pipeline without a dispose method
+      ;(pipeline as any).mockResolvedValueOnce(async () => {
+        return async () => ({ data: new Float32Array([1, 2, 3]) })
+      })
+
+      const provider = await createLocalEmbeddingProvider()
+      await provider.embed('some text')
+      await expect(provider.close()).resolves.not.toThrow()
+    })
+
+    it('handles errors during dispose gracefully', async () => {
+      const disposeMock = vi.fn().mockRejectedValue(new Error('Disposal failed'))
+      ;(pipeline as any).mockResolvedValueOnce(async () => {
+        const extractor = async () => ({ data: new Float32Array([1, 2, 3]) })
+        ;(extractor as any).dispose = disposeMock
+        return extractor
+      })
+
+      const provider = await createLocalEmbeddingProvider()
+      await provider.embed('some text')
+      await expect(provider.close()).resolves.not.toThrow()
     })
   })
 })
