@@ -1,6 +1,6 @@
 {
   "id": "d37e5f1f-63a0-486d-a0c6-28642f72d243",
-  "status": "-",
+  "status": "+",
   "title": "On-demand ephemeral PostgreSQL (pgvector) lifecycle: managed container or external URL",
   "description": "Goal\nProvide a programmatic, on-demand PostgreSQL with pgvector lifecycle so clients can call createDatabase() to start a fresh DB and destroyDatabase() to fully tear it down. Keep openDatabase() for users who already manage their DB.\n\nOperating modes (definitive)\n- Managed (default): If no connectionString is supplied, start a fresh Postgres+pgvector container via Testcontainers using image 'pgvector/pgvector:pg16'. Wait until ready, build a connection string, and initialize the schema via openDatabase(). On destroyDatabase(), stop and remove the container. No reuse, no persistence.\n- External: If a connectionString is supplied, treat it as server access with privileges to CREATE DATABASE and CREATE EXTENSION vector. On createDatabase(), generate a temporary database name (e.g. 'tfdb_<random>'), create it (connecting to the 'postgres' DB for admin ops), connect to the new DB, and run schema init. On destroyDatabase(), DROP the temporary database. No truncation or schema-only cleanup; the entire database is removed.\n\nAdditional API: reusable database provisioning (opt-in)\n- For clients who want this package to fully provision a long-lived local database and reuse it:\n  - createReusableDatabase(options?: { logLevel?: LogLevel }): Promise<{ connectionString: string; created: boolean }>\n  - Behavior: Managed persistent instance using Docker and image 'pgvector/pgvector:pg16' with hardcoded defaults:\n    - container name: 'thefactory-db'\n    - POSTGRES_USER='thefactory', POSTGRES_PASSWORD='thefactory', POSTGRES_DB='thefactorydb'\n    - hostPort=5435 mapped to container 5432\n    - If the container already exists and is running, return the same connection string. If it exists but is stopped, start it and return the same connection string. If it does not exist, create and start it.\n    - After readiness, call openDatabase() once to initialize schema, then close the pool. The function itself does not destroy the instance; it is intended for reuse across runs.\n\nAPI surface (minimal)\n- createDatabase(options?: { connectionString?: string; logLevel?: LogLevel }): Promise<{ client: TheFactoryDb; connectionString: string; destroy: () => Promise<void>; isManaged: boolean; dbName: string }>\n- destroyDatabase(handle): Promise<void>\n- createReusableDatabase(options?: { logLevel?: LogLevel }): Promise<{ connectionString: string; created: boolean }>\n- openDatabase(options) remains available for direct connections.\n\nBehavior & guarantees\n- Schema bootstrap: openDatabase() runs schema and hybrid search SQL so both modes are ready to use.\n- Readiness/health: managed mode waits for listening port and validates with SELECT 1.\n- Teardown: destroyDatabase() is idempotent and fully removes the instance/container or drops the temp database (external mode). No state persists for createDatabase().\n- Reusable provisioning: createReusableDatabase() is idempotent and never drops data; repeated calls return the same connection string.\n- No optional toggles on ephemeral flows: no container reuse, no isolation flags, no cleanup toggles.\n\nRequirements\n- Managed modes: Docker daemon available; image 'pgvector/pgvector:pg16'.\n- External mode: role must have CREATEDB privilege; pgvector 'vector' extension must be available/creatable. If not, initialization fails with a clear error.\n\nAcceptance\n- API exported from src/index.ts: createDatabase/destroyDatabase and createReusableDatabase alongside openDatabase().\n- Managed mode: spins up pgvector Postgres, client is usable, and container is torn down fully on destroy.\n- External mode: creates a new temporary database, initializes schema, and drops the database on destroy.\n- Reusable provisioning: first call creates a persistent container and returns a stable connection string; subsequent calls return the same connection string without altering data; schema is initialized automatically on first creation.\n- Documentation: README includes usage for ephemeral managed/external flows and the reusable database flow, with requirements and troubleshooting.\n- Tests: Lifecycle smoke tests cover both ephemeral modes and the reusable provisioning idempotency.",
   "features": [
@@ -26,12 +26,13 @@
     },
     {
       "id": "412a255b-83b3-4c2c-b57d-5d5b0da46513",
-      "status": "-",
+      "status": "+",
       "title": "Lifecycle tests: managed smoke test and external init",
       "description": "Lifecycle tests (including reusable provisioning)\n- tests/lifecycle/managed.smoke.test.ts (skip if Docker not available):\n  - const { client, destroy } = await createDatabase({ logLevel: 'error' })\n  - Insert a document and an entity, search, then destroy(); assert pool closed and container gone.\n- tests/lifecycle/external.smoke.test.ts (skip if no DATABASE_SERVER_URL):\n  - const { client, dbName, destroy } = await createDatabase({ connectionString: process.env.DATABASE_SERVER_URL!, logLevel: 'error' })\n  - Verify schema works; destroy(); confirm DB <dbName> dropped.\n- tests/lifecycle/reusable.smoke.test.ts (skip if Docker not available):\n  - const r1 = await createReusableDatabase({ logLevel: 'error' }); expect(r1.created).toBe(true) on first run (or allow false if container pre-exists in CI).\n  - const r2 = await createReusableDatabase({ logLevel: 'error' }); expect(r2.connectionString).toEqual(r1.connectionString); expect(r2.created).toBe(false).\n  - Connect via openDatabase({ connectionString: r1.connectionString }) and run a quick op to confirm schema exists.\n- Note: do not destroy the reusable container in tests; document manual cleanup instructions in README.\n",
       "context": [],
       "createdAt": "2025-10-16T22:24:53.418Z",
-      "updatedAt": "2025-10-16T22:40:31.144Z"
+      "updatedAt": "2025-10-16T23:26:06.292Z",
+      "completedAt": "2025-10-16T23:26:06.292Z"
     },
     {
       "id": "9f8f8e43-a014-49b4-95f3-7badb43825dc",
@@ -51,5 +52,6 @@
     "412a255b-83b3-4c2c-b57d-5d5b0da46513": 4
   },
   "createdAt": "2025-10-05T21:39:57.524Z",
-  "updatedAt": "2025-10-16T22:40:31.139Z"
+  "updatedAt": "2025-10-16T22:40:31.139Z",
+  "completedAt": "2025-10-16T23:26:06.292Z"
 }

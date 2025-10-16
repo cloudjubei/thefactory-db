@@ -98,4 +98,4 @@ Embedding dimension is 384 and requires the `pgvector` extension.
 - Unit tests live under `tests/` and target near-100% coverage. They mock external dependencies (e.g., embeddings, PG client) for determinism and speed.
 - End-to-End tests live under `tests/e2e/` and run against a real PostgreSQL database with `pgvector`.
 - Public API parameters are validated at runtime by `src/validation.ts`. Malformed inputs are rejected with descriptive errors. Tests in `tests/validation.test.ts` and `tests/index-validation.test.ts` verify this behavior.
-- Lifecycle smoke tests under `tests/e2e/lifecycle.e2e.test.ts` cover managed/external ephemeral flows and reusable provisioning idempotency.
+- Lifecycle smoke tests under `tests/lifecycle/` cover managed/external ephemeral flows and reusable provisioning idempotency and are skipped automatically when Docker or required env vars are not available.
