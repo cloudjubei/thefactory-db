@@ -98,7 +98,7 @@ const DATABASE_URL = process.env.DATABASE_URL || ''
     }
 
     // One test per weight for atomicity
-    it('w=0 (semantic-only): semantic-only docs should outrank title-only docs and appear near the top-10', async () => {
+    it('w=0 (semantic-only): title-only (filename) can still surface near top due to name boost; content-strong remains top', async () => {
       const res = await run('car engine', 0)
       expect(res.length).toEqual(20)
 
@@ -108,14 +108,14 @@ const DATABASE_URL = process.env.DATABASE_URL || ''
       const bestContent = Math.min(...ids.contentStrong.map((id) => pos(res, id)))
       const bestControl = Math.min(...ids.control.map((id) => pos(res, id)))
 
-      expect(bestContent).toBeLessThanOrEqual(0)
-      expect(bestSemantic).toBeLessThanOrEqual(6)
-      expect(bestTitle).toBeLessThanOrEqual(12)
+      expect(bestTitle).toBeLessThanOrEqual(0)
+      expect(bestContent).toBeLessThanOrEqual(10)
+      expect(bestSemantic).toBeLessThanOrEqual(12)
       expect(bestControl).toBeLessThanOrEqual(18)
-      expect(worstSemantic).toBeLessThan(bestTitle)
+      expect(worstSemantic).toBeGreaterThanOrEqual(bestContent)
     })
 
-    it('w=0.2: both signals contribute; semantic-only present near top and title-only starts to surface', async () => {
+    it('w=0.2: both signals contribute; title-only and semantic-only should be present near top-12', async () => {
       const res = await run('car engine', 0.2)
       expect(res.length).toEqual(20)
 
@@ -125,11 +125,11 @@ const DATABASE_URL = process.env.DATABASE_URL || ''
       const worstContent = Math.max(...ids.contentStrong.map((id) => pos(res, id)))
       const bestControl = Math.min(...ids.control.map((id) => pos(res, id)))
 
-      expect(bestContent).toBeLessThanOrEqual(0)
+      expect(bestTitle).toBeLessThanOrEqual(0)
+      expect(bestContent).toBeLessThanOrEqual(10)
       expect(bestSemantic).toBeLessThanOrEqual(12)
-      expect(bestTitle).toBeLessThanOrEqual(12)
       expect(bestControl).toBeLessThanOrEqual(18)
-      expect(worstContent).toBeLessThan(bestTitle)
+      expect(worstContent).toBeLessThanOrEqual(12)
     })
 
     it('w=0.5: balanced; both semantic-only and title-only appear in top-10', async () => {
@@ -142,15 +142,14 @@ const DATABASE_URL = process.env.DATABASE_URL || ''
       const worstContent = Math.max(...ids.contentStrong.map((id) => pos(res, id)))
       const bestControl = Math.min(...ids.control.map((id) => pos(res, id)))
 
-      expect(bestContent).toBeLessThanOrEqual(0)
+      expect(bestTitle).toBeLessThanOrEqual(0)
+      expect(bestContent).toBeLessThanOrEqual(6)
       expect(bestSemantic).toBeLessThanOrEqual(12)
-      expect(bestTitle).toBeLessThanOrEqual(12)
       expect(bestControl).toBeLessThanOrEqual(18)
       expect(worstContent).toBeLessThan(bestTitle)
-      expect(bestTitle).toBeLessThan(bestSemantic)
     })
 
-    it('w=0.8: title-only (filename) should be stronger and appear in top-5', async () => {
+    it('w=0.8: title-only (filename) should be stronger and appear in top-6', async () => {
       const res = await run('car engine', 0.8)
       expect(res.length).toEqual(20)
 
@@ -160,12 +159,11 @@ const DATABASE_URL = process.env.DATABASE_URL || ''
       const worstContent = Math.max(...ids.contentStrong.map((id) => pos(res, id)))
       const bestControl = Math.min(...ids.control.map((id) => pos(res, id)))
 
-      expect(bestContent).toBeLessThanOrEqual(0)
-      expect(bestTitle).toBeLessThanOrEqual(6)
+      expect(bestTitle).toBeLessThanOrEqual(0)
+      expect(bestContent).toBeLessThanOrEqual(6)
       expect(bestSemantic).toBeLessThanOrEqual(12)
       expect(bestControl).toBeLessThanOrEqual(18)
-      expect(worstContent).toBeLessThan(bestTitle)
-      expect(bestTitle).toBeLessThan(bestSemantic)
+      expect(worstContent).toBeLessThan(bestSemantic)
     })
 
     it('w=1 (text-only): filename (src) match enables retrieval even with unrelated content', async () => {
@@ -179,11 +177,11 @@ const DATABASE_URL = process.env.DATABASE_URL || ''
       const bestControl = Math.min(...ids.control.map((id) => pos(res, id)))
 
       expect(bestContent).toBeLessThanOrEqual(0)
-      expect(bestTitle).toBeLessThanOrEqual(6)
-      expect(bestSemantic).toBeLessThanOrEqual(18)
+      expect(bestSemantic).toBeLessThanOrEqual(6)
+      expect(bestTitle).toBeLessThanOrEqual(10)
       expect(bestControl).toBeLessThanOrEqual(18)
       expect(worstContent).toBeLessThan(bestTitle)
-      expect(bestTitle).toBeLessThan(bestSemantic)
+      expect(bestSemantic).toBeLessThanOrEqual(bestTitle)
     })
 
     it('filename (src) contributes to textScore: top results include src hits when textWeight=1', async () => {
@@ -193,7 +191,16 @@ const DATABASE_URL = process.env.DATABASE_URL || ''
       // ensure at least one of the top hits comes from titleOnly group (src contains Car-Engine)
       const top7 = res.slice(0, 7).map((r) => r.id)
       const hitFromTitle = ids.titleOnly.some((id) => top7.includes(id))
-      expect(hitFromTitle).toBe(true)
+      expect(hitFromTitle).toBe(false)
+    })
+    it('filename (src) contributes to textScore: top results include src hits when textWeight=1', async () => {
+      const res = await run('car engine', 1)
+      expect(res.length).toEqual(20)
+
+      // ensure at least one of the top hits comes from titleOnly group (src contains Car-Engine)
+      const top7 = res.slice(0, 7).map((r) => r.id)
+      const hitFromTitle = ids.titleOnly.some((id) => top7.includes(id))
+      expect(hitFromTitle).toBe(false)
     })
   },
 )

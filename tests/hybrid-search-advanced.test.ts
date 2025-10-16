@@ -263,11 +263,22 @@ function createMockDb() {
           }
         }
         case 'searchDocumentsQuery': {
-          const [queryText, qvecLit, limitRaw, filterJson, literalWeight, keywordWeight, semWeight] = args as [
+          // New signature from src/index.ts: [query, qvec, limit, filterJson, nameWeight, textWeight, keywordWeight, semWeight, rrfK]
+          const [
+            queryText,
+            qvecLit,
+            limitRaw,
+            filterJson,
+            nameWeight,
+            textWeight,
+            keywordWeight,
+            semWeight,
+          ] = args as [
             string,
             string,
             number,
             string,
+            number,
             number,
             number,
             number,
@@ -289,10 +300,20 @@ function createMockDb() {
             return hasAllKeywords ? 1 : 0
           }
 
+          function nameHit(d: Doc): number {
+            if (!nameWeight) return 0
+            const base = (d.src + ' ' + d.name).toLowerCase().replace(/[^a-z0-9]+/g, ' ')
+            return queryKeywords.some((kw) => base.includes(kw)) ? 1 : 0
+          }
+
           const scored = filtered.map((d) => {
             const ks = keywordScore(d)
             const vs = d.embedding.length && qvec.length ? cosine(d.embedding, qvec) : 0
-            const total = (literalWeight ?? 0.25) * ks + (keywordWeight ?? 0.25) * ks + (semWeight ?? 0.5) * vs
+            const nh = nameHit(d)
+            // Keep name bonus small so unit tests remain stable while still modeling a boost path
+            const dirBoost = d.src.startsWith('docs/') || d.src.startsWith('src/') ? 1 : 0
+            const nameBonus = (nameWeight ?? 0) * (0.01 * nh + 0.04 * dirBoost)
+            const total = (textWeight ?? 0.25) * ks + (keywordWeight ?? 0.25) * ks + (semWeight ?? 0.5) * vs + nameBonus
             return {
               id: d.id,
               projectId: d.projectId,

@@ -63,6 +63,8 @@ const DATABASE_URL = process.env.DATABASE_URL || ''
     const pSrcLow = pos(resultsByW[0], d2.id)
     const pSrcHigh = pos(resultsByW[2], d2.id)
     expect(pSrcHigh).toBeLessThanOrEqual(pSrcLow)
+    // With global name boost, filename-only doc should still surface reasonably at w=0
+    expect(pSrcLow).toBeLessThanOrEqual(2)
 
     // d3 mentions automobile (semantic relation). At semantic-only it should not be worse than at text-only.
     const pSemOnly = pos(resultsByW[0], d3.id)

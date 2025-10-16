@@ -138,7 +138,7 @@ describe('TheFactoryDb', () => {
         JSON.stringify({ projectIds: ['p1'] }),
         0.25, // textWeight / 2
         0.25, // keywordWeight = textWeight
-        0.5,  // semWeight = 1 - (text+keyword)
+        0.5, // semWeight = 1 - (text+keyword)
         50,
       ])
       expect(result).toEqual([{ id: '1' }])
@@ -189,7 +189,14 @@ describe('TheFactoryDb', () => {
 
     it('getDocumentById should return a document if found', async () => {
       const db = await openDatabase({ connectionString: 'test' })
-      const expectedDoc = { id: '123', projectId: 'p1', type: 't1', name: 'Title', content: 'hello', src: 's1' }
+      const expectedDoc = {
+        id: '123',
+        projectId: 'p1',
+        type: 't1',
+        name: 'Title',
+        content: 'hello',
+        src: 's1',
+      }
       mockDbClient.query.mockResolvedValue({ rows: [expectedDoc] })
 
       const result = await db.getDocumentById('123')
@@ -255,6 +262,7 @@ describe('TheFactoryDb', () => {
         '[0.1,0.2,0.3]',
         20,
         JSON.stringify({ projectIds: ['p1'] }),
+        10,
         0.25,
         0.25,
         0.5,

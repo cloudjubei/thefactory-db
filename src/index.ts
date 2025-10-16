@@ -326,8 +326,12 @@ export async function openDatabase({
       return upsertedDocs
     } catch (e) {
       logger.error('Error in batch upsert, rolling back transaction', e)
-      await db.query('ROLLBACK')
+      try {
+        await client.query('ROLLBACK')
+      } catch {}
       throw e
+    } finally {
+      client.release()
     }
   }
 
@@ -410,6 +414,7 @@ export async function openDatabase({
     const textWeight = Math.min(1, Math.max(0, params.textWeight ?? 0.5)) / 2
     const keywordWeight = textWeight
     const semWeight = 1 - (textWeight + keywordWeight)
+    const nameWeight = 10
     const limit = Math.max(1, Math.min(1000, params.limit ?? 20))
 
     const filter: any = {}
@@ -422,6 +427,7 @@ export async function openDatabase({
       qvec,
       limit,
       Object.keys(filter).length ? JSON.stringify(filter) : JSON.stringify({}),
+      nameWeight,
       textWeight,
       keywordWeight,
       semWeight,
@@ -442,7 +448,13 @@ export async function openDatabase({
 
   async function close(): Promise<void> {
     logger.info('close')
-    await db.end()
+    try {
+      await embeddingProvider.close?.()
+    } catch {
+      // ignore embedding provider close errors
+    } finally {
+      await db.end()
+    }
   }
 
   return {

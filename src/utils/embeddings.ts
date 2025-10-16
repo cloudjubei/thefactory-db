@@ -1,10 +1,11 @@
-import { pipeline, env, Tensor } from '@xenova/transformers'
+import { pipeline, env } from '@xenova/transformers'
 
 export interface EmbeddingProvider {
   readonly name: string
   readonly dimension: number
   embed(text: string): Promise<Float32Array> | Float32Array
   embedBatch(texts: string[]): Promise<Float32Array[]>
+  close?: () => Promise<void> | void
 }
 
 // Embedding provider using Transformers.js with a sentence embedding model
@@ -14,21 +15,44 @@ export async function createLocalEmbeddingProvider(options?: {
   model?: string // Preconverted ONNX model id, default: 'Xenova/all-MiniLM-L6-v2'
   revision?: string // Optional model revision
   normalize?: boolean // L2 normalize output (default true)
+  configureEnv?: boolean // Configure transformers.js env for tests (default true)
 }): Promise<EmbeddingProvider> {
   const model = options?.model ?? 'Xenova/all-MiniLM-L6-v2'
   const revision = options?.revision
   const normalize = options?.normalize ?? true
+  const configureEnv = options?.configureEnv ?? true
+
+  // Conservative env configuration to minimize background workers and external caching side-effects in tests/CI
+  if (configureEnv) {
+    try {
+      // Avoid persisting caches in browsers; in Node this is a no-op but safe
+      env.useBrowserCache = false
+      // Prefer local cache and prevent unexpected remote calls if possible in CI
+      env.allowLocalModels = true
+      // Reduce thread usage to 1 to limit background worker creation
+      env.backends = env.backends ?? {}
+      env.backends.onnx = env.backends.onnx ?? {}
+      env.backends.onnx.wasm = env.backends.onnx.wasm ?? {}
+      // Force wasm to run in-process and not via a proxy worker to avoid lingering worker threads in Node
+      env.backends.onnx.wasm.proxy = false
+      env.backends.onnx.wasm.numThreads = 1
+    } catch {
+      // best-effort; ignore if newer/older transformers.js differs
+    }
+  }
 
   // Lazy pipeline init shared across calls
   let ready: ReturnType<typeof pipeline<'feature-extraction'>> | null = null
+  let extractorInstance: any | null = null
 
   async function getExtractor() {
     if (!ready) {
       // Only pass options if revision is explicitly provided to preserve test expectations
       const pipelineOptions: any = revision ? { revision } : undefined
       ready = pipeline('feature-extraction', model, pipelineOptions)
+      extractorInstance = await ready
     }
-    return ready
+    return extractorInstance ?? (await ready)
   }
 
   function l2norm(v: Float32Array): Float32Array {
@@ -166,6 +190,23 @@ export async function createLocalEmbeddingProvider(options?: {
         dimension = vecs[0].length
       }
       return vecs
+    },
+    async close() {
+      try {
+        const inst = extractorInstance ?? (ready ? await ready : null)
+        // Dispose pipeline/model resources if available (transformers.js >= 2 exposes dispose on pipeline/model)
+        if (inst && typeof inst.dispose === 'function') {
+          await inst.dispose()
+        }
+      } catch {
+        // ignore dispose errors
+      } finally {
+        // Clear references to allow GC
+        ready = null
+        extractorInstance = null
+        // Yield to event loop to allow any worker teardown to complete
+        await new Promise((r) => setTimeout(r, 0))
+      }
     },
   }
 

@@ -286,6 +286,7 @@ CREATE OR REPLACE FUNCTION hybrid_search_documents(
   query_embedding   vector,
   match_count       integer,
   filter            jsonb DEFAULT '{}'::jsonb,
+  name_weight       float  DEFAULT 1.0,
   literal_weight    float  DEFAULT 0.3,
   full_text_weight  float  DEFAULT 0.3,
   semantic_weight   float  DEFAULT 0.4,
@@ -349,7 +350,7 @@ token_scores AS (
          ts_rank_cd(d.fts, t.ts_query) AS token_score
   FROM base_documents d
   CROSS JOIN or_ts_query t
-  WHERE d.fts @@ t.ts_query
+  WHERE t.ts_query IS NOT NULL AND d.fts @@ t.ts_query
 ),
 -- CTE for literal match counts and ranking
 literal_search AS (
@@ -396,7 +397,7 @@ scored AS (
   FULL JOIN semantic s ON ft.id = s.id
   FULL JOIN literal_search ls ON ls.id = COALESCE(ft.id, s.id)
 )
--- Final result with combined keyword score
+-- Final result with combined keyword score and name-based boost
 SELECT d.id,
        d.project_id,
        d.type,
@@ -406,8 +407,16 @@ SELECT d.id,
        d.created_at,
        d.updated_at,
        d.metadata,
-       scored.rrf_score,
-       scored.rrf_score / ((full_text_weight + semantic_weight + literal_weight) / (rrf_k + 1)::float) AS similarity,
+       -- apply name boost if the query matches the document name tokens
+       (scored.rrf_score + CASE WHEN EXISTS (
+         SELECT 1 FROM or_ts_query t
+         WHERE t.ts_query IS NOT NULL AND to_tsvector('english', tokenize_code(d.name)) @@ t.ts_query
+       ) THEN name_weight ELSE 0 END) AS rrf_score,
+       (scored.rrf_score + CASE WHEN EXISTS (
+         SELECT 1 FROM or_ts_query t
+         WHERE t.ts_query IS NOT NULL AND to_tsvector('english', tokenize_code(d.name)) @@ t.ts_query
+       ) THEN name_weight ELSE 0 END)
+       / ((full_text_weight + semantic_weight + literal_weight) / (rrf_k + 1)::float) AS similarity,
        COALESCE(1 - (embedding <=> query_embedding) / 2, 0) AS cosine_similarity,
        COALESCE(ts.token_score, 0.0) AS keyword_score,
        COALESCE(ls.literal_count, 0) AS literal_score
@@ -415,7 +424,7 @@ FROM scored
 JOIN base_documents d ON d.id = scored.id
 LEFT JOIN token_scores ts ON ts.id = d.id
 LEFT JOIN literal_search ls ON ls.id = d.id
-ORDER BY scored.rrf_score DESC, d.name ASC, d.updated_at DESC
+ORDER BY rrf_score DESC, d.name ASC, d.updated_at DESC
 LIMIT match_count;
 $$;
 
@@ -586,7 +595,7 @@ SELECT
   keyword_score as "keywordScore",
   cosine_similarity as "vecScore",
   similarity as "totalScore"
-FROM hybrid_search_documents($1, $2::vector, $3::int, $4::jsonb, $5::float, $6::float, $7::float, $8::int);
+FROM hybrid_search_documents($1, $2::vector, $3::int, $4::jsonb, $5::float, $6::float, $7::float, $8::float, $9::int);
 `
 
 // ----------------------------------------------------------
