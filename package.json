@@ -22,11 +22,15 @@
   },
   "dependencies": {
     "@xenova/transformers": "^2.17.2",
+    "dockerode": "^3.3.4",
+    "get-port": "^7.1.0",
     "js-tiktoken": "^1.0.21",
     "pg": "^8.16.3",
+    "testcontainers": "^10.10.3",
     "uuid": "^13.0.0"
   },
   "devDependencies": {
+    "@types/dockerode": "^3.3.24",
     "@types/node": "^24.3.1",
     "@types/pg": "^8.15.5",
     "@vitest/coverage-v8": "^3.2.4",

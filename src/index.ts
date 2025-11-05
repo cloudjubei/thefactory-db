@@ -520,5 +520,6 @@ export async function openDatabase({
 export type * from './types.js'
 
 // Runtime lifecycle helpers (managed/external ephemeral DB)
-export { createDatabase, destroyDatabase } from './runtime.js'
+export { createDatabase, destroyDatabase, createReusableDatabase } from './runtime.js'
 export type { CreateDatabaseOptions } from './runtime.js'
+export type { CreateReusableDatabaseOptions } from './runtime.js'

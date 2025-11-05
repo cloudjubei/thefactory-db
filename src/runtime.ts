@@ -3,8 +3,11 @@ import { randomBytes } from 'crypto'
 import type { LogLevel } from './types.js'
 import type { TheFactoryDb } from './index.js'
 
-// Testcontainers core
+// Testcontainers core for ephemeral managed DBs
 import { GenericContainer, Wait, StartedTestContainer } from 'testcontainers'
+// Dockerode for reusable managed DB provisioning
+import Docker from 'dockerode'
+import getPort from 'get-port'
 
 export type CreateDatabaseOptions = {
   connectionString?: string
@@ -76,6 +79,24 @@ function cloneUrlWithDb(u: URL, dbName: string): URL {
   const copy = new URL(u.toString())
   copy.pathname = `/${dbName}`
   return copy
+}
+
+function buildConnectionStringParts({
+  host,
+  port,
+  user,
+  password,
+  db,
+}: {
+  host: string
+  port: number
+  user: string
+  password: string
+  db: string
+}): string {
+  const pw = encodeURIComponent(password)
+  const usr = encodeURIComponent(user)
+  return `postgresql://${usr}:${pw}@${host}:${port}/${db}`
 }
 
 // Internal handle with implementation details for teardown
@@ -211,4 +232,107 @@ export async function createDatabase(opts?: CreateDatabaseOptions): Promise<Data
 export async function destroyDatabase(handle: DatabaseHandle): Promise<void> {
   const h = handle as InternalHandle
   await safeDestroy(h)
+}
+
+export type CreateReusableDatabaseOptions = { logLevel?: LogLevel }
+
+/**
+ * Ensure a long-lived local Postgres+pgvector container exists and is running.
+ * - image: 'pgvector/pgvector:pg16'
+ * - container name: 'thefactory-db'
+ * - env: POSTGRES_USER=thefactory, POSTGRES_PASSWORD=thefactory, POSTGRES_DB=thefactorydb
+ * - port mapping: try 5435 -> 5432, otherwise first free port; mapping is persisted by Docker
+ * - returns actual connection string and whether it was created in this call
+ */
+export async function createReusableDatabase(
+  options?: CreateReusableDatabaseOptions,
+): Promise<{ connectionString: string; created: boolean }> {
+  const docker = new Docker()
+  const image = 'pgvector/pgvector:pg16'
+  const name = 'thefactory-db'
+  const user = 'thefactory'
+  const password = 'thefactory'
+  const db = 'thefactorydb'
+
+  // Helper to derive connection string from container inspect
+  const getConnFromInspect = (info: any): string => {
+    const portBindings = info?.NetworkSettings?.Ports?.['5432/tcp'] as
+      | Array<{ HostIp: string; HostPort: string }>
+      | undefined
+    const hostPort = portBindings && portBindings[0] && Number(portBindings[0].HostPort)
+    if (!hostPort || Number.isNaN(hostPort)) {
+      throw new Error('Unable to determine mapped host port for reusable database container')
+    }
+    return buildConnectionStringParts({ host: 'localhost', port: hostPort, user, password, db })
+  }
+
+  // Find container by name (includes leading '/name' in Names array)
+  const existingList = await docker.listContainers({ all: true, filters: { name: [name] } as any })
+  const existingInfo = existingList.find((c) => (c.Names || []).some((n) => n === `/${name}`))
+  let container = existingInfo ? docker.getContainer(existingInfo.Id) : undefined
+
+  if (container) {
+    const inspect = await container.inspect()
+    const running = inspect?.State?.Running
+    const connectionString = getConnFromInspect(inspect)
+    if (!running) {
+      await container.start()
+      // Readiness guard: wait until SELECT 1 works
+      await waitForSelect1(connectionString)
+    }
+    return { connectionString, created: false }
+  }
+
+  // Pull image if not present
+  const images = await docker.listImages({ filters: { reference: [image] } as any })
+  if (!images || images.length === 0) {
+    await new Promise<void>((resolve, reject) => {
+      docker.pull(image, (err, stream) => {
+        if (err) return reject(err)
+        try {
+          stream.on('end', () => resolve())
+          stream.on('error', (e: any) => reject(e))
+          // drain stream to ensure events fire
+          stream.resume?.()
+        } catch (e) {
+          resolve() // best-effort
+        }
+      })
+    })
+  }
+
+  // Port strategy: prefer 5435, otherwise first available
+  const preferred = 5435
+  const hostPort = await getPort({ port: preferred })
+
+  // Create container with deterministic name and env
+  container = await docker.createContainer({
+    name,
+    Image: image,
+    Env: [
+      `POSTGRES_USER=${user}`,
+      `POSTGRES_PASSWORD=${password}`,
+      `POSTGRES_DB=${db}`,
+    ],
+    ExposedPorts: { '5432/tcp': {} },
+    HostConfig: {
+      PortBindings: { '5432/tcp': [{ HostPort: String(hostPort) }] },
+    },
+  })
+
+  await container.start()
+
+  // Inspect to confirm mapping (source of truth)
+  const inspect = await container.inspect()
+  const connectionString = getConnFromInspect(inspect)
+
+  // Readiness guard
+  await waitForSelect1(connectionString)
+
+  // Initialize schema once via openDatabase(), then close immediately
+  const { openDatabase } = await import('./index.js')
+  const client = await openDatabase({ connectionString, logLevel: options?.logLevel })
+  await client.close()
+
+  return { connectionString, created: true }
 }

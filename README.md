@@ -169,3 +169,36 @@ node scripts/clear.ts -- --url postgresql://user:password@localhost:55432/thefac
 ```bash
 node scripts/count.ts -- --url postgresql://user:password@localhost:55432/thefactory-db
 ```
+
+## Reusable local database (managed via Docker)
+
+For a persistent local PostgreSQL with pgvector managed by this package, use `createReusableDatabase()`.
+
+Requirements:
+- Docker daemon available.
+- Image `pgvector/pgvector:pg16` (pulled if missing).
+
+Behavior:
+- Ensures a long-lived container named `thefactory-db` exists and is running with:
+  - `POSTGRES_USER=thefactory`, `POSTGRES_PASSWORD=thefactory`, `POSTGRES_DB=thefactorydb`
+  - Host port mapping prefers 5435 -> 5432; if 5435 is occupied, the first free port is used. Docker persists the mapping.
+- Returns `{ connectionString, created }`, where `created` is true only on first creation.
+- Initializes the schema on first creation, then closes the connection.
+
+Example:
+
+```ts
+import { createReusableDatabase, openDatabase } from 'thefactory-db'
+
+const { connectionString, created } = await createReusableDatabase()
+console.log('DB ready at', connectionString, 'created:', created)
+
+const db = await openDatabase({ connectionString })
+// ...
+await db.close()
+```
+
+Notes:
+- Idempotent: if the container already exists, it is reused and started if needed. No data is dropped.
+- Always use the returned connection string; the host port may differ from 5435 if it was in use at creation time.
+- To remove the instance: stop and remove the `thefactory-db` container via Docker.

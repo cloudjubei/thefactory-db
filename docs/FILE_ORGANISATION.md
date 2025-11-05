@@ -12,7 +12,7 @@
 - `README.md`: Quick-start usage and utility scripts.
 - `package.json`, `tsconfig.json`: Build and TypeScript configuration.
 - `src/`: Source code for the database wrapper and types.
-  - `src/index.ts`: Public entry point. Exports `openDatabase(options)` which returns a `Database` API instance. The instance provides:
+  - `src/index.ts`: Public entry point. Exports `openDatabase(options)` which returns a `Database` API instance. Also re-exports runtime lifecycle helpers: `createDatabase`, `destroyDatabase`, and `createReusableDatabase`.
     - Documents API (text content)
       - `addDocument`, `getDocumentById`, `getDocumentBySrc`, `updateDocument`, `deleteDocument`
       - `searchDocuments`, `matchDocuments`, `clearDocuments`
@@ -34,6 +34,7 @@
       - Managed mode (default): starts a fresh `pgvector/pgvector:pg16` container via Testcontainers, waits for readiness (port + `SELECT 1`), initializes schema via `openDatabase()`, and returns a client plus a `destroy()` function to tear it down.
       - External mode: given a server `connectionString`, creates a temporary database `tfdb_<random>`, initializes schema, and returns a client plus `destroy()` which drops the temporary database.
     - `destroyDatabase(handle)`: Idempotent teardown for either mode. Managed stops and removes the container; external drops the temp DB from the admin database.
+    - `createReusableDatabase(options?: { logLevel?: LogLevel }): Promise<{ connectionString: string; created: boolean }>`: Creates or reuses a long-lived Docker container named `thefactory-db` using image `pgvector/pgvector:pg16` and deterministic credentials. Prefers host port 5435, falling back to a free port, and returns the actual connection string. Initializes schema on first creation and never drops data. Intended for reuse across runs.
     - Process signals SIGINT/SIGTERM are trapped to auto-cleanup managed containers started in this process.
 - `docs/`: Human-facing documentation for this package (this file).
   - `docs/CODE_STANDARD.md`: Coding standards, architectural patterns, and best practices.
