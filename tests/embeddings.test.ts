@@ -65,7 +65,11 @@ describe('createLocalEmbeddingProvider', () => {
     expect(len).toBeGreaterThan(0.999)
     expect(len).toBeLessThan(1.001)
     expect(provider.dimension).toBe(vec.length)
-    expect(pipeline).toHaveBeenCalledWith('feature-extraction', 'Xenova/all-MiniLM-L6-v2', undefined)
+    expect(pipeline).toHaveBeenCalledWith(
+      'feature-extraction',
+      'Xenova/all-MiniLM-L6-v2',
+      undefined,
+    )
   })
 
   it('respects custom model and revision options', async () => {

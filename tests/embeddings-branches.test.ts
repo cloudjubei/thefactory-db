@@ -29,7 +29,9 @@ describe('embeddings additional branches', () => {
   })
 
   it("handles tensor-like output with to('cpu') returning an array (Array.isArray(maybe) true path)", async () => {
-    ;(pipeline as any).mockResolvedValueOnce(async () => () => ({ to: (_loc: string) => [1, 2, 3] }))
+    ;(pipeline as any).mockResolvedValueOnce(async () => () => ({
+      to: (_loc: string) => [1, 2, 3],
+    }))
 
     const provider = await createLocalEmbeddingProvider()
     const vec = await provider.embed('y')
@@ -40,9 +42,9 @@ describe('embeddings additional branches', () => {
   })
 
   it("handles tensor-like output with to('cpu') returning an object with data (Array.isArray(maybe) false path)", async () => {
-    ;(pipeline as any).mockResolvedValueOnce(
-      async () => () => ({ to: (_loc: string) => ({ data: new Float32Array([1, 2, 3]) }) }),
-    )
+    ;(pipeline as any).mockResolvedValueOnce(async () => () => ({
+      to: (_loc: string) => ({ data: new Float32Array([1, 2, 3]) }),
+    }))
 
     const provider = await createLocalEmbeddingProvider()
     const vec = await provider.embed('z')
@@ -72,7 +74,9 @@ describe('embeddings additional branches', () => {
   })
 
   it('embedAsync handles output with data as a Float32Array', async () => {
-    ;(pipeline as any).mockResolvedValueOnce(async () => () => ({ data: new Float32Array([1, 2, 3]) }))
+    ;(pipeline as any).mockResolvedValueOnce(async () => () => ({
+      data: new Float32Array([1, 2, 3]),
+    }))
     const provider = await createLocalEmbeddingProvider({ normalize: false })
     const vec = await provider.embed('a')
     expect(Array.from(vec)).toEqual([1, 2, 3])

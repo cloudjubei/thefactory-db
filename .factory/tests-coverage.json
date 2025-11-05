@@ -13,17 +13,7 @@
       "pct_branch": 85.8108108108108,
       "pct_functions": 95.65217391304348,
       "pct_lines": 97.53424657534246,
-      "uncovered_lines": [
-        316,
-        317,
-        319,
-        321,
-        322,
-        323,
-        324,
-        325,
-        336
-      ]
+      "uncovered_lines": [316, 317, 319, 321, 322, 323, 324, 325, 336]
     },
     "src/logger.ts": {
       "pct_statements": 100,
@@ -44,11 +34,7 @@
       "pct_branch": 90,
       "pct_functions": 100,
       "pct_lines": 98.08917197452229,
-      "uncovered_lines": [
-        109,
-        198,
-        199
-      ]
+      "uncovered_lines": [109, 198, 199]
     },
     "src/utils/json.ts": {
       "pct_statements": 100,
@@ -72,7 +58,5 @@
     "pct_lines": 99.37477407855211
   },
   "message": "",
-  "ignored_files": [
-    "src/utils.ts"
-  ]
+  "ignored_files": ["src/utils.ts"]
 }

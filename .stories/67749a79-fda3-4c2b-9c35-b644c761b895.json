@@ -60,10 +60,7 @@
       "status": "+",
       "title": "Make more complex e2e tests",
       "description": "THere should be an equivalent e2e test version of @tests/hybrid-search-advanced.test.ts .\nWe should have one version for entities and one for documents.\nThe goal is to stress test different weights to the scores [0,0.2,0.5,0.8,1] of the keywords vs embedding weights.\nWe also make sure that files are picked up based on their file names - so there need to be appropriate tests for that.\nFollow @docs/TESTING.md for standards. \nMake sure the tests are as atomic and self-contained as possible.\nPrefer more easily failable tests rather than a huge battery of tests that could fail at the beginning.",
-      "context": [
-        "tests/hybrid-search-advanced.test.ts",
-        "docs/TESTING.md"
-      ],
+      "context": ["tests/hybrid-search-advanced.test.ts", "docs/TESTING.md"],
       "createdAt": "2025-09-23T15:07:16.099Z",
       "updatedAt": "2025-09-23T17:00:30.567Z",
       "blockers": [],
@@ -85,9 +82,7 @@
       "status": "+",
       "title": "Title doesn't get taken into account when hybrid searching",
       "description": "Inside the definition of hybrid search in @src/utils.ts - for documents, `src` isn't taken into account - the name portion of it should be. But even better, we should enforce accepting a name, inside DocumentInput, and store it in the database and then keyword search (inside hybrid search) should also test itself against this value.",
-      "context": [
-        "src/utils.ts"
-      ],
+      "context": ["src/utils.ts"],
       "createdAt": "2025-09-23T17:01:25.209Z",
       "updatedAt": "2025-09-24T03:00:18.323Z",
       "blockers": [],
@@ -148,9 +143,7 @@
       "status": "+",
       "title": "when multiple keywords are input they are not treated separately",
       "description": "I keep observing a textScore of 0 when calling `searchDocuments` in @src/index.ts . When only one keyword is input, the textScore is correct, but with multiple keywords that are space separated - the result is pretty much always 0.\nWhat should happen is that the input should be space separated, and for each such keyword the textScore should be computed and then the maximum of all these keywords should be taken - that should be the final score for a set of keywords. This should be directly inside the SQL `hybrid_search_entities` and `hybrid_search_documents` functions.",
-      "context": [
-        "src/index.ts"
-      ],
+      "context": ["src/index.ts"],
       "blockers": [],
       "createdAt": "2025-09-24T02:37:08.544Z",
       "updatedAt": "2025-09-24T02:42:00.191Z",
@@ -161,10 +154,7 @@
       "status": "+",
       "title": "Batching of embeddings",
       "description": "In @src/index.ts in the function `upsertDocuments` we are embedding the content of many documents at once and this takes a long time. So we require this improvement - the @src/utils/embeddings.ts needs to allow batched embeddings, so that it can quicker do the whole batch in one go. Sample code for the usage of this is commented out in `upsertDocuments` .",
-      "context": [
-        "src/index.ts",
-        "src/utils/embeddings.ts"
-      ],
+      "context": ["src/index.ts", "src/utils/embeddings.ts"],
       "blockers": [],
       "createdAt": "2025-09-29T20:28:01.709Z",
       "updatedAt": "2025-09-30T01:11:34.522Z",
@@ -175,9 +165,7 @@
       "status": "+",
       "title": "Check hashes before embeddings",
       "description": "In `upsertDocuments` in @src/index.ts before proceeding into the embeddings, there should be a function that would accept the src/ids of the documents and their contents and would return all the documents that would be updated (thus requiring embeddings) and then only these documents would be passed onto the embeddings and the actual upsert. The embeddings are the bottleneck, so we need to make sure that as few documents as possible get re-embedded - thus we need a pre-emptive hash check.",
-      "context": [
-        "src/index.ts"
-      ],
+      "context": ["src/index.ts"],
       "blockers": [],
       "createdAt": "2025-09-29T22:45:51.048Z",
       "updatedAt": "2025-09-30T00:59:38.344Z",

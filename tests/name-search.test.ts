@@ -174,9 +174,22 @@ describe('Direct name/src search', () => {
 
   it('honors filters (ids, types, projectIds)', async () => {
     const db = await openDatabase({ connectionString: 'x' })
-    const p1 = 'p1', p2 = 'p2'
-    const a = await db.addDocument({ projectId: p1, type: 'x', name: 'apple', src: 's-apple', content: '' })
-    const b = await db.addDocument({ projectId: p2, type: 'y', name: 'applet', src: 's-applet', content: '' })
+    const p1 = 'p1',
+      p2 = 'p2'
+    const a = await db.addDocument({
+      projectId: p1,
+      type: 'x',
+      name: 'apple',
+      src: 's-apple',
+      content: '',
+    })
+    const b = await db.addDocument({
+      projectId: p2,
+      type: 'y',
+      name: 'applet',
+      src: 's-applet',
+      content: '',
+    })
 
     const resType = await db.searchDocuments({ query: 'apple', types: ['x'], limit: 10 })
     expect(resType.every((r) => r.type === 'x')).toBe(true)
@@ -194,7 +207,11 @@ describe('Direct name/src search', () => {
     await db.addDocument({ projectId, type: 't', name: 'first', src: 's-first', content: '' })
     await db.addDocument({ projectId, type: 't', name: 'second', src: 'beta-file', content: '' })
 
-    const res = await db.searchDocuments({ query: 'alpha beta', projectIds: [projectId], limit: 10 })
+    const res = await db.searchDocuments({
+      query: 'alpha beta',
+      projectIds: [projectId],
+      limit: 10,
+    })
     const names = res.map((r) => r.name)
     expect(names).toContain('second') // matched via src token 'beta'
   })

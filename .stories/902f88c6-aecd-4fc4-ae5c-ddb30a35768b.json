@@ -9,9 +9,7 @@
       "status": "+",
       "title": "Add tests for src/connection.ts",
       "description": "Improve test coverage for @src/connection.ts.\nTarget uncovered lines: 12-14, 16-22, 35-42, 44-45.",
-      "context": [
-        "src/connection.ts"
-      ],
+      "context": ["src/connection.ts"],
       "blockers": [],
       "createdAt": "2025-09-29T19:11:22.508Z",
       "updatedAt": "2025-09-29T19:17:58.932Z",
@@ -22,9 +20,7 @@
       "status": "+",
       "title": "Add tests for src/utils/tokenizer.ts",
       "description": "Improve test coverage for @src/utils/tokenizer.ts.\nTarget uncovered lines: 49, 53-56, 81-86, 88-89.",
-      "context": [
-        "src/utils/tokenizer.ts"
-      ],
+      "context": ["src/utils/tokenizer.ts"],
       "blockers": [],
       "createdAt": "2025-09-29T19:11:32.553Z",
       "updatedAt": "2025-09-29T19:20:17.479Z",
@@ -35,9 +31,7 @@
       "status": "+",
       "title": "Add tests for src/utils/json.ts",
       "description": "Improve test coverage for @src/utils/json.ts.\nTarget uncovered lines: 18, 28-29, 73, 81.",
-      "context": [
-        "src/utils/json.ts"
-      ],
+      "context": ["src/utils/json.ts"],
       "blockers": [],
       "createdAt": "2025-09-29T19:11:39.404Z",
       "updatedAt": "2025-09-29T19:23:28.768Z",
@@ -48,9 +42,7 @@
       "status": "+",
       "title": "Add tests for src/utils/embeddings.ts",
       "description": "Improve test coverage for @src/utils/embeddings.ts.\nTarget uncovered lines: 54-56, 58-63.",
-      "context": [
-        "src/utils/embeddings.ts"
-      ],
+      "context": ["src/utils/embeddings.ts"],
       "blockers": [],
       "createdAt": "2025-09-29T19:11:41.137Z",
       "updatedAt": "2025-09-29T19:26:29.024Z",
@@ -77,9 +69,7 @@
       "status": "+",
       "title": "Add tests for src/utils/embeddings.ts",
       "description": "Improve test coverage for @src/utils/embeddings.ts.\nTarget uncovered lines: 59-60, 83-84, 98-99, 105-106, 140-141.",
-      "context": [
-        "src/utils/embeddings.ts"
-      ],
+      "context": ["src/utils/embeddings.ts"],
       "blockers": [],
       "createdAt": "2025-09-30T01:11:19.431Z",
       "updatedAt": "2025-09-30T01:13:21.590Z",
@@ -90,9 +80,7 @@
       "status": "+",
       "title": "Add tests for src/utils/embeddings.ts",
       "description": "Improve test coverage for @src/utils/embeddings.ts.\nTarget uncovered lines: 85.",
-      "context": [
-        "src/utils/embeddings.ts"
-      ],
+      "context": ["src/utils/embeddings.ts"],
       "blockers": [],
       "createdAt": "2025-09-30T10:21:50.155Z",
       "updatedAt": "2025-09-30T12:23:17.425Z",
@@ -114,9 +102,7 @@
       "status": "+",
       "title": "Add tests for src/index.ts",
       "description": "Improve test coverage for @src/index.ts .\nTarget uncovered lines: 221, 257-261, 264-271, 274-277, 279-280, 282-285, 287, 289, 291-293, 295-296, 298-303, 305-313, 315-319, 321-331, 334-337, 368-370 .",
-      "context": [
-        "src/index.ts"
-      ],
+      "context": ["src/index.ts"],
       "blockers": [],
       "createdAt": "2025-10-16T21:43:11.025Z",
       "updatedAt": "2025-10-16T22:03:35.656Z",
@@ -127,9 +113,7 @@
       "status": "+",
       "title": "Add tests for src/utils/embeddings.ts",
       "description": "Improve test coverage for @src/utils/embeddings.ts .\nTarget uncovered lines: 109, 194-195, 197-205 .",
-      "context": [
-        "src/utils/embeddings.ts"
-      ],
+      "context": ["src/utils/embeddings.ts"],
       "blockers": [],
       "createdAt": "2025-10-16T21:43:12.719Z",
       "updatedAt": "2025-10-16T21:59:19.317Z",

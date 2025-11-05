@@ -40,7 +40,9 @@ describe('openPostgres (connection)', () => {
 
     const pool = await openPostgres('postgres://user:pass@host:5432/db')
 
-    expect(hoisted.PoolCtor).toHaveBeenCalledWith({ connectionString: 'postgres://user:pass@host:5432/db' })
+    expect(hoisted.PoolCtor).toHaveBeenCalledWith({
+      connectionString: 'postgres://user:pass@host:5432/db',
+    })
     expect(hoisted.poolMock.connect).toHaveBeenCalledTimes(1)
 
     // Expect both schema and hybrid SQL to be executed in order

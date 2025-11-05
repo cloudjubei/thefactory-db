@@ -39,7 +39,9 @@ describe('tokenizer', () => {
     // words -> ['hello', 'world', '123'] -> whitespace fallback uses hashing
     expect(res.tokenCount).toBe(3)
     // ensure produced tokens are 31-bit positive integers (clamped)
-    expect(res.tokens.every((t: number) => Number.isInteger(t) && t >= 0 && t <= 0x7fffffff)).toBe(true)
+    expect(res.tokens.every((t: number) => Number.isInteger(t) && t >= 0 && t <= 0x7fffffff)).toBe(
+      true,
+    )
   })
 
   it('explicit whitespace strategy maps identical words to identical token ids', () => {

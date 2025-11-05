@@ -60,10 +60,7 @@
       "title": "Following the docker steps in README.md doesn't work",
       "description": "After following @README.md to set up docker with postgresql and then using the @scripts/populate.ts  script as described, the code inside populate cannot connect, the error is:\n[thefactory-db] URL:  postgresql://user:password@localhost:5432/thefactory-db\n[thefactory-db] Error: error: database \"thefactory-db\" does not exist\n\nI suspect that we require a Dockerfile that will create the database just as it's explained at the end of option 1 in the README.md",
       "plan": "",
-      "context": [
-        "README.md",
-        "scripts/populate.ts"
-      ],
+      "context": ["README.md", "scripts/populate.ts"],
       "acceptance": [],
       "blockers": [],
       "createdAt": "2025-09-16T13:01:26.233Z",

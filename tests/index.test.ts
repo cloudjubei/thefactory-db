@@ -305,7 +305,14 @@ describe('TheFactoryDb', () => {
 
     it('getDocumentBySrc should return a document if found', async () => {
       const db = await openDatabase({ connectionString: 'test' })
-      const expectedDoc = { id: '123', projectId: 'p1', type: 't1', name: 'Title', content: 'hello', src: 's1' }
+      const expectedDoc = {
+        id: '123',
+        projectId: 'p1',
+        type: 't1',
+        name: 'Title',
+        content: 'hello',
+        src: 's1',
+      }
       mockDbClient.query.mockResolvedValue({ rows: [expectedDoc] })
 
       const result = await db.getDocumentBySrc('p1', 's1')
@@ -361,7 +368,11 @@ describe('TheFactoryDb', () => {
 
       const result = await db.upsertDocuments(inputs)
 
-      expect(mockDbClient.query).toHaveBeenCalledWith('FAKE_SQL', ['p1', ['s1', 's2'], ['new', 'same']])
+      expect(mockDbClient.query).toHaveBeenCalledWith('FAKE_SQL', [
+        'p1',
+        ['s1', 's2'],
+        ['new', 'same'],
+      ])
       expect(mockDbClient.query).toHaveBeenCalledWith('BEGIN')
       expect(mockEmbeddingProvider.embed).toHaveBeenCalledWith('new n1 s1')
       expect(mockDbClient.query).toHaveBeenCalledWith('FAKE_SQL', [
@@ -480,7 +491,9 @@ describe('TheFactoryDb', () => {
 
       const result = await db.updateDocument('123', patch)
       expect(result).toBeUndefined()
-      expect(mockLogger.warn).toHaveBeenCalledWith('updateDocument failed: document not found', { id: '123' })
+      expect(mockLogger.warn).toHaveBeenCalledWith('updateDocument failed: document not found', {
+        id: '123',
+      })
     })
 
     it('deleteDocument should return true if deleted', async () => {

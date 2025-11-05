@@ -86,8 +86,20 @@ const DATABASE_URL = process.env.DATABASE_URL || ''
     // 2. Mixed batch: update 2, insert 1 new, 1 unchanged
     const mixedDocs = [
       { projectId, type: 'post', src: 'p1', name: 'Post 1', content: 'This is the first post.' }, // unchanged
-      { projectId, type: 'post', src: 'p2', name: 'Post 2 Updated', content: 'This is the second post, updated.' }, // updated
-      { projectId, type: 'post', src: 'p3', name: 'Post 3 Updated', content: 'This is the third post, updated.' }, // updated
+      {
+        projectId,
+        type: 'post',
+        src: 'p2',
+        name: 'Post 2 Updated',
+        content: 'This is the second post, updated.',
+      }, // updated
+      {
+        projectId,
+        type: 'post',
+        src: 'p3',
+        name: 'Post 3 Updated',
+        content: 'This is the third post, updated.',
+      }, // updated
       { projectId, type: 'post', src: 'p4', name: 'Post 4', content: 'This is a new fourth post.' }, // new
     ]
 

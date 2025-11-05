@@ -9,78 +9,78 @@
 */
 
 export function stringifyJsonValues(value: unknown): string {
-  const seen = new WeakSet<object>();
-  const tokens: string[] = [];
+  const seen = new WeakSet<object>()
+  const tokens: string[] = []
 
   const pushPrimitive = (v: unknown) => {
     switch (typeof v) {
       case 'string':
-        if (v.length) tokens.push(v);
-        else tokens.push('');
-        break;
+        if (v.length) tokens.push(v)
+        else tokens.push('')
+        break
       case 'number':
-        if (Number.isFinite(v as number)) tokens.push(String(v));
-        else tokens.push('');
-        break;
+        if (Number.isFinite(v as number)) tokens.push(String(v))
+        else tokens.push('')
+        break
       case 'boolean':
-        tokens.push(String(v));
-        break;
+        tokens.push(String(v))
+        break
       case 'bigint':
-        tokens.push(String(v));
-        break;
+        tokens.push(String(v))
+        break
       case 'symbol':
         // ignore symbols
-        break;
+        break
       case 'undefined':
         // ignore undefined (not representable in JSON)
-        break;
+        break
       case 'function':
         // ignore functions
-        break;
+        break
       case 'object':
-        if (v === null) tokens.push('null');
-        break;
+        if (v === null) tokens.push('null')
+        break
     }
-  };
+  }
 
   const visit = (node: unknown): void => {
     // Primitives
     if (node === null || typeof node !== 'object') {
-      pushPrimitive(node);
-      return;
+      pushPrimitive(node)
+      return
     }
 
     // Arrays
     if (Array.isArray(node)) {
       for (let i = 0; i < node.length; i++) {
-        visit(node[i]);
+        visit(node[i])
       }
-      return;
+      return
     }
 
     // Objects
-    const obj = node as Record<string, unknown>;
-    if (seen.has(obj)) return; // avoid cycles
-    seen.add(obj);
+    const obj = node as Record<string, unknown>
+    if (seen.has(obj)) return // avoid cycles
+    seen.add(obj)
 
     // Deterministic ordering by sorted keys
-    const keys = Object.keys(obj).sort();
+    const keys = Object.keys(obj).sort()
     for (const k of keys) {
       // Exclude keys themselves; only traverse into values
       try {
-        visit(obj[k]);
+        visit(obj[k])
       } catch {
         // Ignore property access errors
       }
     }
-  };
+  }
 
   try {
-    visit(value);
+    visit(value)
   } catch {
     // On unexpected errors, fall back to best-effort primitives pushed so far
   }
 
   // Join using a single space; filter out empty tokens produced by empty strings or unsupported values
-  return tokens.filter(t => t !== '').join(' ');
+  return tokens.filter((t) => t !== '').join(' ')
 }
