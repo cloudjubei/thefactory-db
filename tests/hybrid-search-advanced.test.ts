@@ -328,6 +328,60 @@ function createMockDb() {
           scored.sort((a, b) => b.totalScore - a.totalScore)
           return { rows: scored.filter((r) => r.totalScore > 0).slice(0, limit) }
         }
+        case 'searchDocumentsByName': {
+          const [queryText, limitRaw, filterJson] = args as [string, number, string]
+          const limit = Math.min(10, Math.max(1, limitRaw ?? 10))
+          let filtered = docs.slice()
+          const filter = filterJson ? JSON.parse(filterJson) : {}
+          if (filter.ids) filtered = filtered.filter((d) => filter.ids.includes(d.id))
+          if (filter.types) filtered = filtered.filter((d) => filter.types.includes(d.type))
+          if (filter.projectIds)
+            filtered = filtered.filter((d) => filter.projectIds.includes(d.projectId))
+
+          const tokens = (queryText || '')
+            .toLowerCase()
+            .replace(/[^a-z0-9\s]+/g, ' ')
+            .split(/\s+/)
+            .filter(Boolean)
+
+          function strength(d: Doc): number {
+            const name = (d.name || '').toLowerCase()
+            const src = (d.src || '').toLowerCase()
+            let s = 0
+            for (const t of tokens) {
+              s = Math.max(
+                s,
+                name === t ? 3 : name.startsWith(t) ? 2 : name.includes(t) ? 1 : 0,
+                src === t ? 3 : src.startsWith(t) ? 2 : src.includes(t) ? 1 : 0,
+              )
+            }
+            return s
+          }
+
+          const rows = filtered
+            .map((d) => ({
+              id: d.id,
+              projectId: d.projectId,
+              type: d.type,
+              name: d.name,
+              content: d.content,
+              src: d.src,
+              createdAt: d.createdAt,
+              updatedAt: d.updatedAt,
+              metadata: d.metadata ?? null,
+              textScore: null,
+              keywordScore: null,
+              vecScore: null,
+              totalScore: strength(d),
+            }))
+            .filter((r) => r.totalScore > 0)
+          rows.sort((a, b) => {
+            if (b.totalScore !== a.totalScore) return b.totalScore - a.totalScore
+            if (a.name !== b.name) return a.name < b.name ? -1 : 1
+            return a.updatedAt < b.updatedAt ? 1 : -1
+          })
+          return { rows: rows.slice(0, limit) }
+        }
         default:
           return { rows: [] }
       }
@@ -353,6 +407,7 @@ vi.mock('../src/utils', () => ({
     clearDocumentsByProject: 'clearDocumentsByProject',
     matchDocuments: 'matchDocuments',
     searchDocumentsQuery: 'searchDocumentsQuery',
+    searchDocumentsByName: 'searchDocumentsByName',
   },
 }))
 

@@ -496,12 +496,14 @@ describe('TheFactoryDb', () => {
     it('searchDocuments should perform a search', async () => {
       const db = await openDatabase({ connectionString: 'test' })
       const searchParams = { query: 'test', projectIds: ['p1'] }
+      // Return same rows for both hybrid and name queries so dedupe collapses to single
       mockDbClient.query.mockResolvedValue({ rows: [{ id: '1' }] })
 
       const result = await db.searchDocuments(searchParams)
 
       expect(mockEmbeddingProvider.embed).toHaveBeenCalledWith('test')
-      expect(mockDbClient.query).toHaveBeenCalledWith('FAKE_SQL', [
+      // Hybrid search call
+      expect(mockDbClient.query).toHaveBeenNthCalledWith(1, 'FAKE_SQL', [
         'test',
         '[0.1,0.2,0.3]',
         20,
@@ -511,6 +513,12 @@ describe('TheFactoryDb', () => {
         0.25,
         0.5,
         50,
+      ])
+      // Name/src direct search call (capped to top 10)
+      expect(mockDbClient.query).toHaveBeenNthCalledWith(2, 'FAKE_SQL', [
+        'test',
+        10,
+        JSON.stringify({ projectIds: ['p1'] }),
       ])
       expect(result).toEqual([{ id: '1' }])
     })

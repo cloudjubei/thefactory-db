@@ -26,6 +26,7 @@ describe('utils.SQL registry', () => {
       'updateDocument',
       'upsertDocument',
       'searchDocumentsQuery',
+      'searchDocumentsByName',
       'matchDocuments',
       'clearDocuments',
       'clearDocumentsByProject',

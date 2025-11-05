@@ -600,6 +600,87 @@ FROM hybrid_search_documents($1, $2::vector, $3::int, $4::jsonb, $5::float, $6::
 `
 
 // ----------------------------------------------------------
+// Direct name/src search for documents with OR-splitting
+// Ranks: exact equality (3) > prefix (2) > contains (1). Top-10 cap.
+//   $1: query_text
+//   $2: limit (requested); capped to 10 internally
+//   $3: jsonb filter { ids?: string[], types?: string[], projectIds?: string[] }
+// ----------------------------------------------------------
+const searchDocumentsByName = `
+WITH base_documents AS (
+  SELECT * FROM documents d
+  WHERE (
+    (NOT ($3 ? 'ids')) OR id = ANY (ARRAY(SELECT jsonb_array_elements_text($3->'ids')::uuid))
+  )
+  AND (
+    (NOT ($3 ? 'types')) OR type = ANY (ARRAY(SELECT jsonb_array_elements_text($3->'types')))
+  )
+  AND (
+    (NOT ($3 ? 'projectIds')) OR project_id = ANY (ARRAY(SELECT jsonb_array_elements_text($3->'projectIds')))
+  )
+),
+sanitized_query AS (
+  SELECT lower(regexp_replace(trim(coalesce($1, '')), '[^[:alnum:] ]+', '', 'g')) AS cleaned_text
+),
+query_tokens AS (
+  SELECT unnest(string_to_array(s.cleaned_text, ' ')) AS tok
+  FROM sanitized_query s
+  WHERE s.cleaned_text IS NOT NULL AND s.cleaned_text <> ''
+),
+scored AS (
+  SELECT 
+    d.id,
+    d.project_id,
+    d.type,
+    d.name,
+    d.content,
+    d.src,
+    d.created_at,
+    d.updated_at,
+    d.metadata,
+    GREATEST(
+      MAX(
+        CASE
+          WHEN lower(d.name) = qt.tok THEN 3
+          WHEN lower(d.name) LIKE qt.tok || '%' THEN 2
+          WHEN lower(d.name) LIKE '%' || qt.tok || '%' THEN 1
+          ELSE 0
+        END
+      ),
+      MAX(
+        CASE
+          WHEN lower(d.src) = qt.tok THEN 3
+          WHEN lower(d.src) LIKE qt.tok || '%' THEN 2
+          WHEN lower(d.src) LIKE '%' || qt.tok || '%' THEN 1
+          ELSE 0
+        END
+      )
+    ) AS strength
+  FROM base_documents d
+  JOIN query_tokens qt ON TRUE
+  GROUP BY d.id, d.project_id, d.type, d.name, d.content, d.src, d.created_at, d.updated_at, d.metadata
+)
+SELECT
+  id,
+  project_id AS "projectId",
+  type,
+  name,
+  content,
+  src,
+  to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS "createdAt",
+  to_char(updated_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS "updatedAt",
+  to_jsonb(metadata) AS metadata,
+  NULL::float AS "textScore",
+  NULL::float AS "keywordScore",
+  NULL::float AS "vecScore",
+  strength::float AS "totalScore"
+FROM scored
+WHERE strength > 0
+ORDER BY strength DESC, name ASC, updated_at DESC
+LIMIT LEAST(COALESCE($2::int, 10), 10);
+`
+
+// ----------------------------------------------------------
 // Match entities by JSON content containment with filters
 //   $1: jsonb pattern to match (content @> $1)
 //   $2: jsonb filter { ids?: string[], types?: string[], projectIds?: string[] }
@@ -685,6 +766,7 @@ export const SQL = {
   insertDocument,
   updateDocument,
   searchDocumentsQuery,
+  searchDocumentsByName,
   matchDocuments,
   clearDocuments,
   clearDocumentsByProject,

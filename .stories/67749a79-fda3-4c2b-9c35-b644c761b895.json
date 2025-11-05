@@ -203,12 +203,13 @@
     },
     {
       "id": "03e7618d-5ac3-4ff8-9dff-c9d64076128a",
-      "status": "-",
+      "status": "+",
       "title": "Document name/src direct search and interleaving with hybrid results",
       "description": "Add a direct name/src search for documents and interleave top results with hybrid search output.\n\nScope:\n- New SQL: searchDocumentsByName that honors filters (ids, types, projectIds) and ranks by match strength: exact equality on name/src, then prefix, then contains. Limit to top 10.\n- Query parsing follows 'OR' splitting rules (see Feature: OR query splitting for search). For multiple tokens, match if any token hits, rank by strongest match per document.\n- Update src/index.ts searchDocuments to run both hybrid and name searches, interleave results alternating while de-duplicating by id, and cap at the requested limit.\n\nAcceptance criteria:\n- Up to 10 direct name/src matches appear interleaved with hybrid results; duplicates are removed; ordering is deterministic.\n- Filename queries surface expected documents even when content lacks keyword matches.\n\nTesting:\n- Unit tests for the interleaving logic: alternating merge of two lists, de-duplication by id, deterministic ordering, and capping at the requested limit; verify behavior when one list exhausts early and when both contain overlaps.\n- Name/src search unit/integration tests: verify ranking tiers (exact equality > prefix > contains), enforcement of top-10 cap, and honoring of filters (ids, types, projectIds). Include OR splitting inputs per Feature 1.\n- E2E (real DB): scenarios where filename-only matches surface near the top and are interleaved among hybrid results; confirm duplicates are removed when the same id appears in both lists.\n- Regression tests: ensure the final result count equals the API limit and that when no name matches exist, hybrid-only ordering remains unchanged.",
       "context": [],
       "createdAt": "2025-11-05T16:29:52.890Z",
-      "updatedAt": "2025-11-05T16:33:26.072Z"
+      "updatedAt": "2025-11-05T20:24:07.372Z",
+      "completedAt": "2025-11-05T20:24:07.372Z"
     }
   ],
   "featureIdToDisplayIndex": {

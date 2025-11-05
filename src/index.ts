@@ -418,11 +418,14 @@ export async function openDatabase({
     if (params.ids && params.ids.length > 0) filter.ids = params.ids
     if (params.projectIds && params.projectIds.length > 0) filter.projectIds = params.projectIds
 
-    const r = await db.query(SQL.searchDocumentsQuery, [
+    const filterJson = Object.keys(filter).length ? JSON.stringify(filter) : JSON.stringify({})
+
+    // Run hybrid search and direct name/src search in parallel
+    const hybridPromise = db.query(SQL.searchDocumentsQuery, [
       query,
       qvec,
       limit,
-      Object.keys(filter).length ? JSON.stringify(filter) : JSON.stringify({}),
+      filterJson,
       nameWeight,
       textWeight,
       keywordWeight,
@@ -430,7 +433,42 @@ export async function openDatabase({
       50,
     ])
 
-    return r.rows as DocumentWithScore[]
+    const directLimit = Math.min(10, limit)
+    const namePromise = db.query(SQL.searchDocumentsByName, [
+      query,
+      directLimit,
+      filterJson,
+    ])
+
+    const [hybridRes, nameRes] = await Promise.all([hybridPromise, namePromise])
+    const hybrid = (hybridRes.rows as DocumentWithScore[]) || []
+    const nameMatches = (nameRes.rows as DocumentWithScore[]) || []
+
+    // Interleave alternating while de-duplicating by id and cap at limit
+    const seen = new Set<string>()
+    const out: DocumentWithScore[] = []
+    let i = 0
+    let j = 0
+    let pickName = true
+    while (out.length < limit && (i < nameMatches.length || j < hybrid.length)) {
+      let picked: DocumentWithScore | undefined
+      if (pickName && i < nameMatches.length) {
+        picked = nameMatches[i++]
+      } else if (!pickName && j < hybrid.length) {
+        picked = hybrid[j++]
+      } else if (i < nameMatches.length) {
+        picked = nameMatches[i++]
+      } else if (j < hybrid.length) {
+        picked = hybrid[j++]
+      }
+      pickName = !pickName
+      if (!picked) continue
+      if (seen.has(picked.id)) continue
+      seen.add(picked.id)
+      out.push(picked)
+    }
+
+    return out
   }
 
   async function clearDocuments(projectIds?: string[]): Promise<void> {
