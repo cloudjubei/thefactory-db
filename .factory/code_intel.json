@@ -1,0 +1,538 @@
+{
+  "local": {
+    "path": ".",
+    "description": "",
+    "members": {
+      "assertDocumentInput": {
+        "path": "src/validation.ts",
+        "description": "",
+        "dependencies": []
+      },
+      "assertDocumentPatch": {
+        "path": "src/validation.ts",
+        "description": "",
+        "dependencies": []
+      },
+      "assertEntityInput": {
+        "path": "src/validation.ts",
+        "description": "",
+        "dependencies": []
+      },
+      "assertEntityPatch": {
+        "path": "src/validation.ts",
+        "description": "",
+        "dependencies": []
+      },
+      "assertMatchParams": {
+        "path": "src/validation.ts",
+        "description": "",
+        "dependencies": [
+          "MatchParams"
+        ]
+      },
+      "assertSearchParams": {
+        "path": "src/validation.ts",
+        "description": "",
+        "dependencies": [
+          "SearchParams"
+        ]
+      },
+      "content": {
+        "path": "types/sql.d.ts",
+        "description": "",
+        "dependencies": []
+      },
+      "createLocalEmbeddingProvider": {
+        "path": "src/utils/embeddings.ts",
+        "description": "",
+        "dependencies": [
+          "Float32Array",
+          "Promise",
+          "EmbeddingProvider",
+          "ReturnType",
+          "@xenova/transformers/pipeline",
+          "@xenova/transformers/env"
+        ]
+      },
+      "createLogger": {
+        "path": "src/logger.ts",
+        "description": "Creates a new logger instance with the specified log level.",
+        "dependencies": [
+          "LogLevel",
+          "Logger"
+        ]
+      },
+      "DB": {
+        "path": "src/connection.ts",
+        "description": "Represents the raw database client from the `pg` library.",
+        "dependencies": [
+          "pg/Pool",
+          "pg/PoolClient"
+        ]
+      },
+      "Document": {
+        "path": "src/types.ts",
+        "description": "Represents a text-based document in the database.",
+        "dependencies": [
+          "Record"
+        ]
+      },
+      "DocumentInput": {
+        "path": "src/types.ts",
+        "description": "Input for creating a new document.",
+        "dependencies": [
+          "Record"
+        ]
+      },
+      "DocumentPatch": {
+        "path": "src/types.ts",
+        "description": "",
+        "dependencies": [
+          "DocumentInput",
+          "Partial",
+          "Omit"
+        ]
+      },
+      "DocumentUpsertInput": {
+        "path": "src/types.ts",
+        "description": "",
+        "dependencies": [
+          "DocumentInput",
+          "Pick"
+        ]
+      },
+      "DocumentWithScore": {
+        "path": "src/types.ts",
+        "description": "A document augmented with search relevance scores.",
+        "dependencies": [
+          "Document"
+        ]
+      },
+      "EmbeddingProvider": {
+        "path": "src/utils/embeddings.ts",
+        "description": "",
+        "dependencies": [
+          "Promise",
+          "Float32Array",
+          "@xenova/transformers/pipeline",
+          "@xenova/transformers/env"
+        ]
+      },
+      "Entity": {
+        "path": "src/types.ts",
+        "description": "Represents a JSON-based entity in the database.",
+        "dependencies": [
+          "Record"
+        ]
+      },
+      "EntityInput": {
+        "path": "src/types.ts",
+        "description": "Input for creating a new entity.",
+        "dependencies": [
+          "Record"
+        ]
+      },
+      "EntityPatch": {
+        "path": "src/types.ts",
+        "description": "Represents a patch for updating an entity. `projectId` cannot be changed.",
+        "dependencies": [
+          "EntityInput",
+          "Partial",
+          "Omit"
+        ]
+      },
+      "EntityWithScore": {
+        "path": "src/types.ts",
+        "description": "An entity augmented with search relevance scores.",
+        "dependencies": [
+          "Entity"
+        ]
+      },
+      "Logger": {
+        "path": "src/types.ts",
+        "description": "A simple logger interface.",
+        "dependencies": []
+      },
+      "LogLevel": {
+        "path": "src/types.ts",
+        "description": "Defines the available logging levels.",
+        "dependencies": []
+      },
+      "MatchParams": {
+        "path": "src/types.ts",
+        "description": "Parameters for filtering results in match and search operations.",
+        "dependencies": []
+      },
+      "openDatabase": {
+        "path": "src/index.ts",
+        "description": "",
+        "dependencies": [
+          "TheFactoryDb",
+          "Promise",
+          "OpenDbOptions"
+        ]
+      },
+      "OpenDbOptions": {
+        "path": "src/types.ts",
+        "description": "Options for opening a database connection.",
+        "dependencies": [
+          "LogLevel"
+        ]
+      },
+      "openPostgres": {
+        "path": "src/connection.ts",
+        "description": "",
+        "dependencies": [
+          "DB",
+          "Promise",
+          "pg/Pool",
+          "pg/PoolClient"
+        ]
+      },
+      "SearchParams": {
+        "path": "src/types.ts",
+        "description": "Parameters for performing a hybrid search.",
+        "dependencies": [
+          "MatchParams"
+        ]
+      },
+      "SQL": {
+        "path": "src/utils.ts",
+        "description": "",
+        "dependencies": []
+      },
+      "stringifyJsonValues": {
+        "path": "src/utils/json.ts",
+        "description": "",
+        "dependencies": [
+          "Record"
+        ]
+      },
+      "TheFactoryDb": {
+        "path": "src/index.ts",
+        "description": "",
+        "dependencies": [
+          "DB",
+          "Promise",
+          "Document",
+          "MatchParams",
+          "DocumentWithScore",
+          "SearchParams",
+          "DocumentInput",
+          "Partial",
+          "DocumentUpsertInput",
+          "Entity",
+          "EntityWithScore",
+          "EntityPatch",
+          "EntityInput"
+        ]
+      },
+      "toFtsText": {
+        "path": "src/utils/tokenizer.ts",
+        "description": "",
+        "dependencies": [
+          "js-tiktoken"
+        ]
+      },
+      "tokenize": {
+        "path": "src/utils/tokenizer.ts",
+        "description": "",
+        "dependencies": [
+          "TiktokenEncoding",
+          "TokenizerEncodeResult",
+          "TokenizerOptions"
+        ]
+      },
+      "TokenizerEncodeResult": {
+        "path": "src/utils/tokenizer.ts",
+        "description": "",
+        "dependencies": [
+          "js-tiktoken"
+        ]
+      },
+      "TokenizerOptions": {
+        "path": "src/utils/tokenizer.ts",
+        "description": "",
+        "dependencies": [
+          "TiktokenEncoding"
+        ]
+      }
+    }
+  },
+  "scripts": {
+    "path": "scripts",
+    "description": "",
+    "members": {}
+  },
+  "src": {
+    "path": "src",
+    "description": "",
+    "members": {
+      "assertDocumentInput": {
+        "path": "validation.ts",
+        "description": "",
+        "dependencies": []
+      },
+      "assertDocumentPatch": {
+        "path": "validation.ts",
+        "description": "",
+        "dependencies": []
+      },
+      "assertEntityInput": {
+        "path": "validation.ts",
+        "description": "",
+        "dependencies": []
+      },
+      "assertEntityPatch": {
+        "path": "validation.ts",
+        "description": "",
+        "dependencies": []
+      },
+      "assertMatchParams": {
+        "path": "validation.ts",
+        "description": "",
+        "dependencies": [
+          "MatchParams"
+        ]
+      },
+      "assertSearchParams": {
+        "path": "validation.ts",
+        "description": "",
+        "dependencies": [
+          "SearchParams"
+        ]
+      },
+      "createLocalEmbeddingProvider": {
+        "path": "utils/embeddings.ts",
+        "description": "",
+        "dependencies": [
+          "Float32Array",
+          "Promise",
+          "EmbeddingProvider",
+          "ReturnType",
+          "@xenova/transformers/pipeline",
+          "@xenova/transformers/env"
+        ]
+      },
+      "createLogger": {
+        "path": "logger.ts",
+        "description": "Creates a new logger instance with the specified log level.",
+        "dependencies": [
+          "LogLevel",
+          "Logger"
+        ]
+      },
+      "DB": {
+        "path": "connection.ts",
+        "description": "Represents the raw database client from the `pg` library.",
+        "dependencies": [
+          "pg/Pool",
+          "pg/PoolClient"
+        ]
+      },
+      "Document": {
+        "path": "types.ts",
+        "description": "Represents a text-based document in the database.",
+        "dependencies": [
+          "Record"
+        ]
+      },
+      "DocumentInput": {
+        "path": "types.ts",
+        "description": "Input for creating a new document.",
+        "dependencies": [
+          "Record"
+        ]
+      },
+      "DocumentPatch": {
+        "path": "types.ts",
+        "description": "",
+        "dependencies": [
+          "DocumentInput",
+          "Partial",
+          "Omit"
+        ]
+      },
+      "DocumentUpsertInput": {
+        "path": "types.ts",
+        "description": "",
+        "dependencies": [
+          "DocumentInput",
+          "Pick"
+        ]
+      },
+      "DocumentWithScore": {
+        "path": "types.ts",
+        "description": "A document augmented with search relevance scores.",
+        "dependencies": [
+          "Document"
+        ]
+      },
+      "EmbeddingProvider": {
+        "path": "utils/embeddings.ts",
+        "description": "",
+        "dependencies": [
+          "Promise",
+          "Float32Array",
+          "@xenova/transformers/pipeline",
+          "@xenova/transformers/env"
+        ]
+      },
+      "Entity": {
+        "path": "types.ts",
+        "description": "Represents a JSON-based entity in the database.",
+        "dependencies": [
+          "Record"
+        ]
+      },
+      "EntityInput": {
+        "path": "types.ts",
+        "description": "Input for creating a new entity.",
+        "dependencies": [
+          "Record"
+        ]
+      },
+      "EntityPatch": {
+        "path": "types.ts",
+        "description": "Represents a patch for updating an entity. `projectId` cannot be changed.",
+        "dependencies": [
+          "EntityInput",
+          "Partial",
+          "Omit"
+        ]
+      },
+      "EntityWithScore": {
+        "path": "types.ts",
+        "description": "An entity augmented with search relevance scores.",
+        "dependencies": [
+          "Entity"
+        ]
+      },
+      "Logger": {
+        "path": "types.ts",
+        "description": "A simple logger interface.",
+        "dependencies": []
+      },
+      "LogLevel": {
+        "path": "types.ts",
+        "description": "Defines the available logging levels.",
+        "dependencies": []
+      },
+      "MatchParams": {
+        "path": "types.ts",
+        "description": "Parameters for filtering results in match and search operations.",
+        "dependencies": []
+      },
+      "openDatabase": {
+        "path": "index.ts",
+        "description": "",
+        "dependencies": [
+          "TheFactoryDb",
+          "Promise",
+          "OpenDbOptions"
+        ]
+      },
+      "OpenDbOptions": {
+        "path": "types.ts",
+        "description": "Options for opening a database connection.",
+        "dependencies": [
+          "LogLevel"
+        ]
+      },
+      "openPostgres": {
+        "path": "connection.ts",
+        "description": "",
+        "dependencies": [
+          "DB",
+          "Promise",
+          "pg/Pool",
+          "pg/PoolClient"
+        ]
+      },
+      "SearchParams": {
+        "path": "types.ts",
+        "description": "Parameters for performing a hybrid search.",
+        "dependencies": [
+          "MatchParams"
+        ]
+      },
+      "SQL": {
+        "path": "utils.ts",
+        "description": "",
+        "dependencies": []
+      },
+      "stringifyJsonValues": {
+        "path": "utils/json.ts",
+        "description": "",
+        "dependencies": [
+          "Record"
+        ]
+      },
+      "TheFactoryDb": {
+        "path": "index.ts",
+        "description": "",
+        "dependencies": [
+          "DB",
+          "Promise",
+          "Document",
+          "MatchParams",
+          "DocumentWithScore",
+          "SearchParams",
+          "DocumentInput",
+          "Partial",
+          "DocumentUpsertInput",
+          "Entity",
+          "EntityWithScore",
+          "EntityPatch",
+          "EntityInput"
+        ]
+      },
+      "toFtsText": {
+        "path": "utils/tokenizer.ts",
+        "description": "",
+        "dependencies": [
+          "js-tiktoken"
+        ]
+      },
+      "tokenize": {
+        "path": "utils/tokenizer.ts",
+        "description": "",
+        "dependencies": [
+          "TiktokenEncoding",
+          "TokenizerEncodeResult",
+          "TokenizerOptions"
+        ]
+      },
+      "TokenizerEncodeResult": {
+        "path": "utils/tokenizer.ts",
+        "description": "",
+        "dependencies": [
+          "js-tiktoken"
+        ]
+      },
+      "TokenizerOptions": {
+        "path": "utils/tokenizer.ts",
+        "description": "",
+        "dependencies": [
+          "TiktokenEncoding"
+        ]
+      }
+    }
+  },
+  "tests": {
+    "path": "tests",
+    "description": "",
+    "members": {}
+  },
+  "types": {
+    "path": "types",
+    "description": "",
+    "members": {
+      "content": {
+        "path": "sql.d.ts",
+        "description": "",
+        "dependencies": []
+      }
+    }
+  }
+}

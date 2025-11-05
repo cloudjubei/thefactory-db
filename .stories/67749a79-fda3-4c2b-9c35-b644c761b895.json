@@ -1,6 +1,6 @@
 {
   "id": "67749a79-fda3-4c2b-9c35-b644c761b895",
-  "status": "=",
+  "status": "-",
   "title": "Ongoing Improvements",
   "description": "Various ongoing improvements to the project",
   "features": [
@@ -182,6 +182,33 @@
       "createdAt": "2025-09-29T22:45:51.048Z",
       "updatedAt": "2025-09-30T00:59:38.344Z",
       "completedAt": "2025-09-30T00:59:38.344Z"
+    },
+    {
+      "id": "492873cd-c561-440c-abd5-319affebb017",
+      "status": "-",
+      "title": "OR query splitting for search",
+      "description": "Support 'OR' and '|' operators in queries to act as separators for alternative tokens.\n\nScope:\n- Full-text tsquery builders (documents/entities): exclude the 'or' lexeme so it is not treated as a keyword; treat separated tokens as OR alternatives within the tsquery.\n- Name/src direct search logic (see Feature: Document name/src direct search and interleaving): split queries on ' OR ' and '|' (case-insensitive), trim and dedupe tokens; avoid splitting inside quotes.\n\nAcceptance criteria:\n- Given 'codeIntel OR code-intel OR code_intel', treat these as three alternative tokens. The term 'OR' is not searched.\n- Existing search tests pass; no functional regressions.\n\nTesting:\n- Unit/integration tests verifying that queries with 'OR' and '|' are treated as alternative tokens for entities and documents. Example inputs: 'codeIntel OR code-intel OR code_intel', 'alpha|beta', 'ALPHA or beta'.\n- Edge cases: multiple adjacent separators ('alpha||beta'), leading/trailing separators ('|alpha', 'beta|'), mixed-case 'or'/'OR', redundant whitespace, and quoted phrases preserved (e.g., '\"foo OR bar\"' must not be split).\n- Regression tests ensuring that removing 'or' as a lexeme does not prevent finding documents that contain the literal word 'or' when intended (e.g., by using quotes or when no delimiter pattern is present).\n- E2E tests (real DB) for documents and entities confirming that at least one alternative match returns results and that ranking remains stable otherwise.",
+      "context": [],
+      "createdAt": "2025-11-05T16:29:52.888Z",
+      "updatedAt": "2025-11-05T16:33:26.070Z"
+    },
+    {
+      "id": "c96b910f-5ee7-4ca6-94d2-220561b55ba5",
+      "status": "-",
+      "title": "Exact term boosting in hybrid search (documents and entities)",
+      "description": "Add an 'exact_match' CTE directly into the hybrid search SQL functions to highly rank exact token matches.\n\nScope:\n- hybrid_search_documents: add exact-match scoring across name, src, content using case-sensitive exact substring counts; apply higher weight for exact equality on name/src. Integrate via Reciprocal Rank Fusion with a new 'exact_weight' parameter.\n- hybrid_search_entities: add exact-match scoring across content_string (and optionally type) similarly; integrate via RRF with 'exact_weight'.\n- Update wrapper queries to pass 'exact_weight' from the API layer with a sensible default (e.g., 0.4) without breaking signatures.\n\nAcceptance criteria:\n- A query with an identifier-like token (e.g., 'createFileTools') elevates documents/entities containing that exact token to the top results across balanced textWeight values.\n- No significant regressions in existing hybrid search tests.\n\nTesting:\n- Integration tests against the SQL functions asserting that enabling 'exact_weight' lifts exact matches above similar-but-not-exact results for single-token identifier-like queries (e.g., 'createFileTools', 'my-func', 'snake_case_name').\n- Documents: cases covering exact equality on name/src, prefix equality (name/src starts with token), and exact substring in content; verify the ranking follows equality > prefix > substring.\n- Entities: exact substring matches in content_string and optionally type, covering camelCase, hyphen, and underscore tokens.\n- Multi-word queries: ensure the exact-match boost does not swamp semantic/keyword contributions; verify sensible ordering across textWeight values in [0, 0.2, 0.5, 0.8, 1].\n- Case sensitivity and boundaries: tests to confirm case handling and to avoid unintended partial matches within longer alphanumerics when not desired.\n- E2E (real DB): realistic datasets demonstrating that exact token queries promote exact matches and that existing hybrid tests continue to pass.",
+      "context": [],
+      "createdAt": "2025-11-05T16:29:52.889Z",
+      "updatedAt": "2025-11-05T16:33:26.071Z"
+    },
+    {
+      "id": "03e7618d-5ac3-4ff8-9dff-c9d64076128a",
+      "status": "-",
+      "title": "Document name/src direct search and interleaving with hybrid results",
+      "description": "Add a direct name/src search for documents and interleave top results with hybrid search output.\n\nScope:\n- New SQL: searchDocumentsByName that honors filters (ids, types, projectIds) and ranks by match strength: exact equality on name/src, then prefix, then contains. Limit to top 10.\n- Query parsing follows 'OR' splitting rules (see Feature: OR query splitting for search). For multiple tokens, match if any token hits, rank by strongest match per document.\n- Update src/index.ts searchDocuments to run both hybrid and name searches, interleave results alternating while de-duplicating by id, and cap at the requested limit.\n\nAcceptance criteria:\n- Up to 10 direct name/src matches appear interleaved with hybrid results; duplicates are removed; ordering is deterministic.\n- Filename queries surface expected documents even when content lacks keyword matches.\n\nTesting:\n- Unit tests for the interleaving logic: alternating merge of two lists, de-duplication by id, deterministic ordering, and capping at the requested limit; verify behavior when one list exhausts early and when both contain overlaps.\n- Name/src search unit/integration tests: verify ranking tiers (exact equality > prefix > contains), enforcement of top-10 cap, and honoring of filters (ids, types, projectIds). Include OR splitting inputs per Feature 1.\n- E2E (real DB): scenarios where filename-only matches surface near the top and are interleaved among hybrid results; confirm duplicates are removed when the same id appears in both lists.\n- Regression tests: ensure the final result count equals the API limit and that when no name matches exist, hybrid-only ordering remains unchanged.",
+      "context": [],
+      "createdAt": "2025-11-05T16:29:52.890Z",
+      "updatedAt": "2025-11-05T16:33:26.072Z"
     }
   ],
   "featureIdToDisplayIndex": {
@@ -199,7 +226,10 @@
     "4c2bf377-ffe0-4ad3-8b2d-f3cc9ba32592": 12,
     "734c141d-83b8-4a4c-8ed5-75ef2d5ea874": 13,
     "77101a35-86dd-42f7-b42b-5c30fedc7713": 14,
-    "04391c02-652b-4dad-b59a-2eda2bccf1d3": 15
+    "04391c02-652b-4dad-b59a-2eda2bccf1d3": 15,
+    "492873cd-c561-440c-abd5-319affebb017": 16,
+    "c96b910f-5ee7-4ca6-94d2-220561b55ba5": 17,
+    "03e7618d-5ac3-4ff8-9dff-c9d64076128a": 18
   },
   "createdAt": "2025-09-19T01:04:36.087Z",
   "updatedAt": "2025-09-19T01:04:36.087Z"
