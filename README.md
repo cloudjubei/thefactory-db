@@ -170,20 +170,99 @@ node scripts/clear.ts -- --url postgresql://user:password@localhost:55432/thefac
 node scripts/count.ts -- --url postgresql://user:password@localhost:55432/thefactory-db
 ```
 
-## Reusable local database (managed via Docker)
+## On-demand database lifecycle
 
-For a persistent local PostgreSQL with pgvector managed by this package, use `createReusableDatabase()`.
+thefactory-db can provision and manage PostgreSQL with pgvector for you, or connect to an existing server. Three flows are supported:
+
+1) Ephemeral managed (default)
+2) Ephemeral external (uses your server; creates a temporary database)
+3) Reusable managed persistent (local Docker container you can reuse across runs)
+
+These flows are intentionally simple: no reuse for ephemeral flows and full teardown on destroy; the reusable flow is persistent and never drops data.
+
+### 1) Ephemeral managed (default)
+
+Starts a fresh Postgres+pgvector container using `pgvector/pgvector:pg16` via Testcontainers, initializes schema, and returns a ready client. On destroy, the container is stopped and removed. No reuse, no persistence.
 
 Requirements:
-- Docker daemon available.
-- Image `pgvector/pgvector:pg16` (pulled if missing).
+- Docker daemon available and accessible to the current user
+- Image `pgvector/pgvector:pg16` (pulled automatically if missing)
+
+Example:
+
+```ts
+import { createDatabase } from 'thefactory-db'
+
+const { client, connectionString, destroy, isManaged, dbName } = await createDatabase()
+console.log('Ephemeral DB ready', { connectionString, isManaged, dbName })
+
+try {
+  await client.addDocument({
+    projectId: 'demo',
+    type: 'md',
+    src: 'README.md',
+    name: 'Readme',
+    content: 'Hello world',
+  })
+  const results = await client.searchDocuments({ query: 'hello', limit: 5 })
+  console.log(results)
+} finally {
+  await destroy() // fully tears down the container
+}
+```
+
+Notes:
+- Health/readiness is ensured by waiting for the listening port and validating with `SELECT 1`.
+- Schema bootstrap (tables, triggers, extensions) is performed via `openDatabase()` automatically.
+- Managed containers started by this process are also cleaned up on SIGINT/SIGTERM.
+
+### 2) Ephemeral external (server-managed with temporary database)
+
+Connect to an existing PostgreSQL server by supplying a server-level connection string. A temporary database named `tfdb_<random>` is created, initialized, and used for the session. On destroy, the temporary database is dropped.
+
+Requirements:
+- The provided role must have `CREATEDB` privilege on the server
+- The `pgvector` extension must be available/creatable as `vector`
+
+Example:
+
+```ts
+import { createDatabase } from 'thefactory-db'
+
+// Supply a server-level connection string (database portion is ignored for admin ops)
+const serverUrl = 'postgresql://user:password@localhost:5432/postgres'
+const handle = await createDatabase({ connectionString: serverUrl })
+
+console.log('Temp DB created:', handle.dbName, 'URL:', handle.connectionString)
+try {
+  // use handle.client as usual
+  const rows = await handle.client.searchEntities({ query: 'test', limit: 5 })
+  console.log(rows)
+} finally {
+  await handle.destroy() // drops the temporary database
+}
+```
+
+Notes:
+- Admin operations run against the `postgres` database on the same server to create/drop the temp DB.
+- Initialization will fail with a clear error if `vector` is not available or cannot be created.
+- No schema-only cleanup: the entire temporary database is dropped.
+
+### 3) Reusable managed persistent (local Docker)
+
+Create or reuse a long-lived local Docker container named `thefactory-db` using `pgvector/pgvector:pg16`. Intended for development workflows where you want a stable, persistent database across runs.
+
+Requirements:
+- Docker daemon available
+- Image `pgvector/pgvector:pg16` (pulled if missing)
 
 Behavior:
-- Ensures a long-lived container named `thefactory-db` exists and is running with:
+- Ensures a container named `thefactory-db` exists and is running with:
   - `POSTGRES_USER=thefactory`, `POSTGRES_PASSWORD=thefactory`, `POSTGRES_DB=thefactorydb`
-  - Host port mapping prefers 5435 -> 5432; if 5435 is occupied, the first free port is used. Docker persists the mapping.
-- Returns `{ connectionString, created }`, where `created` is true only on first creation.
-- Initializes the schema on first creation, then closes the connection.
+  - Host port mapping prefers 5435 -> 5432; if 5435 is occupied, the first free port is used (Docker persists the mapping)
+- Returns `{ connectionString, created }` where `created` is true only on first creation
+- After readiness, the schema is initialized once via `openDatabase()`; the connection is then closed
+- Never drops data; repeated calls are idempotent
 
 Example:
 
@@ -194,11 +273,56 @@ const { connectionString, created } = await createReusableDatabase()
 console.log('DB ready at', connectionString, 'created:', created)
 
 const db = await openDatabase({ connectionString })
-// ...
+// ... use db
 await db.close()
 ```
 
 Notes:
-- Idempotent: if the container already exists, it is reused and started if needed. No data is dropped.
-- Always use the returned connection string; the host port may differ from 5435 if it was in use at creation time.
-- To remove the instance: stop and remove the `thefactory-db` container via Docker.
+- Always use the returned connection string; if 5435 was busy during first creation, Docker may map a different host port.
+- To remove this instance manually, stop and remove the `thefactory-db` container via Docker.
+
+### Minimal API surface
+
+- `createDatabase(options?: { connectionString?: string; logLevel?: LogLevel }): Promise<{ client: TheFactoryDb; connectionString: string; destroy: () => Promise<void>; isManaged: boolean; dbName: string }>`
+  - Managed (default): starts a fresh container and returns a handle; `destroy()` stops/removes it
+  - External: creates a temporary database on your server; `destroy()` drops that database
+- `destroyDatabase(handle): Promise<void>`
+  - Idempotent; safe to call multiple times
+- `createReusableDatabase(options?: { logLevel?: LogLevel }): Promise<{ connectionString: string; created: boolean }>`
+  - Idempotently provisions or starts a long-lived local Docker container and returns its connection string
+- `openDatabase(options: { connectionString: string; logLevel?: LogLevel }): Promise<TheFactoryDb>` remains available for direct connections
+
+Behavioral guarantees:
+- Schema bootstrap: `openDatabase()` applies schema/extensions and hybrid search SQL automatically
+- Readiness: managed flows wait for `SELECT 1` before returning
+- Teardown: ephemeral flows fully remove their state (container or temp DB) when destroyed
+- No optional toggles on ephemeral flows: no reuse, no isolation flags, no cleanup knobs
+
+### Troubleshooting
+
+- Docker unavailable or permission denied
+  - Ensure Docker Desktop/daemon is running
+  - On Linux, ensure your user has access to the Docker socket (e.g., add to `docker` group) and re-login
+  - Test: `docker ps` should succeed
+
+- Port 5435 already in use (reusable flow)
+  - `createReusableDatabase()` prefers 5435 but will choose a free port if occupied; always use the returned `connectionString`
+  - If you need 5435 specifically, stop the conflicting service/container and recreate/start the `thefactory-db` container
+
+- Missing `pgvector` extension (external flow)
+  - Error will mention failure to create/use extension `vector`
+  - Install pgvector for your PostgreSQL server and enable it: `CREATE EXTENSION IF NOT EXISTS vector;`
+  - Project: https://github.com/pgvector/pgvector
+
+- Insufficient privileges (external flow)
+  - The role must have `CREATEDB` to create the temporary database
+  - The role must be able to create or use extension `vector` (often requires superuser or preinstalled extension in the template)
+
+- Manage the reusable container manually
+  - List: `docker ps -a | grep thefactory-db`
+  - Logs: `docker logs thefactory-db`
+  - Stop: `docker stop thefactory-db`
+  - Remove: `docker rm thefactory-db`
+  - After removal, the next `createReusableDatabase()` call will recreate it
+
+Clarification: the reusable provisioning flow is separate from the ephemeral lifecycle. Ephemeral flows are always fresh and fully removed on destroy; the reusable flow is intentionally persistent and never auto-dropped by this package.
