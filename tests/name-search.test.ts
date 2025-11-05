@@ -256,6 +256,39 @@ describe('Direct name/src search', () => {
     expect(names).toContain('second') // matched via src token 'beta'
   })
 
+  it('pre-processing removes standalone OR (case-insensitive) and behaves like space', async () => {
+    const db = await openDatabase({ connectionString: 'x' })
+    const projectId = 'p'
+    await db.addDocument({ projectId, type: 't', name: 'first', src: 's-first', content: '' })
+    await db.addDocument({ projectId, type: 't', name: 'second', src: 'beta-file', content: '' })
+
+    const res = await db.searchDocuments({
+      query: 'alpha OR beta',
+      projectIds: [projectId],
+      limit: 10,
+    })
+    expect(res.map((r) => r.name)).toContain('second')
+  })
+
+  it('pre-processing handles multiple OR occurrences (case-insensitive)', async () => {
+    const db = await openDatabase({ connectionString: 'x' })
+    const projectId = 'p'
+    await db.addDocument({ projectId, type: 't', name: 'first', src: 's-first', content: '' })
+    await db.addDocument({ projectId, type: 't', name: 'second', src: 'beta-file', content: '' })
+    await db.addDocument({ projectId, type: 't', name: 'third', src: 'gamma-file', content: '' })
+    await db.addDocument({ projectId, type: 't', name: 'fourth', src: 'delta-file', content: '' })
+
+    const res = await db.searchDocuments({
+      query: 'alpha or beta OR gamma oR delta',
+      projectIds: [projectId],
+      limit: 10,
+    })
+    const names = res.map((r) => r.name)
+    expect(names).toContain('second')
+    expect(names).toContain('third')
+    expect(names).toContain('fourth')
+  })
+
   it('ignores extensions in query and prefers shorter basename within same tier', async () => {
     const db = await openDatabase({ connectionString: 'x' })
     const projectId = 'p'

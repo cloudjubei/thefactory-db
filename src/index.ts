@@ -36,6 +36,12 @@ function toVectorLiteral(vec: number[] | Float32Array): string {
   return `[${nums.join(',')}]`
 }
 
+// Minimal query pre-processor: replace standalone 'or' with a single space (case-insensitive)
+function prepareQuery(input: string): string {
+  if (!input) return ''
+  return input.replace(/\s+or\s+/gi, ' ')
+}
+
 // Helper: when documents are recognized source or docs files, include name/src tokens in embeddings.
 const ENRICH_TYPES = new Set([
   'md',
@@ -164,8 +170,9 @@ export async function openDatabase({
   async function searchEntities(params: SearchParams): Promise<EntityWithScore[]> {
     assertSearchParams(params)
     logger.info('searchEntities', params)
-    const query = (params.query ?? '').trim()
-    if (query.length <= 0) return []
+    const rawQuery = (params.query ?? '').trim()
+    if (rawQuery.length <= 0) return []
+    const query = prepareQuery(rawQuery)
     const qvecArr = await embeddingProvider.embed(query)
     const qvec = toVectorLiteral(qvecArr)
     const textWeight = Math.min(1, Math.max(0, params.textWeight ?? 0.5)) / 2
@@ -403,8 +410,9 @@ export async function openDatabase({
   async function searchDocuments(params: SearchParams): Promise<DocumentWithScore[]> {
     assertSearchParams(params)
     logger.info('searchDocuments', params)
-    const query = (params.query ?? '').trim()
-    if (query.length <= 0) return []
+    const rawQuery = (params.query ?? '').trim()
+    if (rawQuery.length <= 0) return []
+    const query = prepareQuery(rawQuery)
     const qvecArr = await embeddingProvider.embed(query)
     const qvec = toVectorLiteral(qvecArr)
     const textWeight = Math.min(1, Math.max(0, params.textWeight ?? 0.5)) / 2

@@ -1,6 +1,6 @@
 {
   "id": "67749a79-fda3-4c2b-9c35-b644c761b895",
-  "status": "-",
+  "status": "=",
   "title": "Ongoing Improvements",
   "description": "Various ongoing improvements to the project",
   "features": [
@@ -185,13 +185,14 @@
     },
     {
       "id": "492873cd-c561-440c-abd5-319affebb017",
-      "status": "-",
+      "status": "+",
       "title": "OR query splitting for search",
       "description": "Support 'OR' and '|' operators in queries to act as separators for alternative tokens.\n\nScope:\n- Full-text tsquery builders (documents/entities): exclude the 'or' lexeme so it is not treated as a keyword; treat separated tokens as OR alternatives within the tsquery.\n- Name/src direct search logic (see Feature: Document name/src direct search and interleaving): split queries on ' OR ' and '|' (case-insensitive), trim and dedupe tokens; avoid splitting inside quotes.\n\nAcceptance criteria:\n- Given 'codeIntel OR code-intel OR code_intel', treat these as three alternative tokens. The term 'OR' is not searched.\n- Existing search tests pass; no functional regressions.\n\nTesting:\n- Unit/integration tests verifying that queries with 'OR' and '|' are treated as alternative tokens for entities and documents. Example inputs: 'codeIntel OR code-intel OR code_intel', 'alpha|beta', 'ALPHA or beta'.\n- Edge cases: multiple adjacent separators ('alpha||beta'), leading/trailing separators ('|alpha', 'beta|'), mixed-case 'or'/'OR', redundant whitespace, and quoted phrases preserved (e.g., '\"foo OR bar\"' must not be split).\n- Regression tests ensuring that removing 'or' as a lexeme does not prevent finding documents that contain the literal word 'or' when intended (e.g., by using quotes or when no delimiter pattern is present).\n- E2E tests (real DB) for documents and entities confirming that at least one alternative match returns results and that ranking remains stable otherwise.",
       "context": [],
       "createdAt": "2025-11-05T16:29:52.888Z",
-      "updatedAt": "2025-11-05T20:54:54.192Z",
-      "blockers": []
+      "updatedAt": "2025-11-05T22:51:21.105Z",
+      "blockers": [],
+      "completedAt": "2025-11-05T22:51:21.105Z"
     },
     {
       "id": "03e7618d-5ac3-4ff8-9dff-c9d64076128a",
