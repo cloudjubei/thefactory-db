@@ -1,6 +1,6 @@
 {
   "id": "67749a79-fda3-4c2b-9c35-b644c761b895",
-  "status": "?",
+  "status": "-",
   "title": "Ongoing Improvements",
   "description": "Various ongoing improvements to the project",
   "features": [
@@ -194,15 +194,6 @@
       "blockers": []
     },
     {
-      "id": "c96b910f-5ee7-4ca6-94d2-220561b55ba5",
-      "status": "?",
-      "title": "Exact term boosting in hybrid search (documents and entities)",
-      "description": "Title: Exact term boosting in hybrid search (documents and entities)\n\nSummary:\nReplace the coarse literal substring channel with a boundary-aware, case-sensitive exact_match channel fused via RRF. Remove literal_search and literal_weight entirely. Introduce exact_weight (replacing literal_weight positionally) so wrapper call shapes remain stable. Keep the existing name_weight boost for documents.\n\nScope:\n- hybrid_search_documents:\n  - Remove: literal_search CTE and literal_weight parameter.\n  - Add: exact_match CTE computing a tiered rank across name, src, and content using case-sensitive, boundary-aware matching.\n    - Tiers (best to worst):\n      1) exact equality on name or src\n      2) prefix equality on name or src\n      3) boundary-aware exact substring in name or src\n      4) boundary-aware exact substring in content\n    - Boundary-aware: adjacent characters (if any) must not be alphanumerics or underscore; prevents matching 'foo' inside 'foobar'. Hyphens/underscores within the query token are treated as part of the token and allowed.\n  - Integrate: fuse via RRF as 1/(k+rank_ix) * exact_weight alongside full_text and semantic channels. Retain existing name_weight additive boost on FTS name hits.\n  - Signature (literal_weight replaced in place):\n    hybrid_search_documents(query_text text, query_embedding vector, match_count int, filter jsonb DEFAULT '{}', name_weight float DEFAULT 1.0, exact_weight float DEFAULT 0.4, full_text_weight float DEFAULT 0.3, semantic_weight float DEFAULT 0.3, rrf_k int DEFAULT 50)\n  - Output: expose exact_score instead of literal_score.\n\n- hybrid_search_entities:\n  - Remove: literal_search CTE and literal_weight parameter.\n  - Add: exact_match CTE scoring content_string (via content::text) and type with boundary-aware, case-sensitive matching. Prefer equality/prefix on type and boundary-aware substring for content_string.\n  - Integrate via RRF with exact_weight.\n  - Signature (literal_weight replaced in place):\n    hybrid_search_entities(query_text text, query_embedding vector, match_count int, filter jsonb DEFAULT '{}', exact_weight float DEFAULT 0.4, full_text_weight float DEFAULT 0.3, semantic_weight float DEFAULT 0.3, rrf_k int DEFAULT 50)\n  - Output: expose exact_score instead of literal_score.\n\n- Wrapper queries (API layer):\n  - searchDocumentsQuery: keep positional arguments the same; the previous literal_weight arg now provides exact_weight. Update selected columns to alias exact_score as 'textScore'.\n  - searchEntitiesQuery: same; map exact_score as 'textScore'.\n  - No breaking changes to TypeScript function signatures or returned row shapes.\n\nAcceptance criteria:\n- Single-token, identifier-like queries (e.g., 'createFileTools', 'my-func', 'snake_case_name') elevate exact matches to the top across balanced textWeight values, with ordering equality > prefix > substring.\n- Multi-word queries: exact_match boost does not swamp semantic/keyword contributions; sensible ordering holds for textWeight in [0, 0.2, 0.5, 0.8, 1].\n- Case sensitivity and boundaries: 'foo' does not match inside 'foobar'; mixed-case and punctuation tokens match as-is.\n- No significant regressions in existing hybrid search tests aside from intentional updates to swap literal_score for exact_score semantics.\n\nTesting:\n- Integration tests on SQL functions:\n  - Documents: cases for name/src equality, prefix, name/src boundary substring, and content boundary substring; assert equality > prefix > substring and that enabling exact_weight lifts exact matches above similar non-exact results.\n  - Entities: equality/prefix on type and boundary-aware substrings in content_string; cover camelCase, hyphen, and underscore tokens.\n  - Verify multi-word behavior across textWeight values [0, 0.2, 0.5, 0.8, 1].\n  - Case sensitivity and alphanumeric boundary tests to prevent unintended partial matches.\n- E2E (real DB): realistic datasets demonstrating exact token queries promote exact matches; existing hybrid tests continue to pass with updated expectations for textScore.\n\nMigration notes:\n- literal_search CTE and literal_score column are removed.\n- literal_weight is replaced by exact_weight at the same parameter index to keep wrappers stable.\n- Wrappers still expose 'textScore'; it now reflects exact_score.",
-      "context": [],
-      "createdAt": "2025-11-05T16:29:52.889Z",
-      "updatedAt": "2025-11-05T21:07:33.054Z"
-    },
-    {
       "id": "03e7618d-5ac3-4ff8-9dff-c9d64076128a",
       "status": "+",
       "title": "Document name/src direct search and interleaving with hybrid results",
@@ -230,9 +221,8 @@
     "77101a35-86dd-42f7-b42b-5c30fedc7713": 14,
     "04391c02-652b-4dad-b59a-2eda2bccf1d3": 15,
     "03e7618d-5ac3-4ff8-9dff-c9d64076128a": 16,
-    "492873cd-c561-440c-abd5-319affebb017": 17,
-    "c96b910f-5ee7-4ca6-94d2-220561b55ba5": 18
+    "492873cd-c561-440c-abd5-319affebb017": 17
   },
   "createdAt": "2025-09-19T01:04:36.087Z",
-  "updatedAt": "2025-09-19T01:04:36.087Z"
+  "updatedAt": "2025-11-05T21:59:35.088Z"
 }
