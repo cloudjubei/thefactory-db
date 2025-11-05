@@ -3,7 +3,7 @@
 ## Overview
 
 - `thefactory-db` is a PostgreSQL wrapper that provides FTS text search (tsvector) and vector similarity (pgvector) for hybrid search across two content models: Documents (text) and Entities (JSON).
-- It is designed to be reusable across projects. You can depend on it as a local file dependency ("thefactory-db": "file:../thefactory-db") or publish it to a private registry.
+- It is designed to be reusable across projects. You can depend on it as a local file dependency ('thefactory-db': 'file:../thefactory-db') or publish it to a private registry.
 - Database connection is provided via a Postgres connection string so multiple projects can access the same DB (ensure access strategy avoids concurrency hazards at the application layer).
 - For details on coding standards and architecture, please see [CODE_STANDARD.md](./CODE_STANDARD.md).
 
@@ -29,6 +29,12 @@
   - `src/utils/json.ts`: JSON value stringifier used for entity embeddings/FTS.
   - `src/utils/tokenizer.ts`: Tokenizer helpers and FTS normalization utilities.
   - `src/utils/hash.ts`: Hashing utility for content checks.
+  - `src/runtime.ts`: Runtime database lifecycle helpers for on-demand Postgres with pgvector.
+    - `createDatabase(options?: { connectionString?: string; logLevel?: LogLevel })`: Provision an on-demand PostgreSQL with pgvector.
+      - Managed mode (default): starts a fresh `pgvector/pgvector:pg16` container via Testcontainers, waits for readiness (port + `SELECT 1`), initializes schema via `openDatabase()`, and returns a client plus a `destroy()` function to tear it down.
+      - External mode: given a server `connectionString`, creates a temporary database `tfdb_<random>`, initializes schema, and returns a client plus `destroy()` which drops the temporary database.
+    - `destroyDatabase(handle)`: Idempotent teardown for either mode. Managed stops and removes the container; external drops the temp DB from the admin database.
+    - Process signals SIGINT/SIGTERM are trapped to auto-cleanup managed containers started in this process.
 - `docs/`: Human-facing documentation for this package (this file).
   - `docs/CODE_STANDARD.md`: Coding standards, architectural patterns, and best practices.
   - `docs/sql/`: Reference SQL scripts (schema and hybrid search) for humans. Runtime uses embedded SQL in `src/utils.ts`.
