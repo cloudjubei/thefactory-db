@@ -433,14 +433,12 @@ export async function openDatabase({
       50,
     ])
 
-    const directLimit = Math.min(10, limit)
-    const namePromise = db.query(SQL.searchDocumentsByName, [query, directLimit, filterJson])
+    const namePromise = db.query(SQL.searchDocumentsByName, [query, Math.min(limit, 10), filterJson])
 
     const [hybridRes, nameRes] = await Promise.all([hybridPromise, namePromise])
     const hybrid = (hybridRes.rows as DocumentWithScore[]) || []
     const nameMatches = (nameRes.rows as DocumentWithScore[]) || []
 
-    // Interleave alternating while de-duplicating by id and cap at limit
     const seen = new Set<string>()
     const out: DocumentWithScore[] = []
     let i = 0

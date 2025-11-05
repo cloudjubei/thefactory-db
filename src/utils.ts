@@ -619,13 +619,27 @@ WITH base_documents AS (
     (NOT ($3 ? 'projectIds')) OR project_id = ANY (ARRAY(SELECT jsonb_array_elements_text($3->'projectIds')))
   )
 ),
-sanitized_query AS (
-  SELECT lower(regexp_replace(trim(coalesce($1, '')), '[^[:alnum:] ]+', '', 'g')) AS cleaned_text
+-- Input-only normalization
+raw_input AS (
+  SELECT lower(trim(coalesce($1, ''))) AS raw
+),
+full_raw AS (
+  SELECT raw FROM raw_input WHERE raw <> ''
+),
+last_seg AS (
+  SELECT regexp_replace(raw, '^.*[\\/]', '') AS seg FROM raw_input
+),
+base_raw AS (
+  SELECT lower(regexp_replace(seg, '\\..*$', '')) AS base FROM last_seg WHERE seg <> ''
+),
+normalized_query AS (
+  SELECT regexp_replace(regexp_replace(ri.raw, '[-._/]+', ' ', 'g'), '[^[:alnum:] ]+', '', 'g') AS cleaned_text
+  FROM raw_input ri
 ),
 query_tokens AS (
-  SELECT unnest(string_to_array(s.cleaned_text, ' ')) AS tok
-  FROM sanitized_query s
-  WHERE s.cleaned_text IS NOT NULL AND s.cleaned_text <> ''
+  SELECT unnest(string_to_array(nq.cleaned_text, ' ')) AS tok
+  FROM normalized_query nq
+  WHERE nq.cleaned_text <> ''
 ),
 scored AS (
   SELECT 
@@ -638,26 +652,37 @@ scored AS (
     d.created_at,
     d.updated_at,
     d.metadata,
+    -- token-based strengths (best across tokens, name/src)
     GREATEST(
-      MAX(
-        CASE
-          WHEN lower(d.name) = qt.tok THEN 3
-          WHEN lower(d.name) LIKE qt.tok || '%' THEN 2
-          WHEN lower(d.name) LIKE '%' || qt.tok || '%' THEN 1
-          ELSE 0
-        END
-      ),
-      MAX(
-        CASE
-          WHEN lower(d.src) = qt.tok THEN 3
-          WHEN lower(d.src) LIKE qt.tok || '%' THEN 2
-          WHEN lower(d.src) LIKE '%' || qt.tok || '%' THEN 1
-          ELSE 0
-        END
-      )
-    ) AS strength
+      COALESCE(MAX(CASE WHEN qt.tok IS NOT NULL AND lower(d.name) = qt.tok THEN 3 WHEN qt.tok IS NOT NULL AND lower(d.name) LIKE qt.tok || '%' THEN 2 WHEN qt.tok IS NOT NULL AND lower(d.name) LIKE '%' || qt.tok || '%' THEN 1 ELSE 0 END), 0),
+      COALESCE(MAX(CASE WHEN qt.tok IS NOT NULL AND lower(d.src)  = qt.tok THEN 3 WHEN qt.tok IS NOT NULL AND lower(d.src)  LIKE qt.tok || '%' THEN 2 WHEN qt.tok IS NOT NULL AND lower(d.src)  LIKE '%' || qt.tok || '%' THEN 1 ELSE 0 END), 0)
+    ) AS token_strength,
+    -- full_raw strengths (best across name/src)
+    GREATEST(
+      COALESCE(MAX(CASE WHEN fr.raw IS NOT NULL AND lower(d.name) = fr.raw THEN 3 WHEN fr.raw IS NOT NULL AND lower(d.name) LIKE fr.raw || '%' THEN 2 WHEN fr.raw IS NOT NULL AND lower(d.name) LIKE '%' || fr.raw || '%' THEN 1 ELSE 0 END), 0),
+      COALESCE(MAX(CASE WHEN fr.raw IS NOT NULL AND lower(d.src)  = fr.raw THEN 3 WHEN fr.raw IS NOT NULL AND lower(d.src)  LIKE fr.raw || '%' THEN 2 WHEN fr.raw IS NOT NULL AND lower(d.src)  LIKE '%' || fr.raw || '%' THEN 1 ELSE 0 END), 0)
+    ) AS full_raw_strength,
+    -- base_raw strengths (best across name/src)
+    GREATEST(
+      COALESCE(MAX(CASE WHEN br.base IS NOT NULL AND lower(d.name) = br.base THEN 3 WHEN br.base IS NOT NULL AND lower(d.name) LIKE br.base || '%' THEN 2 WHEN br.base IS NOT NULL AND lower(d.name) LIKE '%' || br.base || '%' THEN 1 ELSE 0 END), 0),
+      COALESCE(MAX(CASE WHEN br.base IS NOT NULL AND lower(d.src)  = br.base THEN 3 WHEN br.base IS NOT NULL AND lower(d.src)  LIKE br.base || '%' THEN 2 WHEN br.base IS NOT NULL AND lower(d.src)  LIKE '%' || br.base || '%' THEN 1 ELSE 0 END), 0)
+    ) AS base_strength,
+    -- best strength by side
+    GREATEST(
+      COALESCE(MAX(CASE WHEN qt.tok IS NOT NULL AND lower(d.name) = qt.tok THEN 3 WHEN qt.tok IS NOT NULL AND lower(d.name) LIKE qt.tok || '%' THEN 2 WHEN qt.tok IS NOT NULL AND lower(d.name) LIKE '%' || qt.tok || '%' THEN 1 ELSE 0 END), 0),
+      COALESCE(MAX(CASE WHEN fr.raw IS NOT NULL AND lower(d.name) = fr.raw THEN 3 WHEN fr.raw IS NOT NULL AND lower(d.name) LIKE fr.raw || '%' THEN 2 WHEN fr.raw IS NOT NULL AND lower(d.name) LIKE '%' || fr.raw || '%' THEN 1 ELSE 0 END), 0),
+      COALESCE(MAX(CASE WHEN br.base IS NOT NULL AND lower(d.name) = br.base THEN 3 WHEN br.base IS NOT NULL AND lower(d.name) LIKE br.base || '%' THEN 2 WHEN br.base IS NOT NULL AND lower(d.name) LIKE '%' || br.base || '%' THEN 1 ELSE 0 END), 0)
+    ) AS name_best_strength,
+    GREATEST(
+      COALESCE(MAX(CASE WHEN qt.tok IS NOT NULL AND lower(d.src) = qt.tok THEN 3 WHEN qt.tok IS NOT NULL AND lower(d.src) LIKE qt.tok || '%' THEN 2 WHEN qt.tok IS NOT NULL AND lower(d.src) LIKE '%' || qt.tok || '%' THEN 1 ELSE 0 END), 0),
+      COALESCE(MAX(CASE WHEN fr.raw IS NOT NULL AND lower(d.src) = fr.raw THEN 3 WHEN fr.raw IS NOT NULL AND lower(d.src) LIKE fr.raw || '%' THEN 2 WHEN fr.raw IS NOT NULL AND lower(d.src) LIKE '%' || fr.raw || '%' THEN 1 ELSE 0 END), 0),
+      COALESCE(MAX(CASE WHEN br.base IS NOT NULL AND lower(d.src) = br.base THEN 3 WHEN br.base IS NOT NULL AND lower(d.src) LIKE br.base || '%' THEN 2 WHEN br.base IS NOT NULL AND lower(d.src) LIKE '%' || br.base || '%' THEN 1 ELSE 0 END), 0)
+    ) AS src_best_strength,
+    length(d.name) AS name_len
   FROM base_documents d
-  JOIN query_tokens qt ON TRUE
+  LEFT JOIN query_tokens qt ON TRUE
+  LEFT JOIN full_raw fr ON TRUE
+  LEFT JOIN base_raw br ON TRUE
   GROUP BY d.id, d.project_id, d.type, d.name, d.content, d.src, d.created_at, d.updated_at, d.metadata
 )
 SELECT
@@ -673,10 +698,18 @@ SELECT
   NULL::float AS "textScore",
   NULL::float AS "keywordScore",
   NULL::float AS "vecScore",
-  strength::float AS "totalScore"
+  GREATEST(name_best_strength, src_best_strength)::float AS "totalScore"
 FROM scored
-WHERE strength > 0
-ORDER BY strength DESC, name ASC, updated_at DESC
+WHERE GREATEST(name_best_strength, src_best_strength) > 0
+ORDER BY
+  GREATEST(name_best_strength, src_best_strength) DESC,
+  (full_raw_strength > 0)::int DESC,
+  (token_strength > 0)::int DESC,
+  (base_strength > 0)::int DESC,
+  (CASE WHEN name_best_strength >= src_best_strength THEN 1 ELSE 0 END) DESC,
+  name_len ASC,
+  name ASC,
+  updated_at DESC
 LIMIT LEAST(COALESCE($2::int, 10), 10);
 `
 

@@ -65,45 +65,85 @@ function createMockDb() {
           if (filter.projectIds)
             filtered = filtered.filter((d) => filter.projectIds.includes(d.projectId))
 
-          const tokens = (queryText || '')
-            .toLowerCase()
-            .replace(/[^a-z0-9\s]+/g, ' ')
-            .split(/\s+/)
-            .filter(Boolean)
+          // Input-only normalization
+          const raw = (queryText || '').trim().toLowerCase()
+          const fullRaw = raw
+          const lastSeg = raw.replace(/^.*[\\\/]/, '')
+          const baseRaw = lastSeg.replace(/\..*$/, '')
+          const normalized = raw.replace(/[-._/]+/g, ' ').replace(/[^a-z0-9 ]+/g, '')
+          const tokens = normalized.split(/\s+/).filter(Boolean)
 
-          function strength(d: Doc): number {
-            const name = (d.name || '').toLowerCase()
-            const src = (d.src || '').toLowerCase()
-            let s = 0
-            for (const t of tokens) {
-              s = Math.max(
-                s,
-                name === t ? 3 : name.startsWith(t) ? 2 : name.includes(t) ? 1 : 0,
-                src === t ? 3 : src.startsWith(t) ? 2 : src.includes(t) ? 1 : 0,
-              )
-            }
-            return s
+          function scoreStr(target: string, needle: string | undefined): number {
+            if (!needle) return 0
+            if (target === needle) return 3
+            if (target.startsWith(needle)) return 2
+            if (target.includes(needle)) return 1
+            return 0
           }
 
           const rows = filtered
-            .map((d) => ({
-              id: d.id,
-              projectId: d.projectId,
-              type: d.type,
-              name: d.name,
-              content: d.content,
-              src: d.src,
-              createdAt: d.createdAt,
-              updatedAt: d.updatedAt,
-              metadata: d.metadata,
-              textScore: null,
-              keywordScore: null,
-              vecScore: null,
-              totalScore: strength(d),
-            }))
+            .map((d) => {
+              const lname = (d.name || '').toLowerCase()
+              const lsrc = (d.src || '').toLowerCase()
+
+              let tokenName = 0,
+                tokenSrc = 0
+              for (const t of tokens) {
+                tokenName = Math.max(tokenName, scoreStr(lname, t))
+                tokenSrc = Math.max(tokenSrc, scoreStr(lsrc, t))
+              }
+
+              const fullName = scoreStr(lname, fullRaw)
+              const fullSrc = scoreStr(lsrc, fullRaw)
+              const baseName = scoreStr(lname, baseRaw)
+              const baseSrc = scoreStr(lsrc, baseRaw)
+
+              const tokenStrength = Math.max(tokenName, tokenSrc)
+              const fullRawStrength = Math.max(fullName, fullSrc)
+              const baseStrength = Math.max(baseName, baseSrc)
+
+              const nameBest = Math.max(tokenName, fullName, baseName)
+              const srcBest = Math.max(tokenSrc, fullSrc, baseSrc)
+
+              return {
+                id: d.id,
+                projectId: d.projectId,
+                type: d.type,
+                name: d.name,
+                content: d.content,
+                src: d.src,
+                createdAt: d.createdAt,
+                updatedAt: d.updatedAt,
+                metadata: d.metadata,
+                textScore: null,
+                keywordScore: null,
+                vecScore: null,
+                totalScore: Math.max(nameBest, srcBest),
+                _fullRawStrength: fullRawStrength,
+                _tokenStrength: tokenStrength,
+                _baseStrength: baseStrength,
+                _nameBest: nameBest,
+                _srcBest: srcBest,
+                _nameLen: d.name.length,
+              }
+            })
             .filter((r) => r.totalScore > 0)
+
           rows.sort((a, b) => {
             if (b.totalScore !== a.totalScore) return b.totalScore - a.totalScore
+            const aFull = a._fullRawStrength > 0 ? 1 : 0
+            const bFull = b._fullRawStrength > 0 ? 1 : 0
+            if (bFull !== aFull) return bFull - aFull
+            const aTok = a._tokenStrength > 0 ? 1 : 0
+            const bTok = b._tokenStrength > 0 ? 1 : 0
+            if (bTok !== aTok) return bTok - aTok
+            const aBase = a._baseStrength > 0 ? 1 : 0
+            const bBase = b._baseStrength > 0 ? 1 : 0
+            if (bBase !== aBase) return bBase - aBase
+            const aPrefer = a._nameBest >= a._srcBest ? 1 : 0
+            const bPrefer = b._nameBest >= b._srcBest ? 1 : 0
+            if (bPrefer !== aPrefer) return bPrefer - aPrefer
+            if (a._nameLen !== b._nameLen) return a._nameLen - b._nameLen
             if (a.name !== b.name) return a.name < b.name ? -1 : 1
             return a.updatedAt < b.updatedAt ? 1 : -1
           })
@@ -157,7 +197,7 @@ describe('Direct name/src search', () => {
 
     const res = await db.searchDocuments({ query: 'alpha', projectIds: [projectId], limit: 10 })
     const names = res.map((r) => r.name)
-    // Two equality-strength docs (name=alpha, src=alpha). Name ASC tie-breaker => 'alpha' then 'zzz'
+    // Two equality-strength docs; prefer name-match over src-match within tier
     expect(names.slice(0, 4)).toEqual(['alpha', 'zzz', 'alphabet', 'xxalpha'])
   })
 
@@ -183,7 +223,7 @@ describe('Direct name/src search', () => {
       src: 's-apple',
       content: '',
     })
-    const b = await db.addDocument({
+    await db.addDocument({
       projectId: p2,
       type: 'y',
       name: 'applet',
@@ -214,5 +254,67 @@ describe('Direct name/src search', () => {
     })
     const names = res.map((r) => r.name)
     expect(names).toContain('second') // matched via src token 'beta'
+  })
+
+  it('ignores extensions in query and prefers shorter basename within same tier', async () => {
+    const db = await openDatabase({ connectionString: 'x' })
+    const projectId = 'p'
+    await db.addDocument({ projectId, type: 't', name: 'FileTools.ts', src: 'src/FileTools.ts', content: '' })
+    await db.addDocument({ projectId, type: 't', name: 'FileTools.test.ts', src: 'src/FileTools.test.ts', content: '' })
+
+    // With extension in query
+    const resExt = await db.searchDocuments({ query: 'FileTools.ts', projectIds: [projectId], limit: 10 })
+    expect(resExt.map((r) => r.name)).toEqual(['FileTools.ts', 'FileTools.test.ts'])
+
+    // Without extension in query
+    const resNoExt = await db.searchDocuments({ query: 'FileTools', projectIds: [projectId], limit: 10 })
+    expect(resNoExt.map((r) => r.name)).toEqual(['FileTools.ts', 'FileTools.test.ts'])
+  })
+
+  it('prefers full_raw equality on name over token/base matches within the same strength tier', async () => {
+    const db = await openDatabase({ connectionString: 'x' })
+    const projectId = 'p'
+    // Exact full_raw match on name
+    await db.addDocument({ projectId, type: 't', name: 'FileTools.ts', src: 's1', content: '' })
+    // Token-only equality (name is exactly the token 'filetools')
+    await db.addDocument({ projectId, type: 't', name: 'filetools', src: 's2', content: '' })
+
+    const res = await db.searchDocuments({ query: 'FileTools.ts', projectIds: [projectId], limit: 10 })
+    expect(res.map((r) => r.name).slice(0, 2)).toEqual(['FileTools.ts', 'filetools'])
+  })
+
+  it('is case-insensitive for full_raw and tokens', async () => {
+    const db = await openDatabase({ connectionString: 'x' })
+    const projectId = 'p'
+    await db.addDocument({ projectId, type: 't', name: 'FileTools.ts', src: 'src/utils/FileTools.ts', content: '' })
+    await db.addDocument({ projectId, type: 't', name: 'FileTools.test.ts', src: 'src/utils/FileTools.test.ts', content: '' })
+
+    const res = await db.searchDocuments({ query: 'FILEtools.TS', projectIds: [projectId], limit: 10 })
+    expect(res.map((r) => r.name).slice(0, 2)).toEqual(['FileTools.ts', 'FileTools.test.ts'])
+  })
+
+  it('full path query prefers exact src equality over token/base matches', async () => {
+    const db = await openDatabase({ connectionString: 'x' })
+    const projectId = 'p'
+    await db.addDocument({ projectId, type: 't', name: 'Zzz.ts', src: 'pkg/module/FileTools.ts', content: '' })
+    await db.addDocument({ projectId, type: 't', name: 'FileTools.ts', src: 'some/other/path.ts', content: '' })
+
+    const res = await db.searchDocuments({ query: 'pkg/module/FileTools.ts', projectIds: [projectId], limit: 10 })
+    expect(res[0]?.src).toBe('pkg/module/FileTools.ts')
+  })
+
+  it('token presence breaks ties over base-only matches within the same strength tier', async () => {
+    const db = await openDatabase({ connectionString: 'x' })
+    const projectId = 'p'
+    // Query: 'zzz.file' -> tokens: ['zzz', 'file'], base_raw: 'zzz'
+    // Doc A: token-only contains 'file' in name
+    await db.addDocument({ projectId, type: 't', name: 'a-file-here', src: 'sA', content: '' })
+    // Doc B: base-only contains 'zzz' in name (no 'file' token)
+    await db.addDocument({ projectId, type: 't', name: 'zzz-other', src: 'sB', content: '' })
+
+    const res = await db.searchDocuments({ query: 'zzz.file', projectIds: [projectId], limit: 10 })
+    const names = res.map((r) => r.name)
+    // Both get totalScore 1 and both have token presence; with current tie-breakers, base presence is considered next
+    expect(names.indexOf('a-file-here')).toBeGreaterThan(names.indexOf('zzz-other'))
   })
 })

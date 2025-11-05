@@ -60,7 +60,10 @@
       "status": "+",
       "title": "Make more complex e2e tests",
       "description": "THere should be an equivalent e2e test version of @tests/hybrid-search-advanced.test.ts .\nWe should have one version for entities and one for documents.\nThe goal is to stress test different weights to the scores [0,0.2,0.5,0.8,1] of the keywords vs embedding weights.\nWe also make sure that files are picked up based on their file names - so there need to be appropriate tests for that.\nFollow @docs/TESTING.md for standards. \nMake sure the tests are as atomic and self-contained as possible.\nPrefer more easily failable tests rather than a huge battery of tests that could fail at the beginning.",
-      "context": ["tests/hybrid-search-advanced.test.ts", "docs/TESTING.md"],
+      "context": [
+        "tests/hybrid-search-advanced.test.ts",
+        "docs/TESTING.md"
+      ],
       "createdAt": "2025-09-23T15:07:16.099Z",
       "updatedAt": "2025-09-23T17:00:30.567Z",
       "blockers": [],
@@ -82,7 +85,9 @@
       "status": "+",
       "title": "Title doesn't get taken into account when hybrid searching",
       "description": "Inside the definition of hybrid search in @src/utils.ts - for documents, `src` isn't taken into account - the name portion of it should be. But even better, we should enforce accepting a name, inside DocumentInput, and store it in the database and then keyword search (inside hybrid search) should also test itself against this value.",
-      "context": ["src/utils.ts"],
+      "context": [
+        "src/utils.ts"
+      ],
       "createdAt": "2025-09-23T17:01:25.209Z",
       "updatedAt": "2025-09-24T03:00:18.323Z",
       "blockers": [],
@@ -143,7 +148,9 @@
       "status": "+",
       "title": "when multiple keywords are input they are not treated separately",
       "description": "I keep observing a textScore of 0 when calling `searchDocuments` in @src/index.ts . When only one keyword is input, the textScore is correct, but with multiple keywords that are space separated - the result is pretty much always 0.\nWhat should happen is that the input should be space separated, and for each such keyword the textScore should be computed and then the maximum of all these keywords should be taken - that should be the final score for a set of keywords. This should be directly inside the SQL `hybrid_search_entities` and `hybrid_search_documents` functions.",
-      "context": ["src/index.ts"],
+      "context": [
+        "src/index.ts"
+      ],
       "blockers": [],
       "createdAt": "2025-09-24T02:37:08.544Z",
       "updatedAt": "2025-09-24T02:42:00.191Z",
@@ -154,7 +161,10 @@
       "status": "+",
       "title": "Batching of embeddings",
       "description": "In @src/index.ts in the function `upsertDocuments` we are embedding the content of many documents at once and this takes a long time. So we require this improvement - the @src/utils/embeddings.ts needs to allow batched embeddings, so that it can quicker do the whole batch in one go. Sample code for the usage of this is commented out in `upsertDocuments` .",
-      "context": ["src/index.ts", "src/utils/embeddings.ts"],
+      "context": [
+        "src/index.ts",
+        "src/utils/embeddings.ts"
+      ],
       "blockers": [],
       "createdAt": "2025-09-29T20:28:01.709Z",
       "updatedAt": "2025-09-30T01:11:34.522Z",
@@ -165,7 +175,9 @@
       "status": "+",
       "title": "Check hashes before embeddings",
       "description": "In `upsertDocuments` in @src/index.ts before proceeding into the embeddings, there should be a function that would accept the src/ids of the documents and their contents and would return all the documents that would be updated (thus requiring embeddings) and then only these documents would be passed onto the embeddings and the actual upsert. The embeddings are the bottleneck, so we need to make sure that as few documents as possible get re-embedded - thus we need a pre-emptive hash check.",
-      "context": ["src/index.ts"],
+      "context": [
+        "src/index.ts"
+      ],
       "blockers": [],
       "createdAt": "2025-09-29T22:45:51.048Z",
       "updatedAt": "2025-09-30T00:59:38.344Z",
@@ -173,21 +185,22 @@
     },
     {
       "id": "492873cd-c561-440c-abd5-319affebb017",
-      "status": "?",
+      "status": "-",
       "title": "OR query splitting for search",
       "description": "Support 'OR' and '|' operators in queries to act as separators for alternative tokens.\n\nScope:\n- Full-text tsquery builders (documents/entities): exclude the 'or' lexeme so it is not treated as a keyword; treat separated tokens as OR alternatives within the tsquery.\n- Name/src direct search logic (see Feature: Document name/src direct search and interleaving): split queries on ' OR ' and '|' (case-insensitive), trim and dedupe tokens; avoid splitting inside quotes.\n\nAcceptance criteria:\n- Given 'codeIntel OR code-intel OR code_intel', treat these as three alternative tokens. The term 'OR' is not searched.\n- Existing search tests pass; no functional regressions.\n\nTesting:\n- Unit/integration tests verifying that queries with 'OR' and '|' are treated as alternative tokens for entities and documents. Example inputs: 'codeIntel OR code-intel OR code_intel', 'alpha|beta', 'ALPHA or beta'.\n- Edge cases: multiple adjacent separators ('alpha||beta'), leading/trailing separators ('|alpha', 'beta|'), mixed-case 'or'/'OR', redundant whitespace, and quoted phrases preserved (e.g., '\"foo OR bar\"' must not be split).\n- Regression tests ensuring that removing 'or' as a lexeme does not prevent finding documents that contain the literal word 'or' when intended (e.g., by using quotes or when no delimiter pattern is present).\n- E2E tests (real DB) for documents and entities confirming that at least one alternative match returns results and that ranking remains stable otherwise.",
       "context": [],
       "createdAt": "2025-11-05T16:29:52.888Z",
-      "updatedAt": "2025-11-05T17:17:40.066Z"
+      "updatedAt": "2025-11-05T20:54:54.192Z",
+      "blockers": []
     },
     {
       "id": "c96b910f-5ee7-4ca6-94d2-220561b55ba5",
       "status": "?",
       "title": "Exact term boosting in hybrid search (documents and entities)",
-      "description": "Add an 'exact_match' CTE directly into the hybrid search SQL functions to highly rank exact token matches.\n\nScope:\n- hybrid_search_documents: add exact-match scoring across name, src, content using case-sensitive exact substring counts; apply higher weight for exact equality on name/src. Integrate via Reciprocal Rank Fusion with a new 'exact_weight' parameter.\n- hybrid_search_entities: add exact-match scoring across content_string (and optionally type) similarly; integrate via RRF with 'exact_weight'.\n- Update wrapper queries to pass 'exact_weight' from the API layer with a sensible default (e.g., 0.4) without breaking signatures.\n\nAcceptance criteria:\n- A query with an identifier-like token (e.g., 'createFileTools') elevates documents/entities containing that exact token to the top results across balanced textWeight values.\n- No significant regressions in existing hybrid search tests.\n\nTesting:\n- Integration tests against the SQL functions asserting that enabling 'exact_weight' lifts exact matches above similar-but-not-exact results for single-token identifier-like queries (e.g., 'createFileTools', 'my-func', 'snake_case_name').\n- Documents: cases covering exact equality on name/src, prefix equality (name/src starts with token), and exact substring in content; verify the ranking follows equality > prefix > substring.\n- Entities: exact substring matches in content_string and optionally type, covering camelCase, hyphen, and underscore tokens.\n- Multi-word queries: ensure the exact-match boost does not swamp semantic/keyword contributions; verify sensible ordering across textWeight values in [0, 0.2, 0.5, 0.8, 1].\n- Case sensitivity and boundaries: tests to confirm case handling and to avoid unintended partial matches within longer alphanumerics when not desired.\n- E2E (real DB): realistic datasets demonstrating that exact token queries promote exact matches and that existing hybrid tests continue to pass.",
+      "description": "Title: Exact term boosting in hybrid search (documents and entities)\n\nSummary:\nReplace the coarse literal substring channel with a boundary-aware, case-sensitive exact_match channel fused via RRF. Remove literal_search and literal_weight entirely. Introduce exact_weight (replacing literal_weight positionally) so wrapper call shapes remain stable. Keep the existing name_weight boost for documents.\n\nScope:\n- hybrid_search_documents:\n  - Remove: literal_search CTE and literal_weight parameter.\n  - Add: exact_match CTE computing a tiered rank across name, src, and content using case-sensitive, boundary-aware matching.\n    - Tiers (best to worst):\n      1) exact equality on name or src\n      2) prefix equality on name or src\n      3) boundary-aware exact substring in name or src\n      4) boundary-aware exact substring in content\n    - Boundary-aware: adjacent characters (if any) must not be alphanumerics or underscore; prevents matching 'foo' inside 'foobar'. Hyphens/underscores within the query token are treated as part of the token and allowed.\n  - Integrate: fuse via RRF as 1/(k+rank_ix) * exact_weight alongside full_text and semantic channels. Retain existing name_weight additive boost on FTS name hits.\n  - Signature (literal_weight replaced in place):\n    hybrid_search_documents(query_text text, query_embedding vector, match_count int, filter jsonb DEFAULT '{}', name_weight float DEFAULT 1.0, exact_weight float DEFAULT 0.4, full_text_weight float DEFAULT 0.3, semantic_weight float DEFAULT 0.3, rrf_k int DEFAULT 50)\n  - Output: expose exact_score instead of literal_score.\n\n- hybrid_search_entities:\n  - Remove: literal_search CTE and literal_weight parameter.\n  - Add: exact_match CTE scoring content_string (via content::text) and type with boundary-aware, case-sensitive matching. Prefer equality/prefix on type and boundary-aware substring for content_string.\n  - Integrate via RRF with exact_weight.\n  - Signature (literal_weight replaced in place):\n    hybrid_search_entities(query_text text, query_embedding vector, match_count int, filter jsonb DEFAULT '{}', exact_weight float DEFAULT 0.4, full_text_weight float DEFAULT 0.3, semantic_weight float DEFAULT 0.3, rrf_k int DEFAULT 50)\n  - Output: expose exact_score instead of literal_score.\n\n- Wrapper queries (API layer):\n  - searchDocumentsQuery: keep positional arguments the same; the previous literal_weight arg now provides exact_weight. Update selected columns to alias exact_score as 'textScore'.\n  - searchEntitiesQuery: same; map exact_score as 'textScore'.\n  - No breaking changes to TypeScript function signatures or returned row shapes.\n\nAcceptance criteria:\n- Single-token, identifier-like queries (e.g., 'createFileTools', 'my-func', 'snake_case_name') elevate exact matches to the top across balanced textWeight values, with ordering equality > prefix > substring.\n- Multi-word queries: exact_match boost does not swamp semantic/keyword contributions; sensible ordering holds for textWeight in [0, 0.2, 0.5, 0.8, 1].\n- Case sensitivity and boundaries: 'foo' does not match inside 'foobar'; mixed-case and punctuation tokens match as-is.\n- No significant regressions in existing hybrid search tests aside from intentional updates to swap literal_score for exact_score semantics.\n\nTesting:\n- Integration tests on SQL functions:\n  - Documents: cases for name/src equality, prefix, name/src boundary substring, and content boundary substring; assert equality > prefix > substring and that enabling exact_weight lifts exact matches above similar non-exact results.\n  - Entities: equality/prefix on type and boundary-aware substrings in content_string; cover camelCase, hyphen, and underscore tokens.\n  - Verify multi-word behavior across textWeight values [0, 0.2, 0.5, 0.8, 1].\n  - Case sensitivity and alphanumeric boundary tests to prevent unintended partial matches.\n- E2E (real DB): realistic datasets demonstrating exact token queries promote exact matches; existing hybrid tests continue to pass with updated expectations for textScore.\n\nMigration notes:\n- literal_search CTE and literal_score column are removed.\n- literal_weight is replaced by exact_weight at the same parameter index to keep wrappers stable.\n- Wrappers still expose 'textScore'; it now reflects exact_score.",
       "context": [],
       "createdAt": "2025-11-05T16:29:52.889Z",
-      "updatedAt": "2025-11-05T17:17:38.794Z"
+      "updatedAt": "2025-11-05T21:07:33.054Z"
     },
     {
       "id": "03e7618d-5ac3-4ff8-9dff-c9d64076128a",
