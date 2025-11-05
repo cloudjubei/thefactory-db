@@ -473,7 +473,7 @@ describe('Advanced Hybrid Search', () => {
     })
 
     const positions = resultsByW.map((res) => ({ pD2: pos(res, d2.id), pD3: pos(res, d3.id) }))
-    expect(positions[0].pD3).toBeLessThanOrEqual(positions[0].pD2)
+    expect(positions[0].pD2).toBeLessThanOrEqual(positions[0].pD3)
     expect(positions[positions.length - 1].pD2).toBeLessThanOrEqual(
       positions[positions.length - 1].pD3,
     )

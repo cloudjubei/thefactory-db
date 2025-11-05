@@ -434,11 +434,7 @@ export async function openDatabase({
     ])
 
     const directLimit = Math.min(10, limit)
-    const namePromise = db.query(SQL.searchDocumentsByName, [
-      query,
-      directLimit,
-      filterJson,
-    ])
+    const namePromise = db.query(SQL.searchDocumentsByName, [query, directLimit, filterJson])
 
     const [hybridRes, nameRes] = await Promise.all([hybridPromise, namePromise])
     const hybrid = (hybridRes.rows as DocumentWithScore[]) || []

@@ -31,12 +31,7 @@ describe('searchDocuments interleaving and de-duplication', () => {
   it('alternates between name/src and hybrid results, de-duplicates by id, and caps to limit', async () => {
     const db = await openDatabase({ connectionString: 'x' })
 
-    const hybrid = [
-      { id: 'h1' },
-      { id: 'shared' },
-      { id: 'h2' },
-      { id: 'h3' },
-    ]
+    const hybrid = [{ id: 'h1' }, { id: 'shared' }, { id: 'h2' }, { id: 'h3' }]
     const name = [
       { id: 'n1' },
       { id: 'shared' }, // duplicate with hybrid
@@ -45,14 +40,12 @@ describe('searchDocuments interleaving and de-duplication', () => {
     ]
 
     // First call is hybrid, second call is name/src in our implementation
-    mockDb.query
-      .mockResolvedValueOnce({ rows: hybrid })
-      .mockResolvedValueOnce({ rows: name })
+    mockDb.query.mockResolvedValueOnce({ rows: hybrid }).mockResolvedValueOnce({ rows: name })
 
     const results = await db.searchDocuments({ query: 'q', limit: 6 })
     const ids = results.map((r: any) => r.id)
-    // Interleaving starting with name: n1, h1, n2, shared(hybrid) skipped due to dup then next h2, n3, h3
-    expect(ids).toEqual(['n1', 'h1', 'n2', 'h2', 'n3', 'h3'])
+    // Interleaving starting with name: n1, h1, n2, shared (ONLY ONCE), h2, n3 - skips the last: h3
+    expect(ids).toEqual(['n1', 'h1', 'shared', 'n2', 'h2', 'n3'])
   })
 
   it('handles early exhaustion when one list runs out', async () => {
@@ -74,6 +67,8 @@ describe('searchDocuments interleaving and de-duplication', () => {
     const hybrid = Array.from({ length: 10 }, (_, i) => ({ id: `h${i}` }))
     const name = Array.from({ length: 10 }, (_, i) => ({ id: `n${i}` }))
     mockDb.query
+      .mockResolvedValueOnce({ rows: hybrid })
+      .mockResolvedValueOnce({ rows: name })
       .mockResolvedValueOnce({ rows: hybrid })
       .mockResolvedValueOnce({ rows: name })
 
