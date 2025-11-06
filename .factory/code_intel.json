@@ -182,7 +182,10 @@
       "AlbertTokenizer": {
         "path": "types/tokenizers.d.ts",
         "description": "Albert tokenizer",
-        "dependencies": ["PreTrainedTokenizer", "AutoTokenizer"]
+        "dependencies": [
+          "PreTrainedTokenizer",
+          "AutoTokenizer"
+        ]
       },
       "AliasTasks": {
         "path": "types/pipelines.d.ts",
@@ -197,7 +200,10 @@
       },
       "AliasType": {
         "path": "types/pipelines.d.ts",
-        "dependencies": ["wavefile", "fs"]
+        "dependencies": [
+          "wavefile",
+          "fs"
+        ]
       },
       "allowLocalModels": {
         "path": "types/env.d.ts",
@@ -209,15 +215,26 @@
       },
       "AllTasks": {
         "path": "types/pipelines.d.ts",
-        "dependencies": ["AliasTasks", "SupportedTasks"]
+        "dependencies": [
+          "AliasTasks",
+          "SupportedTasks"
+        ]
       },
       "AnyTypedArray": {
         "path": "types/utils/maths.d.ts",
-        "dependencies": ["BigTypedArray", "TypedArray"]
+        "dependencies": [
+          "BigTypedArray",
+          "TypedArray"
+        ]
       },
       "ASTFeatureExtractor": {
         "path": "types/processors.d.ts",
-        "dependencies": ["Tensor", "Promise", "Float64Array", "Float32Array"]
+        "dependencies": [
+          "Tensor",
+          "Promise",
+          "Float64Array",
+          "Float32Array"
+        ]
       },
       "ASTForAudioClassification": {
         "path": "types/models.d.ts",
@@ -325,7 +342,9 @@
       },
       "AudioClassificationOutput": {
         "path": "types/pipelines.d.ts",
-        "dependencies": ["AudioClassificationSingle"]
+        "dependencies": [
+          "AudioClassificationSingle"
+        ]
       },
       "AudioClassificationPipeline": {
         "path": "types/pipelines.d.ts",
@@ -349,7 +368,10 @@
       "AudioClassificationPipelineOptions": {
         "path": "types/pipelines.d.ts",
         "description": "Parameters specific to audio classification pipelines.",
-        "dependencies": ["wavefile", "fs"]
+        "dependencies": [
+          "wavefile",
+          "fs"
+        ]
       },
       "AudioClassificationPipelineType": {
         "path": "types/pipelines.d.ts",
@@ -361,33 +383,51 @@
       },
       "AudioClassificationSingle": {
         "path": "types/pipelines.d.ts",
-        "dependencies": ["wavefile", "fs"]
+        "dependencies": [
+          "wavefile",
+          "fs"
+        ]
       },
       "AudioInput": {
         "path": "types/pipelines.d.ts",
-        "dependencies": ["Float64Array", "Float32Array", "URL"]
+        "dependencies": [
+          "Float64Array",
+          "Float32Array",
+          "URL"
+        ]
       },
       "AudioPipelineConstructorArgs": {
         "path": "types/pipelines.d.ts",
         "description": "The model used by the pipeline.",
-        "dependencies": ["ModelProcessorConstructorArgs"]
+        "dependencies": [
+          "ModelProcessorConstructorArgs"
+        ]
       },
       "AudioPipelineInputs": {
         "path": "types/pipelines.d.ts",
-        "dependencies": ["AudioInput"]
+        "dependencies": [
+          "AudioInput"
+        ]
       },
       "AutoConfig": {
         "path": "types/configs.d.ts",
         "description": "Helper class which is used to instantiate pretrained configs with the `from_pretrained` function.",
-        "dependencies": ["PretrainedConfig", "Promise"]
+        "dependencies": [
+          "PretrainedConfig",
+          "Promise"
+        ]
       },
       "AutomaticSpeechRecognitionConfig": {
         "path": "types/pipelines.d.ts",
-        "dependencies": ["AutomaticSpeechRecognitionSpecificParams"]
+        "dependencies": [
+          "AutomaticSpeechRecognitionSpecificParams"
+        ]
       },
       "AutomaticSpeechRecognitionOutput": {
         "path": "types/pipelines.d.ts",
-        "dependencies": ["Chunk"]
+        "dependencies": [
+          "Chunk"
+        ]
       },
       "AutomaticSpeechRecognitionPipeline": {
         "path": "types/pipelines.d.ts",
@@ -420,7 +460,9 @@
       "AutomaticSpeechRecognitionSpecificParams": {
         "path": "types/pipelines.d.ts",
         "description": "Parameters specific to automatic-speech-recognition pipelines.",
-        "dependencies": ["ChunkCallback"]
+        "dependencies": [
+          "ChunkCallback"
+        ]
       },
       "AutoModel": {
         "path": "types/models.d.ts",
@@ -1325,7 +1367,10 @@
       "AutoProcessor": {
         "path": "types/processors.d.ts",
         "description": "Helper class which is used to instantiate pretrained processors with the `from_pretrained` function.",
-        "dependencies": ["Processor", "Promise"]
+        "dependencies": [
+          "Processor",
+          "Promise"
+        ]
       },
       "AutoTokenizer": {
         "path": "types/tokenizers.d.ts",
@@ -1484,7 +1529,10 @@
       },
       "BartTokenizer": {
         "path": "types/tokenizers.d.ts",
-        "dependencies": ["PreTrainedTokenizer", "AutoTokenizer"]
+        "dependencies": [
+          "PreTrainedTokenizer",
+          "AutoTokenizer"
+        ]
       },
       "BaseModelOutput": {
         "path": "types/models.d.ts",
@@ -1522,7 +1570,9 @@
       },
       "BeitFeatureExtractor": {
         "path": "types/processors.d.ts",
-        "dependencies": ["ImageFeatureExtractor"]
+        "dependencies": [
+          "ImageFeatureExtractor"
+        ]
       },
       "BeitForImageClassification": {
         "path": "types/models.d.ts",
@@ -1842,15 +1892,23 @@
       "BertTokenizer": {
         "path": "types/tokenizers.d.ts",
         "description": "BertTokenizer is a class used to tokenize text for BERT models.",
-        "dependencies": ["PreTrainedTokenizer", "AutoTokenizer"]
+        "dependencies": [
+          "PreTrainedTokenizer",
+          "AutoTokenizer"
+        ]
       },
       "BigTypedArray": {
         "path": "types/utils/maths.d.ts",
-        "dependencies": ["BigUint64Array", "BigInt64Array"]
+        "dependencies": [
+          "BigUint64Array",
+          "BigInt64Array"
+        ]
       },
       "BitImageProcessor": {
         "path": "types/processors.d.ts",
-        "dependencies": ["ImageFeatureExtractor"]
+        "dependencies": [
+          "ImageFeatureExtractor"
+        ]
       },
       "BlenderbotForConditionalGeneration": {
         "path": "types/models.d.ts",
@@ -2062,11 +2120,17 @@
       },
       "BlenderbotSmallTokenizer": {
         "path": "types/tokenizers.d.ts",
-        "dependencies": ["BlenderbotTokenizer", "AutoTokenizer"]
+        "dependencies": [
+          "BlenderbotTokenizer",
+          "AutoTokenizer"
+        ]
       },
       "BlenderbotTokenizer": {
         "path": "types/tokenizers.d.ts",
-        "dependencies": ["PreTrainedTokenizer", "AutoTokenizer"]
+        "dependencies": [
+          "PreTrainedTokenizer",
+          "AutoTokenizer"
+        ]
       },
       "BloomForCausalLM": {
         "path": "types/models.d.ts",
@@ -2175,15 +2239,23 @@
       },
       "BloomTokenizer": {
         "path": "types/tokenizers.d.ts",
-        "dependencies": ["GPT2Tokenizer", "AutoTokenizer"]
+        "dependencies": [
+          "GPT2Tokenizer",
+          "AutoTokenizer"
+        ]
       },
       "BoundingBox": {
         "path": "types/pipelines.d.ts",
-        "dependencies": ["wavefile", "fs"]
+        "dependencies": [
+          "wavefile",
+          "fs"
+        ]
       },
       "BPENode": {
         "path": "types/tokenizers.d.ts",
-        "dependencies": ["AutoTokenizer"]
+        "dependencies": [
+          "AutoTokenizer"
+        ]
       },
       "calculateDimensions": {
         "path": "types/utils/core.d.ts",
@@ -2415,12 +2487,17 @@
       },
       "CamembertTokenizer": {
         "path": "types/tokenizers.d.ts",
-        "dependencies": ["PreTrainedTokenizer", "AutoTokenizer"]
+        "dependencies": [
+          "PreTrainedTokenizer",
+          "AutoTokenizer"
+        ]
       },
       "cat": {
         "path": "types/utils/tensor.d.ts",
         "description": "Concatenates an array of tensors along a specified dimension.",
-        "dependencies": ["Tensor"]
+        "dependencies": [
+          "Tensor"
+        ]
       },
       "CausalLMOutput": {
         "path": "types/models.d.ts",
@@ -2493,15 +2570,23 @@
       "CharTrie": {
         "path": "types/utils/data-structures.d.ts",
         "description": "A trie structure to efficiently store and search for strings.",
-        "dependencies": ["Generator", "CharTrieNode"]
+        "dependencies": [
+          "Generator",
+          "CharTrieNode"
+        ]
       },
       "Chat": {
         "path": "types/pipelines.d.ts",
-        "dependencies": ["wavefile", "fs"]
+        "dependencies": [
+          "wavefile",
+          "fs"
+        ]
       },
       "ChineseCLIPFeatureExtractor": {
         "path": "types/processors.d.ts",
-        "dependencies": ["ImageFeatureExtractor"]
+        "dependencies": [
+          "ImageFeatureExtractor"
+        ]
       },
       "ChineseCLIPModel": {
         "path": "types/models.d.ts",
@@ -2573,15 +2658,22 @@
       },
       "Chunk": {
         "path": "types/pipelines.d.ts",
-        "dependencies": ["wavefile", "fs"]
+        "dependencies": [
+          "wavefile",
+          "fs"
+        ]
       },
       "ChunkCallback": {
         "path": "types/pipelines.d.ts",
-        "dependencies": ["ChunkCallbackItem"]
+        "dependencies": [
+          "ChunkCallbackItem"
+        ]
       },
       "ChunkCallbackItem": {
         "path": "types/pipelines.d.ts",
-        "dependencies": ["Tensor"]
+        "dependencies": [
+          "Tensor"
+        ]
       },
       "ClapAudioModelWithProjection": {
         "path": "types/models.d.ts",
@@ -2620,7 +2712,12 @@
       },
       "ClapFeatureExtractor": {
         "path": "types/processors.d.ts",
-        "dependencies": ["Tensor", "Promise", "Float64Array", "Float32Array"]
+        "dependencies": [
+          "Tensor",
+          "Promise",
+          "Float64Array",
+          "Float32Array"
+        ]
       },
       "ClapModel": {
         "path": "types/models.d.ts",
@@ -2727,7 +2824,9 @@
       },
       "CLIPFeatureExtractor": {
         "path": "types/processors.d.ts",
-        "dependencies": ["ImageFeatureExtractor"]
+        "dependencies": [
+          "ImageFeatureExtractor"
+        ]
       },
       "CLIPModel": {
         "path": "types/models.d.ts",
@@ -2938,7 +3037,10 @@
       },
       "CLIPTokenizer": {
         "path": "types/tokenizers.d.ts",
-        "dependencies": ["PreTrainedTokenizer", "AutoTokenizer"]
+        "dependencies": [
+          "PreTrainedTokenizer",
+          "AutoTokenizer"
+        ]
       },
       "CLIPVisionModelWithProjection": {
         "path": "types/models.d.ts",
@@ -3081,15 +3183,24 @@
       },
       "CodeGenTokenizer": {
         "path": "types/tokenizers.d.ts",
-        "dependencies": ["PreTrainedTokenizer", "AutoTokenizer"]
+        "dependencies": [
+          "PreTrainedTokenizer",
+          "AutoTokenizer"
+        ]
       },
       "CodeLlamaTokenizer": {
         "path": "types/tokenizers.d.ts",
-        "dependencies": ["LlamaTokenizer", "AutoTokenizer"]
+        "dependencies": [
+          "LlamaTokenizer",
+          "AutoTokenizer"
+        ]
       },
       "CohereTokenizer": {
         "path": "types/tokenizers.d.ts",
-        "dependencies": ["PreTrainedTokenizer", "AutoTokenizer"]
+        "dependencies": [
+          "PreTrainedTokenizer",
+          "AutoTokenizer"
+        ]
       },
       "ConvBertForMaskedLM": {
         "path": "types/models.d.ts",
@@ -3306,11 +3417,16 @@
       },
       "ConvBertTokenizer": {
         "path": "types/tokenizers.d.ts",
-        "dependencies": ["PreTrainedTokenizer", "AutoTokenizer"]
+        "dependencies": [
+          "PreTrainedTokenizer",
+          "AutoTokenizer"
+        ]
       },
       "ConvNextFeatureExtractor": {
         "path": "types/processors.d.ts",
-        "dependencies": ["Promise"]
+        "dependencies": [
+          "Promise"
+        ]
       },
       "ConvNextForImageClassification": {
         "path": "types/models.d.ts",
@@ -3350,7 +3466,9 @@
       },
       "ConvNextImageProcessor": {
         "path": "types/processors.d.ts",
-        "dependencies": ["ConvNextFeatureExtractor"]
+        "dependencies": [
+          "ConvNextFeatureExtractor"
+        ]
       },
       "ConvNextModel": {
         "path": "types/models.d.ts",
@@ -3758,7 +3876,10 @@
       },
       "DebertaTokenizer": {
         "path": "types/tokenizers.d.ts",
-        "dependencies": ["PreTrainedTokenizer", "AutoTokenizer"]
+        "dependencies": [
+          "PreTrainedTokenizer",
+          "AutoTokenizer"
+        ]
       },
       "DebertaV2ForMaskedLM": {
         "path": "types/models.d.ts",
@@ -3975,7 +4096,10 @@
       },
       "DebertaV2Tokenizer": {
         "path": "types/tokenizers.d.ts",
-        "dependencies": ["PreTrainedTokenizer", "AutoTokenizer"]
+        "dependencies": [
+          "PreTrainedTokenizer",
+          "AutoTokenizer"
+        ]
       },
       "DEFAULT_CACHE_DIR": {
         "path": "types/env.d.ts",
@@ -3983,7 +4107,9 @@
       },
       "DeiTFeatureExtractor": {
         "path": "types/processors.d.ts",
-        "dependencies": ["ImageFeatureExtractor"]
+        "dependencies": [
+          "ImageFeatureExtractor"
+        ]
       },
       "DeiTForImageClassification": {
         "path": "types/models.d.ts",
@@ -4159,16 +4285,27 @@
       },
       "DepthEstimationPipeline": {
         "path": "types/pipelines.d.ts",
-        "dependencies": ["DepthEstimationPipelineOutput", "Promise", "ImagePipelineInputs"]
+        "dependencies": [
+          "DepthEstimationPipelineOutput",
+          "Promise",
+          "ImagePipelineInputs"
+        ]
       },
       "DepthEstimationPipelineCallback": {
         "path": "types/pipelines.d.ts",
         "description": "The processed depth map as an image (with the same size as the input image).",
-        "dependencies": ["DepthEstimationPipelineOutput", "Promise", "ImagePipelineInputs"]
+        "dependencies": [
+          "DepthEstimationPipelineOutput",
+          "Promise",
+          "ImagePipelineInputs"
+        ]
       },
       "DepthEstimationPipelineOutput": {
         "path": "types/pipelines.d.ts",
-        "dependencies": ["RawImage", "Tensor"]
+        "dependencies": [
+          "RawImage",
+          "Tensor"
+        ]
       },
       "DepthEstimationPipelineType": {
         "path": "types/pipelines.d.ts",
@@ -4193,11 +4330,16 @@
       },
       "DetrFeatureExtractorResult": {
         "path": "types/processors.d.ts",
-        "dependencies": ["DetrFeatureExtractorResultProps", "ImageFeatureExtractorResult"]
+        "dependencies": [
+          "DetrFeatureExtractorResultProps",
+          "ImageFeatureExtractorResult"
+        ]
       },
       "DetrFeatureExtractorResultProps": {
         "path": "types/processors.d.ts",
-        "dependencies": ["Tensor"]
+        "dependencies": [
+          "Tensor"
+        ]
       },
       "DetrForObjectDetection": {
         "path": "types/models.d.ts",
@@ -4511,15 +4653,21 @@
       "dispatchCallback": {
         "path": "types/utils/core.d.ts",
         "description": "Helper function to dispatch progress callbacks.",
-        "dependencies": ["Function"]
+        "dependencies": [
+          "Function"
+        ]
       },
       "Disposable": {
         "path": "types/pipelines.d.ts",
-        "dependencies": ["DisposeType"]
+        "dependencies": [
+          "DisposeType"
+        ]
       },
       "DisposeType": {
         "path": "types/pipelines.d.ts",
-        "dependencies": ["Promise"]
+        "dependencies": [
+          "Promise"
+        ]
       },
       "DistilBertForMaskedLM": {
         "path": "types/models.d.ts",
@@ -4735,21 +4883,34 @@
       },
       "DistilBertTokenizer": {
         "path": "types/tokenizers.d.ts",
-        "dependencies": ["PreTrainedTokenizer", "AutoTokenizer"]
+        "dependencies": [
+          "PreTrainedTokenizer",
+          "AutoTokenizer"
+        ]
       },
       "DocumentQuestionAnsweringOutput": {
         "path": "types/pipelines.d.ts",
-        "dependencies": ["DocumentQuestionAnsweringSingle"]
+        "dependencies": [
+          "DocumentQuestionAnsweringSingle"
+        ]
       },
       "DocumentQuestionAnsweringPipeline": {
         "path": "types/pipelines.d.ts",
         "description": "Document Question Answering pipeline using any `AutoModelForDocumentQuestionAnswering`.",
-        "dependencies": ["DocumentQuestionAnsweringOutput", "Promise", "ImageInput"]
+        "dependencies": [
+          "DocumentQuestionAnsweringOutput",
+          "Promise",
+          "ImageInput"
+        ]
       },
       "DocumentQuestionAnsweringPipelineCallback": {
         "path": "types/pipelines.d.ts",
         "description": "Answer the question given as input by using the document.",
-        "dependencies": ["DocumentQuestionAnsweringOutput", "Promise", "ImageInput"]
+        "dependencies": [
+          "DocumentQuestionAnsweringOutput",
+          "Promise",
+          "ImageInput"
+        ]
       },
       "DocumentQuestionAnsweringPipelineType": {
         "path": "types/pipelines.d.ts",
@@ -4761,11 +4922,16 @@
       },
       "DocumentQuestionAnsweringSingle": {
         "path": "types/pipelines.d.ts",
-        "dependencies": ["wavefile", "fs"]
+        "dependencies": [
+          "wavefile",
+          "fs"
+        ]
       },
       "DonutFeatureExtractor": {
         "path": "types/processors.d.ts",
-        "dependencies": ["Float32Array"]
+        "dependencies": [
+          "Float32Array"
+        ]
       },
       "DonutSwinModel": {
         "path": "types/models.d.ts",
@@ -4843,7 +5009,9 @@
       },
       "DPTFeatureExtractor": {
         "path": "types/processors.d.ts",
-        "dependencies": ["ImageFeatureExtractor"]
+        "dependencies": [
+          "ImageFeatureExtractor"
+        ]
       },
       "DPTForDepthEstimation": {
         "path": "types/models.d.ts",
@@ -4882,7 +5050,9 @@
       },
       "DPTImageProcessor": {
         "path": "types/processors.d.ts",
-        "dependencies": ["DPTFeatureExtractor"]
+        "dependencies": [
+          "DPTFeatureExtractor"
+        ]
       },
       "DPTModel": {
         "path": "types/models.d.ts",
@@ -4956,7 +5126,9 @@
       "dynamicTimeWarping": {
         "path": "types/utils/tensor.d.ts",
         "description": "Measures similarity between two temporal sequences (e.g., input audio and output tokens",
-        "dependencies": ["Tensor"]
+        "dependencies": [
+          "Tensor"
+        ]
       },
       "EfficientNetForImageClassification": {
         "path": "types/models.d.ts",
@@ -4996,7 +5168,9 @@
       },
       "EfficientNetImageProcessor": {
         "path": "types/processors.d.ts",
-        "dependencies": ["ImageFeatureExtractor"]
+        "dependencies": [
+          "ImageFeatureExtractor"
+        ]
       },
       "EfficientNetModel": {
         "path": "types/models.d.ts",
@@ -5282,11 +5456,16 @@
       },
       "ElectraTokenizer": {
         "path": "types/tokenizers.d.ts",
-        "dependencies": ["PreTrainedTokenizer", "AutoTokenizer"]
+        "dependencies": [
+          "PreTrainedTokenizer",
+          "AutoTokenizer"
+        ]
       },
       "EncodingSingle": {
         "path": "types/tokenizers.d.ts",
-        "dependencies": ["AutoTokenizer"]
+        "dependencies": [
+          "AutoTokenizer"
+        ]
       },
       "escapeRegExp": {
         "path": "types/utils/core.d.ts",
@@ -5472,11 +5651,16 @@
       },
       "EsmTokenizer": {
         "path": "types/tokenizers.d.ts",
-        "dependencies": ["PreTrainedTokenizer", "AutoTokenizer"]
+        "dependencies": [
+          "PreTrainedTokenizer",
+          "AutoTokenizer"
+        ]
       },
       "executionProviders": {
         "path": "types/backends/onnx.d.ts",
-        "dependencies": ["onnxruntime-web"]
+        "dependencies": [
+          "onnxruntime-web"
+        ]
       },
       "exists": {
         "path": "types/utils/core.d.ts",
@@ -5588,7 +5772,10 @@
       },
       "FalconTokenizer": {
         "path": "types/tokenizers.d.ts",
-        "dependencies": ["PreTrainedTokenizer", "AutoTokenizer"]
+        "dependencies": [
+          "PreTrainedTokenizer",
+          "AutoTokenizer"
+        ]
       },
       "FastViTForImageClassification": {
         "path": "types/models.d.ts",
@@ -5695,16 +5882,27 @@
       },
       "FeatureExtractionPipeline": {
         "path": "types/pipelines.d.ts",
-        "dependencies": ["Tensor", "Promise", "FeatureExtractionPipelineOptions"]
+        "dependencies": [
+          "Tensor",
+          "Promise",
+          "FeatureExtractionPipelineOptions"
+        ]
       },
       "FeatureExtractionPipelineCallback": {
         "path": "types/pipelines.d.ts",
-        "dependencies": ["Tensor", "Promise", "FeatureExtractionPipelineOptions"]
+        "dependencies": [
+          "Tensor",
+          "Promise",
+          "FeatureExtractionPipelineOptions"
+        ]
       },
       "FeatureExtractionPipelineOptions": {
         "path": "types/pipelines.d.ts",
         "description": "Parameters specific to feature extraction pipelines.",
-        "dependencies": ["wavefile", "fs"]
+        "dependencies": [
+          "wavefile",
+          "fs"
+        ]
       },
       "FeatureExtractionPipelineType": {
         "path": "types/pipelines.d.ts",
@@ -5718,52 +5916,83 @@
       "FeatureExtractor": {
         "path": "types/processors.d.ts",
         "description": "Base class for feature extractors.",
-        "dependencies": ["FeatureExtractor_base"]
+        "dependencies": [
+          "FeatureExtractor_base"
+        ]
       },
       "FFT": {
         "path": "types/utils/maths.d.ts",
-        "dependencies": ["NP2FFT", "P2FFT"]
+        "dependencies": [
+          "NP2FFT",
+          "P2FFT"
+        ]
       },
       "FillMaskOutput": {
         "path": "types/pipelines.d.ts",
         "description": "The predicted token id (to replace the masked one).",
-        "dependencies": ["FillMaskSingle"]
+        "dependencies": [
+          "FillMaskSingle"
+        ]
       },
       "FillMaskPipeline": {
         "path": "types/pipelines.d.ts",
         "description": "Masked language modeling prediction pipeline using any `ModelWithLMHead`.",
-        "dependencies": ["FillMaskOutput", "Promise", "FillMaskPipelineOptions"]
+        "dependencies": [
+          "FillMaskOutput",
+          "Promise",
+          "FillMaskPipelineOptions"
+        ]
       },
       "FillMaskPipelineCallback": {
         "path": "types/pipelines.d.ts",
-        "dependencies": ["FillMaskOutput", "Promise", "FillMaskPipelineOptions"]
+        "dependencies": [
+          "FillMaskOutput",
+          "Promise",
+          "FillMaskPipelineOptions"
+        ]
       },
       "FillMaskPipelineOptions": {
         "path": "types/pipelines.d.ts",
-        "dependencies": ["wavefile", "fs"]
+        "dependencies": [
+          "wavefile",
+          "fs"
+        ]
       },
       "FillMaskPipelineType": {
         "path": "types/pipelines.d.ts",
-        "dependencies": ["Disposable", "FillMaskPipelineCallback", "TextPipelineConstructorArgs"]
+        "dependencies": [
+          "Disposable",
+          "FillMaskPipelineCallback",
+          "TextPipelineConstructorArgs"
+        ]
       },
       "FillMaskSingle": {
         "path": "types/pipelines.d.ts",
-        "dependencies": ["wavefile", "fs"]
+        "dependencies": [
+          "wavefile",
+          "fs"
+        ]
       },
       "ForcedBOSTokenLogitsProcessor": {
         "path": "types/utils/generation.d.ts",
         "description": "A LogitsProcessor that forces a BOS token at the beginning of the generated sequence.",
-        "dependencies": ["LogitsProcessor"]
+        "dependencies": [
+          "LogitsProcessor"
+        ]
       },
       "ForcedEOSTokenLogitsProcessor": {
         "path": "types/utils/generation.d.ts",
         "description": "A logits processor that forces end-of-sequence token probability to 1.",
-        "dependencies": ["Tensor"]
+        "dependencies": [
+          "Tensor"
+        ]
       },
       "ForceTokensLogitsProcessor": {
         "path": "types/utils/generation.d.ts",
         "description": "A logits processor that forces a specific token to be generated by the decoder.",
-        "dependencies": ["Tensor"]
+        "dependencies": [
+          "Tensor"
+        ]
       },
       "FS_AVAILABLE": {
         "path": "types/env.d.ts",
@@ -5771,12 +6000,17 @@
       },
       "GemmaTokenizer": {
         "path": "types/tokenizers.d.ts",
-        "dependencies": ["PreTrainedTokenizer", "AutoTokenizer"]
+        "dependencies": [
+          "PreTrainedTokenizer",
+          "AutoTokenizer"
+        ]
       },
       "GenerationConfig": {
         "path": "types/utils/generation.d.ts",
         "description": "Class that holds a configuration for a generation task.",
-        "dependencies": ["GenerationConfigType"]
+        "dependencies": [
+          "GenerationConfigType"
+        ]
       },
       "GenerationConfigType": {
         "path": "types/utils/generation.d.ts",
@@ -5786,26 +6020,41 @@
       "getFile": {
         "path": "types/utils/hub.d.ts",
         "description": "Helper function to get a file, using either the Fetch API or FileSystem API.",
-        "dependencies": ["Response", "FileResponse", "Promise", "URL"]
+        "dependencies": [
+          "Response",
+          "FileResponse",
+          "Promise",
+          "URL"
+        ]
       },
       "getModelFile": {
         "path": "types/utils/hub.d.ts",
         "description": "Retrieves a file from either a remote URL using the Fetch API or from the local file system using the FileSystem API.",
-        "dependencies": ["Promise", "PretrainedOptions"]
+        "dependencies": [
+          "Promise",
+          "PretrainedOptions"
+        ]
       },
       "getModelJSON": {
         "path": "types/utils/hub.d.ts",
         "description": "Fetches a JSON file from a given path and file name.",
-        "dependencies": ["Promise", "PretrainedOptions"]
+        "dependencies": [
+          "Promise",
+          "PretrainedOptions"
+        ]
       },
       "getTopItems": {
         "path": "types/utils/maths.d.ts",
         "description": "Get the top k items from an iterable, sorted by descending order",
-        "dependencies": ["TypedArray"]
+        "dependencies": [
+          "TypedArray"
+        ]
       },
       "GLPNFeatureExtractor": {
         "path": "types/processors.d.ts",
-        "dependencies": ["ImageFeatureExtractor"]
+        "dependencies": [
+          "ImageFeatureExtractor"
+        ]
       },
       "GLPNForDepthEstimation": {
         "path": "types/models.d.ts",
@@ -6016,7 +6265,10 @@
       },
       "GPT2Tokenizer": {
         "path": "types/tokenizers.d.ts",
-        "dependencies": ["PreTrainedTokenizer", "AutoTokenizer"]
+        "dependencies": [
+          "PreTrainedTokenizer",
+          "AutoTokenizer"
+        ]
       },
       "GPTBigCodeForCausalLM": {
         "path": "types/models.d.ts",
@@ -6428,16 +6680,24 @@
       },
       "GPTNeoXTokenizer": {
         "path": "types/tokenizers.d.ts",
-        "dependencies": ["PreTrainedTokenizer", "AutoTokenizer"]
+        "dependencies": [
+          "PreTrainedTokenizer",
+          "AutoTokenizer"
+        ]
       },
       "Grok1Tokenizer": {
         "path": "types/tokenizers.d.ts",
-        "dependencies": ["PreTrainedTokenizer", "AutoTokenizer"]
+        "dependencies": [
+          "PreTrainedTokenizer",
+          "AutoTokenizer"
+        ]
       },
       "hanning": {
         "path": "types/utils/audio.d.ts",
         "description": "Generates a Hanning window of length M.",
-        "dependencies": ["Float64Array"]
+        "dependencies": [
+          "Float64Array"
+        ]
       },
       "HeightWidth": {
         "path": "types/processors.d.ts",
@@ -6446,7 +6706,10 @@
       },
       "HerbertTokenizer": {
         "path": "types/tokenizers.d.ts",
-        "dependencies": ["PreTrainedTokenizer", "AutoTokenizer"]
+        "dependencies": [
+          "PreTrainedTokenizer",
+          "AutoTokenizer"
+        ]
       },
       "HubertForCTC": {
         "path": "types/models.d.ts",
@@ -6591,7 +6854,9 @@
       },
       "ImageClassificationOutput": {
         "path": "types/pipelines.d.ts",
-        "dependencies": ["ImageClassificationSingle"]
+        "dependencies": [
+          "ImageClassificationSingle"
+        ]
       },
       "ImageClassificationPipeline": {
         "path": "types/pipelines.d.ts",
@@ -6614,7 +6879,10 @@
       },
       "ImageClassificationPipelineOptions": {
         "path": "types/pipelines.d.ts",
-        "dependencies": ["wavefile", "fs"]
+        "dependencies": [
+          "wavefile",
+          "fs"
+        ]
       },
       "ImageClassificationPipelineType": {
         "path": "types/pipelines.d.ts",
@@ -6627,7 +6895,10 @@
       },
       "ImageClassificationSingle": {
         "path": "types/pipelines.d.ts",
-        "dependencies": ["wavefile", "fs"]
+        "dependencies": [
+          "wavefile",
+          "fs"
+        ]
       },
       "ImageFeatureExtractionPipeline": {
         "path": "types/pipelines.d.ts",
@@ -6651,7 +6922,10 @@
       "ImageFeatureExtractionPipelineOptions": {
         "path": "types/pipelines.d.ts",
         "description": "Parameters specific to image feature extraction pipelines.",
-        "dependencies": ["wavefile", "fs"]
+        "dependencies": [
+          "wavefile",
+          "fs"
+        ]
       },
       "ImageFeatureExtractionPipelineType": {
         "path": "types/pipelines.d.ts",
@@ -6675,11 +6949,17 @@
       },
       "ImageFeatureExtractorResult": {
         "path": "types/processors.d.ts",
-        "dependencies": ["HeightWidth", "Tensor"]
+        "dependencies": [
+          "HeightWidth",
+          "Tensor"
+        ]
       },
       "ImageInput": {
         "path": "types/pipelines.d.ts",
-        "dependencies": ["URL", "RawImage"]
+        "dependencies": [
+          "URL",
+          "RawImage"
+        ]
       },
       "ImageMattingOutput": {
         "path": "types/models.d.ts",
@@ -6716,11 +6996,15 @@
       },
       "ImagePipelineConstructorArgs": {
         "path": "types/pipelines.d.ts",
-        "dependencies": ["ModelProcessorConstructorArgs"]
+        "dependencies": [
+          "ModelProcessorConstructorArgs"
+        ]
       },
       "ImagePipelineInputs": {
         "path": "types/pipelines.d.ts",
-        "dependencies": ["ImageInput"]
+        "dependencies": [
+          "ImageInput"
+        ]
       },
       "ImageSegmentationPipeline": {
         "path": "types/pipelines.d.ts",
@@ -6744,11 +7028,16 @@
       "ImageSegmentationPipelineOptions": {
         "path": "types/pipelines.d.ts",
         "description": "Parameters specific to image segmentation pipelines.",
-        "dependencies": ["wavefile", "fs"]
+        "dependencies": [
+          "wavefile",
+          "fs"
+        ]
       },
       "ImageSegmentationPipelineOutput": {
         "path": "types/pipelines.d.ts",
-        "dependencies": ["RawImage"]
+        "dependencies": [
+          "RawImage"
+        ]
       },
       "ImageSegmentationPipelineType": {
         "path": "types/pipelines.d.ts",
@@ -6760,11 +7049,19 @@
       },
       "ImageToImagePipeline": {
         "path": "types/pipelines.d.ts",
-        "dependencies": ["RawImage", "Promise", "ImagePipelineInputs"]
+        "dependencies": [
+          "RawImage",
+          "Promise",
+          "ImagePipelineInputs"
+        ]
       },
       "ImageToImagePipelineCallback": {
         "path": "types/pipelines.d.ts",
-        "dependencies": ["RawImage", "Promise", "ImagePipelineInputs"]
+        "dependencies": [
+          "RawImage",
+          "Promise",
+          "ImagePipelineInputs"
+        ]
       },
       "ImageToImagePipelineType": {
         "path": "types/pipelines.d.ts",
@@ -6776,16 +7073,26 @@
       },
       "ImageToTextOutput": {
         "path": "types/pipelines.d.ts",
-        "dependencies": ["ImageToTextSingle"]
+        "dependencies": [
+          "ImageToTextSingle"
+        ]
       },
       "ImageToTextPipeline": {
         "path": "types/pipelines.d.ts",
         "description": "Image To Text pipeline using a `AutoModelForVision2Seq`. This pipeline predicts a caption for a given image.",
-        "dependencies": ["ImageToTextOutput", "Promise", "ImagePipelineInputs"]
+        "dependencies": [
+          "ImageToTextOutput",
+          "Promise",
+          "ImagePipelineInputs"
+        ]
       },
       "ImageToTextPipelineCallback": {
         "path": "types/pipelines.d.ts",
-        "dependencies": ["ImageToTextOutput", "Promise", "ImagePipelineInputs"]
+        "dependencies": [
+          "ImageToTextOutput",
+          "Promise",
+          "ImagePipelineInputs"
+        ]
       },
       "ImageToTextPipelineType": {
         "path": "types/pipelines.d.ts",
@@ -6798,7 +7105,10 @@
       },
       "ImageToTextSingle": {
         "path": "types/pipelines.d.ts",
-        "dependencies": ["wavefile", "fs"]
+        "dependencies": [
+          "wavefile",
+          "fs"
+        ]
       },
       "InferenceSession": {
         "path": "types/models.d.ts",
@@ -6836,12 +7146,16 @@
       "interpolate": {
         "path": "types/utils/tensor.d.ts",
         "description": "Interpolates an Tensor to the given size.",
-        "dependencies": ["Tensor"]
+        "dependencies": [
+          "Tensor"
+        ]
       },
       "interpolate_data": {
         "path": "types/utils/maths.d.ts",
         "description": "@param {TypedArray} input",
-        "dependencies": ["TypedArray"]
+        "dependencies": [
+          "TypedArray"
+        ]
       },
       "isIntegralNumber": {
         "path": "types/utils/core.d.ts",
@@ -6856,7 +7170,9 @@
       "layer_norm": {
         "path": "types/utils/tensor.d.ts",
         "description": "Apply Layer Normalization for last certain number of dimensions.",
-        "dependencies": ["Tensor"]
+        "dependencies": [
+          "Tensor"
+        ]
       },
       "LlamaForCausalLM": {
         "path": "types/models.d.ts",
@@ -6964,7 +7280,10 @@
       },
       "LlamaTokenizer": {
         "path": "types/tokenizers.d.ts",
-        "dependencies": ["PreTrainedTokenizer", "AutoTokenizer"]
+        "dependencies": [
+          "PreTrainedTokenizer",
+          "AutoTokenizer"
+        ]
       },
       "localModelPath": {
         "path": "types/env.d.ts",
@@ -6973,17 +7292,25 @@
       "log_softmax": {
         "path": "types/utils/maths.d.ts",
         "description": "Calculates the logarithm of the softmax function for the input array.",
-        "dependencies": ["T", "TypedArray"]
+        "dependencies": [
+          "T",
+          "TypedArray"
+        ]
       },
       "LogitsProcessor": {
         "path": "types/utils/generation.d.ts",
         "description": "Base class for processing logits.",
-        "dependencies": ["Tensor"]
+        "dependencies": [
+          "Tensor"
+        ]
       },
       "LogitsProcessorList": {
         "path": "types/utils/generation.d.ts",
         "description": "A class representing a list of logits processors. A logits processor is a function that modifies the logits",
-        "dependencies": ["IterableIterator", "LogitsProcessor"]
+        "dependencies": [
+          "IterableIterator",
+          "LogitsProcessor"
+        ]
       },
       "LongT5ForConditionalGeneration": {
         "path": "types/models.d.ts",
@@ -7195,7 +7522,10 @@
       "M2M100Tokenizer": {
         "path": "types/tokenizers.d.ts",
         "description": "The M2M100Tokenizer class is used to tokenize text for M2M100 (\"Many-to-Many\") models.",
-        "dependencies": ["RegExp", "AutoTokenizer"]
+        "dependencies": [
+          "RegExp",
+          "AutoTokenizer"
+        ]
       },
       "magnitude": {
         "path": "types/utils/maths.d.ts",
@@ -7307,7 +7637,10 @@
       "MarianTokenizer": {
         "path": "types/tokenizers.d.ts",
         "description": "@todo This model is not yet supported by Hugging Face's \"fast\" tokenizers library (https://github.com/huggingface/tokenizers).",
-        "dependencies": ["RegExp", "AutoTokenizer"]
+        "dependencies": [
+          "RegExp",
+          "AutoTokenizer"
+        ]
       },
       "MaskedLMOutput": {
         "path": "types/models.d.ts",
@@ -7346,11 +7679,16 @@
       "max": {
         "path": "types/utils/maths.d.ts",
         "description": "Returns the value and index of the maximum element in an array.",
-        "dependencies": ["AnyTypedArray"]
+        "dependencies": [
+          "AnyTypedArray"
+        ]
       },
       "MBart50Tokenizer": {
         "path": "types/tokenizers.d.ts",
-        "dependencies": ["MBartTokenizer", "AutoTokenizer"]
+        "dependencies": [
+          "MBartTokenizer",
+          "AutoTokenizer"
+        ]
       },
       "MBartForCausalLM": {
         "path": "types/models.d.ts",
@@ -7528,22 +7866,31 @@
       },
       "MBartTokenizer": {
         "path": "types/tokenizers.d.ts",
-        "dependencies": ["RegExp", "AutoTokenizer"]
+        "dependencies": [
+          "RegExp",
+          "AutoTokenizer"
+        ]
       },
       "mean": {
         "path": "types/utils/tensor.d.ts",
         "description": "Returns the mean value of each row of the input tensor in the given dimension dim.",
-        "dependencies": ["Tensor"]
+        "dependencies": [
+          "Tensor"
+        ]
       },
       "mean_pooling": {
         "path": "types/utils/tensor.d.ts",
         "description": "Perform mean pooling of the last hidden state followed by a normalization step.",
-        "dependencies": ["Tensor"]
+        "dependencies": [
+          "Tensor"
+        ]
       },
       "medianFilter": {
         "path": "types/utils/maths.d.ts",
         "description": "Performs median filter on the provided data. Padding is done by mirroring the data.",
-        "dependencies": ["AnyTypedArray"]
+        "dependencies": [
+          "AnyTypedArray"
+        ]
       },
       "mel_filter_bank": {
         "path": "types/utils/audio.d.ts",
@@ -7557,22 +7904,30 @@
       },
       "Message": {
         "path": "types/tokenizers.d.ts",
-        "dependencies": ["AutoTokenizer"]
+        "dependencies": [
+          "AutoTokenizer"
+        ]
       },
       "min": {
         "path": "types/utils/maths.d.ts",
         "description": "Returns the value and index of the minimum element in an array.",
-        "dependencies": ["TypedArray"]
+        "dependencies": [
+          "TypedArray"
+        ]
       },
       "MinLengthLogitsProcessor": {
         "path": "types/utils/generation.d.ts",
         "description": "A logits processor that enforces a minimum number of tokens.",
-        "dependencies": ["LogitsProcessor"]
+        "dependencies": [
+          "LogitsProcessor"
+        ]
       },
       "MinNewTokensLengthLogitsProcessor": {
         "path": "types/utils/generation.d.ts",
         "description": "A logits processor that enforces a minimum number of new tokens.",
-        "dependencies": ["LogitsProcessor"]
+        "dependencies": [
+          "LogitsProcessor"
+        ]
       },
       "MistralForCausalLM": {
         "path": "types/models.d.ts",
@@ -7855,11 +8210,16 @@
       },
       "MobileBertTokenizer": {
         "path": "types/tokenizers.d.ts",
-        "dependencies": ["PreTrainedTokenizer", "AutoTokenizer"]
+        "dependencies": [
+          "PreTrainedTokenizer",
+          "AutoTokenizer"
+        ]
       },
       "MobileViTFeatureExtractor": {
         "path": "types/processors.d.ts",
-        "dependencies": ["ImageFeatureExtractor"]
+        "dependencies": [
+          "ImageFeatureExtractor"
+        ]
       },
       "MobileViTForImageClassification": {
         "path": "types/models.d.ts",
@@ -7898,7 +8258,9 @@
       },
       "MobileViTImageProcessor": {
         "path": "types/processors.d.ts",
-        "dependencies": ["MobileViTFeatureExtractor"]
+        "dependencies": [
+          "MobileViTFeatureExtractor"
+        ]
       },
       "MobileViTModel": {
         "path": "types/models.d.ts",
@@ -8106,15 +8468,25 @@
       },
       "ModelProcessorConstructorArgs": {
         "path": "types/pipelines.d.ts",
-        "dependencies": ["Processor", "PreTrainedModel"]
+        "dependencies": [
+          "Processor",
+          "PreTrainedModel"
+        ]
       },
       "ModelTokenizerConstructorArgs": {
         "path": "types/pipelines.d.ts",
-        "dependencies": ["PreTrainedTokenizer", "PreTrainedModel"]
+        "dependencies": [
+          "PreTrainedTokenizer",
+          "PreTrainedModel"
+        ]
       },
       "ModelTokenizerProcessorConstructorArgs": {
         "path": "types/pipelines.d.ts",
-        "dependencies": ["Processor", "PreTrainedTokenizer", "PreTrainedModel"]
+        "dependencies": [
+          "Processor",
+          "PreTrainedTokenizer",
+          "PreTrainedModel"
+        ]
       },
       "MPNetForMaskedLM": {
         "path": "types/models.d.ts",
@@ -8331,7 +8703,10 @@
       },
       "MPNetTokenizer": {
         "path": "types/tokenizers.d.ts",
-        "dependencies": ["PreTrainedTokenizer", "AutoTokenizer"]
+        "dependencies": [
+          "PreTrainedTokenizer",
+          "AutoTokenizer"
+        ]
       },
       "MptForCausalLM": {
         "path": "types/models.d.ts",
@@ -8543,16 +8918,25 @@
       "NestArray": {
         "path": "types/utils/tensor.d.ts",
         "description": "This creates a nested array of a given type and depth (see examples).",
-        "dependencies": ["Acc", "Depth", "T"]
+        "dependencies": [
+          "Acc",
+          "Depth",
+          "T"
+        ]
       },
       "NllbTokenizer": {
         "path": "types/tokenizers.d.ts",
         "description": "The NllbTokenizer class is used to tokenize text for NLLB (\"No Language Left Behind\") models.",
-        "dependencies": ["RegExp", "AutoTokenizer"]
+        "dependencies": [
+          "RegExp",
+          "AutoTokenizer"
+        ]
       },
       "NoBadWordsLogitsProcessor": {
         "path": "types/utils/generation.d.ts",
-        "dependencies": ["LogitsProcessor"]
+        "dependencies": [
+          "LogitsProcessor"
+        ]
       },
       "NomicBertModel": {
         "path": "types/models.d.ts",
@@ -8625,15 +9009,22 @@
       "NoRepeatNGramLogitsProcessor": {
         "path": "types/utils/generation.d.ts",
         "description": "A logits processor that disallows ngrams of a certain size to be repeated.",
-        "dependencies": ["Map"]
+        "dependencies": [
+          "Map"
+        ]
       },
       "NougatImageProcessor": {
         "path": "types/processors.d.ts",
-        "dependencies": ["DonutFeatureExtractor"]
+        "dependencies": [
+          "DonutFeatureExtractor"
+        ]
       },
       "NougatTokenizer": {
         "path": "types/tokenizers.d.ts",
-        "dependencies": ["PreTrainedTokenizer", "AutoTokenizer"]
+        "dependencies": [
+          "PreTrainedTokenizer",
+          "AutoTokenizer"
+        ]
       },
       "ObjectDetectionPipeline": {
         "path": "types/pipelines.d.ts",
@@ -8657,16 +9048,23 @@
       "ObjectDetectionPipelineOptions": {
         "path": "types/pipelines.d.ts",
         "description": "Parameters specific to object detection pipelines.",
-        "dependencies": ["wavefile", "fs"]
+        "dependencies": [
+          "wavefile",
+          "fs"
+        ]
       },
       "ObjectDetectionPipelineOutput": {
         "path": "types/pipelines.d.ts",
         "description": "The score attributed by the model for that label.",
-        "dependencies": ["ObjectDetectionPipelineSingle"]
+        "dependencies": [
+          "ObjectDetectionPipelineSingle"
+        ]
       },
       "ObjectDetectionPipelineSingle": {
         "path": "types/pipelines.d.ts",
-        "dependencies": ["BoundingBox"]
+        "dependencies": [
+          "BoundingBox"
+        ]
       },
       "ObjectDetectionPipelineType": {
         "path": "types/pipelines.d.ts",
@@ -8680,17 +9078,23 @@
       "ones": {
         "path": "types/utils/tensor.d.ts",
         "description": "Returns a tensor filled with the scalar value 1, with the shape defined by the variable argument size.",
-        "dependencies": ["Tensor"]
+        "dependencies": [
+          "Tensor"
+        ]
       },
       "ones_like": {
         "path": "types/utils/tensor.d.ts",
         "description": "Returns a tensor filled with the scalar value 1, with the same size as input.",
-        "dependencies": ["Tensor"]
+        "dependencies": [
+          "Tensor"
+        ]
       },
       "ONNX": {
         "path": "types/backends/onnx.d.ts",
         "description": "@type {import('onnxruntime-web')} The ONNX runtime module.",
-        "dependencies": ["onnxruntime-web"]
+        "dependencies": [
+          "onnxruntime-web"
+        ]
       },
       "onnx_env": {
         "path": "types/env.d.ts",
@@ -8836,7 +9240,9 @@
       },
       "Owlv2ImageProcessor": {
         "path": "types/processors.d.ts",
-        "dependencies": ["OwlViTFeatureExtractor"]
+        "dependencies": [
+          "OwlViTFeatureExtractor"
+        ]
       },
       "Owlv2Model": {
         "path": "types/models.d.ts",
@@ -8908,7 +9314,9 @@
       },
       "OwlViTFeatureExtractor": {
         "path": "types/processors.d.ts",
-        "dependencies": ["Tensor"]
+        "dependencies": [
+          "Tensor"
+        ]
       },
       "OwlViTForObjectDetection": {
         "path": "types/models.d.ts",
@@ -9014,17 +9422,24 @@
       },
       "OwlViTProcessor": {
         "path": "types/processors.d.ts",
-        "dependencies": ["Processor"]
+        "dependencies": [
+          "Processor"
+        ]
       },
       "permute": {
         "path": "types/utils/tensor.d.ts",
         "description": "Permutes a tensor according to the provided axes.",
-        "dependencies": ["Tensor"]
+        "dependencies": [
+          "Tensor"
+        ]
       },
       "permute_data": {
         "path": "types/utils/maths.d.ts",
         "description": "Helper method to permute a `AnyTypedArray` directly",
-        "dependencies": ["T", "AnyTypedArray"]
+        "dependencies": [
+          "T",
+          "AnyTypedArray"
+        ]
       },
       "PhiForCausalLM": {
         "path": "types/models.d.ts",
@@ -9132,16 +9547,29 @@
       "pipeline": {
         "path": "types/pipelines.d.ts",
         "description": "Utility factory method to build a `Pipeline` object.",
-        "dependencies": ["T", "AllTasks", "Promise", "PipelineType"]
+        "dependencies": [
+          "T",
+          "AllTasks",
+          "Promise",
+          "PipelineType"
+        ]
       },
       "Pipeline": {
         "path": "types/pipelines.d.ts",
         "description": "The Pipeline class is the class from which all pipelines inherit.",
-        "dependencies": ["Promise", "Processor", "PreTrainedTokenizer", "PreTrainedModel"]
+        "dependencies": [
+          "Promise",
+          "Processor",
+          "PreTrainedTokenizer",
+          "PreTrainedModel"
+        ]
       },
       "PipelineType": {
         "path": "types/pipelines.d.ts",
-        "dependencies": ["AliasType", "TaskType"]
+        "dependencies": [
+          "AliasType",
+          "TaskType"
+        ]
       },
       "pop": {
         "path": "types/utils/core.d.ts",
@@ -9150,12 +9578,17 @@
       },
       "PostProcessedOutput": {
         "path": "types/tokenizers.d.ts",
-        "dependencies": ["AutoTokenizer"]
+        "dependencies": [
+          "AutoTokenizer"
+        ]
       },
       "PretrainedConfig": {
         "path": "types/configs.d.ts",
         "description": "Base class for all configuration classes. For more information, see the corresponding",
-        "dependencies": ["Promise", "PretrainedOptions"]
+        "dependencies": [
+          "Promise",
+          "PretrainedOptions"
+        ]
       },
       "PretrainedMixin": {
         "path": "types/models.d.ts",
@@ -9254,17 +9687,25 @@
       },
       "PretrainedTokenizerOptions": {
         "path": "types/tokenizers.d.ts",
-        "dependencies": ["TokenizerProperties", "AutoTokenizer"]
+        "dependencies": [
+          "TokenizerProperties",
+          "AutoTokenizer"
+        ]
       },
       "PriorityQueue": {
         "path": "types/utils/data-structures.d.ts",
         "description": "Efficient Heap-based Implementation of a Priority Queue.",
-        "dependencies": ["Function"]
+        "dependencies": [
+          "Function"
+        ]
       },
       "Processor": {
         "path": "types/processors.d.ts",
         "description": "Represents a Processor that extracts features from an input.",
-        "dependencies": ["Promise", "FeatureExtractor"]
+        "dependencies": [
+          "Promise",
+          "FeatureExtractor"
+        ]
       },
       "product": {
         "path": "types/utils/core.d.ts",
@@ -9274,7 +9715,9 @@
       "quantize_embeddings": {
         "path": "types/utils/tensor.d.ts",
         "description": "Quantizes the embeddings tensor to binary or unsigned binary precision.",
-        "dependencies": ["Tensor"]
+        "dependencies": [
+          "Tensor"
+        ]
       },
       "QuestionAnsweringModelOutput": {
         "path": "types/models.d.ts",
@@ -9312,21 +9755,35 @@
       },
       "QuestionAnsweringOutput": {
         "path": "types/pipelines.d.ts",
-        "dependencies": ["wavefile", "fs"]
+        "dependencies": [
+          "wavefile",
+          "fs"
+        ]
       },
       "QuestionAnsweringPipeline": {
         "path": "types/pipelines.d.ts",
         "description": "Question Answering pipeline using any `ModelForQuestionAnswering`.",
-        "dependencies": ["QuestionAnsweringOutput", "Promise", "QuestionAnsweringPipelineOptions"]
+        "dependencies": [
+          "QuestionAnsweringOutput",
+          "Promise",
+          "QuestionAnsweringPipelineOptions"
+        ]
       },
       "QuestionAnsweringPipelineCallback": {
         "path": "types/pipelines.d.ts",
         "description": "Answer the question(s) given as inputs by using the context(s).",
-        "dependencies": ["QuestionAnsweringOutput", "Promise", "QuestionAnsweringPipelineOptions"]
+        "dependencies": [
+          "QuestionAnsweringOutput",
+          "Promise",
+          "QuestionAnsweringPipelineOptions"
+        ]
       },
       "QuestionAnsweringPipelineOptions": {
         "path": "types/pipelines.d.ts",
-        "dependencies": ["wavefile", "fs"]
+        "dependencies": [
+          "wavefile",
+          "fs"
+        ]
       },
       "QuestionAnsweringPipelineType": {
         "path": "types/pipelines.d.ts",
@@ -9442,16 +9899,30 @@
       },
       "Qwen2Tokenizer": {
         "path": "types/tokenizers.d.ts",
-        "dependencies": ["PreTrainedTokenizer", "AutoTokenizer"]
+        "dependencies": [
+          "PreTrainedTokenizer",
+          "AutoTokenizer"
+        ]
       },
       "RawImage": {
         "path": "types/utils/image.d.ts",
-        "dependencies": ["Promise", "Tensor", "Uint8ClampedArray", "Uint8Array", "Blob", "URL"]
+        "dependencies": [
+          "Promise",
+          "Tensor",
+          "Uint8ClampedArray",
+          "Uint8Array",
+          "Blob",
+          "URL"
+        ]
       },
       "read_audio": {
         "path": "types/utils/audio.d.ts",
         "description": "Helper function to read audio from a path/URL.",
-        "dependencies": ["Float32Array", "Promise", "URL"]
+        "dependencies": [
+          "Float32Array",
+          "Promise",
+          "URL"
+        ]
       },
       "remoteHost": {
         "path": "types/env.d.ts",
@@ -9464,7 +9935,9 @@
       "RepetitionPenaltyLogitsProcessor": {
         "path": "types/utils/generation.d.ts",
         "description": "A logits processor that penalises repeated output tokens.",
-        "dependencies": ["LogitsProcessor"]
+        "dependencies": [
+          "LogitsProcessor"
+        ]
       },
       "ResNetForImageClassification": {
         "path": "types/models.d.ts",
@@ -9791,7 +10264,10 @@
       },
       "RobertaTokenizer": {
         "path": "types/tokenizers.d.ts",
-        "dependencies": ["PreTrainedTokenizer", "AutoTokenizer"]
+        "dependencies": [
+          "PreTrainedTokenizer",
+          "AutoTokenizer"
+        ]
       },
       "RoFormerForMaskedLM": {
         "path": "types/models.d.ts",
@@ -10008,7 +10484,10 @@
       },
       "RoFormerTokenizer": {
         "path": "types/tokenizers.d.ts",
-        "dependencies": ["PreTrainedTokenizer", "AutoTokenizer"]
+        "dependencies": [
+          "PreTrainedTokenizer",
+          "AutoTokenizer"
+        ]
       },
       "round": {
         "path": "types/utils/maths.d.ts",
@@ -10018,11 +10497,19 @@
       "SamImageProcessor": {
         "path": "types/processors.d.ts",
         "description": "@typedef {object} SamImageProcessorResult",
-        "dependencies": ["Tensor", "SamImageProcessorResult", "Promise", "HeightWidth"]
+        "dependencies": [
+          "Tensor",
+          "SamImageProcessorResult",
+          "Promise",
+          "HeightWidth"
+        ]
       },
       "SamImageProcessorResult": {
         "path": "types/processors.d.ts",
-        "dependencies": ["Tensor", "HeightWidth"]
+        "dependencies": [
+          "Tensor",
+          "HeightWidth"
+        ]
       },
       "SamImageSegmentationOutput": {
         "path": "types/models.d.ts",
@@ -10097,7 +10584,11 @@
       "Sampler": {
         "path": "types/utils/generation.d.ts",
         "description": "Sampler is a base class for all sampling methods used for text generation.",
-        "dependencies": ["Float32Array", "Tensor", "GenerationConfigType"]
+        "dependencies": [
+          "Float32Array",
+          "Tensor",
+          "GenerationConfigType"
+        ]
       },
       "SamPreTrainedModel": {
         "path": "types/models.d.ts",
@@ -10135,15 +10626,24 @@
       },
       "SamProcessor": {
         "path": "types/processors.d.ts",
-        "dependencies": ["Promise"]
+        "dependencies": [
+          "Promise"
+        ]
       },
       "SeamlessM4TFeatureExtractor": {
         "path": "types/processors.d.ts",
-        "dependencies": ["Tensor", "Promise", "Float64Array", "Float32Array"]
+        "dependencies": [
+          "Tensor",
+          "Promise",
+          "Float64Array",
+          "Float32Array"
+        ]
       },
       "SegformerFeatureExtractor": {
         "path": "types/processors.d.ts",
-        "dependencies": ["Tensor"]
+        "dependencies": [
+          "Tensor"
+        ]
       },
       "SegformerForImageClassification": {
         "path": "types/models.d.ts",
@@ -10353,7 +10853,9 @@
       },
       "SiglipImageProcessor": {
         "path": "types/processors.d.ts",
-        "dependencies": ["ImageFeatureExtractor"]
+        "dependencies": [
+          "ImageFeatureExtractor"
+        ]
       },
       "SiglipModel": {
         "path": "types/models.d.ts",
@@ -10461,7 +10963,10 @@
       },
       "SiglipTokenizer": {
         "path": "types/tokenizers.d.ts",
-        "dependencies": ["PreTrainedTokenizer", "AutoTokenizer"]
+        "dependencies": [
+          "PreTrainedTokenizer",
+          "AutoTokenizer"
+        ]
       },
       "SiglipVisionModel": {
         "path": "types/models.d.ts",
@@ -10501,16 +11006,24 @@
       "softmax": {
         "path": "types/utils/maths.d.ts",
         "description": "Compute the softmax of an array of numbers.",
-        "dependencies": ["T", "TypedArray"]
+        "dependencies": [
+          "T",
+          "TypedArray"
+        ]
       },
       "spectrogram": {
         "path": "types/utils/audio.d.ts",
         "description": "Calculates a spectrogram over one waveform using the Short-Time Fourier Transform.",
-        "dependencies": ["Float32Array", "Float64Array"]
+        "dependencies": [
+          "Float32Array",
+          "Float64Array"
+        ]
       },
       "SpeechT5FeatureExtractor": {
         "path": "types/processors.d.ts",
-        "dependencies": ["FeatureExtractor"]
+        "dependencies": [
+          "FeatureExtractor"
+        ]
       },
       "SpeechT5ForSpeechToText": {
         "path": "types/models.d.ts",
@@ -10689,15 +11202,22 @@
       },
       "SpeechT5Processor": {
         "path": "types/processors.d.ts",
-        "dependencies": ["Promise"]
+        "dependencies": [
+          "Promise"
+        ]
       },
       "SpeechT5Tokenizer": {
         "path": "types/tokenizers.d.ts",
-        "dependencies": ["PreTrainedTokenizer", "AutoTokenizer"]
+        "dependencies": [
+          "PreTrainedTokenizer",
+          "AutoTokenizer"
+        ]
       },
       "SplitDelimiterBehavior": {
         "path": "types/tokenizers.d.ts",
-        "dependencies": ["AutoTokenizer"]
+        "dependencies": [
+          "AutoTokenizer"
+        ]
       },
       "SqueezeBertForMaskedLM": {
         "path": "types/models.d.ts",
@@ -10874,7 +11394,10 @@
       },
       "SqueezeBertTokenizer": {
         "path": "types/tokenizers.d.ts",
-        "dependencies": ["PreTrainedTokenizer", "AutoTokenizer"]
+        "dependencies": [
+          "PreTrainedTokenizer",
+          "AutoTokenizer"
+        ]
       },
       "StableLmForCausalLM": {
         "path": "types/models.d.ts",
@@ -10983,7 +11506,9 @@
       "stack": {
         "path": "types/utils/tensor.d.ts",
         "description": "Stack an array of tensors along a specified dimension.",
-        "dependencies": ["Tensor"]
+        "dependencies": [
+          "Tensor"
+        ]
       },
       "Starcoder2ForCausalLM": {
         "path": "types/models.d.ts",
@@ -11091,20 +11616,29 @@
       "std_mean": {
         "path": "types/utils/tensor.d.ts",
         "description": "Calculates the standard deviation and mean over the dimensions specified by dim. dim can be a single dimension or `null` to reduce over all dimensions.",
-        "dependencies": ["Tensor"]
+        "dependencies": [
+          "Tensor"
+        ]
       },
       "SummarizationOutput": {
         "path": "types/pipelines.d.ts",
-        "dependencies": ["SummarizationSingle"]
+        "dependencies": [
+          "SummarizationSingle"
+        ]
       },
       "SummarizationPipeline": {
         "path": "types/pipelines.d.ts",
         "description": "A pipeline for summarization tasks, inheriting from Text2TextGenerationPipeline.",
-        "dependencies": ["SummarizationPipeline_base"]
+        "dependencies": [
+          "SummarizationPipeline_base"
+        ]
       },
       "SummarizationPipelineCallback": {
         "path": "types/pipelines.d.ts",
-        "dependencies": ["SummarizationOutput", "Promise"]
+        "dependencies": [
+          "SummarizationOutput",
+          "Promise"
+        ]
       },
       "SummarizationPipelineType": {
         "path": "types/pipelines.d.ts",
@@ -11116,7 +11650,10 @@
       },
       "SummarizationSingle": {
         "path": "types/pipelines.d.ts",
-        "dependencies": ["wavefile", "fs"]
+        "dependencies": [
+          "wavefile",
+          "fs"
+        ]
       },
       "SupportedTasks": {
         "path": "types/pipelines.d.ts",
@@ -11151,7 +11688,9 @@
       "SuppressTokensAtBeginLogitsProcessor": {
         "path": "types/utils/generation.d.ts",
         "description": "A LogitsProcessor that suppresses a list of tokens as soon as the `generate` function starts",
-        "dependencies": ["LogitsProcessor"]
+        "dependencies": [
+          "LogitsProcessor"
+        ]
       },
       "Swin2SRForImageSuperResolution": {
         "path": "types/models.d.ts",
@@ -11190,7 +11729,9 @@
       },
       "Swin2SRImageProcessor": {
         "path": "types/processors.d.ts",
-        "dependencies": ["Float32Array"]
+        "dependencies": [
+          "Float32Array"
+        ]
       },
       "Swin2SRModel": {
         "path": "types/models.d.ts",
@@ -11469,7 +12010,10 @@
       },
       "T5Tokenizer": {
         "path": "types/tokenizers.d.ts",
-        "dependencies": ["PreTrainedTokenizer", "AutoTokenizer"]
+        "dependencies": [
+          "PreTrainedTokenizer",
+          "AutoTokenizer"
+        ]
       },
       "TableTransformerForObjectDetection": {
         "path": "types/models.d.ts",
@@ -11612,25 +12156,41 @@
       },
       "TaskType": {
         "path": "types/pipelines.d.ts",
-        "dependencies": ["wavefile", "fs"]
+        "dependencies": [
+          "wavefile",
+          "fs"
+        ]
       },
       "Tensor": {
         "path": "types/utils/tensor.d.ts",
-        "dependencies": ["Iterator", "DataType", "bigint", "DataArray"]
+        "dependencies": [
+          "Iterator",
+          "DataType",
+          "bigint",
+          "DataArray"
+        ]
       },
       "Text2TextGenerationOutput": {
         "path": "types/pipelines.d.ts",
-        "dependencies": ["Text2TextGenerationSingle"]
+        "dependencies": [
+          "Text2TextGenerationSingle"
+        ]
       },
       "Text2TextGenerationPipeline": {
         "path": "types/pipelines.d.ts",
         "description": "Text2TextGenerationPipeline class for generating text using a model that performs text-to-text generation tasks.",
-        "dependencies": ["Text2TextGenerationOutput", "Promise"]
+        "dependencies": [
+          "Text2TextGenerationOutput",
+          "Promise"
+        ]
       },
       "Text2TextGenerationPipelineCallback": {
         "path": "types/pipelines.d.ts",
         "description": "Generate the output text(s) using text(s) given as inputs.",
-        "dependencies": ["Text2TextGenerationOutput", "Promise"]
+        "dependencies": [
+          "Text2TextGenerationOutput",
+          "Promise"
+        ]
       },
       "Text2TextGenerationPipelineType": {
         "path": "types/pipelines.d.ts",
@@ -11642,28 +12202,46 @@
       },
       "Text2TextGenerationSingle": {
         "path": "types/pipelines.d.ts",
-        "dependencies": ["wavefile", "fs"]
+        "dependencies": [
+          "wavefile",
+          "fs"
+        ]
       },
       "TextAudioPipelineConstructorArgs": {
         "path": "types/pipelines.d.ts",
-        "dependencies": ["ModelTokenizerProcessorConstructorArgs"]
+        "dependencies": [
+          "ModelTokenizerProcessorConstructorArgs"
+        ]
       },
       "TextClassificationOutput": {
         "path": "types/pipelines.d.ts",
-        "dependencies": ["TextClassificationSingle"]
+        "dependencies": [
+          "TextClassificationSingle"
+        ]
       },
       "TextClassificationPipeline": {
         "path": "types/pipelines.d.ts",
         "description": "Text classification pipeline using any `ModelForSequenceClassification`.",
-        "dependencies": ["TextClassificationOutput", "Promise", "TextClassificationPipelineOptions"]
+        "dependencies": [
+          "TextClassificationOutput",
+          "Promise",
+          "TextClassificationPipelineOptions"
+        ]
       },
       "TextClassificationPipelineCallback": {
         "path": "types/pipelines.d.ts",
-        "dependencies": ["TextClassificationOutput", "Promise", "TextClassificationPipelineOptions"]
+        "dependencies": [
+          "TextClassificationOutput",
+          "Promise",
+          "TextClassificationPipelineOptions"
+        ]
       },
       "TextClassificationPipelineOptions": {
         "path": "types/pipelines.d.ts",
-        "dependencies": ["wavefile", "fs"]
+        "dependencies": [
+          "wavefile",
+          "fs"
+        ]
       },
       "TextClassificationPipelineType": {
         "path": "types/pipelines.d.ts",
@@ -11676,24 +12254,41 @@
       },
       "TextClassificationSingle": {
         "path": "types/pipelines.d.ts",
-        "dependencies": ["wavefile", "fs"]
+        "dependencies": [
+          "wavefile",
+          "fs"
+        ]
       },
       "TextGenerationConfig": {
         "path": "types/pipelines.d.ts",
-        "dependencies": ["TextGenerationSpecificParams"]
+        "dependencies": [
+          "TextGenerationSpecificParams"
+        ]
       },
       "TextGenerationOutput": {
         "path": "types/pipelines.d.ts",
-        "dependencies": ["TextGenerationSingle"]
+        "dependencies": [
+          "TextGenerationSingle"
+        ]
       },
       "TextGenerationPipeline": {
         "path": "types/pipelines.d.ts",
         "description": "Language generation pipeline using any `ModelWithLMHead` or `ModelForCausalLM`.",
-        "dependencies": ["TextGenerationOutput", "Promise", "TextGenerationConfig", "Chat"]
+        "dependencies": [
+          "TextGenerationOutput",
+          "Promise",
+          "TextGenerationConfig",
+          "Chat"
+        ]
       },
       "TextGenerationPipelineCallback": {
         "path": "types/pipelines.d.ts",
-        "dependencies": ["TextGenerationOutput", "Promise", "TextGenerationConfig", "Chat"]
+        "dependencies": [
+          "TextGenerationOutput",
+          "Promise",
+          "TextGenerationConfig",
+          "Chat"
+        ]
       },
       "TextGenerationPipelineType": {
         "path": "types/pipelines.d.ts",
@@ -11705,25 +12300,36 @@
       },
       "TextGenerationSingle": {
         "path": "types/pipelines.d.ts",
-        "dependencies": ["Chat"]
+        "dependencies": [
+          "Chat"
+        ]
       },
       "TextGenerationSpecificParams": {
         "path": "types/pipelines.d.ts",
         "description": "Parameters specific to text-generation pipelines.",
-        "dependencies": ["wavefile", "fs"]
+        "dependencies": [
+          "wavefile",
+          "fs"
+        ]
       },
       "TextImagePipelineConstructorArgs": {
         "path": "types/pipelines.d.ts",
-        "dependencies": ["ModelTokenizerProcessorConstructorArgs"]
+        "dependencies": [
+          "ModelTokenizerProcessorConstructorArgs"
+        ]
       },
       "TextPipelineConstructorArgs": {
         "path": "types/pipelines.d.ts",
         "description": "The model used by the pipeline.",
-        "dependencies": ["ModelTokenizerConstructorArgs"]
+        "dependencies": [
+          "ModelTokenizerConstructorArgs"
+        ]
       },
       "TextToAudioOutput": {
         "path": "types/pipelines.d.ts",
-        "dependencies": ["Float32Array"]
+        "dependencies": [
+          "Float32Array"
+        ]
       },
       "TextToAudioPipeline": {
         "path": "types/pipelines.d.ts",
@@ -11738,16 +12344,27 @@
       "TextToAudioPipelineCallback": {
         "path": "types/pipelines.d.ts",
         "description": "The speaker embeddings (if the model requires it).",
-        "dependencies": ["TextToAudioOutput", "Promise", "TextToAudioPipelineOptions"]
+        "dependencies": [
+          "TextToAudioOutput",
+          "Promise",
+          "TextToAudioPipelineOptions"
+        ]
       },
       "TextToAudioPipelineConstructorArgs": {
         "path": "types/pipelines.d.ts",
-        "dependencies": ["VocoderOptions", "TextAudioPipelineConstructorArgs"]
+        "dependencies": [
+          "VocoderOptions",
+          "TextAudioPipelineConstructorArgs"
+        ]
       },
       "TextToAudioPipelineOptions": {
         "path": "types/pipelines.d.ts",
         "description": "The generated audio waveform.",
-        "dependencies": ["URL", "Float32Array", "Tensor"]
+        "dependencies": [
+          "URL",
+          "Float32Array",
+          "Tensor"
+        ]
       },
       "TextToAudioPipelineType": {
         "path": "types/pipelines.d.ts",
@@ -11764,7 +12381,9 @@
       },
       "TokenClassificationOutput": {
         "path": "types/pipelines.d.ts",
-        "dependencies": ["TokenClassificationSingle"]
+        "dependencies": [
+          "TokenClassificationSingle"
+        ]
       },
       "TokenClassificationPipeline": {
         "path": "types/pipelines.d.ts",
@@ -11785,7 +12404,10 @@
       },
       "TokenClassificationPipelineOptions": {
         "path": "types/pipelines.d.ts",
-        "dependencies": ["wavefile", "fs"]
+        "dependencies": [
+          "wavefile",
+          "fs"
+        ]
       },
       "TokenClassificationPipelineType": {
         "path": "types/pipelines.d.ts",
@@ -11797,7 +12419,10 @@
       },
       "TokenClassificationSingle": {
         "path": "types/pipelines.d.ts",
-        "dependencies": ["wavefile", "fs"]
+        "dependencies": [
+          "wavefile",
+          "fs"
+        ]
       },
       "TokenClassifierOutput": {
         "path": "types/models.d.ts",
@@ -11836,38 +12461,59 @@
       "TokenizerModel": {
         "path": "types/tokenizers.d.ts",
         "description": "Abstract base class for tokenizer models.",
-        "dependencies": ["Map", "AutoTokenizer"]
+        "dependencies": [
+          "Map",
+          "AutoTokenizer"
+        ]
       },
       "TokenizerProperties": {
         "path": "types/tokenizers.d.ts",
         "description": "Additional tokenizer-specific properties.",
-        "dependencies": ["AutoTokenizer"]
+        "dependencies": [
+          "AutoTokenizer"
+        ]
       },
       "TokenLattice": {
         "path": "types/utils/data-structures.d.ts",
         "description": "A lattice data structure to be used for tokenization.",
-        "dependencies": ["TokenLatticeNode"]
+        "dependencies": [
+          "TokenLatticeNode"
+        ]
       },
       "TranslationOutput": {
         "path": "types/pipelines.d.ts",
-        "dependencies": ["TranslationSingle"]
+        "dependencies": [
+          "TranslationSingle"
+        ]
       },
       "TranslationPipeline": {
         "path": "types/pipelines.d.ts",
-        "dependencies": ["TranslationPipeline_base"]
+        "dependencies": [
+          "TranslationPipeline_base"
+        ]
       },
       "TranslationPipelineCallback": {
         "path": "types/pipelines.d.ts",
-        "dependencies": ["TranslationOutput", "Promise"]
+        "dependencies": [
+          "TranslationOutput",
+          "Promise"
+        ]
       },
       "TranslationPipelineType": {
         "path": "types/pipelines.d.ts",
         "description": "Translate the text(s) given as inputs.",
-        "dependencies": ["Disposable", "TranslationPipelineCallback", "TextPipelineConstructorArgs"]
+        "dependencies": [
+          "Disposable",
+          "TranslationPipelineCallback",
+          "TextPipelineConstructorArgs"
+        ]
       },
       "TranslationSingle": {
         "path": "types/pipelines.d.ts",
-        "dependencies": ["wavefile", "fs"]
+        "dependencies": [
+          "wavefile",
+          "fs"
+        ]
       },
       "TrOCRForCausalLM": {
         "path": "types/models.d.ts",
@@ -12315,7 +12961,9 @@
       },
       "ViTFeatureExtractor": {
         "path": "types/processors.d.ts",
-        "dependencies": ["ImageFeatureExtractor"]
+        "dependencies": [
+          "ImageFeatureExtractor"
+        ]
       },
       "ViTForImageClassification": {
         "path": "types/models.d.ts",
@@ -12354,7 +13002,9 @@
       },
       "ViTImageProcessor": {
         "path": "types/processors.d.ts",
-        "dependencies": ["ImageFeatureExtractor"]
+        "dependencies": [
+          "ImageFeatureExtractor"
+        ]
       },
       "VitMatteForImageMatting": {
         "path": "types/models.d.ts",
@@ -12394,7 +13044,11 @@
       },
       "VitMatteImageProcessor": {
         "path": "types/processors.d.ts",
-        "dependencies": ["ImageFeatureExtractorResult", "Promise", "RawImage"]
+        "dependencies": [
+          "ImageFeatureExtractorResult",
+          "Promise",
+          "RawImage"
+        ]
       },
       "VitMattePreTrainedModel": {
         "path": "types/models.d.ts",
@@ -12604,11 +13258,16 @@
       },
       "VitsTokenizer": {
         "path": "types/tokenizers.d.ts",
-        "dependencies": ["PreTrainedTokenizer", "AutoTokenizer"]
+        "dependencies": [
+          "PreTrainedTokenizer",
+          "AutoTokenizer"
+        ]
       },
       "VocoderOptions": {
         "path": "types/pipelines.d.ts",
-        "dependencies": ["PreTrainedModel"]
+        "dependencies": [
+          "PreTrainedModel"
+        ]
       },
       "Wav2Vec2BertForCTC": {
         "path": "types/models.d.ts",
@@ -12753,11 +13412,19 @@
       },
       "Wav2Vec2CTCTokenizer": {
         "path": "types/tokenizers.d.ts",
-        "dependencies": ["PreTrainedTokenizer", "AutoTokenizer"]
+        "dependencies": [
+          "PreTrainedTokenizer",
+          "AutoTokenizer"
+        ]
       },
       "Wav2Vec2FeatureExtractor": {
         "path": "types/processors.d.ts",
-        "dependencies": ["Tensor", "Promise", "Float64Array", "Float32Array"]
+        "dependencies": [
+          "Tensor",
+          "Promise",
+          "Float64Array",
+          "Float32Array"
+        ]
       },
       "Wav2Vec2ForAudioFrameClassification": {
         "path": "types/models.d.ts",
@@ -12936,7 +13603,9 @@
       },
       "Wav2Vec2ProcessorWithLM": {
         "path": "types/processors.d.ts",
-        "dependencies": ["Promise"]
+        "dependencies": [
+          "Promise"
+        ]
       },
       "WavLMForAudioFrameClassification": {
         "path": "types/models.d.ts",
@@ -13158,7 +13827,12 @@
       },
       "WhisperFeatureExtractor": {
         "path": "types/processors.d.ts",
-        "dependencies": ["Tensor", "Promise", "Float64Array", "Float32Array"]
+        "dependencies": [
+          "Tensor",
+          "Promise",
+          "Float64Array",
+          "Float32Array"
+        ]
       },
       "WhisperForConditionalGeneration": {
         "path": "types/models.d.ts",
@@ -13267,22 +13941,31 @@
       "WhisperProcessor": {
         "path": "types/processors.d.ts",
         "description": "Represents a WhisperProcessor that extracts features from an audio input.",
-        "dependencies": ["Promise"]
+        "dependencies": [
+          "Promise"
+        ]
       },
       "WhisperTimeStampLogitsProcessor": {
         "path": "types/utils/generation.d.ts",
         "description": "A LogitsProcessor that handles adding timestamps to generated text.",
-        "dependencies": ["Tensor"]
+        "dependencies": [
+          "Tensor"
+        ]
       },
       "WhisperTokenizer": {
         "path": "types/tokenizers.d.ts",
         "description": "WhisperTokenizer tokenizer",
-        "dependencies": ["Array", "AutoTokenizer"]
+        "dependencies": [
+          "Array",
+          "AutoTokenizer"
+        ]
       },
       "window_function": {
         "path": "types/utils/audio.d.ts",
         "description": "Returns an array containing the specified window.",
-        "dependencies": ["Float64Array"]
+        "dependencies": [
+          "Float64Array"
+        ]
       },
       "XLMForQuestionAnswering": {
         "path": "types/models.d.ts",
@@ -13676,11 +14359,17 @@
       },
       "XLMRobertaTokenizer": {
         "path": "types/tokenizers.d.ts",
-        "dependencies": ["PreTrainedTokenizer", "AutoTokenizer"]
+        "dependencies": [
+          "PreTrainedTokenizer",
+          "AutoTokenizer"
+        ]
       },
       "XLMTokenizer": {
         "path": "types/tokenizers.d.ts",
-        "dependencies": ["PreTrainedTokenizer", "AutoTokenizer"]
+        "dependencies": [
+          "PreTrainedTokenizer",
+          "AutoTokenizer"
+        ]
       },
       "XLMWithLMHeadModel": {
         "path": "types/models.d.ts",
@@ -13754,7 +14443,9 @@
       },
       "YolosFeatureExtractor": {
         "path": "types/processors.d.ts",
-        "dependencies": ["Tensor"]
+        "dependencies": [
+          "Tensor"
+        ]
       },
       "YolosForObjectDetection": {
         "path": "types/models.d.ts",
@@ -13894,7 +14585,10 @@
       },
       "ZeroShotAudioClassificationOutput": {
         "path": "types/pipelines.d.ts",
-        "dependencies": ["wavefile", "fs"]
+        "dependencies": [
+          "wavefile",
+          "fs"
+        ]
       },
       "ZeroShotAudioClassificationPipeline": {
         "path": "types/pipelines.d.ts",
@@ -13919,7 +14613,10 @@
       "ZeroShotAudioClassificationPipelineOptions": {
         "path": "types/pipelines.d.ts",
         "description": "Parameters specific to zero-shot audio classification pipelines.",
-        "dependencies": ["wavefile", "fs"]
+        "dependencies": [
+          "wavefile",
+          "fs"
+        ]
       },
       "ZeroShotAudioClassificationPipelineType": {
         "path": "types/pipelines.d.ts",
@@ -13931,7 +14628,10 @@
       },
       "ZeroShotClassificationOutput": {
         "path": "types/pipelines.d.ts",
-        "dependencies": ["wavefile", "fs"]
+        "dependencies": [
+          "wavefile",
+          "fs"
+        ]
       },
       "ZeroShotClassificationPipeline": {
         "path": "types/pipelines.d.ts",
@@ -13954,7 +14654,10 @@
       "ZeroShotClassificationPipelineOptions": {
         "path": "types/pipelines.d.ts",
         "description": "Parameters specific to zero-shot classification pipelines.",
-        "dependencies": ["wavefile", "fs"]
+        "dependencies": [
+          "wavefile",
+          "fs"
+        ]
       },
       "ZeroShotClassificationPipelineType": {
         "path": "types/pipelines.d.ts",
@@ -13966,7 +14669,10 @@
       },
       "ZeroShotImageClassificationOutput": {
         "path": "types/pipelines.d.ts",
-        "dependencies": ["wavefile", "fs"]
+        "dependencies": [
+          "wavefile",
+          "fs"
+        ]
       },
       "ZeroShotImageClassificationPipeline": {
         "path": "types/pipelines.d.ts",
@@ -13991,7 +14697,10 @@
       "ZeroShotImageClassificationPipelineOptions": {
         "path": "types/pipelines.d.ts",
         "description": "Parameters specific to zero-shot image classification pipelines.",
-        "dependencies": ["wavefile", "fs"]
+        "dependencies": [
+          "wavefile",
+          "fs"
+        ]
       },
       "ZeroShotImageClassificationPipelineType": {
         "path": "types/pipelines.d.ts",
@@ -14003,7 +14712,9 @@
       },
       "ZeroShotObjectDetectionOutput": {
         "path": "types/pipelines.d.ts",
-        "dependencies": ["BoundingBox"]
+        "dependencies": [
+          "BoundingBox"
+        ]
       },
       "ZeroShotObjectDetectionPipeline": {
         "path": "types/pipelines.d.ts",
@@ -14028,7 +14739,10 @@
       "ZeroShotObjectDetectionPipelineOptions": {
         "path": "types/pipelines.d.ts",
         "description": "Parameters specific to zero-shot object detection pipelines.",
-        "dependencies": ["wavefile", "fs"]
+        "dependencies": [
+          "wavefile",
+          "fs"
+        ]
       },
       "ZeroShotObjectDetectionPipelineType": {
         "path": "types/pipelines.d.ts",
@@ -14061,15 +14775,44 @@
       },
       "assertMatchParams": {
         "path": "src/validation.ts",
-        "dependencies": ["MatchParams"]
+        "dependencies": [
+          "MatchParams"
+        ]
       },
       "assertSearchParams": {
         "path": "src/validation.ts",
-        "dependencies": ["SearchParams"]
+        "dependencies": [
+          "SearchParams"
+        ]
       },
       "content": {
         "path": "types/sql.d.ts",
         "dependencies": []
+      },
+      "createDatabase": {
+        "path": "src/runtime.ts",
+        "dependencies": [
+          "InternalHandle",
+          "DatabaseHandle",
+          "Promise",
+          "CreateDatabaseOptions",
+          "pg/Pool",
+          "crypto/randomBytes",
+          "testcontainers/GenericContainer",
+          "testcontainers/Wait",
+          "testcontainers/StartedTestContainer"
+        ]
+      },
+      "CreateDatabaseOptions": {
+        "path": "src/runtime.ts",
+        "dependencies": [
+          "LogLevel",
+          "pg/Pool",
+          "crypto/randomBytes",
+          "testcontainers/GenericContainer",
+          "testcontainers/Wait",
+          "testcontainers/StartedTestContainer"
+        ]
       },
       "createLocalEmbeddingProvider": {
         "path": "src/utils/embeddings.ts",
@@ -14085,35 +14828,103 @@
       "createLogger": {
         "path": "src/logger.ts",
         "description": "Creates a new logger instance with the specified log level.",
-        "dependencies": ["LogLevel", "Logger"]
+        "dependencies": [
+          "LogLevel",
+          "Logger"
+        ]
+      },
+      "createReusableDatabase": {
+        "path": "src/runtime.ts",
+        "dependencies": [
+          "Array",
+          "Promise",
+          "CreateReusableDatabaseOptions",
+          "pg/Pool",
+          "crypto/randomBytes",
+          "testcontainers/GenericContainer",
+          "testcontainers/Wait",
+          "testcontainers/StartedTestContainer"
+        ]
+      },
+      "CreateReusableDatabaseOptions": {
+        "path": "src/runtime.ts",
+        "dependencies": [
+          "LogLevel",
+          "pg/Pool",
+          "crypto/randomBytes",
+          "testcontainers/GenericContainer",
+          "testcontainers/Wait",
+          "testcontainers/StartedTestContainer"
+        ]
+      },
+      "DatabaseHandle": {
+        "path": "src/runtime.ts",
+        "dependencies": [
+          "Promise",
+          "TheFactoryDb",
+          "pg/Pool",
+          "crypto/randomBytes",
+          "testcontainers/GenericContainer",
+          "testcontainers/Wait",
+          "testcontainers/StartedTestContainer"
+        ]
       },
       "DB": {
         "path": "src/connection.ts",
         "description": "Represents the raw database client from the `pg` library.",
-        "dependencies": ["pg/Pool", "pg/PoolClient"]
+        "dependencies": [
+          "pg/Pool",
+          "pg/PoolClient"
+        ]
+      },
+      "destroyDatabase": {
+        "path": "src/runtime.ts",
+        "dependencies": [
+          "InternalHandle",
+          "Promise",
+          "DatabaseHandle",
+          "pg/Pool",
+          "crypto/randomBytes",
+          "testcontainers/GenericContainer",
+          "testcontainers/Wait",
+          "testcontainers/StartedTestContainer"
+        ]
       },
       "Document": {
         "path": "src/types.ts",
         "description": "Represents a text-based document in the database.",
-        "dependencies": ["Record"]
+        "dependencies": [
+          "Record"
+        ]
       },
       "DocumentInput": {
         "path": "src/types.ts",
         "description": "Input for creating a new document.",
-        "dependencies": ["Record"]
+        "dependencies": [
+          "Record"
+        ]
       },
       "DocumentPatch": {
         "path": "src/types.ts",
-        "dependencies": ["DocumentInput", "Partial", "Omit"]
+        "dependencies": [
+          "DocumentInput",
+          "Partial",
+          "Omit"
+        ]
       },
       "DocumentUpsertInput": {
         "path": "src/types.ts",
-        "dependencies": ["DocumentInput", "Pick"]
+        "dependencies": [
+          "DocumentInput",
+          "Pick"
+        ]
       },
       "DocumentWithScore": {
         "path": "src/types.ts",
         "description": "A document augmented with search relevance scores.",
-        "dependencies": ["Document"]
+        "dependencies": [
+          "Document"
+        ]
       },
       "EmbeddingProvider": {
         "path": "src/utils/embeddings.ts",
@@ -14127,22 +14938,32 @@
       "Entity": {
         "path": "src/types.ts",
         "description": "Represents a JSON-based entity in the database.",
-        "dependencies": ["Record"]
+        "dependencies": [
+          "Record"
+        ]
       },
       "EntityInput": {
         "path": "src/types.ts",
         "description": "Input for creating a new entity.",
-        "dependencies": ["Record"]
+        "dependencies": [
+          "Record"
+        ]
       },
       "EntityPatch": {
         "path": "src/types.ts",
         "description": "Represents a patch for updating an entity. `projectId` cannot be changed.",
-        "dependencies": ["EntityInput", "Partial", "Omit"]
+        "dependencies": [
+          "EntityInput",
+          "Partial",
+          "Omit"
+        ]
       },
       "EntityWithScore": {
         "path": "src/types.ts",
         "description": "An entity augmented with search relevance scores.",
-        "dependencies": ["Entity"]
+        "dependencies": [
+          "Entity"
+        ]
       },
       "Logger": {
         "path": "src/types.ts",
@@ -14161,21 +14982,34 @@
       },
       "openDatabase": {
         "path": "src/index.ts",
-        "dependencies": ["TheFactoryDb", "Promise", "OpenDbOptions"]
+        "dependencies": [
+          "TheFactoryDb",
+          "Promise",
+          "OpenDbOptions"
+        ]
       },
       "OpenDbOptions": {
         "path": "src/types.ts",
         "description": "Options for opening a database connection.",
-        "dependencies": ["LogLevel"]
+        "dependencies": [
+          "LogLevel"
+        ]
       },
       "openPostgres": {
         "path": "src/connection.ts",
-        "dependencies": ["DB", "Promise", "pg/Pool", "pg/PoolClient"]
+        "dependencies": [
+          "DB",
+          "Promise",
+          "pg/Pool",
+          "pg/PoolClient"
+        ]
       },
       "SearchParams": {
         "path": "src/types.ts",
         "description": "Parameters for performing a hybrid search.",
-        "dependencies": ["MatchParams"]
+        "dependencies": [
+          "MatchParams"
+        ]
       },
       "SQL": {
         "path": "src/utils.ts",
@@ -14183,7 +15017,9 @@
       },
       "stringifyJsonValues": {
         "path": "src/utils/json.ts",
-        "dependencies": ["Record"]
+        "dependencies": [
+          "Record"
+        ]
       },
       "TheFactoryDb": {
         "path": "src/index.ts",
@@ -14205,19 +15041,29 @@
       },
       "toFtsText": {
         "path": "src/utils/tokenizer.ts",
-        "dependencies": ["js-tiktoken"]
+        "dependencies": [
+          "js-tiktoken"
+        ]
       },
       "tokenize": {
         "path": "src/utils/tokenizer.ts",
-        "dependencies": ["TiktokenEncoding", "TokenizerEncodeResult", "TokenizerOptions"]
+        "dependencies": [
+          "TiktokenEncoding",
+          "TokenizerEncodeResult",
+          "TokenizerOptions"
+        ]
       },
       "TokenizerEncodeResult": {
         "path": "src/utils/tokenizer.ts",
-        "dependencies": ["js-tiktoken"]
+        "dependencies": [
+          "js-tiktoken"
+        ]
       },
       "TokenizerOptions": {
         "path": "src/utils/tokenizer.ts",
-        "dependencies": ["TiktokenEncoding"]
+        "dependencies": [
+          "TiktokenEncoding"
+        ]
       }
     }
   },
@@ -14250,11 +15096,40 @@
       },
       "assertMatchParams": {
         "path": "validation.ts",
-        "dependencies": ["MatchParams"]
+        "dependencies": [
+          "MatchParams"
+        ]
       },
       "assertSearchParams": {
         "path": "validation.ts",
-        "dependencies": ["SearchParams"]
+        "dependencies": [
+          "SearchParams"
+        ]
+      },
+      "createDatabase": {
+        "path": "runtime.ts",
+        "dependencies": [
+          "InternalHandle",
+          "DatabaseHandle",
+          "Promise",
+          "CreateDatabaseOptions",
+          "pg/Pool",
+          "crypto/randomBytes",
+          "testcontainers/GenericContainer",
+          "testcontainers/Wait",
+          "testcontainers/StartedTestContainer"
+        ]
+      },
+      "CreateDatabaseOptions": {
+        "path": "runtime.ts",
+        "dependencies": [
+          "LogLevel",
+          "pg/Pool",
+          "crypto/randomBytes",
+          "testcontainers/GenericContainer",
+          "testcontainers/Wait",
+          "testcontainers/StartedTestContainer"
+        ]
       },
       "createLocalEmbeddingProvider": {
         "path": "utils/embeddings.ts",
@@ -14270,35 +15145,103 @@
       "createLogger": {
         "path": "logger.ts",
         "description": "Creates a new logger instance with the specified log level.",
-        "dependencies": ["LogLevel", "Logger"]
+        "dependencies": [
+          "LogLevel",
+          "Logger"
+        ]
+      },
+      "createReusableDatabase": {
+        "path": "runtime.ts",
+        "dependencies": [
+          "Array",
+          "Promise",
+          "CreateReusableDatabaseOptions",
+          "pg/Pool",
+          "crypto/randomBytes",
+          "testcontainers/GenericContainer",
+          "testcontainers/Wait",
+          "testcontainers/StartedTestContainer"
+        ]
+      },
+      "CreateReusableDatabaseOptions": {
+        "path": "runtime.ts",
+        "dependencies": [
+          "LogLevel",
+          "pg/Pool",
+          "crypto/randomBytes",
+          "testcontainers/GenericContainer",
+          "testcontainers/Wait",
+          "testcontainers/StartedTestContainer"
+        ]
+      },
+      "DatabaseHandle": {
+        "path": "runtime.ts",
+        "dependencies": [
+          "Promise",
+          "TheFactoryDb",
+          "pg/Pool",
+          "crypto/randomBytes",
+          "testcontainers/GenericContainer",
+          "testcontainers/Wait",
+          "testcontainers/StartedTestContainer"
+        ]
       },
       "DB": {
         "path": "connection.ts",
         "description": "Represents the raw database client from the `pg` library.",
-        "dependencies": ["pg/Pool", "pg/PoolClient"]
+        "dependencies": [
+          "pg/Pool",
+          "pg/PoolClient"
+        ]
+      },
+      "destroyDatabase": {
+        "path": "runtime.ts",
+        "dependencies": [
+          "InternalHandle",
+          "Promise",
+          "DatabaseHandle",
+          "pg/Pool",
+          "crypto/randomBytes",
+          "testcontainers/GenericContainer",
+          "testcontainers/Wait",
+          "testcontainers/StartedTestContainer"
+        ]
       },
       "Document": {
         "path": "types.ts",
         "description": "Represents a text-based document in the database.",
-        "dependencies": ["Record"]
+        "dependencies": [
+          "Record"
+        ]
       },
       "DocumentInput": {
         "path": "types.ts",
         "description": "Input for creating a new document.",
-        "dependencies": ["Record"]
+        "dependencies": [
+          "Record"
+        ]
       },
       "DocumentPatch": {
         "path": "types.ts",
-        "dependencies": ["DocumentInput", "Partial", "Omit"]
+        "dependencies": [
+          "DocumentInput",
+          "Partial",
+          "Omit"
+        ]
       },
       "DocumentUpsertInput": {
         "path": "types.ts",
-        "dependencies": ["DocumentInput", "Pick"]
+        "dependencies": [
+          "DocumentInput",
+          "Pick"
+        ]
       },
       "DocumentWithScore": {
         "path": "types.ts",
         "description": "A document augmented with search relevance scores.",
-        "dependencies": ["Document"]
+        "dependencies": [
+          "Document"
+        ]
       },
       "EmbeddingProvider": {
         "path": "utils/embeddings.ts",
@@ -14312,22 +15255,32 @@
       "Entity": {
         "path": "types.ts",
         "description": "Represents a JSON-based entity in the database.",
-        "dependencies": ["Record"]
+        "dependencies": [
+          "Record"
+        ]
       },
       "EntityInput": {
         "path": "types.ts",
         "description": "Input for creating a new entity.",
-        "dependencies": ["Record"]
+        "dependencies": [
+          "Record"
+        ]
       },
       "EntityPatch": {
         "path": "types.ts",
         "description": "Represents a patch for updating an entity. `projectId` cannot be changed.",
-        "dependencies": ["EntityInput", "Partial", "Omit"]
+        "dependencies": [
+          "EntityInput",
+          "Partial",
+          "Omit"
+        ]
       },
       "EntityWithScore": {
         "path": "types.ts",
         "description": "An entity augmented with search relevance scores.",
-        "dependencies": ["Entity"]
+        "dependencies": [
+          "Entity"
+        ]
       },
       "Logger": {
         "path": "types.ts",
@@ -14346,21 +15299,34 @@
       },
       "openDatabase": {
         "path": "index.ts",
-        "dependencies": ["TheFactoryDb", "Promise", "OpenDbOptions"]
+        "dependencies": [
+          "TheFactoryDb",
+          "Promise",
+          "OpenDbOptions"
+        ]
       },
       "OpenDbOptions": {
         "path": "types.ts",
         "description": "Options for opening a database connection.",
-        "dependencies": ["LogLevel"]
+        "dependencies": [
+          "LogLevel"
+        ]
       },
       "openPostgres": {
         "path": "connection.ts",
-        "dependencies": ["DB", "Promise", "pg/Pool", "pg/PoolClient"]
+        "dependencies": [
+          "DB",
+          "Promise",
+          "pg/Pool",
+          "pg/PoolClient"
+        ]
       },
       "SearchParams": {
         "path": "types.ts",
         "description": "Parameters for performing a hybrid search.",
-        "dependencies": ["MatchParams"]
+        "dependencies": [
+          "MatchParams"
+        ]
       },
       "SQL": {
         "path": "utils.ts",
@@ -14368,7 +15334,9 @@
       },
       "stringifyJsonValues": {
         "path": "utils/json.ts",
-        "dependencies": ["Record"]
+        "dependencies": [
+          "Record"
+        ]
       },
       "TheFactoryDb": {
         "path": "index.ts",
@@ -14390,21 +15358,35 @@
       },
       "toFtsText": {
         "path": "utils/tokenizer.ts",
-        "dependencies": ["js-tiktoken"]
+        "dependencies": [
+          "js-tiktoken"
+        ]
       },
       "tokenize": {
         "path": "utils/tokenizer.ts",
-        "dependencies": ["TiktokenEncoding", "TokenizerEncodeResult", "TokenizerOptions"]
+        "dependencies": [
+          "TiktokenEncoding",
+          "TokenizerEncodeResult",
+          "TokenizerOptions"
+        ]
       },
       "TokenizerEncodeResult": {
         "path": "utils/tokenizer.ts",
-        "dependencies": ["js-tiktoken"]
+        "dependencies": [
+          "js-tiktoken"
+        ]
       },
       "TokenizerOptions": {
         "path": "utils/tokenizer.ts",
-        "dependencies": ["TiktokenEncoding"]
+        "dependencies": [
+          "TiktokenEncoding"
+        ]
       }
     }
+  },
+  "testcontainers": {
+    "path": "node_modules/testcontainers",
+    "members": {}
   },
   "tests": {
     "path": "tests",

@@ -35,6 +35,16 @@ vi.mock('../src/utils/embeddings', () => ({
   })),
 }))
 
+// Silence logger output in this test file
+vi.mock('../src/logger', () => ({
+  createLogger: () => ({
+    debug: vi.fn(),
+    info: vi.fn(),
+    warn: vi.fn(),
+    error: vi.fn(),
+  }),
+}))
+
 // Import the function under test after mocks
 import { createReusableDatabase } from '../src/runtime'
 

@@ -174,9 +174,9 @@ node scripts/count.ts -- --url postgresql://user:password@localhost:55432/thefac
 
 thefactory-db can provision and manage PostgreSQL with pgvector for you, or connect to an existing server. Three flows are supported:
 
-1) Ephemeral managed (default)
-2) Ephemeral external (uses your server; creates a temporary database)
-3) Reusable managed persistent (local Docker container you can reuse across runs)
+1. Ephemeral managed (default)
+2. Ephemeral external (uses your server; creates a temporary database)
+3. Reusable managed persistent (local Docker container you can reuse across runs)
 
 These flows are intentionally simple: no reuse for ephemeral flows and full teardown on destroy; the reusable flow is persistent and never drops data.
 
@@ -185,6 +185,7 @@ These flows are intentionally simple: no reuse for ephemeral flows and full tear
 Starts a fresh Postgres+pgvector container using `pgvector/pgvector:pg16` via Testcontainers, initializes schema, and returns a ready client. On destroy, the container is stopped and removed. No reuse, no persistence.
 
 Requirements:
+
 - Docker daemon available and accessible to the current user
 - Image `pgvector/pgvector:pg16` (pulled automatically if missing)
 
@@ -212,6 +213,7 @@ try {
 ```
 
 Notes:
+
 - Health/readiness is ensured by waiting for the listening port and validating with `SELECT 1`.
 - Schema bootstrap (tables, triggers, extensions) is performed via `openDatabase()` automatically.
 - Managed containers started by this process are also cleaned up on SIGINT/SIGTERM.
@@ -221,6 +223,7 @@ Notes:
 Connect to an existing PostgreSQL server by supplying a server-level connection string. A temporary database named `tfdb_<random>` is created, initialized, and used for the session. On destroy, the temporary database is dropped.
 
 Requirements:
+
 - The provided role must have `CREATEDB` privilege on the server
 - The `pgvector` extension must be available/creatable as `vector`
 
@@ -230,6 +233,7 @@ Example:
 import { createDatabase } from 'thefactory-db'
 
 // Supply a server-level connection string (database portion is ignored for admin ops)
+
 const serverUrl = 'postgresql://user:password@localhost:5432/postgres'
 const handle = await createDatabase({ connectionString: serverUrl })
 
@@ -244,6 +248,7 @@ try {
 ```
 
 Notes:
+
 - Admin operations run against the `postgres` database on the same server to create/drop the temp DB.
 - Initialization will fail with a clear error if `vector` is not available or cannot be created.
 - No schema-only cleanup: the entire temporary database is dropped.
@@ -253,10 +258,12 @@ Notes:
 Create or reuse a long-lived local Docker container named `thefactory-db` using `pgvector/pgvector:pg16`. Intended for development workflows where you want a stable, persistent database across runs.
 
 Requirements:
+
 - Docker daemon available
 - Image `pgvector/pgvector:pg16` (pulled if missing)
 
 Behavior:
+
 - Ensures a container named `thefactory-db` exists and is running with:
   - `POSTGRES_USER=thefactory`, `POSTGRES_PASSWORD=thefactory`, `POSTGRES_DB=thefactorydb`
   - Host port mapping prefers 5435 -> 5432; if 5435 is occupied, the first free port is used (Docker persists the mapping)
@@ -278,6 +285,7 @@ await db.close()
 ```
 
 Notes:
+
 - Always use the returned connection string; if 5435 was busy during first creation, Docker may map a different host port.
 - To remove this instance manually, stop and remove the `thefactory-db` container via Docker.
 
@@ -293,6 +301,7 @@ Notes:
 - `openDatabase(options: { connectionString: string; logLevel?: LogLevel }): Promise<TheFactoryDb>` remains available for direct connections
 
 Behavioral guarantees:
+
 - Schema bootstrap: `openDatabase()` applies schema/extensions and hybrid search SQL automatically
 - Readiness: managed flows wait for `SELECT 1` before returning
 - Teardown: ephemeral flows fully remove their state (container or temp DB) when destroyed

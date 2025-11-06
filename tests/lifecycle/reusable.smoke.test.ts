@@ -39,15 +39,18 @@ const DOCKER = await dockerAvailable()
     expect(r2.created).toBe(false)
 
     const db = await openDatabase({ connectionString: r1.connectionString, logLevel: 'error' })
-    // Perform a tiny op to ensure schema exists
-    const doc = await db.addDocument({
+    // Perform a tiny op to ensure schema exists; use upsert to be idempotent across runs
+    const doc = await db.upsertDocument({
       projectId: 'reusable',
       type: 'md',
       src: 'file.md',
       name: 'File',
       content: 'hello reusable',
+      metadata: null,
     })
-    expect(doc.id).toBeDefined()
+    // Regardless of whether upsert inserted/updated or was a no-op, the doc should exist
+    const fetched = await db.getDocumentBySrc('reusable', 'file.md')
+    expect(fetched && fetched.id).toBeDefined()
     await db.close()
 
     // Do not destroy the reusable container here; it is intended to persist across runs
