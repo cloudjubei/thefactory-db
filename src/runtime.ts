@@ -48,7 +48,11 @@ function randHex(nBytes: number): string {
   return randomBytes(nBytes).toString('hex')
 }
 
-async function waitForSelect1(connectionString: string, attempts = 30, delayMs = 500): Promise<void> {
+async function waitForSelect1(
+  connectionString: string,
+  attempts = 30,
+  delayMs = 500,
+): Promise<void> {
   let lastErr: any
   for (let i = 0; i < attempts; i++) {
     const pool = new Pool({ connectionString })
@@ -69,7 +73,19 @@ async function waitForSelect1(connectionString: string, attempts = 30, delayMs =
   if (lastErr) throw lastErr
 }
 
-function buildPgUrl({ host, port, user, password, db }: { host: string; port: number; user: string; password: string; db: string }): string {
+function buildPgUrl({
+  host,
+  port,
+  user,
+  password,
+  db,
+}: {
+  host: string
+  port: number
+  user: string
+  password: string
+  db: string
+}): string {
   const pw = encodeURIComponent(password)
   const usr = encodeURIComponent(user)
   return `postgresql://${usr}:${pw}@${host}:${port}/${db}`
@@ -134,7 +150,10 @@ async function safeDestroy(h: InternalHandle): Promise<void> {
       const adminPool = new Pool({ connectionString: h.__internal.external.adminUrl })
       try {
         // Ensure no lingering connections
-        await adminPool.query(`SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = $1 AND pid <> pg_backend_pid()`, [h.dbName])
+        await adminPool.query(
+          `SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = $1 AND pid <> pg_backend_pid()`,
+          [h.dbName],
+        )
         await adminPool.query(`DROP DATABASE IF EXISTS "${h.dbName}"`)
       } finally {
         await adminPool.end()
@@ -287,7 +306,7 @@ export async function createReusableDatabase(
   const images = await docker.listImages({ filters: { reference: [image] } as any })
   if (!images || images.length === 0) {
     await new Promise<void>((resolve, reject) => {
-      docker.pull(image, (err, stream) => {
+      docker.pull(image, (err: any, stream: any) => {
         if (err) return reject(err)
         try {
           stream.on('end', () => resolve())
@@ -309,11 +328,7 @@ export async function createReusableDatabase(
   container = await docker.createContainer({
     name,
     Image: image,
-    Env: [
-      `POSTGRES_USER=${user}`,
-      `POSTGRES_PASSWORD=${password}`,
-      `POSTGRES_DB=${db}`,
-    ],
+    Env: [`POSTGRES_USER=${user}`, `POSTGRES_PASSWORD=${password}`, `POSTGRES_DB=${db}`],
     ExposedPorts: { '5432/tcp': {} },
     HostConfig: {
       PortBindings: { '5432/tcp': [{ HostPort: String(hostPort) }] },
