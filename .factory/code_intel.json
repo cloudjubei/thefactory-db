@@ -6,6 +6,12 @@
         "path": "types/env.d.ts",
         "dependencies": []
       },
+      "AddedToken": {
+        "path": "types/tokenizers.d.ts",
+        "dependencies": [
+          "AutoTokenizer"
+        ]
+      },
       "AlbertForMaskedLM": {
         "path": "src/models.js",
         "dependencies": [
@@ -211,14 +217,6 @@
           "fs"
         ]
       },
-      "allowLocalModels": {
-        "path": "types/env.d.ts",
-        "dependencies": []
-      },
-      "allowRemoteModels": {
-        "path": "types/env.d.ts",
-        "dependencies": []
-      },
       "AllTasks": {
         "path": "types/pipelines.d.ts",
         "dependencies": [
@@ -365,6 +363,13 @@
           "pipeline"
         ]
       },
+      "AudioClassificationPipeline_base": {
+        "path": "types/pipelines.d.ts",
+        "dependencies": [
+          "AudioClassificationPipelineType",
+          "AudioPipelineConstructorArgs"
+        ]
+      },
       "AudioClassificationPipelineCallback": {
         "path": "types/pipelines.d.ts",
         "dependencies": [
@@ -444,6 +449,13 @@
           "TextAudioPipelineConstructorArgs",
           "Right",
           "pipeline"
+        ]
+      },
+      "AutomaticSpeechRecognitionPipeline_base": {
+        "path": "types/pipelines.d.ts",
+        "dependencies": [
+          "AutomaticSpeechRecognitionPipelineType",
+          "TextAudioPipelineConstructorArgs"
         ]
       },
       "AutomaticSpeechRecognitionPipelineCallback": {
@@ -2647,6 +2659,12 @@
         "description": "A trie structure to efficiently store and search for strings.",
         "dependencies": []
       },
+      "CharTrieNode": {
+        "path": "types/utils/data-structures.d.ts",
+        "dependencies": [
+          "Map"
+        ]
+      },
       "Chat": {
         "path": "types/pipelines.d.ts",
         "dependencies": [
@@ -3762,10 +3780,6 @@
         "description": "Computes the cosine similarity between two arrays.",
         "dependencies": []
       },
-      "customCache": {
-        "path": "types/env.d.ts",
-        "dependencies": []
-      },
       "DataArray": {
         "path": "types/utils/tensor.d.ts",
         "dependencies": []
@@ -3773,6 +3787,23 @@
       "DataType": {
         "path": "types/utils/tensor.d.ts",
         "dependencies": []
+      },
+      "DataTypeMap": {
+        "path": "types/utils/tensor.d.ts",
+        "dependencies": [
+          "Uint8ArrayConstructor",
+          "BigUint64ArrayConstructor",
+          "BigInt64ArrayConstructor",
+          "Uint32ArrayConstructor",
+          "Int32ArrayConstructor",
+          "Uint16ArrayConstructor",
+          "Int16ArrayConstructor",
+          "Int8ArrayConstructor",
+          "ArrayConstructor",
+          "Float64ArrayConstructor",
+          "Float32ArrayConstructor",
+          "Readonly"
+        ]
       },
       "DebertaForMaskedLM": {
         "path": "src/models.js",
@@ -4228,6 +4259,119 @@
           "@huggingface/jinja/Template"
         ]
       },
+      "Decoder": {
+        "path": "types/tokenizers.d.ts",
+        "dependencies": [
+          "AddedToken",
+          "AutoTokenizer"
+        ]
+      },
+      "Decoder_base": {
+        "path": "types/tokenizers.d.ts",
+        "dependencies": [
+          "AutoTokenizer"
+        ]
+      },
+      "decoderRunBeam": {
+        "path": "types/models.d.ts",
+        "dependencies": [
+          "Promise",
+          "Tensor",
+          "AutoTokenizer",
+          "AutoProcessor",
+          "CLIPModel",
+          "RawImage",
+          "CLIPTextModelWithProjection",
+          "CLIPVisionModelWithProjection",
+          "SiglipModel",
+          "SiglipTextModel",
+          "SiglipVisionModel",
+          "CLIPSegForImageSegmentation",
+          "VitMatteForImageMatting",
+          "cat",
+          "Swin2SRForImageSuperResolution",
+          "DPTForDepthEstimation",
+          "interpolate",
+          "max",
+          "GLPNForDepthEstimation",
+          "AutoModelForVision2Seq",
+          "SamModel",
+          "AutoModel",
+          "read_audio",
+          "AutoModelForAudioFrameClassification",
+          "SpeechT5ForTextToSpeech",
+          "SpeechT5HifiGan",
+          "ClapTextModelWithProjection",
+          "ClapAudioModelWithProjection",
+          "VitsModel"
+        ]
+      },
+      "decoderStartBeams": {
+        "path": "types/models.d.ts",
+        "dependencies": [
+          "Tensor",
+          "AutoTokenizer",
+          "AutoProcessor",
+          "CLIPModel",
+          "RawImage",
+          "CLIPTextModelWithProjection",
+          "CLIPVisionModelWithProjection",
+          "SiglipModel",
+          "SiglipTextModel",
+          "SiglipVisionModel",
+          "CLIPSegForImageSegmentation",
+          "VitMatteForImageMatting",
+          "cat",
+          "Swin2SRForImageSuperResolution",
+          "DPTForDepthEstimation",
+          "interpolate",
+          "max",
+          "GLPNForDepthEstimation",
+          "AutoModelForVision2Seq",
+          "SamModel",
+          "AutoModel",
+          "read_audio",
+          "AutoModelForAudioFrameClassification",
+          "SpeechT5ForTextToSpeech",
+          "SpeechT5HifiGan",
+          "ClapTextModelWithProjection",
+          "ClapAudioModelWithProjection",
+          "VitsModel"
+        ]
+      },
+      "decoderUpdatebeam": {
+        "path": "types/models.d.ts",
+        "dependencies": [
+          "AutoTokenizer",
+          "AutoProcessor",
+          "CLIPModel",
+          "RawImage",
+          "CLIPTextModelWithProjection",
+          "CLIPVisionModelWithProjection",
+          "SiglipModel",
+          "SiglipTextModel",
+          "SiglipVisionModel",
+          "CLIPSegForImageSegmentation",
+          "VitMatteForImageMatting",
+          "Tensor",
+          "cat",
+          "Swin2SRForImageSuperResolution",
+          "DPTForDepthEstimation",
+          "interpolate",
+          "max",
+          "GLPNForDepthEstimation",
+          "AutoModelForVision2Seq",
+          "SamModel",
+          "AutoModel",
+          "read_audio",
+          "AutoModelForAudioFrameClassification",
+          "SpeechT5ForTextToSpeech",
+          "SpeechT5HifiGan",
+          "ClapTextModelWithProjection",
+          "ClapAudioModelWithProjection",
+          "VitsModel"
+        ]
+      },
       "DEFAULT_CACHE_DIR": {
         "path": "types/env.d.ts",
         "dependencies": []
@@ -4423,6 +4567,13 @@
           "ImagePipelineConstructorArgs",
           "RawImage",
           "pipeline"
+        ]
+      },
+      "DepthEstimationPipeline_base": {
+        "path": "types/pipelines.d.ts",
+        "dependencies": [
+          "DepthEstimationPipelineType",
+          "ImagePipelineConstructorArgs"
         ]
       },
       "DepthEstimationPipelineCallback": {
@@ -5050,6 +5201,13 @@
           "pipeline"
         ]
       },
+      "DocumentQuestionAnsweringPipeline_base": {
+        "path": "types/pipelines.d.ts",
+        "dependencies": [
+          "DocumentQuestionAnsweringPipelineType",
+          "TextImagePipelineConstructorArgs"
+        ]
+      },
       "DocumentQuestionAnsweringPipelineCallback": {
         "path": "types/pipelines.d.ts",
         "description": "Answer the question given as input by using the document.",
@@ -5628,6 +5786,40 @@
           "@huggingface/jinja/Template"
         ]
       },
+      "encoderForward": {
+        "path": "types/models.d.ts",
+        "dependencies": [
+          "Promise",
+          "AutoTokenizer",
+          "AutoProcessor",
+          "CLIPModel",
+          "RawImage",
+          "CLIPTextModelWithProjection",
+          "CLIPVisionModelWithProjection",
+          "SiglipModel",
+          "SiglipTextModel",
+          "SiglipVisionModel",
+          "CLIPSegForImageSegmentation",
+          "VitMatteForImageMatting",
+          "Tensor",
+          "cat",
+          "Swin2SRForImageSuperResolution",
+          "DPTForDepthEstimation",
+          "interpolate",
+          "max",
+          "GLPNForDepthEstimation",
+          "AutoModelForVision2Seq",
+          "SamModel",
+          "AutoModel",
+          "read_audio",
+          "AutoModelForAudioFrameClassification",
+          "SpeechT5ForTextToSpeech",
+          "SpeechT5HifiGan",
+          "ClapTextModelWithProjection",
+          "ClapAudioModelWithProjection",
+          "VitsModel"
+        ]
+      },
       "EncodingSingle": {
         "path": "types/tokenizers.d.ts",
         "dependencies": [
@@ -6079,6 +6271,13 @@
           "pipeline"
         ]
       },
+      "FeatureExtractionPipeline_base": {
+        "path": "types/pipelines.d.ts",
+        "dependencies": [
+          "FeatureExtractionPipelineType",
+          "TextPipelineConstructorArgs"
+        ]
+      },
       "FeatureExtractionPipelineCallback": {
         "path": "types/pipelines.d.ts",
         "dependencies": [
@@ -6113,9 +6312,24 @@
           "read_audio"
         ]
       },
+      "FeatureExtractor_base": {
+        "path": "types/processors.d.ts",
+        "dependencies": []
+      },
       "FFT": {
         "path": "src/utils/maths.js",
         "dependencies": []
+      },
+      "FileResponse": {
+        "path": "types/utils/hub.d.ts",
+        "dependencies": [
+          "Promise",
+          "Blob",
+          "ArrayBuffer",
+          "ReadableStream",
+          "Headers",
+          "URL"
+        ]
       },
       "FillMaskOutput": {
         "path": "types/pipelines.d.ts",
@@ -6130,6 +6344,13 @@
         "dependencies": [
           "TextPipelineConstructorArgs",
           "pipeline"
+        ]
+      },
+      "FillMaskPipeline_base": {
+        "path": "types/pipelines.d.ts",
+        "dependencies": [
+          "FillMaskPipelineType",
+          "TextPipelineConstructorArgs"
         ]
       },
       "FillMaskPipelineCallback": {
@@ -7073,6 +7294,13 @@
           "pipeline"
         ]
       },
+      "ImageClassificationPipeline_base": {
+        "path": "types/pipelines.d.ts",
+        "dependencies": [
+          "ImageClassificationPipelineType",
+          "ImagePipelineConstructorArgs"
+        ]
+      },
       "ImageClassificationPipelineCallback": {
         "path": "types/pipelines.d.ts",
         "dependencies": [
@@ -7111,6 +7339,13 @@
         "dependencies": [
           "ImagePipelineConstructorArgs",
           "pipeline"
+        ]
+      },
+      "ImageFeatureExtractionPipeline_base": {
+        "path": "types/pipelines.d.ts",
+        "dependencies": [
+          "ImageFeatureExtractionPipelineType",
+          "ImagePipelineConstructorArgs"
         ]
       },
       "ImageFeatureExtractionPipelineCallback": {
@@ -7223,6 +7458,13 @@
           "pipeline"
         ]
       },
+      "ImageSegmentationPipeline_base": {
+        "path": "types/pipelines.d.ts",
+        "dependencies": [
+          "ImageSegmentationPipelineType",
+          "ImagePipelineConstructorArgs"
+        ]
+      },
       "ImageSegmentationPipelineCallback": {
         "path": "types/pipelines.d.ts",
         "dependencies": [
@@ -7262,6 +7504,13 @@
           "pipeline"
         ]
       },
+      "ImageToImagePipeline_base": {
+        "path": "types/pipelines.d.ts",
+        "dependencies": [
+          "ImageToImagePipelineType",
+          "ImagePipelineConstructorArgs"
+        ]
+      },
       "ImageToImagePipelineCallback": {
         "path": "types/pipelines.d.ts",
         "dependencies": [
@@ -7290,6 +7539,13 @@
         "dependencies": [
           "TextImagePipelineConstructorArgs",
           "pipeline"
+        ]
+      },
+      "ImageToTextPipeline_base": {
+        "path": "types/pipelines.d.ts",
+        "dependencies": [
+          "ImageToTextPipelineType",
+          "TextImagePipelineConstructorArgs"
         ]
       },
       "ImageToTextPipelineCallback": {
@@ -7507,6 +7763,10 @@
           "Callable"
         ]
       },
+      "LogitsProcessor_base": {
+        "path": "types/utils/generation.d.ts",
+        "dependencies": []
+      },
       "LogitsProcessorList": {
         "path": "src/utils/generation.js",
         "description": "A class representing a list of logits processors. A logits processor is a function that modifies the logits",
@@ -7514,6 +7774,10 @@
           "Callable",
           "This"
         ]
+      },
+      "LogitsProcessorList_base": {
+        "path": "types/utils/generation.d.ts",
+        "dependencies": []
       },
       "LongT5ForConditionalGeneration": {
         "path": "src/models.js",
@@ -9260,6 +9524,19 @@
           "LogitsProcessor"
         ]
       },
+      "Normalizer": {
+        "path": "types/tokenizers.d.ts",
+        "dependencies": [
+          "Normalizer_base",
+          "AutoTokenizer"
+        ]
+      },
+      "Normalizer_base": {
+        "path": "types/tokenizers.d.ts",
+        "dependencies": [
+          "AutoTokenizer"
+        ]
+      },
       "NougatImageProcessor": {
         "path": "src/processors.js",
         "dependencies": [
@@ -9276,12 +9553,26 @@
           "@huggingface/jinja/Template"
         ]
       },
+      "NP2FFT": {
+        "path": "types/utils/maths.d.ts",
+        "dependencies": [
+          "P2FFT",
+          "Float64Array"
+        ]
+      },
       "ObjectDetectionPipeline": {
         "path": "src/pipelines.js",
         "description": "Object detection pipeline using any `AutoModelForObjectDetection`.",
         "dependencies": [
           "ImagePipelineConstructorArgs",
           "pipeline"
+        ]
+      },
+      "ObjectDetectionPipeline_base": {
+        "path": "types/pipelines.d.ts",
+        "dependencies": [
+          "ObjectDetectionPipelineType",
+          "ImagePipelineConstructorArgs"
         ]
       },
       "ObjectDetectionPipelineCallback": {
@@ -9685,6 +9976,13 @@
           "read_audio"
         ]
       },
+      "P2FFT": {
+        "path": "types/utils/maths.d.ts",
+        "dependencies": [
+          "Float64Array",
+          "Int32Array"
+        ]
+      },
       "permute": {
         "path": "src/utils/tensor.js",
         "description": "Permutes a tensor according to the provided axes.",
@@ -9815,6 +10113,13 @@
           "pipeline"
         ]
       },
+      "Pipeline_base": {
+        "path": "types/pipelines.d.ts",
+        "dependencies": [
+          "wavefile",
+          "fs"
+        ]
+      },
       "PipelineType": {
         "path": "types/pipelines.d.ts",
         "dependencies": [
@@ -9828,6 +10133,32 @@
         "dependencies": []
       },
       "PostProcessedOutput": {
+        "path": "types/tokenizers.d.ts",
+        "dependencies": [
+          "AutoTokenizer"
+        ]
+      },
+      "PostProcessor": {
+        "path": "types/tokenizers.d.ts",
+        "dependencies": [
+          "PostProcessedOutput",
+          "AutoTokenizer"
+        ]
+      },
+      "PostProcessor_base": {
+        "path": "types/tokenizers.d.ts",
+        "dependencies": [
+          "AutoTokenizer"
+        ]
+      },
+      "PreTokenizer": {
+        "path": "types/tokenizers.d.ts",
+        "dependencies": [
+          "PreTokenizer_base",
+          "AutoTokenizer"
+        ]
+      },
+      "PreTokenizer_base": {
         "path": "types/tokenizers.d.ts",
         "dependencies": [
           "AutoTokenizer"
@@ -9917,6 +10248,39 @@
           "VitsModel"
         ]
       },
+      "PreTrainedModel_base": {
+        "path": "types/models.d.ts",
+        "dependencies": [
+          "AutoTokenizer",
+          "AutoProcessor",
+          "CLIPModel",
+          "RawImage",
+          "CLIPTextModelWithProjection",
+          "CLIPVisionModelWithProjection",
+          "SiglipModel",
+          "SiglipTextModel",
+          "SiglipVisionModel",
+          "CLIPSegForImageSegmentation",
+          "VitMatteForImageMatting",
+          "Tensor",
+          "cat",
+          "Swin2SRForImageSuperResolution",
+          "DPTForDepthEstimation",
+          "interpolate",
+          "max",
+          "GLPNForDepthEstimation",
+          "AutoModelForVision2Seq",
+          "SamModel",
+          "AutoModel",
+          "read_audio",
+          "AutoModelForAudioFrameClassification",
+          "SpeechT5ForTextToSpeech",
+          "SpeechT5HifiGan",
+          "ClapTextModelWithProjection",
+          "ClapAudioModelWithProjection",
+          "VitsModel"
+        ]
+      },
       "PretrainedOptions": {
         "path": "types/configs.d.ts",
         "dependencies": []
@@ -9929,6 +10293,12 @@
           "In",
           "AutoTokenizer",
           "@huggingface/jinja/Template"
+        ]
+      },
+      "PreTrainedTokenizer_base": {
+        "path": "types/tokenizers.d.ts",
+        "dependencies": [
+          "AutoTokenizer"
         ]
       },
       "PretrainedTokenizerOptions": {
@@ -9951,6 +10321,10 @@
           "AutoProcessor",
           "read_audio"
         ]
+      },
+      "Processor_base": {
+        "path": "types/processors.d.ts",
+        "dependencies": []
       },
       "product": {
         "path": "src/utils/core.js",
@@ -10015,6 +10389,13 @@
           "Math",
           "HF",
           "pipeline"
+        ]
+      },
+      "QuestionAnsweringPipeline_base": {
+        "path": "types/pipelines.d.ts",
+        "dependencies": [
+          "QuestionAnsweringPipelineType",
+          "TextPipelineConstructorArgs"
         ]
       },
       "QuestionAnsweringPipelineCallback": {
@@ -10165,14 +10546,6 @@
       },
       "read_audio": {
         "path": "src/utils/audio.js",
-        "dependencies": []
-      },
-      "remoteHost": {
-        "path": "types/env.d.ts",
-        "dependencies": []
-      },
-      "remotePathTemplate": {
-        "path": "types/env.d.ts",
         "dependencies": []
       },
       "RepetitionPenaltyLogitsProcessor": {
@@ -10850,6 +11223,10 @@
         "dependencies": [
           "Callable"
         ]
+      },
+      "Sampler_base": {
+        "path": "types/utils/generation.d.ts",
+        "dependencies": []
       },
       "SamPreTrainedModel": {
         "path": "src/models.js",
@@ -11933,6 +12310,13 @@
           "pipeline"
         ]
       },
+      "SummarizationPipeline_base": {
+        "path": "types/pipelines.d.ts",
+        "dependencies": [
+          "SummarizationPipelineType",
+          "TextPipelineConstructorArgs"
+        ]
+      },
       "SummarizationPipelineCallback": {
         "path": "types/pipelines.d.ts",
         "dependencies": [
@@ -11953,6 +12337,12 @@
         "dependencies": [
           "wavefile",
           "fs"
+        ]
+      },
+      "SUPPORTED_TASKS": {
+        "path": "types/pipelines.d.ts",
+        "dependencies": [
+          "Readonly"
         ]
       },
       "SupportedTasks": {
@@ -12470,6 +12860,12 @@
           "VitsModel"
         ]
       },
+      "TASK_ALIASES": {
+        "path": "types/pipelines.d.ts",
+        "dependencies": [
+          "Readonly"
+        ]
+      },
       "TaskType": {
         "path": "types/pipelines.d.ts",
         "dependencies": [
@@ -12496,6 +12892,13 @@
         "dependencies": [
           "TextPipelineConstructorArgs",
           "pipeline"
+        ]
+      },
+      "Text2TextGenerationPipeline_base": {
+        "path": "types/pipelines.d.ts",
+        "dependencies": [
+          "Text2TextGenerationPipelineType",
+          "TextPipelineConstructorArgs"
         ]
       },
       "Text2TextGenerationPipelineCallback": {
@@ -12540,6 +12943,13 @@
           "TextPipelineConstructorArgs",
           "Use",
           "pipeline"
+        ]
+      },
+      "TextClassificationPipeline_base": {
+        "path": "types/pipelines.d.ts",
+        "dependencies": [
+          "TextClassificationPipelineType",
+          "TextPipelineConstructorArgs"
         ]
       },
       "TextClassificationPipelineCallback": {
@@ -12591,6 +13001,13 @@
         "dependencies": [
           "TextPipelineConstructorArgs",
           "pipeline"
+        ]
+      },
+      "TextGenerationPipeline_base": {
+        "path": "types/pipelines.d.ts",
+        "dependencies": [
+          "TextGenerationPipelineType",
+          "TextPipelineConstructorArgs"
         ]
       },
       "TextGenerationPipelineCallback": {
@@ -12653,6 +13070,13 @@
           "pipeline"
         ]
       },
+      "TextToAudioPipeline_base": {
+        "path": "types/pipelines.d.ts",
+        "dependencies": [
+          "TextToAudioPipelineType",
+          "TextToAudioPipelineConstructorArgs"
+        ]
+      },
       "TextToAudioPipelineCallback": {
         "path": "types/pipelines.d.ts",
         "description": "The speaker embeddings (if the model requires it).",
@@ -12687,10 +13111,6 @@
           "TextToAudioPipelineConstructorArgs"
         ]
       },
-      "tfjs": {
-        "path": "types/env.d.ts",
-        "dependencies": []
-      },
       "TokenClassificationOutput": {
         "path": "types/pipelines.d.ts",
         "dependencies": [
@@ -12703,6 +13123,13 @@
         "dependencies": [
           "TextPipelineConstructorArgs",
           "pipeline"
+        ]
+      },
+      "TokenClassificationPipeline_base": {
+        "path": "types/pipelines.d.ts",
+        "dependencies": [
+          "TokenClassificationPipelineType",
+          "TextPipelineConstructorArgs"
         ]
       },
       "TokenClassificationPipelineCallback": {
@@ -12780,6 +13207,12 @@
           "@huggingface/jinja/Template"
         ]
       },
+      "TokenizerModel_base": {
+        "path": "types/tokenizers.d.ts",
+        "dependencies": [
+          "AutoTokenizer"
+        ]
+      },
       "TokenizerProperties": {
         "path": "types/tokenizers.d.ts",
         "description": "Additional tokenizer-specific properties.",
@@ -12790,6 +13223,10 @@
       "TokenLattice": {
         "path": "src/utils/data-structures.js",
         "description": "A lattice data structure to be used for tokenization.",
+        "dependencies": []
+      },
+      "TokenLatticeNode": {
+        "path": "types/utils/data-structures.d.ts",
         "dependencies": []
       },
       "TranslationOutput": {
@@ -12804,6 +13241,13 @@
         "dependencies": [
           "TextPipelineConstructorArgs",
           "pipeline"
+        ]
+      },
+      "TranslationPipeline_base": {
+        "path": "types/pipelines.d.ts",
+        "dependencies": [
+          "TranslationPipelineType",
+          "TextPipelineConstructorArgs"
         ]
       },
       "TranslationPipelineCallback": {
@@ -13238,10 +13682,6 @@
           "ClapAudioModelWithProjection",
           "VitsModel"
         ]
-      },
-      "useCustomCache": {
-        "path": "types/env.d.ts",
-        "dependencies": []
       },
       "VERSION": {
         "path": "types/env.d.ts",
@@ -14984,6 +15424,13 @@
           "pipeline"
         ]
       },
+      "ZeroShotAudioClassificationPipeline_base": {
+        "path": "types/pipelines.d.ts",
+        "dependencies": [
+          "ZeroShotAudioClassificationPipelineType",
+          "TextAudioPipelineConstructorArgs"
+        ]
+      },
       "ZeroShotAudioClassificationPipelineCallback": {
         "path": "types/pipelines.d.ts",
         "description": "Classify the sequence(s) given as inputs.",
@@ -15023,6 +15470,13 @@
         "dependencies": [
           "TextPipelineConstructorArgs",
           "pipeline"
+        ]
+      },
+      "ZeroShotClassificationPipeline_base": {
+        "path": "types/pipelines.d.ts",
+        "dependencies": [
+          "ZeroShotClassificationPipelineType",
+          "TextPipelineConstructorArgs"
         ]
       },
       "ZeroShotClassificationPipelineCallback": {
@@ -15065,6 +15519,13 @@
           "pipeline"
         ]
       },
+      "ZeroShotImageClassificationPipeline_base": {
+        "path": "types/pipelines.d.ts",
+        "dependencies": [
+          "ZeroShotImageClassificationPipelineType",
+          "TextImagePipelineConstructorArgs"
+        ]
+      },
       "ZeroShotImageClassificationPipelineCallback": {
         "path": "types/pipelines.d.ts",
         "description": "Assign labels to the image(s) passed as inputs.",
@@ -15103,6 +15564,13 @@
         "dependencies": [
           "TextImagePipelineConstructorArgs",
           "pipeline"
+        ]
+      },
+      "ZeroShotObjectDetectionPipeline_base": {
+        "path": "types/pipelines.d.ts",
+        "dependencies": [
+          "ZeroShotObjectDetectionPipelineType",
+          "TextImagePipelineConstructorArgs"
         ]
       },
       "ZeroShotObjectDetectionPipelineCallback": {

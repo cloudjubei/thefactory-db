@@ -72,4 +72,14 @@ const DATABASE_URL = process.env.DATABASE_URL || ''
     const res = await db.searchDocuments({ query: 'FileTools', projectIds: [projectId], limit: 5 })
     expect(res.every((r) => r.projectId === projectId)).toBe(true)
   })
+
+  it('multi-dot filenames: exact and base queries (E2E)', async () => {
+    const p = projectId
+    await db.addDocument({ projectId: p, type: 'ts', name: 'something.service.test.ts', src: 'src/something.service.test.ts', content: '' })
+    const exact = await db.searchDocuments({ query: 'something.service.test.ts', projectIds: [p], limit: 5 })
+    expect(exact[0]?.name).toBe('something.service.test.ts')
+
+    const base = await db.searchDocuments({ query: 'something.service.test', projectIds: [p], limit: 5 })
+    expect(base[0]?.name).toBe('something.service.test.ts')
+  })
 })

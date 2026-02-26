@@ -1,6 +1,6 @@
 {
   "id": "67749a79-fda3-4c2b-9c35-b644c761b895",
-  "status": "=",
+  "status": "-",
   "title": "Ongoing Improvements",
   "description": "Various ongoing improvements to the project",
   "features": [
@@ -203,6 +203,18 @@
       "createdAt": "2025-11-05T16:29:52.890Z",
       "updatedAt": "2025-11-05T20:24:07.372Z",
       "completedAt": "2025-11-05T20:24:07.372Z"
+    },
+    {
+      "id": "7f3ef437-3fe9-48ef-be8e-59316248e5cb",
+      "status": "-",
+      "title": "Improving search",
+      "description": "There's @docs/SEARCH_IMPROVED.md that outlines what is required of this feature.",
+      "context": [
+        "docs/SEARCH_IMPROVED.md"
+      ],
+      "blockers": [],
+      "createdAt": "2026-02-26T11:34:48.921Z",
+      "updatedAt": "2026-02-26T11:34:48.921Z"
     }
   ],
   "featureIdToDisplayIndex": {
@@ -222,7 +234,8 @@
     "77101a35-86dd-42f7-b42b-5c30fedc7713": 14,
     "04391c02-652b-4dad-b59a-2eda2bccf1d3": 15,
     "03e7618d-5ac3-4ff8-9dff-c9d64076128a": 16,
-    "492873cd-c561-440c-abd5-319affebb017": 17
+    "492873cd-c561-440c-abd5-319affebb017": 17,
+    "7f3ef437-3fe9-48ef-be8e-59316248e5cb": 18
   },
   "createdAt": "2025-09-19T01:04:36.087Z",
   "updatedAt": "2025-11-05T21:59:35.088Z"

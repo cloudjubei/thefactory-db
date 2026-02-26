@@ -69,7 +69,7 @@ function createMockDb() {
           const raw = (queryText || '').trim().toLowerCase()
           const fullRaw = raw
           const lastSeg = raw.replace(/^.*[\\\/]/, '')
-          const baseRaw = lastSeg.replace(/\..*$/, '')
+          const baseRaw = lastSeg.replace(/\.[^.]+$/, '')
           const normalized = raw.replace(/[-._/]+/g, ' ').replace(/[^a-z0-9 ]+/g, '')
           const tokens = normalized.split(/\s+/).filter(Boolean)
 
@@ -334,6 +334,22 @@ describe('Direct name/src search', () => {
 
     const res = await db.searchDocuments({ query: 'pkg/module/FileTools.ts', projectIds: [projectId], limit: 10 })
     expect(res[0]?.src).toBe('pkg/module/FileTools.ts')
+  })
+
+  it('handles multi-dot filenames: exact and base-only queries', async () => {
+    const db = await openDatabase({ connectionString: 'x' })
+    const projectId = 'p'
+    await db.addDocument({ projectId, type: 't', name: 'something.service.test.ts', src: 'src/something.service.test.ts', content: '' })
+    await db.addDocument({ projectId, type: 't', name: 'something.service.ts', src: 'src/something.service.ts', content: '' })
+
+    const exact = await db.searchDocuments({ query: 'something.service.test.ts', projectIds: [projectId], limit: 10 })
+    expect(exact[0]?.name).toBe('something.service.test.ts')
+
+    const base = await db.searchDocuments({ query: 'something.service.test', projectIds: [projectId], limit: 10 })
+    expect(base[0]?.name).toBe('something.service.test.ts')
+
+    const mixed = await db.searchDocuments({ query: 'Something.Service.Test.TS', projectIds: [projectId], limit: 10 })
+    expect(mixed[0]?.name).toBe('something.service.test.ts')
   })
 
   it('token presence breaks ties over base-only matches within the same strength tier', async () => {

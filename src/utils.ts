@@ -630,7 +630,7 @@ last_seg AS (
   SELECT regexp_replace(raw, '^.*[\\/]', '') AS seg FROM raw_input
 ),
 base_raw AS (
-  SELECT lower(regexp_replace(seg, '\\..*$', '')) AS base FROM last_seg WHERE seg <> ''
+  SELECT lower(regexp_replace(seg, '\\.[^.]+$', '')) AS base FROM last_seg WHERE seg <> ''
 ),
 normalized_query AS (
   SELECT regexp_replace(regexp_replace(ri.raw, '[-._/]+', ' ', 'g'), '[^[:alnum:] ]+', '', 'g') AS cleaned_text
