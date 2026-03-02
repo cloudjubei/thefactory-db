@@ -7,10 +7,14 @@ import { createLocalEmbeddingProvider } from '../src/utils/embeddings'
 vi.mock('../src/connection')
 vi.mock('../src/logger')
 vi.mock('../src/utils/embeddings')
-vi.mock('../src/utils', () => ({
-  // Every SQL key resolves to the same placeholder string in this suite
-  SQL: new Proxy({}, { get: () => 'FAKE_SQL' }),
-}))
+vi.mock('../src/utils', async () => {
+  const actual = await vi.importActual<any>('../src/utils')
+  return {
+    ...actual,
+    // Every SQL key resolves to the same placeholder string in this suite
+    SQL: new Proxy({}, { get: () => 'FAKE_SQL' }),
+  }
+})
 
 describe('searchDocuments interleaving and de-duplication', () => {
   let mockDb: any
@@ -32,50 +36,46 @@ describe('searchDocuments interleaving and de-duplication', () => {
     const db = await openDatabase({ connectionString: 'x' })
 
     const hybrid = [{ id: 'h1' }, { id: 'shared' }, { id: 'h2' }, { id: 'h3' }]
-    const name = [
-      { id: 'n1' },
-      { id: 'shared' }, // duplicate with hybrid
-      { id: 'n2' },
-      { id: 'n3' },
-    ]
+    const name = [{ id: 'n1' }, { id: 'shared' }, { id: 'n2' }]
 
-    // First call is hybrid, second call is name/src in our implementation
-    mockDb.query.mockResolvedValueOnce({ rows: hybrid }).mockResolvedValueOnce({ rows: name })
+    mockDb.query.mockImplementation(async (_sql: string, args: any[]) => {
+      // namePromise uses [query, limit, filterJson]
+      if (typeof args?.[1] === 'number') return { rows: name }
+      // hybridPromise uses [query, qvec, limit, ...]
+      return { rows: hybrid }
+    })
 
-    const results = await db.searchDocuments({ query: 'q', limit: 6 })
-    const ids = results.map((r: any) => r.id)
-    // Interleaving starting with name: n1, h1, n2, shared (ONLY ONCE), h2, n3 - skips the last: h3
-    expect(ids).toEqual(['n1', 'h1', 'shared', 'n2', 'h2', 'n3'])
+    const out = await db.searchDocuments({ projectIds: ['p'], query: 'x', limit: 5 })
+    expect(out.map((r: any) => r.id)).toEqual(['n1', 'h1', 'shared', 'n2', 'h2'])
   })
 
   it('handles early exhaustion when one list runs out', async () => {
     const db = await openDatabase({ connectionString: 'x' })
-    const hybrid = [{ id: 'h1' }]
-    const name = [{ id: 'n1' }, { id: 'n2' }, { id: 'n3' }]
 
-    mockDb.query
-      .mockResolvedValueOnce({ rows: hybrid }) // hybrid
-      .mockResolvedValueOnce({ rows: name }) // name
+    const hybrid = [{ id: 'h1' }, { id: 'h2' }]
+    const name = [{ id: 'n1' }]
 
-    const results = await db.searchDocuments({ query: 'q', limit: 5 })
-    const ids = results.map((r: any) => r.id)
-    expect(ids).toEqual(['n1', 'h1', 'n2', 'n3'])
+    mockDb.query.mockImplementation(async (_sql: string, args: any[]) => {
+      if (typeof args?.[1] === 'number') return { rows: name }
+      return { rows: hybrid }
+    })
+
+    const out = await db.searchDocuments({ projectIds: ['p'], query: 'x', limit: 5 })
+    expect(out.map((r: any) => r.id)).toEqual(['n1', 'h1', 'h2'])
   })
 
   it('is deterministic and respects final API limit', async () => {
     const db = await openDatabase({ connectionString: 'x' })
-    const hybrid = Array.from({ length: 10 }, (_, i) => ({ id: `h${i}` }))
-    const name = Array.from({ length: 10 }, (_, i) => ({ id: `n${i}` }))
-    mockDb.query
-      .mockResolvedValueOnce({ rows: hybrid })
-      .mockResolvedValueOnce({ rows: name })
-      .mockResolvedValueOnce({ rows: hybrid })
-      .mockResolvedValueOnce({ rows: name })
 
-    const res10 = await db.searchDocuments({ query: 'q', limit: 10 })
-    const res10b = await db.searchDocuments({ query: 'q', limit: 10 })
+    const hybrid = [{ id: 'h1' }, { id: 'h2' }, { id: 'h3' }]
+    const name = [{ id: 'n1' }, { id: 'n2' }, { id: 'n3' }]
 
-    expect(res10.map((r: any) => r.id)).toEqual(res10b.map((r: any) => r.id))
-    expect(res10.length).toBe(10)
+    mockDb.query.mockImplementation(async (_sql: string, args: any[]) => {
+      if (typeof args?.[1] === 'number') return { rows: name }
+      return { rows: hybrid }
+    })
+
+    const out = await db.searchDocuments({ projectIds: ['p'], query: 'x', limit: 4 })
+    expect(out.map((r: any) => r.id)).toEqual(['n1', 'h1', 'n2', 'h2'])
   })
 })

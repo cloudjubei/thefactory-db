@@ -1,6 +1,12 @@
 // Runtime validation helpers for public API inputs
 
-import { MatchParams, SearchParams } from './types'
+import {
+  MatchParams,
+  SearchParams,
+  SearchDocumentsForExactArgs,
+  SearchDocumentsForKeywordsArgs,
+  SearchDocumentsForPathsArgs,
+} from './types'
 
 function isPlainObject(v: unknown): v is Record<string, unknown> {
   return typeof v === 'object' && v !== null && !Array.isArray(v)
@@ -12,6 +18,42 @@ function isRecord(v: unknown): v is Record<string, unknown> {
 
 function isStringArray(v: unknown): v is string[] {
   return Array.isArray(v) && v.every((x) => typeof x === 'string')
+}
+
+function assertNonEmptyString(v: any, name: string): void {
+  if (typeof v !== 'string' || v.trim().length === 0) {
+    throw new TypeError(`${name} must be a non-empty string`)
+  }
+}
+
+function assertString(v: any, name: string): void {
+  if (typeof v !== 'string') {
+    throw new TypeError(`${name} must be a string`)
+  }
+}
+
+function assertOptionalString(v: any, name: string): void {
+  if (v !== undefined && typeof v !== 'string') {
+    throw new TypeError(`${name} must be a string if provided`)
+  }
+}
+
+function assertOptionalInt(v: any, name: string): void {
+  if (v !== undefined && !Number.isInteger(v)) {
+    throw new TypeError(`${name} must be an integer if provided`)
+  }
+}
+
+function assertStringOrStringArray(v: any, name: string): void {
+  const ok = typeof v === 'string' || isStringArray(v)
+  if (!ok) throw new TypeError(`${name} must be a string or an array of strings`)
+}
+
+function assertMatchMode(v: any, name: string): void {
+  if (v === undefined) return
+  if (v !== 'any' && v !== 'all') {
+    throw new TypeError(`${name} must be 'any' or 'all' if provided`)
+  }
 }
 
 export function assertDocumentInput(input: any): void {
@@ -93,4 +135,48 @@ export function assertSearchParams(params: SearchParams): void {
   if (params.textWeight !== undefined && typeof params.textWeight !== 'number')
     throw new TypeError('Search params.textWeight must be a number if provided')
   assertMatchParams(params)
+}
+
+// ------------------------------
+// Improved document search APIs
+// ------------------------------
+
+export function assertSearchDocumentsForPathsArgs(args: SearchDocumentsForPathsArgs): void {
+  if (!isRecord(args)) throw new TypeError('Args must be an object')
+  if (!isStringArray(args.projectIds) || args.projectIds.length === 0)
+    throw new TypeError('Args.projectIds must be a non-empty array of strings')
+  assertString(args.query, 'Args.query')
+  assertOptionalInt(args.limit, 'Args.limit')
+  assertOptionalString(args.pathPrefix, 'Args.pathPrefix')
+}
+
+export function assertSearchDocumentsForKeywordsArgs(
+  args: SearchDocumentsForKeywordsArgs,
+): void {
+  if (!isRecord(args)) throw new TypeError('Args must be an object')
+  if (!isStringArray(args.projectIds) || args.projectIds.length === 0)
+    throw new TypeError('Args.projectIds must be a non-empty array of strings')
+  assertStringOrStringArray(args.keywords, 'Args.keywords')
+  assertMatchMode(args.matchMode, 'Args.matchMode')
+  if (args.includeNameAndSrc !== undefined && typeof args.includeNameAndSrc !== 'boolean') {
+    throw new TypeError('Args.includeNameAndSrc must be a boolean if provided')
+  }
+  assertOptionalInt(args.limit, 'Args.limit')
+  assertOptionalString(args.pathPrefix, 'Args.pathPrefix')
+}
+
+export function assertSearchDocumentsForExactArgs(args: SearchDocumentsForExactArgs): void {
+  if (!isRecord(args)) throw new TypeError('Args must be an object')
+  if (!isStringArray(args.projectIds) || args.projectIds.length === 0)
+    throw new TypeError('Args.projectIds must be a non-empty array of strings')
+  assertStringOrStringArray(args.needles, 'Args.needles')
+  assertMatchMode(args.matchMode, 'Args.matchMode')
+  if (args.caseSensitive !== undefined && typeof args.caseSensitive !== 'boolean') {
+    throw new TypeError('Args.caseSensitive must be a boolean if provided')
+  }
+  if (args.includeNameAndSrc !== undefined && typeof args.includeNameAndSrc !== 'boolean') {
+    throw new TypeError('Args.includeNameAndSrc must be a boolean if provided')
+  }
+  assertOptionalInt(args.limit, 'Args.limit')
+  assertOptionalString(args.pathPrefix, 'Args.pathPrefix')
 }

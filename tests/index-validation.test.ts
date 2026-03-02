@@ -7,7 +7,7 @@ import { createLocalEmbeddingProvider } from '../src/utils/embeddings'
 vi.mock('../src/connection')
 vi.mock('../src/logger')
 vi.mock('../src/utils/embeddings')
-vi.mock('../src/utils', () => ({
+vi.mock('../src/sql', () => ({
   SQL: new Proxy({}, { get: () => 'FAKE_SQL' }),
 }))
 
@@ -40,7 +40,6 @@ describe('TheFactoryDb validation and edges', () => {
     // @ts-expect-error invalid types on purpose
     await expect(db.addDocument({})).rejects.toThrow()
     // invalid content type
-    // @ts-expect-error invalid
     await expect(
       db.addDocument({ projectId: 'p', type: 't', name: 'n', src: 's', content: 123 as any }),
     ).rejects.toThrow()
@@ -99,7 +98,6 @@ describe('TheFactoryDb validation and edges', () => {
 
   it('matchDocuments rejects invalid options', async () => {
     const db = await openDatabase({ connectionString: 'test' })
-    // @ts-expect-error
     await expect(db.matchDocuments({ limit: 0 })).rejects.toThrow()
   })
 
@@ -126,5 +124,32 @@ describe('TheFactoryDb validation and edges', () => {
     const res = await db.updateEntity('123', { type: 'new' })
     expect(mockEmbeddingProvider.embed).not.toHaveBeenCalled()
     expect(res).toEqual({ id: '123', type: 'new' })
+  })
+
+  it('searchDocumentsForPaths validates args and early-returns on empty query', async () => {
+    const db = await openDatabase({ connectionString: 'test' })
+    await expect(db.searchDocumentsForPaths({ projectIds: [], query: '' })).rejects.toThrow()
+
+    const res = await db.searchDocumentsForPaths({ projectIds: ['p'], query: '   ' })
+    expect(res).toEqual([])
+    expect(mockDbClient.query).not.toHaveBeenCalled()
+  })
+
+  it('searchDocumentsForKeywords validates args and early-returns on empty tokens', async () => {
+    const db = await openDatabase({ connectionString: 'test' })
+    await expect(db.searchDocumentsForKeywords({ projectIds: [], keywords: [] })).rejects.toThrow()
+
+    const res = await db.searchDocumentsForKeywords({ projectIds: ['p'], keywords: '  , ; ' })
+    expect(res).toEqual([])
+    expect(mockDbClient.query).not.toHaveBeenCalled()
+  })
+
+  it('searchDocumentsForExact validates args and early-returns on empty tokens', async () => {
+    const db = await openDatabase({ connectionString: 'test' })
+    await expect(db.searchDocumentsForExact({ projectIds: [], needles: [] })).rejects.toThrow()
+
+    const res = await db.searchDocumentsForExact({ projectIds: ['p'], needles: '   , ' })
+    expect(res).toEqual([])
+    expect(mockDbClient.query).not.toHaveBeenCalled()
   })
 })

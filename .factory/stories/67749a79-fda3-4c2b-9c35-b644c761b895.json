@@ -208,13 +208,13 @@
       "id": "7f3ef437-3fe9-48ef-be8e-59316248e5cb",
       "status": "-",
       "title": "Improving search",
-      "description": "There's @docs/SEARCH_IMPROVED.md that outlines what is required of this feature.",
+      "description": "Implement improved DB-backed document search APIs per '@docs/SEARCH_IMPROVED.md', with project naming conventions.\n\nMVP (paths-only results):\n- Add three explicit document search methods (keep existing 'searchDocuments' as the unified/hybrid search):\n  1) 'searchDocumentsForPaths(args: { projectIds: string[]; query: string; limit?: number; pathPrefix?: string }): Promise<string[]>'\n     - Case-insensitive substring match on stored document 'src' and/or 'name'.\n     - No content scanning.\n  2) 'searchDocumentsForKeywords(args: { projectIds: string[]; keywords: string | string[]; matchMode?: 'any' | 'all'; limit?: number; pathPrefix?: string }): Promise<string[]>'\n     - Tokenization when input is string: split on /[,;]+/, trim, drop empties.\n     - Substring matching in document content (and optionally name/src as implementation choice).\n     - Default matching case-insensitive.\n     - 'matchMode' default: 'any'.\n  3) 'searchDocumentsForExact(args: { projectIds: string[]; needles: string | string[]; matchMode?: 'any' | 'all'; caseSensitive?: boolean; limit?: number; pathPrefix?: string }): Promise<string[]>'\n     - Tokenization when input is string: split on /[,;]+/, trim, drop empties.\n     - Literal substring matching (not regex).\n     - Default 'caseSensitive: true'.\n     - 'matchMode' default: 'any'.\n\nCommon rules:\n- Returned paths are project-relative; normalize to unix separators where needed.\n- Support optional scoping via 'pathPrefix' (project-relative directory prefix).\n\nStep 2 (follow-up enhancement):\n- Add match-detail variants/flags for keyword + exact searches that return per-document hit locations similar to 'grep': line + column (1-based), matched token/needle, and short preview/snippet. Include guardrails such as maxMatchesPerFile and scan byte limits.\n\nOut of scope (for now): regex search, AST-aware search, replace/refactor.",
       "context": [
         "docs/SEARCH_IMPROVED.md"
       ],
       "blockers": [],
       "createdAt": "2026-02-26T11:34:48.921Z",
-      "updatedAt": "2026-02-26T11:34:48.921Z"
+      "updatedAt": "2026-02-26T11:58:53.171Z"
     }
   ],
   "featureIdToDisplayIndex": {

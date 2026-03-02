@@ -396,7 +396,7 @@ function createMockDb() {
 vi.mock('../src/connection')
 vi.mock('../src/logger')
 vi.mock('../src/utils/embeddings')
-vi.mock('../src/utils', () => ({
+vi.mock('../src/sql', () => ({
   SQL: {
     insertDocument: 'insertDocument',
     getDocumentById: 'getDocumentById',

@@ -121,6 +121,38 @@ export type SearchParams = MatchParams & {
   textWeight?: number
 }
 
+// ------------------------------
+// Improved document search APIs
+// ------------------------------
+
+export type DocumentSearchMatchMode = 'any' | 'all'
+
+export type SearchDocumentsForPathsArgs = {
+  projectIds: string[]
+  query: string
+  limit?: number
+  pathPrefix?: string
+}
+
+export type SearchDocumentsForKeywordsArgs = {
+  projectIds: string[]
+  keywords: string | string[]
+  matchMode?: DocumentSearchMatchMode // default: 'any'
+  includeNameAndSrc?: boolean // default: true
+  limit?: number
+  pathPrefix?: string
+}
+
+export type SearchDocumentsForExactArgs = {
+  projectIds: string[]
+  needles: string | string[]
+  matchMode?: DocumentSearchMatchMode // default: 'any'
+  caseSensitive?: boolean // default: true
+  includeNameAndSrc?: boolean // default: true
+  limit?: number
+  pathPrefix?: string
+}
+
 // Logger
 /**
  * Defines the available logging levels.

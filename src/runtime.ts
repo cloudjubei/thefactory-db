@@ -278,7 +278,13 @@ export async function createReusableDatabase(
     const portBindings = info?.NetworkSettings?.Ports?.['5432/tcp'] as
       | Array<{ HostIp: string; HostPort: string }>
       | undefined
-    const hostPort = portBindings && portBindings[0] && Number(portBindings[0].HostPort)
+    // dockerode sometimes returns an empty array briefly after start, or when a container
+    // exists without a published host port (shouldn't happen for our created container,
+    // but can happen if the container was created externally).
+    const hostPort =
+      portBindings && portBindings[0] && portBindings[0].HostPort
+        ? Number(portBindings[0].HostPort)
+        : undefined
     if (!hostPort || Number.isNaN(hostPort)) {
       throw new Error('Unable to determine mapped host port for reusable database container')
     }
@@ -293,10 +299,14 @@ export async function createReusableDatabase(
   if (container) {
     const inspect = await container.inspect()
     const running = inspect?.State?.Running
-    const connectionString = getConnFromInspect(inspect)
     if (!running) {
       await container.start()
-      // Readiness guard: wait until SELECT 1 works
+    }
+    // Re-inspect after ensuring it's started; port bindings may not be populated
+    // in the first inspect call.
+    const inspect2 = await container.inspect()
+    const connectionString = getConnFromInspect(inspect2)
+    if (!running) {
       await waitForSelect1(connectionString)
     }
     return { connectionString, created: false }

@@ -6,6 +6,9 @@ import {
   assertEntityPatch,
   assertMatchParams,
   assertSearchParams,
+  assertSearchDocumentsForExactArgs,
+  assertSearchDocumentsForKeywordsArgs,
+  assertSearchDocumentsForPathsArgs,
 } from '../src/validation'
 
 describe('validation', () => {
@@ -121,6 +124,89 @@ describe('validation', () => {
       expect(() => assertSearchParams({} as any)).toThrow()
       expect(() => assertSearchParams({ query: 1 } as any)).toThrow()
       expect(() => assertSearchParams({ query: 'q', textWeight: '1' } as any)).toThrow()
+    })
+  })
+
+  describe('assertSearchDocumentsForPathsArgs', () => {
+    it('accepts valid args', () => {
+      expect(() =>
+        assertSearchDocumentsForPathsArgs({ projectIds: ['p'], query: 'file.ts', limit: 10 }),
+      ).not.toThrow()
+    })
+    it('rejects invalid args', () => {
+      expect(() => assertSearchDocumentsForPathsArgs(null as any)).toThrow()
+      expect(() => assertSearchDocumentsForPathsArgs({} as any)).toThrow()
+      expect(() =>
+        assertSearchDocumentsForPathsArgs({ projectIds: [], query: 'x' } as any),
+      ).toThrow()
+      expect(() =>
+        assertSearchDocumentsForPathsArgs({ projectIds: ['p'], query: 1 as any } as any),
+      ).toThrow()
+      expect(() =>
+        assertSearchDocumentsForPathsArgs({ projectIds: ['p'], query: 'x', limit: 1.2 } as any),
+      ).toThrow()
+    })
+  })
+
+  describe('assertSearchDocumentsForKeywordsArgs', () => {
+    it('accepts valid args', () => {
+      expect(() =>
+        assertSearchDocumentsForKeywordsArgs({ projectIds: ['p'], keywords: 'a, b' }),
+      ).not.toThrow()
+      expect(() =>
+        assertSearchDocumentsForKeywordsArgs({
+          projectIds: ['p'],
+          keywords: ['a', 'b'],
+          matchMode: 'all',
+          limit: 5,
+          pathPrefix: 'src',
+        }),
+      ).not.toThrow()
+    })
+    it('rejects invalid args', () => {
+      expect(() => assertSearchDocumentsForKeywordsArgs(null as any)).toThrow()
+      expect(() => assertSearchDocumentsForKeywordsArgs({} as any)).toThrow()
+      expect(() =>
+        assertSearchDocumentsForKeywordsArgs({ projectIds: [], keywords: 'a' } as any),
+      ).toThrow()
+      expect(() =>
+        assertSearchDocumentsForKeywordsArgs({ projectIds: ['p'], keywords: 1 as any }),
+      ).toThrow()
+      expect(() =>
+        assertSearchDocumentsForKeywordsArgs({
+          projectIds: ['p'],
+          keywords: 'a',
+          matchMode: 'maybe' as any,
+        }),
+      ).toThrow()
+    })
+  })
+
+  describe('assertSearchDocumentsForExactArgs', () => {
+    it('accepts valid args', () => {
+      expect(() =>
+        assertSearchDocumentsForExactArgs({ projectIds: ['p'], needles: ['a'], caseSensitive: true }),
+      ).not.toThrow()
+    })
+    it('rejects invalid args', () => {
+      expect(() => assertSearchDocumentsForExactArgs(null as any)).toThrow()
+      expect(() => assertSearchDocumentsForExactArgs({} as any)).toThrow()
+      expect(() =>
+        assertSearchDocumentsForExactArgs({ projectIds: [], needles: 'a' } as any),
+      ).toThrow()
+      expect(() =>
+        assertSearchDocumentsForExactArgs({ projectIds: ['p'], needles: 1 as any }),
+      ).toThrow()
+      expect(() =>
+        assertSearchDocumentsForExactArgs({
+          projectIds: ['p'],
+          needles: 'a',
+          matchMode: 'maybe' as any,
+        }),
+      ).toThrow()
+      expect(() =>
+        assertSearchDocumentsForExactArgs({ projectIds: ['p'], needles: 'a', caseSensitive: 1 as any }),
+      ).toThrow()
     })
   })
 })

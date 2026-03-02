@@ -1,4 +1,4 @@
-import { SQL } from './utils.js'
+import { SQL } from './sql.js'
 import { Pool, PoolClient } from 'pg'
 
 /**

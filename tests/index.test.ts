@@ -10,7 +10,7 @@ vi.mock('../src/connection')
 vi.mock('../src/logger')
 vi.mock('../src/utils/embeddings')
 vi.mock('../src/utils/json')
-vi.mock('../src/utils', () => ({
+vi.mock('../src/sql', () => ({
   SQL: new Proxy({}, { get: () => 'FAKE_SQL' }),
 }))
 
@@ -45,7 +45,7 @@ describe('TheFactoryDb', () => {
     vi.mocked(createLogger).mockReturnValue(mockLogger)
     vi.mocked(createLocalEmbeddingProvider).mockResolvedValue(mockEmbeddingProvider)
     vi.mocked(stringifyJsonValues).mockImplementation((val) => JSON.stringify(val))
-    mockEmbeddingProvider.embed.mockResolvedValue(new Float32Array([0.1, 0.2, 0.3]))
+    mockEmbeddingProvider.embed.mockResolvedValue([0.1, 0.2, 0.3])
   })
 
   describe('Entities', () => {
@@ -263,7 +263,7 @@ describe('TheFactoryDb', () => {
 
       const result = await db.addDocument(docInput)
 
-      expect(mockEmbeddingProvider.embed).toHaveBeenCalledWith('hello')
+      expect(mockEmbeddingProvider.embed).toHaveBeenCalledWith('t1\nTitle\ns1\nhello')
       expect(mockDbClient.query).toHaveBeenCalledWith('FAKE_SQL', [
         'p1',
         't1',
@@ -374,7 +374,7 @@ describe('TheFactoryDb', () => {
         ['new', 'same'],
       ])
       expect(mockDbClient.query).toHaveBeenCalledWith('BEGIN')
-      expect(mockEmbeddingProvider.embed).toHaveBeenCalledWith('new n1 s1')
+      expect(mockEmbeddingProvider.embed).toHaveBeenCalledWith('md\nn1\ns1\nnew')
       expect(mockDbClient.query).toHaveBeenCalledWith('FAKE_SQL', [
         'p1',
         'md',

@@ -15626,11 +15626,33 @@
           "MatchParams"
         ]
       },
+      "assertSearchDocumentsForExactArgs": {
+        "path": "src/validation.ts",
+        "dependencies": [
+          "SearchDocumentsForExactArgs"
+        ]
+      },
+      "assertSearchDocumentsForKeywordsArgs": {
+        "path": "src/validation.ts",
+        "dependencies": [
+          "SearchDocumentsForKeywordsArgs"
+        ]
+      },
+      "assertSearchDocumentsForPathsArgs": {
+        "path": "src/validation.ts",
+        "dependencies": [
+          "SearchDocumentsForPathsArgs"
+        ]
+      },
       "assertSearchParams": {
         "path": "src/validation.ts",
         "dependencies": [
           "SearchParams"
         ]
+      },
+      "buildEmbeddingTextForDoc": {
+        "path": "src/utils.ts",
+        "dependencies": []
       },
       "content": {
         "path": "types/sql.d.ts",
@@ -15759,6 +15781,10 @@
           "Omit"
         ]
       },
+      "DocumentSearchMatchMode": {
+        "path": "src/types.ts",
+        "dependencies": []
+      },
       "DocumentUpsertInput": {
         "path": "src/types.ts",
         "dependencies": [
@@ -15812,6 +15838,10 @@
           "Entity"
         ]
       },
+      "escapeLikePattern": {
+        "path": "src/utils.ts",
+        "dependencies": []
+      },
       "Logger": {
         "path": "src/types.ts",
         "description": "A simple logger interface.",
@@ -15825,6 +15855,14 @@
       "MatchParams": {
         "path": "src/types.ts",
         "description": "Parameters for filtering results in match and search operations.",
+        "dependencies": []
+      },
+      "normalizeDocPath": {
+        "path": "src/utils.ts",
+        "dependencies": []
+      },
+      "normalizePathPrefix": {
+        "path": "src/utils.ts",
         "dependencies": []
       },
       "openDatabase": {
@@ -15851,6 +15889,26 @@
           "pg/PoolClient"
         ]
       },
+      "prepareQuery": {
+        "path": "src/utils.ts",
+        "dependencies": []
+      },
+      "SearchDocumentsForExactArgs": {
+        "path": "src/types.ts",
+        "dependencies": [
+          "DocumentSearchMatchMode"
+        ]
+      },
+      "SearchDocumentsForKeywordsArgs": {
+        "path": "src/types.ts",
+        "dependencies": [
+          "DocumentSearchMatchMode"
+        ]
+      },
+      "SearchDocumentsForPathsArgs": {
+        "path": "src/types.ts",
+        "dependencies": []
+      },
       "SearchParams": {
         "path": "src/types.ts",
         "description": "Parameters for performing a hybrid search.",
@@ -15859,7 +15917,7 @@
         ]
       },
       "SQL": {
-        "path": "src/utils.ts",
+        "path": "src/sql.ts",
         "dependencies": []
       },
       "stringifyJsonValues": {
@@ -15873,13 +15931,16 @@
         "dependencies": [
           "DB",
           "Promise",
-          "Document",
-          "MatchParams",
+          "SearchDocumentsForExactArgs",
+          "SearchDocumentsForKeywordsArgs",
+          "SearchDocumentsForPathsArgs",
           "DocumentWithScore",
           "SearchParams",
-          "DocumentInput",
-          "Partial",
+          "Document",
+          "MatchParams",
+          "DocumentPatch",
           "DocumentUpsertInput",
+          "DocumentInput",
           "Entity",
           "EntityWithScore",
           "EntityPatch",
@@ -15910,6 +15971,16 @@
         "path": "src/utils/tokenizer.ts",
         "dependencies": [
           "TiktokenEncoding"
+        ]
+      },
+      "toTokens": {
+        "path": "src/utils.ts",
+        "dependencies": []
+      },
+      "toVectorLiteral": {
+        "path": "src/utils.ts",
+        "dependencies": [
+          "ArrayLike"
         ]
       }
     }
@@ -15947,11 +16018,33 @@
           "MatchParams"
         ]
       },
+      "assertSearchDocumentsForExactArgs": {
+        "path": "validation.ts",
+        "dependencies": [
+          "SearchDocumentsForExactArgs"
+        ]
+      },
+      "assertSearchDocumentsForKeywordsArgs": {
+        "path": "validation.ts",
+        "dependencies": [
+          "SearchDocumentsForKeywordsArgs"
+        ]
+      },
+      "assertSearchDocumentsForPathsArgs": {
+        "path": "validation.ts",
+        "dependencies": [
+          "SearchDocumentsForPathsArgs"
+        ]
+      },
       "assertSearchParams": {
         "path": "validation.ts",
         "dependencies": [
           "SearchParams"
         ]
+      },
+      "buildEmbeddingTextForDoc": {
+        "path": "utils.ts",
+        "dependencies": []
       },
       "createDatabase": {
         "path": "runtime.ts",
@@ -16076,6 +16169,10 @@
           "Omit"
         ]
       },
+      "DocumentSearchMatchMode": {
+        "path": "types.ts",
+        "dependencies": []
+      },
       "DocumentUpsertInput": {
         "path": "types.ts",
         "dependencies": [
@@ -16129,6 +16226,10 @@
           "Entity"
         ]
       },
+      "escapeLikePattern": {
+        "path": "utils.ts",
+        "dependencies": []
+      },
       "Logger": {
         "path": "types.ts",
         "description": "A simple logger interface.",
@@ -16142,6 +16243,14 @@
       "MatchParams": {
         "path": "types.ts",
         "description": "Parameters for filtering results in match and search operations.",
+        "dependencies": []
+      },
+      "normalizeDocPath": {
+        "path": "utils.ts",
+        "dependencies": []
+      },
+      "normalizePathPrefix": {
+        "path": "utils.ts",
         "dependencies": []
       },
       "openDatabase": {
@@ -16168,6 +16277,26 @@
           "pg/PoolClient"
         ]
       },
+      "prepareQuery": {
+        "path": "utils.ts",
+        "dependencies": []
+      },
+      "SearchDocumentsForExactArgs": {
+        "path": "types.ts",
+        "dependencies": [
+          "DocumentSearchMatchMode"
+        ]
+      },
+      "SearchDocumentsForKeywordsArgs": {
+        "path": "types.ts",
+        "dependencies": [
+          "DocumentSearchMatchMode"
+        ]
+      },
+      "SearchDocumentsForPathsArgs": {
+        "path": "types.ts",
+        "dependencies": []
+      },
       "SearchParams": {
         "path": "types.ts",
         "description": "Parameters for performing a hybrid search.",
@@ -16176,7 +16305,7 @@
         ]
       },
       "SQL": {
-        "path": "utils.ts",
+        "path": "sql.ts",
         "dependencies": []
       },
       "stringifyJsonValues": {
@@ -16190,13 +16319,16 @@
         "dependencies": [
           "DB",
           "Promise",
-          "Document",
-          "MatchParams",
+          "SearchDocumentsForExactArgs",
+          "SearchDocumentsForKeywordsArgs",
+          "SearchDocumentsForPathsArgs",
           "DocumentWithScore",
           "SearchParams",
-          "DocumentInput",
-          "Partial",
+          "Document",
+          "MatchParams",
+          "DocumentPatch",
           "DocumentUpsertInput",
+          "DocumentInput",
           "Entity",
           "EntityWithScore",
           "EntityPatch",
@@ -16227,6 +16359,16 @@
         "path": "utils/tokenizer.ts",
         "dependencies": [
           "TiktokenEncoding"
+        ]
+      },
+      "toTokens": {
+        "path": "utils.ts",
+        "dependencies": []
+      },
+      "toVectorLiteral": {
+        "path": "utils.ts",
+        "dependencies": [
+          "ArrayLike"
         ]
       }
     }
