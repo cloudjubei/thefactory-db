@@ -153,8 +153,117 @@ RETURNING
 `
 
 // ----------------------------------------------------------
-// Explicit document searches (MVP: paths only)
+// Explicit entity searches (MVP: ids only)
+// - Operates on entities.content_string (stringified JSON content)
+// - Supports matchMode: 'any'|'all'
 // ----------------------------------------------------------
+
+const searchEntitiesForKeywords = `
+WITH tokens AS (
+  SELECT unnest($2::text[]) AS token
+),
+base AS (
+  SELECT e.id, e.content_string
+  FROM entities e
+  WHERE e.project_id = ANY($1::text[])
+    AND (
+      $4::text[] IS NULL
+      OR e.type = ANY($4::text[])
+    )
+)
+SELECT
+  b.id::text AS id,
+  (
+    SELECT COALESCE(
+      sum(
+        CASE
+          WHEN position(lower(t.token) in lower(b.content_string)) > 0 THEN 1
+          ELSE 0
+        END
+      ),
+      0
+    )
+    FROM tokens t
+  )::int AS score
+FROM base b
+WHERE (
+  CASE
+    WHEN COALESCE($3::text, 'any') = 'all' THEN (
+      SELECT bool_and(position(lower(t.token) in lower(b.content_string)) > 0) FROM tokens t
+    )
+    ELSE (
+      SELECT bool_or(position(lower(t.token) in lower(b.content_string)) > 0) FROM tokens t
+    )
+  END
+)
+ORDER BY score DESC, b.id ASC
+LIMIT COALESCE($5::int, 20);
+`
+
+const searchEntitiesForExact = `
+WITH tokens AS (
+  SELECT unnest($2::text[]) AS token
+),
+base AS (
+  SELECT e.id, e.content_string
+  FROM entities e
+  WHERE e.project_id = ANY($1::text[])
+    AND (
+      $5::text[] IS NULL
+      OR e.type = ANY($5::text[])
+    )
+)
+SELECT
+  b.id::text AS id,
+  (
+    SELECT COALESCE(
+      sum(
+        CASE
+          WHEN COALESCE($4::boolean, true) = true THEN
+            CASE
+              WHEN position(t.token in b.content_string) > 0 THEN 1
+              ELSE 0
+            END
+          ELSE
+            CASE
+              WHEN position(lower(t.token) in lower(b.content_string)) > 0 THEN 1
+              ELSE 0
+            END
+        END
+      ),
+      0
+    )
+    FROM tokens t
+  )::int AS score
+FROM base b
+WHERE (
+  CASE
+    WHEN COALESCE($4::boolean, true) = true THEN (
+      CASE
+        WHEN COALESCE($3::text, 'any') = 'all' THEN (
+          SELECT bool_and(position(t.token in b.content_string) > 0) FROM tokens t
+        )
+        ELSE (
+          SELECT bool_or(position(t.token in b.content_string) > 0) FROM tokens t
+        )
+      END
+    )
+    ELSE (
+      CASE
+        WHEN COALESCE($3::text, 'any') = 'all' THEN (
+          SELECT bool_and(position(lower(t.token) in lower(b.content_string)) > 0) FROM tokens t
+        )
+        ELSE (
+          SELECT bool_or(position(lower(t.token) in lower(b.content_string)) > 0) FROM tokens t
+        )
+      END
+    )
+  END
+)
+ORDER BY score DESC, b.id ASC
+LIMIT COALESCE($6::int, 20);
+`
+
 const searchDocumentsForPaths = `
 SELECT
   src
@@ -210,6 +319,7 @@ WHERE (
 ORDER BY literal_score DESC, src ASC;
 `
 
+// Params: $1=projectIds, $2=tokens, $3=matchMode, $4=escapedPrefix, $5=limit
 const searchDocumentsForKeywords = `
 WITH doc_base AS (
   SELECT
@@ -223,7 +333,24 @@ WITH doc_base AS (
       OR lower(src) LIKE lower($4) || '%' ESCAPE '\\'
     )
 )
-SELECT src
+SELECT
+  src,
+  (
+    SELECT COALESCE(
+      sum(
+        CASE
+          WHEN (
+            lower(coalesce(content, '')) LIKE '%' || lower(tok) || '%' ESCAPE '\\'
+            OR lower(coalesce(name, '')) LIKE '%' || lower(tok) || '%' ESCAPE '\\'
+            OR lower(src) LIKE '%' || lower(tok) || '%' ESCAPE '\\'
+          ) THEN 1
+          ELSE 0
+        END
+      ),
+      0
+    )
+    FROM unnest($2::text[]) AS tok
+  )::int AS score
 FROM doc_base
 WHERE (
   ($3::text = 'all' AND (
@@ -244,10 +371,11 @@ WHERE (
     FROM unnest($2::text[]) AS tok
   ))
 )
-ORDER BY src ASC
+ORDER BY score DESC, src ASC
 LIMIT COALESCE($5::int, 20);
 `
 
+// Params: $1=projectIds, $2=tokens, $3=matchMode, $4=caseSensitive, $5=escapedPrefix, $6=limit
 const searchDocumentsForExact = `
 WITH doc_base AS (
   SELECT
@@ -261,7 +389,36 @@ WITH doc_base AS (
       OR lower(src) LIKE lower($5) || '%' ESCAPE '\\'
     )
 )
-SELECT src
+SELECT
+  src,
+  (
+    SELECT COALESCE(
+      sum(
+        CASE
+          WHEN $4::boolean THEN
+            CASE
+              WHEN (
+                coalesce(content, '') LIKE '%' || tok || '%' ESCAPE '\\'
+                OR coalesce(name, '') LIKE '%' || tok || '%' ESCAPE '\\'
+                OR src LIKE '%' || tok || '%' ESCAPE '\\'
+              ) THEN 1
+              ELSE 0
+            END
+          ELSE
+            CASE
+              WHEN (
+                lower(coalesce(content, '')) LIKE '%' || lower(tok) || '%' ESCAPE '\\'
+                OR lower(coalesce(name, '')) LIKE '%' || lower(tok) || '%' ESCAPE '\\'
+                OR lower(src) LIKE '%' || lower(tok) || '%' ESCAPE '\\'
+              ) THEN 1
+              ELSE 0
+            END
+        END
+      ),
+      0
+    )
+    FROM unnest($2::text[]) AS tok
+  )::int AS score
 FROM doc_base
 WHERE (
   ($3::text = 'all' AND (
@@ -294,12 +451,10 @@ WHERE (
     FROM unnest($2::text[]) AS tok
   ))
 )
-ORDER BY src ASC
+ORDER BY score DESC, src ASC
 LIMIT COALESCE($6::int, 20);
 `
 
-// ----------------------------------------------------------
-// Schema: documents (text) and entities (jsonb), indexes and triggers
 // ----------------------------------------------------------
 const schema = `
 -- Enable required extensions
@@ -820,7 +975,7 @@ scored AS (
       COALESCE(MAX(CASE WHEN br.base IS NOT NULL AND lower(d.name) = br.base THEN 3 WHEN br.base IS NOT NULL AND lower(d.name) LIKE br.base || '%' THEN 2 WHEN br.base IS NOT NULL AND lower(d.name) LIKE '%' || br.base || '%' THEN 1 ELSE 0 END), 0)
     ) AS name_best_strength,
     GREATEST(
-      COALESCE(MAX(CASE WHEN qt.tok IS NOT NULL AND lower(d.src) = qt.tok THEN 3 WHEN qt.tok IS NOT NULL AND lower(d.src) LIKE qt.tok || '%' THEN 2 WHEN qt.tok IS NOT NULL AND lower(d.src) LIKE qt.tok || '%' THEN 2 WHEN qt.tok IS NOT NULL AND lower(d.src) LIKE '%' || qt.tok || '%' THEN 1 ELSE 0 END), 0),
+      COALESCE(MAX(CASE WHEN qt.tok IS NOT NULL AND lower(d.src) = qt.tok THEN 3 WHEN qt.tok IS NOT NULL AND lower(d.src) LIKE qt.tok || '%' THEN 2 WHEN qt.tok IS NOT NULL AND lower(d.src) LIKE '%' || qt.tok || '%' THEN 1 ELSE 0 END), 0),
       COALESCE(MAX(CASE WHEN fr.raw IS NOT NULL AND lower(d.src) = fr.raw THEN 3 WHEN fr.raw IS NOT NULL AND lower(d.src) LIKE fr.raw || '%' THEN 2 WHEN fr.raw IS NOT NULL AND lower(d.src) LIKE '%' || fr.raw || '%' THEN 1 ELSE 0 END), 0),
       COALESCE(MAX(CASE WHEN br.base IS NOT NULL AND lower(d.src) = br.base THEN 3 WHEN br.base IS NOT NULL AND lower(d.src) LIKE br.base || '%' THEN 2 WHEN br.base IS NOT NULL AND lower(d.src) LIKE '%' || br.base || '%' THEN 1 ELSE 0 END), 0)
     ) AS src_best_strength,
@@ -935,6 +1090,9 @@ export const SQL = {
   matchEntities,
   clearEntities,
   clearEntitiesByProject,
+  // Improved entity searches (ids only)
+  searchEntitiesForKeywords,
+  searchEntitiesForExact,
 
   // Documents
   deleteDocument,

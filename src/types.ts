@@ -138,7 +138,6 @@ export type SearchDocumentsForKeywordsArgs = {
   projectIds: string[]
   keywords: string | string[]
   matchMode?: DocumentSearchMatchMode // default: 'any'
-  includeNameAndSrc?: boolean // default: true
   limit?: number
   pathPrefix?: string
 }
@@ -148,7 +147,6 @@ export type SearchDocumentsForExactArgs = {
   needles: string | string[]
   matchMode?: DocumentSearchMatchMode // default: 'any'
   caseSensitive?: boolean // default: true
-  includeNameAndSrc?: boolean // default: true
   limit?: number
   pathPrefix?: string
 }
@@ -167,4 +165,30 @@ export type Logger = {
   info: (...args: any[]) => void
   warn: (...args: any[]) => void
   error: (...args: any[]) => void
+}
+
+
+// ------------------------------
+// Improved entity search APIs
+// ------------------------------
+
+export type EntitySearchMatchMode = 'any' | 'all'
+
+export type SearchEntitiesForKeywordsArgs = {
+  projectIds: string[]
+  keywords: string | string[]
+  matchMode?: EntitySearchMatchMode // default: 'any'
+  /** Optional filter: only return entities with a type in this set. */
+  types?: string[]
+  limit?: number
+}
+
+export type SearchEntitiesForExactArgs = {
+  projectIds: string[]
+  needles: string | string[]
+  matchMode?: EntitySearchMatchMode // default: 'any'
+  caseSensitive?: boolean // default: true
+  /** Optional filter: only return entities with a type in this set. */
+  types?: string[]
+  limit?: number
 }

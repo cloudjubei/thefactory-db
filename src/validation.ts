@@ -2,6 +2,8 @@
 
 import {
   MatchParams,
+  SearchEntitiesForKeywordsArgs,
+  SearchEntitiesForExactArgs,
   SearchParams,
   SearchDocumentsForExactArgs,
   SearchDocumentsForKeywordsArgs,
@@ -158,9 +160,6 @@ export function assertSearchDocumentsForKeywordsArgs(
     throw new TypeError('Args.projectIds must be a non-empty array of strings')
   assertStringOrStringArray(args.keywords, 'Args.keywords')
   assertMatchMode(args.matchMode, 'Args.matchMode')
-  if (args.includeNameAndSrc !== undefined && typeof args.includeNameAndSrc !== 'boolean') {
-    throw new TypeError('Args.includeNameAndSrc must be a boolean if provided')
-  }
   assertOptionalInt(args.limit, 'Args.limit')
   assertOptionalString(args.pathPrefix, 'Args.pathPrefix')
 }
@@ -174,9 +173,39 @@ export function assertSearchDocumentsForExactArgs(args: SearchDocumentsForExactA
   if (args.caseSensitive !== undefined && typeof args.caseSensitive !== 'boolean') {
     throw new TypeError('Args.caseSensitive must be a boolean if provided')
   }
-  if (args.includeNameAndSrc !== undefined && typeof args.includeNameAndSrc !== 'boolean') {
-    throw new TypeError('Args.includeNameAndSrc must be a boolean if provided')
-  }
   assertOptionalInt(args.limit, 'Args.limit')
   assertOptionalString(args.pathPrefix, 'Args.pathPrefix')
+}
+
+// ------------------------------
+// Improved entity search APIs
+// ------------------------------
+
+export function assertSearchEntitiesForKeywordsArgs(
+  args: SearchEntitiesForKeywordsArgs,
+): void {
+  if (!isRecord(args)) throw new TypeError('Args must be an object')
+  if (!isStringArray(args.projectIds) || args.projectIds.length === 0)
+    throw new TypeError('Args.projectIds must be a non-empty array of strings')
+  assertStringOrStringArray(args.keywords, 'Args.keywords')
+  assertMatchMode(args.matchMode as any, 'Args.matchMode')
+  assertOptionalInt(args.limit, 'Args.limit')
+  if (args.types !== undefined && !isStringArray(args.types)) {
+    throw new TypeError('Args.types must be an array of strings if provided')
+  }
+}
+
+export function assertSearchEntitiesForExactArgs(args: SearchEntitiesForExactArgs): void {
+  if (!isRecord(args)) throw new TypeError('Args must be an object')
+  if (!isStringArray(args.projectIds) || args.projectIds.length === 0)
+    throw new TypeError('Args.projectIds must be a non-empty array of strings')
+  assertStringOrStringArray(args.needles, 'Args.needles')
+  assertMatchMode(args.matchMode as any, 'Args.matchMode')
+  if (args.caseSensitive !== undefined && typeof args.caseSensitive !== 'boolean') {
+    throw new TypeError('Args.caseSensitive must be a boolean if provided')
+  }
+  assertOptionalInt(args.limit, 'Args.limit')
+  if (args.types !== undefined && !isStringArray(args.types)) {
+    throw new TypeError('Args.types must be an array of strings if provided')
+  }
 }

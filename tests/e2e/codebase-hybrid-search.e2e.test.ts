@@ -78,16 +78,16 @@ function collectProjectFiles(root: string): string[] {
     const res = await run('hybrid search function', 1)
     const srcs = res.map((r) => r.src)
     expect(srcs).toEqual([
-      'src/index.ts',
-      'src/utils.ts',
+      'docs/SEARCH_IMPROVED.md',
+      'src/sql.ts',
+      'src/client/documents.ts',
+      'src/validation.ts',
+      'src/client/entities.ts',
       'docs/FILE_ORGANISATION.md',
       'src/types.ts',
       'README.md',
       'scripts/example.ts',
-      'src/validation.ts',
-      'src/utils/embeddings.ts',
-      'docs/TESTING_E2E.md',
-      'src/connection.ts',
+      'src/client/types.ts',
     ])
   })
 
@@ -95,16 +95,16 @@ function collectProjectFiles(root: string): string[] {
     const res = await run('hybrid search function', 0)
     const srcs = res.map((r) => r.src)
     expect(srcs).toEqual([
+      'docs/SEARCH_IMPROVED.md',
       'scripts/example.ts',
+      'src/validation.ts',
       'scripts/test.ts',
+      'src/client/types.ts',
       'src/utils/json.ts',
-      'scripts/count.ts',
-      'src/index.ts',
-      'scripts/clear.ts',
-      'docs/FILE_ORGANISATION.md',
-      'docs/TESTING_E2E.md',
       'docs/CODE_STANDARD.md',
-      'src/utils/tokenizer.ts',
+      'scripts/count.ts',
+      'src/types.ts',
+      'docs/TESTING_E2E.md',
     ])
   })
 
@@ -112,16 +112,16 @@ function collectProjectFiles(root: string): string[] {
     const res = await run('hybrid search function', 0.5)
     const srcs = res.map((r) => r.src)
     expect(srcs).toEqual([
-      'src/index.ts',
-      'scripts/example.ts',
-      'docs/FILE_ORGANISATION.md',
-      'scripts/test.ts',
-      'src/utils/json.ts',
-      'src/utils.ts',
-      'docs/TESTING_E2E.md',
-      'src/types.ts',
-      'scripts/count.ts',
+      'docs/SEARCH_IMPROVED.md',
       'src/validation.ts',
+      'scripts/example.ts',
+      'src/client/types.ts',
+      'src/types.ts',
+      'src/sql.ts',
+      'scripts/test.ts',
+      'src/client/documents.ts',
+      'docs/FILE_ORGANISATION.md',
+      'docs/TESTING_E2E.md',
     ])
   })
 
@@ -131,14 +131,14 @@ function collectProjectFiles(root: string): string[] {
     expect(srcs).toEqual([
       'README.md',
       'docs/FILE_ORGANISATION.md',
-      'src/index.ts',
       'docs/TESTING_E2E.md',
+      'src/runtime.ts',
       'docs/CODE_STANDARD.md',
       'scripts/example.ts',
       'docker-compose.yml',
       'docker-compose.e2e.yml',
       'src/connection.ts',
-      'src/utils/json.ts',
+      '.prettierignore',
     ])
   })
   it('w=0 (semantic-only): "pgvector" should find files related to vector databases', async () => {
@@ -149,12 +149,12 @@ function collectProjectFiles(root: string): string[] {
       'docker-compose.yml',
       'docker-compose.e2e.yml',
       'src/connection.ts',
-      'src/utils/json.ts',
-      'src/index.ts',
+      '.prettierignore',
       'scripts/example.ts',
       'docs/TESTING_E2E.md',
-      '.gitignore',
-      '.prettierignore',
+      'docs/CODE_STANDARD.md',
+      '.husky/_/.gitignore',
+      'docs/FILE_ORGANISATION.md',
     ])
   })
 })
