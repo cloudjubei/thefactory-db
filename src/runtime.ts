@@ -63,11 +63,18 @@ async function waitForSelect1(
         return
       } finally {
         client.release()
-        await pool.end()
       }
     } catch (e) {
       lastErr = e
       await new Promise((r) => setTimeout(r, delayMs))
+    } finally {
+      // Ensure we always close the pool, even when connect() fails.
+      // Leaking pools/sockets can cause tests to hang under flaky startup conditions.
+      try {
+        await pool.end()
+      } catch {
+        // ignore
+      }
     }
   }
   if (lastErr) throw lastErr

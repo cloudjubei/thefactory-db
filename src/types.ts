@@ -62,6 +62,7 @@ export type Entity = {
   id: string
   projectId: string
   type: string
+  shouldEmbed: boolean
   content: unknown
   createdAt: string
   updatedAt: string
@@ -75,6 +76,7 @@ export type EntityInput = {
   projectId: string
   type: string
   content: Record<string, any> | any[]
+  shouldEmbed?: boolean
   metadata?: Record<string, any>
 }
 

@@ -36,13 +36,17 @@ export function createEntityApi({
     assertEntityInput(e)
     logger.info('addEntity', { projectId: e.projectId, type: e.type })
     const stringContent = stringifyJsonValues(e.content)
-    const embedding = await embeddingProvider.embed(stringContent)
+    const shouldEmbed = e.shouldEmbed ?? true
+    const embedding = shouldEmbed ? await embeddingProvider.embed(stringContent) : null
+    const embeddingLiteral = embedding ? toVectorLiteral(embedding) : null
+
     const out = await db.query(SQL.insertEntity, [
       e.projectId,
       e.type,
       e.content,
+      shouldEmbed,
       stringContent,
-      toVectorLiteral(embedding),
+      embeddingLiteral,
       e.metadata ?? null,
     ])
     return out.rows[0]
@@ -65,18 +69,34 @@ export function createEntityApi({
     let embeddingLiteral = null
     let newContent = null
     let newContentString = null
+    let shouldEmbed = patch.shouldEmbed
 
     if (patch.content !== undefined) {
       newContent = patch.content
       newContentString = stringifyJsonValues(patch.content)
-      const emb = await embeddingProvider.embed(newContentString)
-      embeddingLiteral = toVectorLiteral(emb)
+      
+      const effectiveShouldEmbed = shouldEmbed ?? exists.shouldEmbed
+      if (effectiveShouldEmbed) {
+         const emb = await embeddingProvider.embed(newContentString)
+         embeddingLiteral = toVectorLiteral(emb)
+      }
+    } else {
+      // Content didn't change.
+      // If shouldEmbed changed to true, we need to embed the EXISTING content.
+      if (shouldEmbed === true && exists.shouldEmbed === false) {
+        // We need to re-embed existing content
+        const contentStr = stringifyJsonValues(exists.content as any)
+        const emb = await embeddingProvider.embed(contentStr)
+        embeddingLiteral = toVectorLiteral(emb)
+      }
+      // If shouldEmbed changed to false, embeddingLiteral is null (default) and SQL handles clearing it.
     }
 
     const r = await db.query(SQL.updateEntity, [
       id,
       patch.type ?? null,
       newContent,
+      shouldEmbed ?? null,
       newContentString,
       embeddingLiteral,
       patch.metadata ?? null,

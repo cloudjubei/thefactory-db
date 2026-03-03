@@ -1,13 +1,13 @@
 import { describe, it, expect, vi, beforeEach, afterAll } from 'vitest'
-import { openDatabase } from '../src/index'
-import { openPostgres } from '../src/connection'
-import { createLogger } from '../src/logger'
-import { createLocalEmbeddingProvider } from '../src/utils/embeddings'
-import { SQL } from '../src/sql'
+import { openDatabase } from '../../src/index'
+import { openPostgres } from '../../src/connection'
+import { createLogger } from '../../src/logger'
+import { createLocalEmbeddingProvider } from '../../src/utils/embeddings'
+import { SQL } from '../../src/sql'
 
-vi.mock('../src/connection')
-vi.mock('../src/logger')
-vi.mock('../src/utils/embeddings')
+vi.mock('../../src/connection')
+vi.mock('../../src/logger')
+vi.mock('../../src/utils/embeddings')
 
 describe('db.searchEntitiesForExact', () => {
   let mockDb: any
@@ -17,7 +17,6 @@ describe('db.searchEntitiesForExact', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     mockDb = { query: vi.fn(), end: vi.fn() }
-
     ;(openPostgres as unknown as any).mockResolvedValue(mockDb)
     ;(createLogger as unknown as any).mockReturnValue(mockLogger)
     ;(createLocalEmbeddingProvider as unknown as any).mockResolvedValue(mockEmb)
@@ -29,8 +28,7 @@ describe('db.searchEntitiesForExact', () => {
 
   it('throws if args.projectIds is missing/empty', async () => {
     const db = await openDatabase({ connectionString: 'postgres://x', logLevel: 'silent' })
-    // @ts-expect-error
-    await expect(db.searchEntitiesForExact({ needles: 'a' })).rejects.toThrow(/projectIds/i)
+    await expect(db.searchEntitiesForExact({ needles: 'a' } as any)).rejects.toThrow(/projectIds/i)
     await expect(db.searchEntitiesForExact({ projectIds: [], needles: 'a' })).rejects.toThrow(
       /projectIds/i,
     )
@@ -38,41 +36,36 @@ describe('db.searchEntitiesForExact', () => {
 
   it('throws if args.needles is not string|string[]', async () => {
     const db = await openDatabase({ connectionString: 'postgres://x', logLevel: 'silent' })
-    // @ts-expect-error
-    await expect(db.searchEntitiesForExact({ projectIds: ['p1'], needles: 5 })).rejects.toThrow(
-      /needles/i,
-    )
+    await expect(
+      db.searchEntitiesForExact({ projectIds: ['p1'], needles: 5 } as any),
+    ).rejects.toThrow(/needles/i)
   })
 
   it('throws if args.matchMode is not any|all', async () => {
     const db = await openDatabase({ connectionString: 'postgres://x', logLevel: 'silent' })
-    // @ts-expect-error
     await expect(
-      db.searchEntitiesForExact({ projectIds: ['p1'], needles: 'a', matchMode: 'nope' }),
+      db.searchEntitiesForExact({ projectIds: ['p1'], needles: 'a', matchMode: 'nope' } as any),
     ).rejects.toThrow(/matchMode/i)
   })
 
   it('throws if args.caseSensitive is not boolean', async () => {
     const db = await openDatabase({ connectionString: 'postgres://x', logLevel: 'silent' })
-    // @ts-expect-error
     await expect(
-      db.searchEntitiesForExact({ projectIds: ['p1'], needles: 'a', caseSensitive: 'y' }),
+      db.searchEntitiesForExact({ projectIds: ['p1'], needles: 'a', caseSensitive: 'y' } as any),
     ).rejects.toThrow(/caseSensitive/i)
   })
 
   it('throws if args.limit is not an integer', async () => {
     const db = await openDatabase({ connectionString: 'postgres://x', logLevel: 'silent' })
-    // @ts-expect-error
     await expect(
-      db.searchEntitiesForExact({ projectIds: ['p1'], needles: 'a', limit: 1.1 }),
+      db.searchEntitiesForExact({ projectIds: ['p1'], needles: 'a', limit: 1.1 } as any),
     ).rejects.toThrow(/limit/i)
   })
 
   it('throws if args.types is not string[]', async () => {
     const db = await openDatabase({ connectionString: 'postgres://x', logLevel: 'silent' })
-    // @ts-expect-error
     await expect(
-      db.searchEntitiesForExact({ projectIds: ['p1'], needles: 'a', types: 't1' }),
+      db.searchEntitiesForExact({ projectIds: ['p1'], needles: 'a', types: 't1' } as any),
     ).rejects.toThrow(/types/i)
   })
 
@@ -179,6 +172,8 @@ describe('db.searchEntitiesForExact', () => {
     mockDb.query.mockResolvedValue({ rows: undefined })
     const db = await openDatabase({ connectionString: 'postgres://x', logLevel: 'silent' })
 
-    await expect(db.searchEntitiesForExact({ projectIds: ['p1'], needles: 'one' })).resolves.toEqual([])
+    await expect(
+      db.searchEntitiesForExact({ projectIds: ['p1'], needles: 'one' }),
+    ).resolves.toEqual([])
   })
 })

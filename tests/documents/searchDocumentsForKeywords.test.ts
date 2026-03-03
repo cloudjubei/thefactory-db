@@ -1,13 +1,13 @@
 import { describe, it, expect, vi, beforeEach, afterAll } from 'vitest'
-import { openDatabase } from '../src/index'
-import { openPostgres } from '../src/connection'
-import { createLogger } from '../src/logger'
-import { createLocalEmbeddingProvider } from '../src/utils/embeddings'
-import { SQL } from '../src/sql'
+import { openDatabase } from '../../src/index'
+import { openPostgres } from '../../src/connection'
+import { createLogger } from '../../src/logger'
+import { createLocalEmbeddingProvider } from '../../src/utils/embeddings'
+import { SQL } from '../../src/sql'
 
-vi.mock('../src/connection')
-vi.mock('../src/logger')
-vi.mock('../src/utils/embeddings')
+vi.mock('../../src/connection')
+vi.mock('../../src/logger')
+vi.mock('../../src/utils/embeddings')
 
 describe('db.searchDocumentsForKeywords', () => {
   let mockDb: any
@@ -17,7 +17,6 @@ describe('db.searchDocumentsForKeywords', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     mockDb = { query: vi.fn(), end: vi.fn() }
-
     ;(openPostgres as unknown as any).mockResolvedValue(mockDb)
     ;(createLogger as unknown as any).mockReturnValue(mockLogger)
     ;(createLocalEmbeddingProvider as unknown as any).mockResolvedValue(mockEmb)
@@ -38,33 +37,33 @@ describe('db.searchDocumentsForKeywords', () => {
 
   it('throws if args.keywords is not string|string[]', async () => {
     const db = await openDatabase({ connectionString: 'x' })
-    // @ts-expect-error
-    await expect(db.searchDocumentsForKeywords({ projectIds: ['p1'], keywords: 5 })).rejects.toThrow(
-      /keywords/i,
-    )
+    await expect(
+      db.searchDocumentsForKeywords({ projectIds: ['p1'], keywords: 5 } as any),
+    ).rejects.toThrow(/keywords/i)
   })
 
   it('throws if args.matchMode is not any|all', async () => {
     const db = await openDatabase({ connectionString: 'x' })
-    // @ts-expect-error
     await expect(
-      db.searchDocumentsForKeywords({ projectIds: ['p1'], keywords: 'a', matchMode: 'nope' }),
+      db.searchDocumentsForKeywords({
+        projectIds: ['p1'],
+        keywords: 'a',
+        matchMode: 'nope',
+      } as any),
     ).rejects.toThrow(/matchMode/i)
   })
 
   it('throws if args.limit is not an integer', async () => {
     const db = await openDatabase({ connectionString: 'x' })
-    // @ts-expect-error
     await expect(
-      db.searchDocumentsForKeywords({ projectIds: ['p1'], keywords: 'a', limit: 1.1 }),
+      db.searchDocumentsForKeywords({ projectIds: ['p1'], keywords: 'a', limit: 1.1 } as any),
     ).rejects.toThrow(/limit/i)
   })
 
   it('throws if args.pathPrefix is not a string', async () => {
     const db = await openDatabase({ connectionString: 'x' })
-    // @ts-expect-error
     await expect(
-      db.searchDocumentsForKeywords({ projectIds: ['p1'], keywords: 'a', pathPrefix: 5 }),
+      db.searchDocumentsForKeywords({ projectIds: ['p1'], keywords: 'a', pathPrefix: 5 } as any),
     ).rejects.toThrow(/pathPrefix/i)
   })
 
@@ -72,7 +71,9 @@ describe('db.searchDocumentsForKeywords', () => {
     const db = await openDatabase({ connectionString: 'x' })
 
     expect(await db.searchDocumentsForKeywords({ projectIds: ['p1'], keywords: '' })).toEqual([])
-    expect(await db.searchDocumentsForKeywords({ projectIds: ['p1'], keywords: ',;;  ,' })).toEqual([])
+    expect(await db.searchDocumentsForKeywords({ projectIds: ['p1'], keywords: ',;;  ,' })).toEqual(
+      [],
+    )
 
     expect(mockDb.query).not.toHaveBeenCalled()
   })
@@ -161,6 +162,8 @@ describe('db.searchDocumentsForKeywords', () => {
     mockDb.query.mockResolvedValue({ rows: undefined })
     const db = await openDatabase({ connectionString: 'x' })
 
-    await expect(db.searchDocumentsForKeywords({ projectIds: ['p1'], keywords: 'one' })).resolves.toEqual([])
+    await expect(
+      db.searchDocumentsForKeywords({ projectIds: ['p1'], keywords: 'one' }),
+    ).resolves.toEqual([])
   })
 })

@@ -1,0 +1,72 @@
+import { vi, beforeEach } from 'vitest'
+import { openPostgres } from '../../src/connection'
+import { createLogger } from '../../src/logger'
+import { createLocalEmbeddingProvider } from '../../src/utils/embeddings'
+import { stringifyJsonValues } from '../../src/utils/json'
+
+// IMPORTANT:
+// These mocks must be registered before importing the SUT (e.g. '../../src/index').
+// So test files should import from this module before importing openDatabase.
+
+// Keep SQL stable in tests
+vi.mock('../../src/sql', () => ({
+  SQL: new Proxy({}, { get: () => 'FAKE_SQL' }),
+}))
+
+vi.mock('../../src/connection')
+vi.mock('../../src/logger')
+vi.mock('../../src/utils/embeddings')
+vi.mock('../../src/utils/json')
+
+export type UnitTestMocks = {
+  mockDbClient: any
+  mockLogger: any
+  mockEmbeddingProvider: any
+}
+
+/**
+ * Shared unit-test setup for db unit tests.
+ * Call once at top-level of each test file.
+ */
+export function setupUnitTestMocks(): UnitTestMocks {
+  // IMPORTANT:
+  // Keep object identity stable across the test file.
+  // The SUT will capture references (db client, logger, provider) during openDatabase().
+  const mockDbClient: any = {
+    query: vi.fn(),
+    end: vi.fn(),
+  }
+
+  const mockLogger: any = {
+    debug: vi.fn(),
+    info: vi.fn(),
+    warn: vi.fn(),
+    error: vi.fn(),
+  }
+
+  const mockEmbeddingProvider: any = {
+    embed: vi.fn().mockResolvedValue([0.1, 0.2, 0.3]),
+    close: vi.fn(),
+  }
+
+  // Wire module mocks to our stable objects
+  vi.mocked(openPostgres).mockResolvedValue(mockDbClient)
+  vi.mocked(createLogger).mockReturnValue(mockLogger)
+  vi.mocked(createLocalEmbeddingProvider).mockResolvedValue(mockEmbeddingProvider)
+  vi.mocked(stringifyJsonValues).mockImplementation((val) => JSON.stringify(val))
+
+  beforeEach(() => {
+    vi.clearAllMocks()
+
+    // Re-wire after clearAllMocks to ensure implementations remain
+    vi.mocked(openPostgres).mockResolvedValue(mockDbClient)
+    vi.mocked(createLogger).mockReturnValue(mockLogger)
+    vi.mocked(createLocalEmbeddingProvider).mockResolvedValue(mockEmbeddingProvider)
+    vi.mocked(stringifyJsonValues).mockImplementation((val) => JSON.stringify(val))
+
+    // Restore default embedding return value
+    mockEmbeddingProvider.embed.mockResolvedValue([0.1, 0.2, 0.3])
+  })
+
+  return { mockDbClient, mockLogger, mockEmbeddingProvider }
+}

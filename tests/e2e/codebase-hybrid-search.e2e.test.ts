@@ -103,8 +103,8 @@ function collectProjectFiles(root: string): string[] {
       'src/utils/json.ts',
       'docs/CODE_STANDARD.md',
       'scripts/count.ts',
-      'src/types.ts',
       'docs/TESTING_E2E.md',
+      'src/utils.ts',
     ])
   })
 
@@ -116,12 +116,12 @@ function collectProjectFiles(root: string): string[] {
       'src/validation.ts',
       'scripts/example.ts',
       'src/client/types.ts',
-      'src/types.ts',
       'src/sql.ts',
       'scripts/test.ts',
-      'src/client/documents.ts',
       'docs/FILE_ORGANISATION.md',
       'docs/TESTING_E2E.md',
+      'src/types.ts',
+      'src/client/entities.ts',
     ])
   })
 

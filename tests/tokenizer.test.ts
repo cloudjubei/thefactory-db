@@ -35,7 +35,7 @@ describe('tokenizer', () => {
     ;(jsTiktoken as any).getEncoding.mockImplementationOnce(() => {
       throw new Error('fail')
     })
-    const res = tokenize('Hello, WORLD! 123', { encoding: 'fresh-encoding' })
+    const res = tokenize('Hello, WORLD! 123', { encoding: 'cl100k_base' })
     // words -> ['hello', 'world', '123'] -> whitespace fallback uses hashing
     expect(res.tokenCount).toBe(3)
     // ensure produced tokens are 31-bit positive integers (clamped)

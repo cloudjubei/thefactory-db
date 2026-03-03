@@ -93,8 +93,42 @@ const DATABASE_URL = process.env.DATABASE_URL || ''
       projectIds: [projectId],
       textWeight: 0,
     })
-
     // Expect content match to be the top result
     expect(results0[0].id).toBe(contentMatch.id)
+  })
+
+  it('includes non-embedded entities and returns vecScore=0 for them', async () => {
+    const embedded = await db.addEntity({
+      projectId,
+      type: 'note',
+      content: { text: 'kiwi fruit note' },
+    })
+
+    const nonEmbedded = await db.addEntity({
+      projectId,
+      type: 'note',
+      content: { text: 'kiwi fruit note (no embedding)' },
+      shouldEmbed: false,
+    })
+
+    const results = await db.searchEntities({
+      query: 'kiwi',
+      projectIds: [projectId],
+      // force a vector query path; non-embedded rows must not error and should get vecScore=0
+      textWeight: 0,
+      limit: 10,
+    })
+
+    const embeddedRow = results.find((r) => r.id === embedded.id)
+    const nonEmbeddedRow = results.find((r) => r.id === nonEmbedded.id)
+
+    expect(embeddedRow).toBeTruthy()
+    expect(nonEmbeddedRow).toBeTruthy()
+
+    // Non-embedded entities must not crash vector scoring; they should get a 0 vecScore.
+    expect(nonEmbeddedRow!.vecScore).toBe(0)
+    // Embedded entity should have some vector score (not necessarily >0 depending on embedding provider,
+    // but it should not be forced to 0 by our NULL-guard).
+    expect(embeddedRow!.vecScore).not.toBeNull()
   })
 })

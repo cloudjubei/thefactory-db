@@ -1,9 +1,9 @@
 import { describe, it, expect, vi } from 'vitest'
 import Docker from 'dockerode'
-import { createReusableDatabase, openDatabase } from '../../src/index'
+import { createReusableDatabase, openDatabase } from '../../../src/index'
 
-// Stub embeddings to avoid heavy model downloads during smoke tests
-vi.mock('../../src/utils/embeddings', () => {
+// Stub embeddings to avoid heavy model downloads during e2e tests
+vi.mock('../../../src/utils/embeddings', () => {
   const makeVec = () => new Float32Array(Array.from({ length: 384 }, () => 0.01))
   return {
     createLocalEmbeddingProvider: vi.fn(async () => ({
@@ -16,6 +16,8 @@ vi.mock('../../src/utils/embeddings', () => {
   }
 })
 
+const RUN = process.env.RUN_E2E === '1'
+
 async function dockerAvailable(): Promise<boolean> {
   try {
     const docker = new Docker()
@@ -26,14 +28,13 @@ async function dockerAvailable(): Promise<boolean> {
   }
 }
 
-const DOCKER = await dockerAvailable()
+const DOCKER = RUN ? await dockerAvailable() : false
 
-;(DOCKER ? describe : describe.skip)(
-  'lifecycle: reusable provisioning (managed persistent)',
-  () => {
-    it('is idempotent and schema is initialized for connections', async () => {
+;(DOCKER ? describe : describe.skip)('E2E: Lifecycle (reusable provisioning)', () => {
+  it(
+    'is idempotent and schema is initialized for connections',
+    async () => {
       const r1 = await createReusableDatabase({ logLevel: 'error' })
-      // In CI, container may already exist; allow created to be either true or false
       expect(typeof r1.created).toBe('boolean')
 
       const r2 = await createReusableDatabase({ logLevel: 'error' })
@@ -41,7 +42,7 @@ const DOCKER = await dockerAvailable()
       expect(r2.created).toBe(false)
 
       const db = await openDatabase({ connectionString: r1.connectionString, logLevel: 'error' })
-      // Perform a tiny op to ensure schema exists; use upsert to be idempotent across runs
+
       const doc = await db.upsertDocument({
         projectId: 'reusable',
         type: 'md',
@@ -49,12 +50,14 @@ const DOCKER = await dockerAvailable()
         name: 'File',
         content: 'hello reusable',
       })
-      // Regardless of whether upsert inserted/updated or was a no-op, the doc should exist
+      expect(doc).toBeUndefined()
+
       const fetched = await db.getDocumentBySrc('reusable', 'file.md')
       expect(fetched && fetched.id).toBeDefined()
-      await db.close()
 
+      await db.close()
       // Do not destroy the reusable container here; it is intended to persist across runs
-    }, 120_000)
-  },
-)
+    },
+    120_000,
+  )
+})

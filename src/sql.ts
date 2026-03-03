@@ -5,6 +5,7 @@ SELECT
   id,
   project_id AS "projectId",
   type,
+  should_embed AS "shouldEmbed",
   content,
   to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS "createdAt",
   to_char(updated_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS "updatedAt",
@@ -14,13 +15,14 @@ WHERE id = $1;
 `
 
 const insertEntity = `
-INSERT INTO entities (project_id, type, content, content_string, embedding, metadata)
-VALUES ($1, $2, $3::jsonb, $4, $5::vector, $6::jsonb)
+INSERT INTO entities (project_id, type, content, should_embed, content_string, embedding, metadata)
+VALUES ($1, $2, $3::jsonb, $4::boolean, $5, $6::vector, $7::jsonb)
 RETURNING 
   id,
   project_id AS "projectId",
   type,
   content,
+  should_embed AS "shouldEmbed",
   to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS "createdAt",
   to_char(updated_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS "updatedAt",
   to_jsonb(metadata) AS metadata;
@@ -30,15 +32,20 @@ const updateEntity = `
 UPDATE entities SET
   type = COALESCE($2, type),
   content = COALESCE($3::jsonb, content),
-  content_string = COALESCE($4, content_string),
-  embedding = COALESCE($5::vector, embedding),
-  metadata = COALESCE($6::jsonb, metadata)
+  content_string = COALESCE($5, content_string),
+  should_embed = COALESCE($4::boolean, should_embed),
+  embedding = CASE 
+    WHEN COALESCE($4::boolean, should_embed) = false THEN NULL 
+    ELSE COALESCE($6::vector, embedding) 
+  END,
+  metadata = COALESCE($7::jsonb, metadata)
 WHERE id = $1
 RETURNING 
   id,
   project_id AS "projectId",
   type,
   content,
+  should_embed AS "shouldEmbed",
   to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS "createdAt",
   to_char(updated_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS "updatedAt",
   to_jsonb(metadata) AS metadata;
@@ -539,11 +546,18 @@ BEFORE INSERT OR UPDATE ON documents
 FOR EACH ROW EXECUTE FUNCTION set_document_content_hash();
 
 -- Entities table
+-- NOTE: Schema changes in this project are applied via 'CREATE TABLE IF NOT EXISTS'.
+-- For existing databases (including long-lived local dev DBs), new columns must be added
+-- with 'ALTER TABLE ... ADD COLUMN IF NOT EXISTS' to keep e2e tests and upgrades working.
+ALTER TABLE entities
+  ADD COLUMN IF NOT EXISTS should_embed boolean NOT NULL DEFAULT true;
+
 CREATE TABLE IF NOT EXISTS entities (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   project_id text NOT NULL,
   type text NOT NULL,
   content jsonb NOT NULL,
+  should_embed boolean NOT NULL DEFAULT true,
   content_string text NOT NULL,
   fts tsvector GENERATED ALWAYS AS (
     CASE WHEN content_string IS NULL OR content_string = '' THEN NULL ELSE to_tsvector('english', content_string) END
@@ -851,7 +865,11 @@ SELECT e.id,
        e.metadata,
        scored.rrf_score,
        scored.rrf_score / ((full_text_weight + semantic_weight + literal_weight) / (rrf_k + 1)::float) AS similarity,
-       COALESCE(1 - (embedding <=> query_embedding) / 2, 0) AS cosine_similarity,
+       -- Entities may not be embedded (embedding can be NULL). Guard vector ops to avoid
+       -- 'operator does not exist: vector <=> null' / undefined behavior.
+       CASE WHEN e.embedding IS NULL OR query_embedding IS NULL THEN 0
+            ELSE (1 - (e.embedding <=> query_embedding) / 2)
+       END AS cosine_similarity,
        COALESCE(ts.token_score, 0.0) AS keyword_score,
        COALESCE(ls.literal_count, 0) AS literal_score
 FROM scored

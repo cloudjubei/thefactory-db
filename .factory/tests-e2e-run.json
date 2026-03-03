@@ -6,22 +6,22 @@
       "passes": [],
       "failures": [],
       "skips": [],
-      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/e2e/codebase-hybrid-search.e2e.test.ts (5 tests) 2684ms\n ✓ tests/e2e/documents-hybrid-advanced.e2e.test.ts (9 tests) 406ms\n ✓ tests/e2e/entities-hybrid-advanced.e2e.test.ts (9 tests) 384ms\n ✓ tests/e2e/documents-indexing.e2e.test.ts (2 tests) 152ms\n ✓ tests/e2e/updates-and-fts.e2e.test.ts (2 tests) 143ms\n ✓ tests/e2e/entities-hybrid.e2e.test.ts (2 tests) 167ms\n ✓ tests/e2e/documents-hybrid.e2e.test.ts (2 tests) 155ms\n ✓ tests/e2e/entities-indexing.e2e.test.ts (1 test) 122ms\n\n Test Files  8 passed (8)\n      Tests  32 passed (32)\n   Start at  23:58:04\n   Duration  6.25s (transform 180ms, setup 0ms, collect 1.04s, tests 4.21s, environment 1ms, prepare 252ms)\n\n",
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/e2e/codebase-hybrid-search.e2e.test.ts (5 tests) 2557ms\n ✓ tests/e2e/documents-hybrid-advanced.e2e.test.ts (9 tests) 534ms\n ✓ tests/e2e/entities-hybrid-advanced.e2e.test.ts (9 tests) 374ms\n ✓ tests/e2e/updates-and-fts.e2e.test.ts (2 tests) 158ms\n ✓ tests/e2e/documents-name-search.e2e.test.ts (5 tests) 161ms\n ✓ tests/e2e/documents-indexing.e2e.test.ts (2 tests) 157ms\n ✓ tests/e2e/searchEntitiesForKeywords.e2e.test.ts (13 tests) 155ms\n ✓ tests/e2e/searchDocumentsForKeywords.e2e.test.ts (13 tests) 134ms\n ✓ tests/e2e/searchEntitiesForExact.e2e.test.ts (15 tests) 141ms\n ✓ tests/e2e/searchDocumentsForPaths.e2e.test.ts (12 tests) 150ms\n ✓ tests/e2e/documents-hybrid.e2e.test.ts (2 tests) 142ms\n ✓ tests/e2e/entities-hybrid.e2e.test.ts (2 tests) 143ms\n ✓ tests/e2e/documents-improved-search-ranking.e2e.test.ts (5 tests) 149ms\n ✓ tests/e2e/searchDocumentsForExact.e2e.test.ts (14 tests) 153ms\n ✓ tests/e2e/entities-improved-search-ranking.e2e.test.ts (5 tests) 133ms\n ✓ tests/e2e/entities-indexing.e2e.test.ts (1 test) 120ms\n\n Test Files  16 passed (16)\n      Tests  114 passed (114)\n   Start at  20:29:09\n   Duration  11.75s (transform 160ms, setup 0ms, collect 4.17s, tests 5.36s, environment 1ms, prepare 547ms)\n\n",
       "summary": {
-        "total": 32,
-        "passed": 32,
+        "total": 114,
+        "passed": 114,
         "failed": 0,
         "skipped": 0,
-        "durationMs": 6250
+        "durationMs": 11750
       }
     }
   ],
   "status": "ok",
   "summary": {
-    "total": 32,
-    "passed": 32,
+    "total": 114,
+    "passed": 114,
     "failed": 0,
     "skipped": 0,
-    "durationMs": 6250
+    "durationMs": 11750
   }
 }
