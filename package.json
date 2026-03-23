@@ -1,6 +1,6 @@
 {
   "name": "thefactory-db",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Local-first PostgreSQL toolkit with hybrid text (tsvector) + vector (pgvector) search, Docker-managed ephemeral/persistent databases, and a TypeScript API for documents and entities.",
   "license": "MIT",
   "author": "Kamil Chmurzynski <cloudjubei@gmail.com>",
