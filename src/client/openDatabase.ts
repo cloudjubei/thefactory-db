@@ -5,13 +5,22 @@ import { createLocalEmbeddingProvider } from '../utils/embeddings.js'
 import { createEntityApi } from './entities.js'
 import { createDocumentApi } from './documents.js'
 import type { TheFactoryDb } from './types.js'
+import { migrateDatabase } from '../migrations/runner.js'
 
-export async function openDatabase({
-  connectionString,
-  logLevel,
-}: OpenDbOptions): Promise<TheFactoryDb> {
+export async function openDatabase(options: OpenDbOptions): Promise<TheFactoryDb> {
+  const { connectionString, logLevel, migrations } = options
   const logger = createLogger(logLevel)
+
   const db = await openPostgres(connectionString)
+
+  // 1. Run migrations if auto (default)
+  const isAuto = migrations === undefined || migrations === 'auto' || (typeof migrations === 'object' && migrations !== null)
+  if (isAuto) {
+    const toVersion = typeof migrations === 'object' ? migrations.toVersion : undefined
+    logger.debug('Running database migrations (auto)...')
+    await migrateDatabase(db, { toVersion, logLevel })
+  }
+
   const embeddingProvider = await createLocalEmbeddingProvider()
 
   const entityApi = createEntityApi({ db, logger, embeddingProvider })

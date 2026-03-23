@@ -149,10 +149,54 @@ console.log(results)
 The `openDatabase` function will:
 
 1. Connect to your PostgreSQL database
-2. Initialize the required schema and functions (executed from embedded SQL)
+2. Automatically run any pending schema migrations (unless configured otherwise)
 3. Ensure the `vector` and `pgcrypto` extensions are enabled (idempotent)
 
 The returned `db` object provides an API for adding/searching documents and entities, as well as a `raw()` method for direct `pg.Client` access.
+
+## Migrations
+
+`thefactory-db` ships with a first-class, deterministic database migration system using Postgres advisory locks. By default, calling `openDatabase` will automatically apply all pending schema changes.
+
+### Auto-migration (Default)
+
+When `migrations: 'auto'` (or omitted), opening the database will automatically upgrade your schema to the latest version before returning the client:
+
+```typescript
+const db = await openDatabase({ connectionString }) // auto-migrates
+```
+
+### Disabling Auto-migration
+
+In controlled environments where you prefer to apply migrations out-of-band or manually, you can opt-out by setting `migrations: 'none'`:
+
+```typescript
+const db = await openDatabase({ 
+  connectionString, 
+  migrations: 'none' 
+})
+```
+
+### Explicit Migrations and Introspection
+
+You can run migrations or inspect the current schema state explicitly:
+
+```typescript
+import { migrateDatabase, getDatabaseInfo } from 'thefactory-db'
+
+// Inspect current version and pending migrations
+const info = await getDatabaseInfo({ connectionString })
+console.log(`Current version: ${info.schemaVersion}, pending: ${info.pending.length}`)
+
+// Run pending migrations up to the latest version
+await migrateDatabase({ connectionString })
+
+// Or pin to a specific version
+await migrateDatabase({ connectionString }, { toVersion: 1 })
+
+// Dry run (logs what would happen without applying)
+await migrateDatabase({ connectionString }, { dryRun: true })
+```
 
 ## Utilities
 

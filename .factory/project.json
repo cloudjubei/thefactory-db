@@ -1,0 +1,22 @@
+{
+  "title": "TheFactory DB",
+  "description": "A TypeScript-based hybrid search database toolkit using PostgreSQL with pgvector. It provides a unified API for managing and searching 'Entities' (JSON) and 'Documents' (Text) using semantic vector search, full-text search, and exact matching. Supports Docker-based ephemeral instances for testing and persistent connections for production.",
+  "repo_url": "https://github.com/cloudjubei/thefactory-db",
+  "codeInfo": {
+    "language": "typescript",
+    "framework": "node",
+    "testFramework": "vitest"
+  },
+  "createdAt": "2025-09-14T19:03:30.461Z",
+  "updatedAt": "2026-03-18T01:24:41.432Z",
+  "storyIds": [
+    "67749a79-fda3-4c2b-9c35-b644c761b895",
+    "08660cf9-08cc-4e96-84e7-977dfe6cb58f",
+    "80ed9778-d7d8-421f-818a-1027f98a580f",
+    "30a26e88-c04e-4619-a89c-1d21ed660e20",
+    "902f88c6-aecd-4fc4-ae5c-ddb30a35768b",
+    "d37e5f1f-63a0-486d-a0c6-28642f72d243"
+  ],
+  "scopeGroupIds": [],
+  "mainGroupId": "1ab9a5d7-de6b-4503-ac17-892ae9ad3582"
+}

@@ -6,6 +6,13 @@ export type OpenDbOptions = {
   connectionString: string
   /** The desired logging level. */
   logLevel?: LogLevel
+  /**
+   * Migration options.
+   * - 'auto' (default): Automatically run pending migrations up to the latest version.
+   * - 'none': Do not run any migrations.
+   * - { toVersion: number }: Run migrations up to (or including) the specified version.
+   */
+  migrations?: 'auto' | 'none' | { toVersion?: number }
 }
 
 // Documents (text)
@@ -168,7 +175,6 @@ export type Logger = {
   warn: (...args: any[]) => void
   error: (...args: any[]) => void
 }
-
 
 // ------------------------------
 // Improved entity search APIs

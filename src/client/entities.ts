@@ -74,11 +74,11 @@ export function createEntityApi({
     if (patch.content !== undefined) {
       newContent = patch.content
       newContentString = stringifyJsonValues(patch.content)
-      
+
       const effectiveShouldEmbed = shouldEmbed ?? exists.shouldEmbed
       if (effectiveShouldEmbed) {
-         const emb = await embeddingProvider.embed(newContentString)
-         embeddingLiteral = toVectorLiteral(emb)
+        const emb = await embeddingProvider.embed(newContentString)
+        embeddingLiteral = toVectorLiteral(emb)
       }
     } else {
       // Content didn't change.
@@ -124,7 +124,7 @@ export function createEntityApi({
     const textWeight = Math.min(1, Math.max(0, params.textWeight ?? 0.5)) / 2
     const keywordWeight = textWeight
     const semWeight = 1 - (textWeight + keywordWeight)
-    const limit = Math.max(1, Math.min(1000, params.limit ?? 20))
+    const limit = Math.max(1, params.limit ?? 20)
 
     const filter: { types?: string[]; ids?: string[]; projectIds?: string[] } = {}
     if (params.types && params.types.length > 0) filter.types = params.types
@@ -144,7 +144,10 @@ export function createEntityApi({
     return r.rows
   }
 
-  async function matchEntities(criteria: any | undefined, options?: MatchParams): Promise<Entity[]> {
+  async function matchEntities(
+    criteria: any | undefined,
+    options?: MatchParams,
+  ): Promise<Entity[]> {
     assertMatchParams(options)
     logger.info('matchEntities', {
       criteria,
@@ -156,7 +159,7 @@ export function createEntityApi({
     if (options?.ids && options.ids.length > 0) filter.ids = options.ids
     if (options?.projectIds && options.projectIds.length > 0) filter.projectIds = options.projectIds
 
-    const limit = Math.max(1, Math.min(1000, options?.limit ?? 20))
+    const limit = Math.max(1, options?.limit ?? 20)
     const r = await db.query(SQL.matchEntities, [
       JSON.stringify(criteria ?? {}),
       Object.keys(filter).length ? JSON.stringify(filter) : null,
@@ -186,7 +189,7 @@ export function createEntityApi({
     const tokens = toTokens(args.keywords)
     if (tokens.length === 0) return []
     const matchMode = args.matchMode ?? 'any'
-    const limit = Math.max(1, Math.min(1000, args.limit ?? 20))
+    const limit = Math.max(1, args.limit ?? 20)
     const r = await db.query(SQL.searchEntitiesForKeywords, [
       args.projectIds,
       tokens,
@@ -211,7 +214,7 @@ export function createEntityApi({
     if (tokens.length === 0) return []
     const matchMode = args.matchMode ?? 'any'
     const caseSensitive = args.caseSensitive ?? true
-    const limit = Math.max(1, Math.min(1000, args.limit ?? 20))
+    const limit = Math.max(1, args.limit ?? 20)
     const r = await db.query(SQL.searchEntitiesForExact, [
       args.projectIds,
       tokens,

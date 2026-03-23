@@ -4,6 +4,7 @@ import { openPostgres } from '../../src/connection'
 import { createLogger } from '../../src/logger'
 import { createLocalEmbeddingProvider } from '../../src/utils/embeddings'
 import { SQL } from '../../src/sql'
+import { attachMigrationSupport } from '../utils/unitTestMocks'
 
 vi.mock('../../src/connection')
 vi.mock('../../src/logger')
@@ -69,6 +70,7 @@ function createMockDb() {
     _docs: docs,
   }
 
+  attachMigrationSupport(client)
   return client
 }
 

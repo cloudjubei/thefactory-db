@@ -25,6 +25,28 @@ export type UnitTestMocks = {
 }
 
 /**
+ * Attaches a minimal `connect()` implementation to a mock DB client so that
+ * `migrateDatabase` can acquire an advisory lock and read the current schema_version
+ * without failing or trying to hit a real DB.
+ */
+export function attachMigrationSupport(mockDb: any, options: { schemaVersion?: number } = {}) {
+  const version = options.schemaVersion ?? 0
+
+  const lockClient = {
+    query: vi.fn(async (sql: string) => {
+      const s = (sql || '').toLowerCase()
+      if (s.includes('pg_try_advisory_lock')) return { rows: [{ acquired: true }], rowCount: 1 }
+      if (s.includes('select schema_version')) return { rows: [{ schema_version: version }], rowCount: 1 }
+      return { rows: [], rowCount: 0 }
+    }),
+    release: vi.fn(),
+  }
+
+  mockDb.connect = vi.fn().mockResolvedValue(lockClient)
+  return mockDb
+}
+
+/**
  * Shared unit-test setup for db unit tests.
  * Call once at top-level of each test file.
  */
@@ -32,10 +54,13 @@ export function setupUnitTestMocks(): UnitTestMocks {
   // IMPORTANT:
   // Keep object identity stable across the test file.
   // The SUT will capture references (db client, logger, provider) during openDatabase().
+
   const mockDbClient: any = {
     query: vi.fn(),
     end: vi.fn(),
   }
+  
+  attachMigrationSupport(mockDbClient)
 
   const mockLogger: any = {
     debug: vi.fn(),
@@ -66,6 +91,9 @@ export function setupUnitTestMocks(): UnitTestMocks {
 
     // Restore default embedding return value
     mockEmbeddingProvider.embed.mockResolvedValue([0.1, 0.2, 0.3])
+    
+    // Restore lock client mock
+    attachMigrationSupport(mockDbClient)
   })
 
   return { mockDbClient, mockLogger, mockEmbeddingProvider }

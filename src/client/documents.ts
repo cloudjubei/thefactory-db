@@ -175,21 +175,19 @@ export function createDocumentApi({
   }
 
   async function deleteDocument(id: string): Promise<boolean> {
-    logger.info('deleteDocument', { id })
     const r = await db.query(SQL.deleteDocument, [id])
     return (r.rowCount ?? 0) > 0
   }
 
   async function matchDocuments(options: MatchParams): Promise<Document[]> {
     assertMatchParams(options)
-    logger.info('matchDocuments', options)
 
     const filter: { types?: string[]; ids?: string[]; projectIds?: string[] } = {}
     if (options?.types && options.types.length > 0) filter.types = options.types
     if (options?.ids && options.ids.length > 0) filter.ids = options.ids
     if (options?.projectIds && options.projectIds.length > 0) filter.projectIds = options.projectIds
 
-    const limit = Math.max(1, Math.min(1000, options?.limit ?? 20))
+    const limit = Math.max(1, options?.limit ?? 20)
     const r = await db.query(SQL.matchDocuments, [
       Object.keys(filter).length ? JSON.stringify(filter) : null,
       limit,
@@ -199,7 +197,6 @@ export function createDocumentApi({
 
   async function searchDocuments(params: SearchParams): Promise<DocumentWithScore[]> {
     assertSearchParams(params)
-    logger.info('searchDocuments', params)
 
     const rawQuery = (params.query ?? '').trim()
     if (rawQuery.length <= 0) return []
@@ -211,7 +208,7 @@ export function createDocumentApi({
     const keywordWeight = textWeight
     const semWeight = 1 - (textWeight + keywordWeight)
     const nameWeight = 10
-    const limit = Math.max(1, Math.min(1000, params.limit ?? 20))
+    const limit = Math.max(1, params.limit ?? 20)
 
     const filter: { types?: string[]; ids?: string[]; projectIds?: string[] } = {}
     if (params.types && params.types.length > 0) filter.types = params.types
@@ -271,7 +268,7 @@ export function createDocumentApi({
     const query = args.query.trim()
     if (!query) return []
 
-    const limit = Math.max(1, Math.min(1000, args.limit ?? 20))
+    const limit = Math.max(1, args.limit ?? 20)
     const pathPrefix = normalizePathPrefix(args.pathPrefix)
     const escapedQuery = escapeLikePattern(query)
     const escapedPrefix = pathPrefix ? escapeLikePattern(pathPrefix) : null
@@ -286,19 +283,27 @@ export function createDocumentApi({
     return (r.rows || []).map((row) => normalizeDocPath(row.src))
   }
 
-  async function searchDocumentsForKeywords(args: SearchDocumentsForKeywordsArgs): Promise<string[]> {
+  async function searchDocumentsForKeywords(
+    args: SearchDocumentsForKeywordsArgs,
+  ): Promise<string[]> {
     assertSearchDocumentsForKeywordsArgs(args)
     logger.info('searchDocumentsForKeywords', args)
 
     const tokens = toTokens(args.keywords)
     if (tokens.length === 0) return []
 
-    const limit = Math.max(1, Math.min(1000, args.limit ?? 20))
+    const limit = Math.max(1, args.limit ?? 20)
     const matchMode = args.matchMode ?? 'any'
     const pathPrefix = normalizePathPrefix(args.pathPrefix)
     const escapedPrefix = pathPrefix ? escapeLikePattern(pathPrefix) : null
 
-    const r = await db.query(SQL.searchDocumentsForKeywords, [args.projectIds, tokens, matchMode, escapedPrefix, limit])
+    const r = await db.query(SQL.searchDocumentsForKeywords, [
+      args.projectIds,
+      tokens,
+      matchMode,
+      escapedPrefix,
+      limit,
+    ])
 
     return (r.rows || []).map((row: any) => normalizeDocPath(row.src))
   }
@@ -310,7 +315,7 @@ export function createDocumentApi({
     const tokens = toTokens(args.needles)
     if (tokens.length === 0) return []
 
-    const limit = Math.max(1, Math.min(1000, args.limit ?? 20))
+    const limit = Math.max(1, args.limit ?? 20)
     const matchMode = args.matchMode ?? 'any'
     const caseSensitive = args.caseSensitive ?? true
     const pathPrefix = normalizePathPrefix(args.pathPrefix)

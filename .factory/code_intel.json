@@ -15022,6 +15022,14 @@
           "SearchParams"
         ]
       },
+      "attachMigrationSupport": {
+        "path": "tests/utils/unitTestMocks.ts",
+        "description": "Attaches a minimal `connect()` implementation to a mock DB client so that",
+        "dependencies": [
+          "vitest/vi",
+          "vitest/beforeEach"
+        ]
+      },
       "buildEmbeddingTextForDoc": {
         "path": "src/utils.ts",
         "dependencies": []
@@ -15126,12 +15134,19 @@
           "testcontainers/StartedTestContainer"
         ]
       },
+      "DatabaseInfo": {
+        "path": "src/migrations/runner.ts",
+        "dependencies": [
+          "Array",
+          "pg/Pool",
+          "pg/PoolClient"
+        ]
+      },
       "DB": {
         "path": "src/connection.ts",
         "description": "Represents the raw database client from the `pg` library.",
         "dependencies": [
-          "pg/Pool",
-          "pg/PoolClient"
+          "pg/Pool"
         ]
       },
       "destroyDatabase": {
@@ -15234,6 +15249,16 @@
         "path": "src/utils.ts",
         "dependencies": []
       },
+      "getDatabaseInfo": {
+        "path": "src/migrations/runner.ts",
+        "dependencies": [
+          "OpenDbOptions",
+          "DatabaseInfo",
+          "Promise",
+          "pg/Pool",
+          "pg/PoolClient"
+        ]
+      },
       "Logger": {
         "path": "src/types.ts",
         "description": "A simple logger interface.",
@@ -15248,6 +15273,51 @@
         "path": "src/types.ts",
         "description": "Parameters for filtering results in match and search operations.",
         "dependencies": []
+      },
+      "migrateDatabase": {
+        "path": "src/migrations/runner.ts",
+        "dependencies": [
+          "OpenDbOptions",
+          "Promise",
+          "MigrateOptions",
+          "pg/Pool",
+          "pg/PoolClient"
+        ]
+      },
+      "MigrateOptions": {
+        "path": "src/migrations/runner.ts",
+        "dependencies": [
+          "pg/Pool",
+          "pg/PoolClient"
+        ]
+      },
+      "Migration": {
+        "path": "src/migrations/types.ts",
+        "dependencies": [
+          "Promise",
+          "MigrationContext",
+          "pg/Pool",
+          "pg/PoolClient"
+        ]
+      },
+      "migration001": {
+        "path": "src/migrations/001-init.ts",
+        "dependencies": [
+          "Migration"
+        ]
+      },
+      "MigrationContext": {
+        "path": "src/migrations/types.ts",
+        "dependencies": [
+          "pg/PoolClient",
+          "pg/Pool"
+        ]
+      },
+      "migrations": {
+        "path": "src/migrations/index.ts",
+        "dependencies": [
+          "Migration"
+        ]
       },
       "normalizeDocPath": {
         "path": "src/utils.ts",
@@ -15277,8 +15347,7 @@
         "dependencies": [
           "DB",
           "Promise",
-          "pg/Pool",
-          "pg/PoolClient"
+          "pg/Pool"
         ]
       },
       "prepareQuery": {
@@ -15576,12 +15645,19 @@
           "testcontainers/StartedTestContainer"
         ]
       },
+      "DatabaseInfo": {
+        "path": "migrations/runner.ts",
+        "dependencies": [
+          "Array",
+          "pg/Pool",
+          "pg/PoolClient"
+        ]
+      },
       "DB": {
         "path": "connection.ts",
         "description": "Represents the raw database client from the `pg` library.",
         "dependencies": [
-          "pg/Pool",
-          "pg/PoolClient"
+          "pg/Pool"
         ]
       },
       "destroyDatabase": {
@@ -15684,6 +15760,16 @@
         "path": "utils.ts",
         "dependencies": []
       },
+      "getDatabaseInfo": {
+        "path": "migrations/runner.ts",
+        "dependencies": [
+          "OpenDbOptions",
+          "DatabaseInfo",
+          "Promise",
+          "pg/Pool",
+          "pg/PoolClient"
+        ]
+      },
       "Logger": {
         "path": "types.ts",
         "description": "A simple logger interface.",
@@ -15698,6 +15784,51 @@
         "path": "types.ts",
         "description": "Parameters for filtering results in match and search operations.",
         "dependencies": []
+      },
+      "migrateDatabase": {
+        "path": "migrations/runner.ts",
+        "dependencies": [
+          "OpenDbOptions",
+          "Promise",
+          "MigrateOptions",
+          "pg/Pool",
+          "pg/PoolClient"
+        ]
+      },
+      "MigrateOptions": {
+        "path": "migrations/runner.ts",
+        "dependencies": [
+          "pg/Pool",
+          "pg/PoolClient"
+        ]
+      },
+      "Migration": {
+        "path": "migrations/types.ts",
+        "dependencies": [
+          "Promise",
+          "MigrationContext",
+          "pg/Pool",
+          "pg/PoolClient"
+        ]
+      },
+      "migration001": {
+        "path": "migrations/001-init.ts",
+        "dependencies": [
+          "Migration"
+        ]
+      },
+      "MigrationContext": {
+        "path": "migrations/types.ts",
+        "dependencies": [
+          "pg/PoolClient",
+          "pg/Pool"
+        ]
+      },
+      "migrations": {
+        "path": "migrations/index.ts",
+        "dependencies": [
+          "Migration"
+        ]
       },
       "normalizeDocPath": {
         "path": "utils.ts",
@@ -15727,8 +15858,7 @@
         "dependencies": [
           "DB",
           "Promise",
-          "pg/Pool",
-          "pg/PoolClient"
+          "pg/Pool"
         ]
       },
       "prepareQuery": {
@@ -15848,6 +15978,14 @@
   "tests": {
     "path": "tests",
     "members": {
+      "attachMigrationSupport": {
+        "path": "utils/unitTestMocks.ts",
+        "description": "Attaches a minimal `connect()` implementation to a mock DB client so that",
+        "dependencies": [
+          "vitest/vi",
+          "vitest/beforeEach"
+        ]
+      },
       "setupUnitTestMocks": {
         "path": "utils/unitTestMocks.ts",
         "description": "Shared unit-test setup for db unit tests.",

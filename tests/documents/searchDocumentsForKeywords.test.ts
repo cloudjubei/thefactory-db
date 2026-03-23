@@ -4,6 +4,7 @@ import { openPostgres } from '../../src/connection'
 import { createLogger } from '../../src/logger'
 import { createLocalEmbeddingProvider } from '../../src/utils/embeddings'
 import { SQL } from '../../src/sql'
+import { attachMigrationSupport } from '../utils/unitTestMocks'
 
 vi.mock('../../src/connection')
 vi.mock('../../src/logger')
@@ -17,6 +18,7 @@ describe('db.searchDocumentsForKeywords', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     mockDb = { query: vi.fn(), end: vi.fn() }
+    attachMigrationSupport(mockDb)
     ;(openPostgres as unknown as any).mockResolvedValue(mockDb)
     ;(createLogger as unknown as any).mockReturnValue(mockLogger)
     ;(createLocalEmbeddingProvider as unknown as any).mockResolvedValue(mockEmb)
@@ -82,11 +84,14 @@ describe('db.searchDocumentsForKeywords', () => {
     mockDb.query.mockResolvedValue({ rows: [] })
     const db = await openDatabase({ connectionString: 'x' })
 
-    await db.searchDocumentsForKeywords({ projectIds: ['p1'], keywords: ' one, two; , three  ' })
+    await db.searchDocumentsForKeywords({
+      projectIds: ['p1'],
+      keywords: ' one, two; , three,four,five;six,seven;eight  ',
+    })
     const call = mockDb.query.mock.calls.find((c: any[]) => c[0] === SQL.searchDocumentsForKeywords)
     expect(call).toBeTruthy()
     // args: [projectIds, tokens, matchMode, escapedPrefix, limit]
-    expect(call[1][1]).toEqual(['one', 'two', 'three'])
+    expect(call[1][1]).toEqual(['one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight'])
   })
 
   it('does not split on spaces (string tokenization only splits on comma/semicolon)', async () => {
@@ -122,13 +127,13 @@ describe('db.searchDocumentsForKeywords', () => {
     expect(call[1][2]).toBe('any')
   })
 
-  it('clamps limit to [1..1000]', async () => {
+  it('clamps limit to [1..]', async () => {
     mockDb.query.mockResolvedValue({ rows: [] })
     const db = await openDatabase({ connectionString: 'x' })
 
-    await db.searchDocumentsForKeywords({ projectIds: ['p1'], keywords: ['one'], limit: 5000 })
+    await db.searchDocumentsForKeywords({ projectIds: ['p1'], keywords: ['one'], limit: 5_000_000 })
     let call = mockDb.query.mock.calls.find((c: any[]) => c[0] === SQL.searchDocumentsForKeywords)
-    expect(call[1][4]).toBe(1000)
+    expect(call[1][4]).toBe(5_000_000)
 
     mockDb.query.mockClear()
     await db.searchDocumentsForKeywords({ projectIds: ['p1'], keywords: ['one'], limit: 0 })

@@ -3,6 +3,7 @@ import { openDatabase } from '../src/index'
 import { openPostgres } from '../src/connection'
 import { createLogger } from '../src/logger'
 import { createLocalEmbeddingProvider } from '../src/utils/embeddings'
+import { attachMigrationSupport } from './utils/unitTestMocks'
 
 vi.mock('../src/connection')
 vi.mock('../src/logger')
@@ -26,6 +27,8 @@ describe('TheFactoryDb validation and edges', () => {
       query: vi.fn(),
       end: vi.fn(),
     }
+    attachMigrationSupport(mockDbClient)
+    
     mockLogger = { debug: vi.fn(), info: vi.fn(), warn: vi.fn(), error: vi.fn() }
     mockEmbeddingProvider = { embed: vi.fn() }
 

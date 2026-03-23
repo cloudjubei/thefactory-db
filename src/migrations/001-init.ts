@@ -1,0 +1,427 @@
+import type { Migration } from './types.js'
+
+export const migration001: Migration = {
+  version: 1,
+  id: '001-init-schema',
+  up: async ({ client }) => {
+    if (INITIAL_SCHEMA) {
+      await client.query(INITIAL_SCHEMA)
+    }
+    if (INITIAL_SEARCH_FUNCTIONS) {
+      await client.query(INITIAL_SEARCH_FUNCTIONS)
+    }
+  },
+}
+
+const INITIAL_SCHEMA = `
+-- Enable required extensions
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
+CREATE EXTENSION IF NOT EXISTS vector;
+
+CREATE OR REPLACE FUNCTION tokenize_code(input_text text)
+RETURNS text AS $$
+BEGIN
+  -- Convert camelCase and PascalCase to space-separated words
+  input_text := regexp_replace(input_text, '([a-z])([A-Z])', '\\1 \\2', 'g');
+  
+  -- Replace underscores, hyphens, and dots with spaces
+  input_text := regexp_replace(input_text, '[-._]', ' ', 'g');
+  
+  RETURN input_text;
+END;
+$$ LANGUAGE plpgsql IMMUTABLE;
+
+-- Documents table
+CREATE TABLE IF NOT EXISTS documents (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  project_id text NOT NULL,
+  type text NOT NULL,
+  src text NOT NULL,
+  name text NOT NULL,
+  content text,
+  content_hash text,
+  fts tsvector GENERATED ALWAYS AS (
+    to_tsvector('english', tokenize_code(name)) || to_tsvector('english', coalesce(tokenize_code(content), ''))
+  ) STORED,
+  embedding vector(384),
+  metadata jsonb,
+  created_at timestamptz NOT NULL DEFAULT now(),
+  updated_at timestamptz NOT NULL DEFAULT now()
+);
+
+-- Basic indexes for documents
+CREATE UNIQUE INDEX IF NOT EXISTS documents_project_src_unique_idx ON documents (project_id, src);
+CREATE INDEX IF NOT EXISTS documents_type_idx ON documents USING btree(type);
+CREATE INDEX IF NOT EXISTS documents_fts_idx ON documents USING GIN(fts);
+-- Vector index HNSW preferred, fallback to IVFFLAT
+DO $$
+BEGIN
+  EXECUTE 'CREATE INDEX IF NOT EXISTS documents_embedding_hnsw_idx ON documents USING hnsw (embedding vector_cosine_ops)';
+EXCEPTION WHEN undefined_object THEN
+  BEGIN
+    EXECUTE 'CREATE INDEX IF NOT EXISTS documents_embedding_ivfflat_idx ON documents USING ivfflat (embedding vector_cosine_ops) WITH (lists = 100)';
+  EXCEPTION WHEN others THEN
+    NULL;
+  END;
+END$$;
+
+-- Trigger to update updated_at on row modification
+CREATE OR REPLACE FUNCTION set_updated_at()
+RETURNS trigger AS $$
+BEGIN
+  NEW.updated_at = now();
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS documents_set_updated_at ON documents;
+CREATE TRIGGER documents_set_updated_at
+BEFORE UPDATE ON documents
+FOR EACH ROW EXECUTE FUNCTION set_updated_at();
+
+CREATE OR REPLACE FUNCTION set_document_content_hash()
+RETURNS trigger AS $$
+BEGIN
+  -- Check if the content is new or has changed to avoid unnecessary computation
+  IF NEW.content IS NOT NULL THEN
+    NEW.content_hash = encode(digest(NEW.content, 'sha1'), 'hex');
+  END IF;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS documents_set_content_hash ON documents;
+CREATE TRIGGER documents_set_content_hash
+BEFORE INSERT OR UPDATE ON documents
+FOR EACH ROW EXECUTE FUNCTION set_document_content_hash();
+
+-- Entities table
+-- NOTE: Schema changes in this project are applied via 'CREATE TABLE IF NOT EXISTS'.
+-- For existing databases (including long-lived local dev DBs), new columns must be added
+-- with 'ALTER TABLE ... ADD COLUMN IF NOT EXISTS' to keep e2e tests and upgrades working.
+CREATE TABLE IF NOT EXISTS entities (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  project_id text NOT NULL,
+  type text NOT NULL,
+  content jsonb NOT NULL,
+  should_embed boolean NOT NULL DEFAULT true,
+  content_string text NOT NULL,
+  fts tsvector GENERATED ALWAYS AS (
+    CASE WHEN content_string IS NULL OR content_string = '' THEN NULL ELSE to_tsvector('english', content_string) END
+  ) STORED,
+  embedding vector(384),
+  metadata jsonb,
+  created_at timestamptz NOT NULL DEFAULT now(),
+  updated_at timestamptz NOT NULL DEFAULT now()
+);
+
+ALTER TABLE entities ADD COLUMN IF NOT EXISTS should_embed boolean NOT NULL DEFAULT true;
+
+-- Updated_at trigger for entities (fts is a GENERATED column)
+DROP TRIGGER IF EXISTS entities_set_updated_at ON entities;
+CREATE TRIGGER entities_set_updated_at
+BEFORE UPDATE ON entities
+FOR EACH ROW EXECUTE FUNCTION set_updated_at();
+
+-- Indexes for entities
+CREATE INDEX IF NOT EXISTS entities_project_id_idx ON entities USING btree(project_id);
+CREATE INDEX IF NOT EXISTS entities_type_idx ON entities USING btree(type);
+CREATE INDEX IF NOT EXISTS entities_fts_idx ON entities USING GIN(fts);
+DO $$
+BEGIN
+  EXECUTE 'CREATE INDEX IF NOT EXISTS entities_embedding_hnsw_idx ON entities USING hnsw (embedding vector_cosine_ops)';
+EXCEPTION WHEN undefined_object THEN
+  BEGIN
+    EXECUTE 'CREATE INDEX IF NOT EXISTS entities_embedding_ivfflat_idx ON entities USING ivfflat (embedding vector_cosine_ops) WITH (lists = 100)';
+  EXCEPTION WHEN others THEN
+    NULL;
+  END;
+END$$;
+`
+
+const INITIAL_SEARCH_FUNCTIONS = `
+-- Documents
+CREATE OR REPLACE FUNCTION hybrid_search_documents(
+  query_text        text,
+  query_embedding   vector,
+  match_count       integer,
+  filter            jsonb DEFAULT '{}'::jsonb,
+  name_weight       float  DEFAULT 1.0,
+  literal_weight    float  DEFAULT 0.3,
+  full_text_weight  float  DEFAULT 0.3,
+  semantic_weight   float  DEFAULT 0.4,
+  rrf_k             integer DEFAULT 50
+)
+RETURNS TABLE (
+  id uuid,
+  project_id text,
+  type text,
+  name text,
+  content text,
+  src text,
+  created_at timestamptz,
+  updated_at timestamptz,
+  metadata jsonb,
+  rrf_score double precision,
+  similarity float,
+  cosine_similarity float,
+  keyword_score float,
+  literal_score float
+)
+LANGUAGE sql AS
+$$
+WITH base_documents AS (
+  SELECT *
+  FROM documents
+  WHERE (
+    (NOT filter ? 'ids') OR id = ANY (
+      ARRAY(SELECT jsonb_array_elements_text(filter->'ids')::uuid)
+    )
+  )
+  AND (
+    (NOT filter ? 'types') OR type = ANY (
+      ARRAY(SELECT jsonb_array_elements_text(filter->'types'))
+    )
+  )
+  AND (
+    (NOT filter ? 'projectIds') OR project_id = ANY (
+      ARRAY(SELECT jsonb_array_elements_text(filter->'projectIds'))
+    )
+  )
+),
+-- This CTE sanitizes the query for the full-text search
+sanitized_query AS (
+  SELECT regexp_replace(trim(coalesce(query_text, '')), '[^[:alnum:] ]+', '', 'g') AS cleaned_text
+),
+-- This CTE creates the OR-based tsquery from the sanitized text
+or_ts_query AS (
+  SELECT 
+    CASE WHEN query_tokens.cleaned_text = '' THEN NULL ELSE to_tsquery('english', string_agg(lexeme, ' | ')) END AS ts_query
+  FROM (
+    SELECT t.cleaned_text, unnest(string_to_array(t.cleaned_text, ' ')) AS lexeme
+    FROM sanitized_query t
+  ) AS query_tokens
+  WHERE lexeme <> ''
+  GROUP BY query_tokens.cleaned_text
+),
+-- The CTE for the full-text (OR) search and ranking
+token_scores AS (
+  SELECT d.id, d.name, d.updated_at,
+         ts_rank_cd(d.fts, t.ts_query) AS token_score
+  FROM base_documents d
+  CROSS JOIN or_ts_query t
+  WHERE t.ts_query IS NOT NULL AND d.fts @@ t.ts_query
+),
+-- CTE for literal match counts and ranking
+literal_search AS (
+  SELECT d.id,
+         COALESCE(SUM((LENGTH(d.content) - LENGTH(REPLACE(d.content, t.lexeme, ''))) / LENGTH(t.lexeme)), 0) +
+         COALESCE(SUM((LENGTH(d.name) - LENGTH(REPLACE(d.name, t.lexeme, ''))) / LENGTH(t.lexeme)), 0) AS literal_count,
+         dense_rank() OVER (ORDER BY (
+            COALESCE(SUM((LENGTH(d.content) - LENGTH(REPLACE(d.content, t.lexeme, ''))) / LENGTH(t.lexeme)), 0) +
+            COALESCE(SUM((LENGTH(d.name) - LENGTH(REPLACE(d.name, t.lexeme, ''))) / LENGTH(t.lexeme)), 0)
+         ) DESC) AS rank_ix
+  FROM base_documents d
+  CROSS JOIN (
+    SELECT unnest(string_to_array(trim(coalesce(query_text, '')), ' ')) AS lexeme
+  ) AS t
+  WHERE LENGTH(t.lexeme) > 0
+  GROUP BY d.id
+),
+-- Rank documents based on full-text score
+full_text as (  
+  SELECT ts.id,
+    row_number() over (
+      ORDER BY ts.token_score DESC, ts.name ASC, ts.updated_at ASC
+    ) as rank_ix
+  FROM token_scores ts
+  limit least(match_count, 30) * 2
+),
+-- Rank documents based on semantic similarity
+semantic AS (
+  SELECT id,
+         row_number() OVER (
+           ORDER BY embedding <#> query_embedding
+         ) AS rank_ix
+  FROM base_documents
+  WHERE embedding IS NOT NULL
+  LIMIT LEAST(match_count, 30) * 2
+),
+-- Combine ranks using RRF
+scored AS (
+  SELECT COALESCE(ft.id, s.id, ls.id) AS id,
+         COALESCE(1.0 / (rrf_k + ft.rank_ix), 0.0) * full_text_weight +
+         COALESCE(1.0 / (rrf_k + s.rank_ix), 0.0) * semantic_weight +
+         COALESCE(1.0 / (rrf_k + ls.rank_ix), 0.0) * literal_weight AS rrf_score
+  FROM full_text ft
+  FULL JOIN semantic s ON ft.id = s.id
+  FULL JOIN literal_search ls ON ls.id = COALESCE(ft.id, s.id)
+)
+-- Final result with combined keyword score and name-based boost
+SELECT d.id,
+       d.project_id,
+       d.type,
+       d.name,
+       d.content,
+       d.src,
+       d.created_at,
+       d.updated_at,
+       d.metadata,
+       -- apply name boost if the query matches the document name tokens
+       (scored.rrf_score + CASE WHEN EXISTS (
+         SELECT 1 FROM or_ts_query t
+         WHERE t.ts_query IS NOT NULL AND to_tsvector('english', tokenize_code(d.name)) @@ t.ts_query
+       ) THEN name_weight ELSE 0 END) AS rrf_score,
+       (scored.rrf_score + CASE WHEN EXISTS (
+         SELECT 1 FROM or_ts_query t
+         WHERE t.ts_query IS NOT NULL AND to_tsvector('english', tokenize_code(d.name)) @@ t.ts_query
+       ) THEN name_weight ELSE 0 END)
+       / ((full_text_weight + semantic_weight + literal_weight) / (rrf_k + 1)::float) AS similarity,
+       COALESCE(1 - (embedding <=> query_embedding) / 2, 0) AS cosine_similarity,
+       COALESCE(ts.token_score, 0.0) AS keyword_score,
+       COALESCE(ls.literal_count, 0) AS literal_score
+FROM scored
+JOIN base_documents d ON d.id = scored.id
+LEFT JOIN token_scores ts ON ts.id = d.id
+LEFT JOIN literal_search ls ON ls.id = d.id
+ORDER BY rrf_score DESC, cosine_similarity DESC, keyword_score DESC, literal_score DESC, d.name ASC, d.updated_at DESC
+LIMIT match_count;
+$$;
+
+
+-- Entities content
+CREATE OR REPLACE FUNCTION hybrid_search_entities(
+  query_text        text,
+  query_embedding   vector,
+  match_count       integer,
+  filter            jsonb DEFAULT '{}'::jsonb,
+  literal_weight    float  DEFAULT 0.3,
+  full_text_weight  float  DEFAULT 0.3,
+  semantic_weight   float  DEFAULT 0.4,
+  rrf_k             integer DEFAULT 50
+)
+RETURNS TABLE (
+  id uuid,
+  project_id text,
+  type text,
+  content jsonb,
+  created_at timestamptz,
+  updated_at timestamptz,
+  metadata jsonb,
+  rrf_score double precision,
+  similarity float,
+  cosine_similarity float,
+  keyword_score float,
+  literal_score float
+)
+LANGUAGE sql AS
+$$
+WITH base_entities AS (
+  SELECT *
+  FROM entities
+  WHERE (
+    (NOT filter ? 'ids') OR id = ANY (
+      ARRAY(SELECT jsonb_array_elements_text(filter->'ids')::uuid)
+    )
+  )
+  AND (
+    (NOT filter ? 'types') OR type = ANY (
+      ARRAY(SELECT jsonb_array_elements_text(filter->'types'))
+    )
+  )
+  AND (
+    (NOT filter ? 'projectIds') OR project_id = ANY (
+      ARRAY(SELECT jsonb_array_elements_text(filter->'projectIds'))
+    )
+  )
+),
+-- This CTE sanitizes the query for the full-text search
+sanitized_query AS (
+  SELECT regexp_replace(trim(coalesce(query_text, '')), '[^[:alnum:] ]+', '', 'g') AS cleaned_text
+),
+-- This CTE creates the OR-based tsquery from the sanitized text
+or_ts_query AS (
+  SELECT 
+    CASE WHEN query_tokens.cleaned_text = '' THEN NULL ELSE to_tsquery('english', string_agg(lexeme, ' | ')) END AS ts_query
+  FROM (
+    SELECT t.cleaned_text, unnest(string_to_array(t.cleaned_text, ' ')) AS lexeme
+    FROM sanitized_query t
+  ) AS query_tokens
+  WHERE lexeme <> ''
+  GROUP BY query_tokens.cleaned_text
+),
+-- The CTE for the full-text (OR) search and ranking
+token_scores AS (
+  SELECT e.id, e.type, e.updated_at,
+         ts_rank_cd(e.fts, t.ts_query) AS token_score
+  FROM base_entities e
+  CROSS JOIN or_ts_query t
+  WHERE e.fts @@ t.ts_query
+),
+-- CTE for literal match counts and ranking
+literal_search AS (
+  SELECT e.id,
+         COALESCE(SUM((LENGTH(e.content::text) - LENGTH(REPLACE(e.content::text, t.lexeme, ''))) / LENGTH(t.lexeme)), 0) +
+         COALESCE(SUM((LENGTH(e.type) - LENGTH(REPLACE(e.type, t.lexeme, ''))) / LENGTH(t.lexeme)), 0) AS literal_count,
+         dense_rank() OVER (ORDER BY (
+            COALESCE(SUM((LENGTH(e.content::text) - LENGTH(REPLACE(e.content::text, t.lexeme, ''))) / LENGTH(t.lexeme)), 0) +
+            COALESCE(SUM((LENGTH(e.type) - LENGTH(REPLACE(e.type, t.lexeme, ''))) / LENGTH(t.lexeme)), 0)
+         ) DESC) AS rank_ix
+
+  FROM base_entities e
+  CROSS JOIN (
+    SELECT unnest(string_to_array(trim(coalesce(query_text, '')), ' ')) AS lexeme
+  ) AS t
+  WHERE LENGTH(t.lexeme) > 0
+  GROUP BY e.id
+),
+full_text as (  
+  SELECT ts.id,
+    row_number() over (
+      ORDER BY ts.token_score DESC, ts.type ASC, ts.updated_at DESC
+    ) as rank_ix
+  FROM token_scores ts
+  limit least(match_count, 30) * 2
+),
+semantic AS (
+  SELECT id,
+         row_number() OVER (
+           ORDER BY embedding <#> query_embedding
+         ) AS rank_ix
+  FROM base_entities
+  WHERE embedding IS NOT NULL
+  LIMIT LEAST(match_count, 30) * 2
+),
+scored AS (
+  SELECT COALESCE(ft.id, s.id, ls.id) AS id,
+         COALESCE(1.0 / (rrf_k + ft.rank_ix), 0.0) * full_text_weight +
+         COALESCE(1.0 / (rrf_k + s.rank_ix), 0.0) * semantic_weight +
+         COALESCE(1.0 / (rrf_k + ls.rank_ix), 0.0) * literal_weight AS rrf_score
+  FROM full_text ft
+  FULL JOIN semantic s ON ft.id = s.id
+  FULL JOIN literal_search ls ON ls.id = COALESCE(ft.id, s.id)
+)
+SELECT e.id,
+       e.project_id,
+       e.type,
+       e.content,
+       e.created_at,
+       e.updated_at,
+       e.metadata,
+       scored.rrf_score,
+       scored.rrf_score / ((full_text_weight + semantic_weight + literal_weight) / (rrf_k + 1)::float) AS similarity,
+       -- Entities may not be embedded (embedding can be NULL). Guard vector ops to avoid
+       -- 'operator does not exist: vector <=> null' / undefined behavior.
+       CASE WHEN e.embedding IS NULL OR query_embedding IS NULL THEN 0
+            ELSE (1 - (e.embedding <=> query_embedding) / 2)
+       END AS cosine_similarity,
+       COALESCE(ts.token_score, 0.0) AS keyword_score,
+       COALESCE(ls.literal_count, 0) AS literal_score
+FROM scored
+JOIN base_entities e ON e.id = scored.id
+LEFT JOIN token_scores ts ON ts.id = e.id
+LEFT JOIN literal_search ls ON ls.id = e.id
+ORDER BY similarity DESC, cosine_similarity DESC, keyword_score DESC, literal_score DESC, e.type ASC, e.updated_at DESC
+LIMIT match_count;
+$$;
+`

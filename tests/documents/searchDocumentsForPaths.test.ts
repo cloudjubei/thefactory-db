@@ -4,6 +4,7 @@ import { openPostgres } from '../../src/connection'
 import { createLogger } from '../../src/logger'
 import { createLocalEmbeddingProvider } from '../../src/utils/embeddings'
 import { SQL } from '../../src/sql'
+import { attachMigrationSupport } from '../utils/unitTestMocks'
 
 vi.mock('../../src/connection')
 vi.mock('../../src/logger')
@@ -17,6 +18,7 @@ describe('db.searchDocumentsForPaths', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     mockDb = { query: vi.fn(), end: vi.fn() }
+    attachMigrationSupport(mockDb)
     ;(openPostgres as unknown as any).mockResolvedValue(mockDb)
     ;(createLogger as unknown as any).mockReturnValue(mockLogger)
     ;(createLocalEmbeddingProvider as unknown as any).mockResolvedValue(mockEmb)
@@ -77,13 +79,13 @@ describe('db.searchDocumentsForPaths', () => {
     expect(call[1][1]).toBe('abc')
   })
 
-  it('clamps limit to [1..1000]', async () => {
+  it('clamps limit to [1..]', async () => {
     mockDb.query.mockResolvedValue({ rows: [] })
     const db = await openDatabase({ connectionString: 'x' })
 
-    await db.searchDocumentsForPaths({ projectIds: ['p1'], query: 'a', limit: 5000 })
+    await db.searchDocumentsForPaths({ projectIds: ['p1'], query: 'a', limit: 5_000_000 })
     let call = mockDb.query.mock.calls.find((c: any[]) => c[0] === SQL.searchDocumentsForPaths)
-    expect(call[1][3]).toBe(1000)
+    expect(call[1][3]).toBe(5_000_000)
 
     mockDb.query.mockClear()
     await db.searchDocumentsForPaths({ projectIds: ['p1'], query: 'a', limit: 0 })

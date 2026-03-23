@@ -174,7 +174,6 @@ async function safeDestroy(h: InternalHandle): Promise<void> {
 export async function createDatabase(opts?: CreateDatabaseOptions): Promise<DatabaseHandle> {
   const logLevel = opts?.logLevel
   if (!opts?.connectionString) {
-    // Managed mode via Testcontainers
     registerCleanupHandlers()
 
     const dbName = `tfdb_${randHex(6)}`
@@ -195,7 +194,6 @@ export async function createDatabase(opts?: CreateDatabaseOptions): Promise<Data
     const port = container.getMappedPort(5432)
     const connectionString = buildPgUrl({ host, port, user, password, db: dbName })
 
-    // Readiness guard
     await waitForSelect1(connectionString)
 
     const { openDatabase } = await import('./index.js')
@@ -233,7 +231,6 @@ export async function createDatabase(opts?: CreateDatabaseOptions): Promise<Data
 
     const dbUrl = cloneUrlWithDb(baseUrl, dbName).toString()
 
-    // Readiness (server already up; new DB ready upon creation)
     await waitForSelect1(dbUrl)
 
     const { openDatabase } = await import('./index.js')

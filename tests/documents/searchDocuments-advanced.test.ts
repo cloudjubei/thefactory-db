@@ -74,7 +74,19 @@ function createMockDb() {
     return new Date().toISOString().replace('Z', 'Z')
   }
 
+  // Minimal lock+metadata client for migrations
+  const lockClient = {
+    query: vi.fn(async (sql: string) => {
+      const s = (sql || '').toLowerCase()
+      if (s.includes('pg_try_advisory_lock')) return { rows: [{ acquired: true }], rowCount: 1 }
+      if (s.includes('select schema_version')) return { rows: [{ schema_version: 0 }], rowCount: 1 }
+      return { rows: [], rowCount: 0 }
+    }),
+    release: vi.fn(),
+  }
+
   const client = {
+    connect: vi.fn(async () => lockClient),
     query: vi.fn(async (sql: string, args?: any[]) => {
       const normalized = (sql || '').trim()
 

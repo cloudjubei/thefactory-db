@@ -6,22 +6,22 @@
       "passes": [],
       "failures": [],
       "skips": [],
-      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/e2e/codebase-hybrid-search.e2e.test.ts (5 tests) 2557ms\n ✓ tests/e2e/documents-hybrid-advanced.e2e.test.ts (9 tests) 534ms\n ✓ tests/e2e/entities-hybrid-advanced.e2e.test.ts (9 tests) 374ms\n ✓ tests/e2e/updates-and-fts.e2e.test.ts (2 tests) 158ms\n ✓ tests/e2e/documents-name-search.e2e.test.ts (5 tests) 161ms\n ✓ tests/e2e/documents-indexing.e2e.test.ts (2 tests) 157ms\n ✓ tests/e2e/searchEntitiesForKeywords.e2e.test.ts (13 tests) 155ms\n ✓ tests/e2e/searchDocumentsForKeywords.e2e.test.ts (13 tests) 134ms\n ✓ tests/e2e/searchEntitiesForExact.e2e.test.ts (15 tests) 141ms\n ✓ tests/e2e/searchDocumentsForPaths.e2e.test.ts (12 tests) 150ms\n ✓ tests/e2e/documents-hybrid.e2e.test.ts (2 tests) 142ms\n ✓ tests/e2e/entities-hybrid.e2e.test.ts (2 tests) 143ms\n ✓ tests/e2e/documents-improved-search-ranking.e2e.test.ts (5 tests) 149ms\n ✓ tests/e2e/searchDocumentsForExact.e2e.test.ts (14 tests) 153ms\n ✓ tests/e2e/entities-improved-search-ranking.e2e.test.ts (5 tests) 133ms\n ✓ tests/e2e/entities-indexing.e2e.test.ts (1 test) 120ms\n\n Test Files  16 passed (16)\n      Tests  114 passed (114)\n   Start at  20:29:09\n   Duration  11.75s (transform 160ms, setup 0ms, collect 4.17s, tests 5.36s, environment 1ms, prepare 547ms)\n\n",
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/e2e/codebase-hybrid-search.e2e.test.ts (5 tests) 2780ms\n ✓ tests/e2e/documents-hybrid-advanced.e2e.test.ts (9 tests) 476ms\n ✓ tests/e2e/documents-hybrid.e2e.test.ts (2 tests) 142ms\n ✓ tests/e2e/documents-improved-search-ranking.e2e.test.ts (5 tests) 137ms\n ✓ tests/e2e/documents-indexing.e2e.test.ts (2 tests) 179ms\n ✓ tests/e2e/documents-name-search.e2e.test.ts (5 tests) 349ms\n ✓ tests/e2e/entities-hybrid-advanced.e2e.test.ts (9 tests) 1224ms\n ✓ tests/e2e/entities-hybrid.e2e.test.ts (3 tests) 381ms\n ✓ tests/e2e/entities-improved-search-ranking.e2e.test.ts (5 tests) 379ms\n ✓ tests/e2e/entities-indexing.e2e.test.ts (1 test) 137ms\n ✓ tests/e2e/searchDocumentsForExact.e2e.test.ts (14 tests) 134ms\n ✓ tests/e2e/searchDocumentsForKeywords.e2e.test.ts (13 tests) 155ms\n ✓ tests/e2e/searchDocumentsForPaths.e2e.test.ts (12 tests) 152ms\n ✓ tests/e2e/searchEntitiesForExact.e2e.test.ts (15 tests) 172ms\n ✓ tests/e2e/searchEntitiesForKeywords.e2e.test.ts (13 tests) 176ms\n ✓ tests/e2e/updates-and-fts.e2e.test.ts (2 tests) 150ms\n ↓ tests/e2e/lifecycle/external.lifecycle.e2e.test.ts (1 test | 1 skipped)\n ✓ tests/e2e/lifecycle/managed.lifecycle.e2e.test.ts (1 test) 1478ms\n   ✓ E2E: Lifecycle (managed container) > starts fresh pgvector container, performs ops, and destroys cleanly  1477ms\n ✓ tests/e2e/lifecycle/reusable.lifecycle.e2e.test.ts (1 test) 41ms\n\n Test Files  18 passed | 1 skipped (19)\n      Tests  117 passed | 1 skipped (118)\n   Start at  15:05:11\n   Duration  18.26s (transform 290ms, setup 0ms, collect 5.65s, tests 8.64s, environment 2ms, prepare 676ms)\n\n",
       "summary": {
-        "total": 114,
-        "passed": 114,
+        "total": 118,
+        "passed": 117,
         "failed": 0,
-        "skipped": 0,
-        "durationMs": 11750
+        "skipped": 1,
+        "durationMs": 18260
       }
     }
   ],
   "status": "ok",
   "summary": {
-    "total": 114,
-    "passed": 114,
+    "total": 118,
+    "passed": 117,
     "failed": 0,
-    "skipped": 0,
-    "durationMs": 11750
+    "skipped": 1,
+    "durationMs": 18260
   }
 }
