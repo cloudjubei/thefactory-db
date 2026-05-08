@@ -115,8 +115,8 @@ export function createEntityApi({
   async function searchEntities(params: SearchParams): Promise<EntityWithScore[]> {
     assertSearchParams(params)
     logger.info('searchEntities', params)
-    const rawQuery = (params.query ?? '').trim()
-    if (rawQuery.length <= 0) return []
+    const rawQuery = params.query.trim()
+    if (rawQuery.length === 0) return []
 
     const query = prepareQuery(rawQuery)
     const qvecArr = await embeddingProvider.embed(query)
@@ -168,12 +168,17 @@ export function createEntityApi({
     return r.rows
   }
 
-  async function clearEntities(projectIds?: string[]): Promise<void> {
-    logger.info('clearEntities', { count: projectIds?.length || 0 })
-    if (projectIds && projectIds.length > 0) {
-      await db.query(SQL.clearEntitiesByProject, [projectIds])
+  async function clearEntities(filter: { projectIds: string[]; types?: string[] }): Promise<void> {
+    if (!filter?.projectIds || filter.projectIds.length === 0) {
+      throw new Error('clearEntities: projectIds is required and must be non-empty')
+    }
+    const projectIds = filter.projectIds
+    const types = filter.types && filter.types.length > 0 ? filter.types : undefined
+    logger.info('clearEntities', { projectIds: projectIds.length, types: types?.length || 0 })
+    if (types) {
+      await db.query(SQL.clearEntitiesByProjectAndType, [projectIds, types])
     } else {
-      await db.query(SQL.clearEntities)
+      await db.query(SQL.clearEntitiesByProject, [projectIds])
     }
   }
 

@@ -12,6 +12,14 @@ import getPort from 'get-port'
 export type CreateDatabaseOptions = {
   connectionString?: string
   logLevel?: LogLevel
+  /**
+   * Optional deterministic container name for managed mode. When supplied, the
+   * created container can later be destroyed by name from a fresh process via
+   * `destroyDatabaseByContainerName(name)` — useful when the caller persists a
+   * registry of long-lived "temp" databases that must outlive the process that
+   * created them. Ignored when `connectionString` is set (external mode).
+   */
+  containerName?: string
 }
 
 export type DatabaseHandle = {
@@ -180,7 +188,7 @@ export async function createDatabase(opts?: CreateDatabaseOptions): Promise<Data
     const user = `u_${randHex(4)}`
     const password = randHex(12)
 
-    const container = await new GenericContainer('pgvector/pgvector:pg16')
+    let builder = new GenericContainer('pgvector/pgvector:pg16')
       .withEnvironment({
         POSTGRES_USER: user,
         POSTGRES_PASSWORD: password,
@@ -188,7 +196,10 @@ export async function createDatabase(opts?: CreateDatabaseOptions): Promise<Data
       })
       .withExposedPorts(5432)
       .withWaitStrategy(Wait.forListeningPorts())
-      .start()
+    if (opts?.containerName) {
+      builder = builder.withName(opts.containerName)
+    }
+    const container = await builder.start()
 
     const host = container.getHost()
     const port = container.getMappedPort(5432)
@@ -364,4 +375,42 @@ export async function createReusableDatabase(
   await client.close()
 
   return { connectionString, created: true }
+}
+
+/**
+ * Stop and remove the well-known reusable container provisioned by
+ * `createReusableDatabase()` (named `thefactory-db`). Returns `{ removed: true }`
+ * if a container existed and was removed; `{ removed: false }` if none was found.
+ *
+ * The next call to `createReusableDatabase()` will provision a fresh container
+ * with a new password, port, and empty schema.
+ */
+export async function destroyReusableDatabase(): Promise<{ removed: boolean }> {
+  return destroyDatabaseByContainerName('thefactory-db')
+}
+
+/**
+ * Stop and remove a Docker container by name. Used by callers that persist a
+ * registry of managed databases (reusable or named-temp) and need to destroy
+ * one across process restarts. Returns `{ removed: true }` if a container
+ * existed; `{ removed: false }` otherwise.
+ *
+ * Stops the container if it's running, then removes it. Already-stopped
+ * containers are removed without an extra stop call.
+ */
+export async function destroyDatabaseByContainerName(
+  name: string,
+): Promise<{ removed: boolean }> {
+  const docker = new Docker()
+  const list = await docker.listContainers({ all: true, filters: { name: [name] } as any })
+  const info = list.find((c) => (c.Names || []).some((n) => n === `/${name}`))
+  if (!info) return { removed: false }
+
+  const container = docker.getContainer(info.Id)
+  const inspect = await container.inspect()
+  if (inspect?.State?.Running) {
+    await container.stop()
+  }
+  await container.remove()
+  return { removed: true }
 }

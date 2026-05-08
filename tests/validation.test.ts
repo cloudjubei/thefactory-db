@@ -9,6 +9,8 @@ import {
   assertSearchDocumentsForExactArgs,
   assertSearchDocumentsForKeywordsArgs,
   assertSearchDocumentsForPathsArgs,
+  assertSearchEntitiesForKeywordsArgs,
+  assertSearchEntitiesForExactArgs,
 } from '../src/validation'
 
 describe('validation', () => {
@@ -182,10 +184,136 @@ describe('validation', () => {
     })
   })
 
+  describe('branch edge cases', () => {
+    it('rejects DocumentInput.src that is not a string at all', () => {
+      expect(() =>
+        assertDocumentInput({ projectId: 'p', type: 't', name: 'n', src: 5 as any, content: 'c' }),
+      ).toThrow()
+    })
+
+    it('rejects DocumentInput.name that is not a string', () => {
+      expect(() =>
+        assertDocumentInput({ projectId: 'p', type: 't', name: 5 as any, src: 's', content: 'c' }),
+      ).toThrow()
+    })
+
+    it('accepts DocumentInput with no metadata field at all', () => {
+      expect(() =>
+        assertDocumentInput({ projectId: 'p', type: 't', name: 'n', src: 's', content: 'c' }),
+      ).not.toThrow()
+    })
+
+    it('rejects DocumentInput.metadata that is not a plain object', () => {
+      expect(() =>
+        assertDocumentInput({
+          projectId: 'p',
+          type: 't',
+          name: 'n',
+          src: 's',
+          content: 'c',
+          metadata: 'oops' as any,
+        }),
+      ).toThrow(/metadata must be an object/i)
+    })
+
+    it('accepts DocumentPatch with name=null and src=null and content=null', () => {
+      expect(() =>
+        assertDocumentPatch({ name: null as any, src: null as any, content: null as any }),
+      ).not.toThrow()
+    })
+
+    it('rejects DocumentPatch.name that is neither string nor null', () => {
+      expect(() => assertDocumentPatch({ name: 5 as any })).toThrow()
+    })
+
+    it('rejects EntityPatch.type that is neither string nor null', () => {
+      expect(() => assertEntityPatch({ type: 5 as any })).toThrow()
+    })
+
+    it('accepts EntityPatch with type=null', () => {
+      expect(() => assertEntityPatch({ type: null as any })).not.toThrow()
+    })
+
+    it('rejects EntityPatch.content scalar', () => {
+      expect(() => assertEntityPatch({ content: 'nope' as any })).toThrow()
+    })
+
+    it('rejects MatchParams.limit that is not an integer', () => {
+      expect(() => assertMatchParams({ limit: 1.5 } as any)).toThrow()
+    })
+
+    it('throws when SearchParams is undefined or null', () => {
+      expect(() => assertSearchParams(undefined as any)).toThrow('Params must be present')
+      expect(() => assertSearchParams(null as any)).toThrow()
+    })
+
+    it('rejects null args for entity search assertions', () => {
+      expect(() => assertSearchEntitiesForKeywordsArgs(null as any)).toThrow()
+      expect(() => assertSearchEntitiesForExactArgs(null as any)).toThrow()
+    })
+
+    it('accepts assertSearchEntitiesForKeywordsArgs with all optional fields populated', () => {
+      expect(() =>
+        assertSearchEntitiesForKeywordsArgs({
+          projectIds: ['p'],
+          keywords: 'a',
+          matchMode: 'all',
+          limit: 5,
+          types: ['t'],
+        }),
+      ).not.toThrow()
+    })
+
+    it('rejects assertSearchEntitiesForKeywordsArgs with non-array types', () => {
+      expect(() =>
+        assertSearchEntitiesForKeywordsArgs({
+          projectIds: ['p'],
+          keywords: 'a',
+          types: 'bad' as any,
+        }),
+      ).toThrow()
+    })
+
+    it('accepts assertSearchEntitiesForExactArgs with all optional fields populated', () => {
+      expect(() =>
+        assertSearchEntitiesForExactArgs({
+          projectIds: ['p'],
+          needles: 'a',
+          caseSensitive: false,
+          types: ['t'],
+        }),
+      ).not.toThrow()
+    })
+
+    it('rejects assertSearchEntitiesForExactArgs with non-boolean caseSensitive', () => {
+      expect(() =>
+        assertSearchEntitiesForExactArgs({
+          projectIds: ['p'],
+          needles: 'a',
+          caseSensitive: 'no' as any,
+        }),
+      ).toThrow()
+    })
+
+    it('rejects assertSearchEntitiesForExactArgs with non-array types', () => {
+      expect(() =>
+        assertSearchEntitiesForExactArgs({
+          projectIds: ['p'],
+          needles: 'a',
+          types: 'bad' as any,
+        }),
+      ).toThrow()
+    })
+  })
+
   describe('assertSearchDocumentsForExactArgs', () => {
     it('accepts valid args', () => {
       expect(() =>
-        assertSearchDocumentsForExactArgs({ projectIds: ['p'], needles: ['a'], caseSensitive: true }),
+        assertSearchDocumentsForExactArgs({
+          projectIds: ['p'],
+          needles: ['a'],
+          caseSensitive: true,
+        }),
       ).not.toThrow()
     })
     it('rejects invalid args', () => {
@@ -205,7 +333,11 @@ describe('validation', () => {
         }),
       ).toThrow()
       expect(() =>
-        assertSearchDocumentsForExactArgs({ projectIds: ['p'], needles: 'a', caseSensitive: 1 as any }),
+        assertSearchDocumentsForExactArgs({
+          projectIds: ['p'],
+          needles: 'a',
+          caseSensitive: 1 as any,
+        }),
       ).toThrow()
     })
   })

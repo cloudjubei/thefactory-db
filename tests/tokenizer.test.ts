@@ -31,14 +31,17 @@ describe('tokenizer', () => {
     expect((jsTiktoken as any).getEncoding).toHaveBeenCalled()
   })
 
-  it('falls back to whitespace strategy when tiktoken fails (fresh encoding forces getEncoding call)', () => {
+  it('falls back to whitespace strategy when tiktoken throws at runtime', () => {
+    // Use a unique encoding name so the per-encoding cache doesn't short-circuit
+    // the throw — otherwise an earlier test will have memoized the encoder.
     ;(jsTiktoken as any).getEncoding.mockImplementationOnce(() => {
       throw new Error('fail')
     })
-    const res = tokenize('Hello, WORLD! 123', { encoding: 'cl100k_base' })
+    const res = tokenize('Hello, WORLD! 123', {
+      encoding: 'tokenizer-test-fallback' as any,
+    })
     // words -> ['hello', 'world', '123'] -> whitespace fallback uses hashing
     expect(res.tokenCount).toBe(3)
-    // ensure produced tokens are 31-bit positive integers (clamped)
     expect(res.tokens.every((t: number) => Number.isInteger(t) && t >= 0 && t <= 0x7fffffff)).toBe(
       true,
     )

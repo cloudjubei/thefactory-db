@@ -1092,9 +1092,9 @@ LIMIT COALESCE($2::int, 100);
 
 // Clear helpers
 const clearDocuments = `TRUNCATE TABLE documents RESTART IDENTITY;`
-const clearEntities = `TRUNCATE TABLE entities RESTART IDENTITY;`
 const clearDocumentsByProject = `DELETE FROM documents WHERE project_id = ANY($1::text[]);`
 const clearEntitiesByProject = `DELETE FROM entities WHERE project_id = ANY($1::text[]);`
+const clearEntitiesByProjectAndType = `DELETE FROM entities WHERE project_id = ANY($1::text[]) AND type = ANY($2::text[]);`
 
 export const SQL = {
   schema,
@@ -1106,8 +1106,8 @@ export const SQL = {
   updateEntity,
   searchEntitiesQuery,
   matchEntities,
-  clearEntities,
   clearEntitiesByProject,
+  clearEntitiesByProjectAndType,
   // Improved entity searches (ids only)
   searchEntitiesForKeywords,
   searchEntitiesForExact,

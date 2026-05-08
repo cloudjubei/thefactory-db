@@ -104,4 +104,68 @@ describe('Entities.updateEntity', () => {
     expect(result).toBeUndefined()
     expect(mockLogger.warn).not.toHaveBeenCalled()
   })
+
+  it('should re-embed existing content when shouldEmbed flips false→true with no content change', async () => {
+    const db = await openDatabase({ connectionString: 'test' })
+    const existing = { id: '123', content: { a: 1 }, shouldEmbed: false }
+    const patch = { shouldEmbed: true }
+    const updated = { ...existing, ...patch }
+
+    mockDbClient.query
+      .mockResolvedValueOnce({ rows: [existing] })
+      .mockResolvedValueOnce({ rows: [updated] })
+
+    const result = await db.updateEntity('123', patch as any)
+
+    expect(mockEmbeddingProvider.embed).toHaveBeenCalledWith(JSON.stringify({ a: 1 }))
+    expect(mockDbClient.query).toHaveBeenNthCalledWith(2, 'FAKE_SQL', [
+      '123',
+      null,
+      null,
+      true,
+      null,
+      '[0.1,0.2,0.3]',
+      null,
+    ])
+    expect(result).toEqual(updated)
+  })
+
+  it('should not re-embed when shouldEmbed stays true with no content change', async () => {
+    const db = await openDatabase({ connectionString: 'test' })
+    const existing = { id: '123', content: { a: 1 }, shouldEmbed: true }
+    const patch = { shouldEmbed: true }
+    const updated = { ...existing, ...patch }
+
+    mockDbClient.query
+      .mockResolvedValueOnce({ rows: [existing] })
+      .mockResolvedValueOnce({ rows: [updated] })
+
+    await db.updateEntity('123', patch as any)
+
+    expect(mockEmbeddingProvider.embed).not.toHaveBeenCalled()
+  })
+
+  it('should not embed when content is patched but effective shouldEmbed is false', async () => {
+    const db = await openDatabase({ connectionString: 'test' })
+    const existing = { id: '123', content: { a: 1 }, shouldEmbed: false }
+    const patch = { content: { a: 2 } }
+    const updated = { ...existing, ...patch }
+
+    mockDbClient.query
+      .mockResolvedValueOnce({ rows: [existing] })
+      .mockResolvedValueOnce({ rows: [updated] })
+
+    await db.updateEntity('123', patch as any)
+
+    expect(mockEmbeddingProvider.embed).not.toHaveBeenCalled()
+    expect(mockDbClient.query).toHaveBeenNthCalledWith(2, 'FAKE_SQL', [
+      '123',
+      null,
+      { a: 2 },
+      null,
+      JSON.stringify({ a: 2 }),
+      null,
+      null,
+    ])
+  })
 })

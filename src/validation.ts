@@ -22,12 +22,6 @@ function isStringArray(v: unknown): v is string[] {
   return Array.isArray(v) && v.every((x) => typeof x === 'string')
 }
 
-function assertNonEmptyString(v: any, name: string): void {
-  if (typeof v !== 'string' || v.trim().length === 0) {
-    throw new TypeError(`${name} must be a non-empty string`)
-  }
-}
-
 function assertString(v: any, name: string): void {
   if (typeof v !== 'string') {
     throw new TypeError(`${name} must be a string`)
@@ -152,9 +146,7 @@ export function assertSearchDocumentsForPathsArgs(args: SearchDocumentsForPathsA
   assertOptionalString(args.pathPrefix, 'Args.pathPrefix')
 }
 
-export function assertSearchDocumentsForKeywordsArgs(
-  args: SearchDocumentsForKeywordsArgs,
-): void {
+export function assertSearchDocumentsForKeywordsArgs(args: SearchDocumentsForKeywordsArgs): void {
   if (!isRecord(args)) throw new TypeError('Args must be an object')
   if (!isStringArray(args.projectIds) || args.projectIds.length === 0)
     throw new TypeError('Args.projectIds must be a non-empty array of strings')
@@ -181,9 +173,7 @@ export function assertSearchDocumentsForExactArgs(args: SearchDocumentsForExactA
 // Improved entity search APIs
 // ------------------------------
 
-export function assertSearchEntitiesForKeywordsArgs(
-  args: SearchEntitiesForKeywordsArgs,
-): void {
+export function assertSearchEntitiesForKeywordsArgs(args: SearchEntitiesForKeywordsArgs): void {
   if (!isRecord(args)) throw new TypeError('Args must be an object')
   if (!isStringArray(args.projectIds) || args.projectIds.length === 0)
     throw new TypeError('Args.projectIds must be a non-empty array of strings')

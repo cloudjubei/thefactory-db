@@ -5,7 +5,13 @@ export { openDatabase } from './client/openDatabase.js'
 export type { TheFactoryDb } from './client/types.js'
 
 // Runtime lifecycle helpers (managed/external ephemeral DB)
-export { createDatabase, destroyDatabase, createReusableDatabase } from './runtime.js'
+export {
+  createDatabase,
+  destroyDatabase,
+  createReusableDatabase,
+  destroyReusableDatabase,
+  destroyDatabaseByContainerName,
+} from './runtime.js'
 export type { CreateDatabaseOptions, CreateReusableDatabaseOptions } from './runtime.js'
 
 // Migration APIs

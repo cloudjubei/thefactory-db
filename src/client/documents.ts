@@ -198,8 +198,8 @@ export function createDocumentApi({
   async function searchDocuments(params: SearchParams): Promise<DocumentWithScore[]> {
     assertSearchParams(params)
 
-    const rawQuery = (params.query ?? '').trim()
-    if (rawQuery.length <= 0) return []
+    const rawQuery = params.query.trim()
+    if (rawQuery.length === 0) return []
 
     const query = prepareQuery(rawQuery)
     const qvecArr = await embeddingProvider.embed(query)
@@ -234,8 +234,8 @@ export function createDocumentApi({
     ])
 
     const [hybridRes, nameRes] = await Promise.all([hybridPromise, namePromise])
-    const hybrid = hybridRes.rows || []
-    const nameMatches = nameRes.rows || []
+    const hybrid = hybridRes.rows
+    const nameMatches = nameRes.rows
     const seen = new Set()
     const out = []
     let i = 0
@@ -249,11 +249,10 @@ export function createDocumentApi({
         picked = hybrid[j++]
       } else if (i < nameMatches.length) {
         picked = nameMatches[i++]
-      } else if (j < hybrid.length) {
+      } else {
         picked = hybrid[j++]
       }
       pickName = !pickName
-      if (!picked) continue
       if (seen.has(picked.id)) continue
       seen.add(picked.id)
       out.push(picked)

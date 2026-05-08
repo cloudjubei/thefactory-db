@@ -15,6 +15,7 @@ const tcHoisted = vi.hoisted(() => {
     withEnvironment: vi.fn(() => builder),
     withExposedPorts: vi.fn(() => builder),
     withWaitStrategy: vi.fn(() => builder),
+    withName: vi.fn(() => builder),
     start: vi.fn(async () => container),
   }
   const GenericContainer = vi.fn(() => builder)
@@ -123,7 +124,13 @@ vi.mock('../src/index.js', () => ({
 }))
 
 // Import after mocks
-import { createDatabase, createReusableDatabase, destroyDatabase } from '../src/runtime'
+import {
+  createDatabase,
+  createReusableDatabase,
+  destroyDatabase,
+  destroyReusableDatabase,
+  destroyDatabaseByContainerName,
+} from '../src/runtime'
 
 function makeInspect(hostPort: number, running = true) {
   return async () => ({
@@ -289,6 +296,97 @@ describe('runtime.ts public API', () => {
 
     // readiness
     expect(pgHoisted.reusableClient.query).toHaveBeenCalledWith('SELECT 1')
+  })
+
+  it('createDatabase() managed mode with explicit containerName: passes name to GenericContainer.withName', async () => {
+    await createDatabase({ containerName: 'tfdb_temp_demo' })
+
+    expect(tcHoisted.builder.withName).toHaveBeenCalledWith('tfdb_temp_demo')
+    expect(tcHoisted.builder.start).toHaveBeenCalled()
+  })
+
+  it('createDatabase() managed mode without containerName: does not call withName', async () => {
+    await createDatabase()
+
+    expect(tcHoisted.builder.withName).not.toHaveBeenCalled()
+  })
+
+  it('destroyReusableDatabase(): stops and removes the well-known thefactory-db container', async () => {
+    const stop = vi.fn(async () => {})
+    const remove = vi.fn(async () => {})
+    const inspect = vi.fn(async () => ({ State: { Running: true } }))
+    const getContainer = vi.fn(() => ({ stop, remove, inspect }))
+
+    dockerHoisted.dockerInstance = {
+      listContainers: vi.fn(async () => [{ Id: 'abc', Names: ['/thefactory-db'] }]),
+      getContainer,
+    }
+
+    const res = await destroyReusableDatabase()
+
+    expect(getContainer).toHaveBeenCalledWith('abc')
+    expect(stop).toHaveBeenCalled()
+    expect(remove).toHaveBeenCalled()
+    expect(res.removed).toBe(true)
+  })
+
+  it('destroyReusableDatabase(): is a no-op when no container exists', async () => {
+    dockerHoisted.dockerInstance = {
+      listContainers: vi.fn(async () => []),
+      getContainer: vi.fn(),
+    }
+
+    const res = await destroyReusableDatabase()
+
+    expect(res.removed).toBe(false)
+  })
+
+  it('destroyDatabaseByContainerName(): stops and removes the named container', async () => {
+    const stop = vi.fn(async () => {})
+    const remove = vi.fn(async () => {})
+    const inspect = vi.fn(async () => ({ State: { Running: true } }))
+    const getContainer = vi.fn(() => ({ stop, remove, inspect }))
+
+    dockerHoisted.dockerInstance = {
+      listContainers: vi.fn(async () => [{ Id: 'xyz', Names: ['/tfdb_temp_demo'] }]),
+      getContainer,
+    }
+
+    const res = await destroyDatabaseByContainerName('tfdb_temp_demo')
+
+    expect(getContainer).toHaveBeenCalledWith('xyz')
+    expect(stop).toHaveBeenCalled()
+    expect(remove).toHaveBeenCalled()
+    expect(res.removed).toBe(true)
+  })
+
+  it('destroyDatabaseByContainerName(): is a no-op when no container exists', async () => {
+    dockerHoisted.dockerInstance = {
+      listContainers: vi.fn(async () => []),
+      getContainer: vi.fn(),
+    }
+
+    const res = await destroyDatabaseByContainerName('nope')
+
+    expect(res.removed).toBe(false)
+  })
+
+  it('destroyDatabaseByContainerName(): does not call stop on an already-stopped container, but still removes', async () => {
+    const stop = vi.fn(async () => {})
+    const remove = vi.fn(async () => {})
+    const inspect = vi.fn(async () => ({ State: { Running: false } }))
+    const getContainer = vi.fn(() => ({ stop, remove, inspect }))
+
+    dockerHoisted.dockerInstance = {
+      listContainers: vi.fn(async () => [{ Id: 'xyz', Names: ['/tfdb_temp_demo'] }]),
+      getContainer,
+    }
+
+    const res = await destroyDatabaseByContainerName('tfdb_temp_demo')
+
+    expect(stop).not.toHaveBeenCalled()
+    expect(remove).toHaveBeenCalled()
+    expect(res.removed).toBe(true)
   })
 
   it('createReusableDatabase(): falls back to a different port when 5435 is occupied', async () => {

@@ -66,6 +66,23 @@ describe('Documents.updateDocument', () => {
     expect(result).toEqual(updatedDoc)
   })
 
+  it('treats patch.content === null as a clear-content (empty string) update', async () => {
+    const db = await openDatabase({ connectionString: 'test' })
+    const existingDoc = { id: '123', name: 'Title', content: 'old' }
+    const updatedDoc = { ...existingDoc, content: '' }
+
+    mockDbClient.query
+      .mockResolvedValueOnce({ rows: [existingDoc] })
+      .mockResolvedValueOnce({ rows: [updatedDoc] })
+
+    await db.updateDocument('123', { content: null } as any)
+
+    // 5th positional arg is the new content; should be '' (not null) per the ?? '' fallback.
+    expect(mockDbClient.query.mock.calls.at(-1)[1][4]).toBe('')
+    // Embedding fires for the cleared content.
+    expect(mockEmbeddingProvider.embed).toHaveBeenCalledWith('')
+  })
+
   it('should return undefined if update returns no rows', async () => {
     const db = await openDatabase({ connectionString: 'test' })
     const existingDoc = { id: '123', name: 'Title', content: 'old' }

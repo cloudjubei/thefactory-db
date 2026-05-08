@@ -27,4 +27,20 @@ describe('Documents.addDocument', () => {
     ])
     expect(result).toEqual(expectedDoc)
   })
+
+  it('falls back to empty content when input.content is undefined', async () => {
+    const db = await openDatabase({ connectionString: 'test' })
+    const docInput = {
+      projectId: 'p1',
+      type: 't1',
+      src: 's1',
+      name: 'Title',
+    } as any
+    mockDbClient.query.mockResolvedValue({ rows: [{ ...docInput, content: '', id: '123' }] })
+
+    await db.addDocument(docInput)
+
+    // The 5th positional arg is the content column.
+    expect(mockDbClient.query.mock.calls.at(-1)[1][4]).toBe('')
+  })
 })

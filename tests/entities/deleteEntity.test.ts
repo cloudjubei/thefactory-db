@@ -24,4 +24,13 @@ describe('Entities.deleteEntity', () => {
 
     expect(result).toBe(false)
   })
+
+  it('should return false when the driver omits rowCount entirely', async () => {
+    const db = await openDatabase({ connectionString: 'test' })
+    mockDbClient.query.mockResolvedValue({})
+
+    const result = await db.deleteEntity('123')
+
+    expect(result).toBe(false)
+  })
 })

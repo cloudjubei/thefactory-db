@@ -25,7 +25,7 @@ export interface TheFactoryDb {
   deleteEntity(id: string): Promise<boolean>
   searchEntities(params: SearchParams): Promise<EntityWithScore[]>
   matchEntities(criteria: any | undefined, options?: MatchParams): Promise<Entity[]>
-  clearEntities(projectIds?: string[]): Promise<void>
+  clearEntities(filter: { projectIds: string[]; types?: string[] }): Promise<void>
 
   searchEntitiesForKeywords(args: SearchEntitiesForKeywordsArgs): Promise<string[]>
   searchEntitiesForExact(args: SearchEntitiesForExactArgs): Promise<string[]>

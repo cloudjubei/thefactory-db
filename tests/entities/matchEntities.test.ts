@@ -39,4 +39,26 @@ describe('Entities.matchEntities', () => {
       10,
     ])
   })
+
+  it('builds a combined filter when types, ids, and projectIds are all present', async () => {
+    const db = await openDatabase({ connectionString: 'test' })
+    mockDbClient.query.mockResolvedValue({ rows: [] })
+
+    await db.matchEntities({ tag: 'x' }, { types: ['t1'], ids: ['e1'], projectIds: ['p1'] })
+
+    const call = mockDbClient.query.mock.calls.at(-1)
+    const filterParam = JSON.parse(call[1][1])
+    expect(filterParam).toEqual({ types: ['t1'], ids: ['e1'], projectIds: ['p1'] })
+  })
+
+  it('drops empty arrays from the filter without sending the keys', async () => {
+    const db = await openDatabase({ connectionString: 'test' })
+    mockDbClient.query.mockResolvedValue({ rows: [] })
+
+    await db.matchEntities({}, { types: [], ids: [], projectIds: ['p1'] })
+
+    const call = mockDbClient.query.mock.calls.at(-1)
+    const filterParam = JSON.parse(call[1][1])
+    expect(filterParam).toEqual({ projectIds: ['p1'] })
+  })
 })

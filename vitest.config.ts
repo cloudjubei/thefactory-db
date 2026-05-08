@@ -10,7 +10,7 @@ export default defineConfig({
       exclude: [
         ...coverageConfigDefaults.exclude,
         'scripts/**',
-        'src/types.ts',
+        'src/**/types.ts',
         'tests/**',
         '.stories/**',
       ],
