@@ -576,6 +576,12 @@ FOR EACH ROW EXECUTE FUNCTION set_updated_at();
 
 -- Indexes for entities
 CREATE INDEX IF NOT EXISTS entities_project_id_idx ON entities USING btree(project_id);
+-- Composite index supports the matchEntities hot path:
+--   WHERE project_id = ANY(...) ORDER BY updated_at DESC LIMIT N
+-- With this in place the planner walks the index in order and stops at
+-- LIMIT, instead of materialising the whole project's rowset and sorting.
+CREATE INDEX IF NOT EXISTS entities_project_id_updated_at_idx
+  ON entities (project_id, updated_at DESC);
 CREATE INDEX IF NOT EXISTS entities_type_idx ON entities USING btree(type);
 CREATE INDEX IF NOT EXISTS entities_fts_idx ON entities USING GIN(fts);
 DO $$
@@ -1052,7 +1058,7 @@ SELECT
   to_char(updated_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS "updatedAt",
   to_jsonb(metadata) AS metadata
 FROM entities
-WHERE content @> $1::jsonb
+WHERE ($1::jsonb IS NULL OR content @> $1::jsonb)
   AND (
     $2::jsonb IS NULL
     OR (

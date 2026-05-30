@@ -1,23 +1,23 @@
 {
-  "status": "ok",
+  "status": "error",
   "tests": [
     {
       "status": "ok",
       "filePath": "tests/close.test.ts",
       "passes": [
         {
-          "testName": "tests/close.test.ts > TheFactoryDb.close > should end the database connection 47ms"
+          "testName": "tests/close.test.ts > TheFactoryDb.close > should end the database connection 2ms"
         }
       ],
       "failures": [],
       "skips": [],
-      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/close.test.ts > TheFactoryDb.close > should end the database connection 47ms\n\n Test Files  1 passed (1)\n      Tests  1 passed (1)\n   Start at  15:04:59\n   Duration  10.78s (transform 2.39s, setup 0ms, collect 7.17s, tests 67ms, environment 0ms, prepare 1.16s)\n\n",
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/close.test.ts > TheFactoryDb.close > should end the database connection 2ms\n\n Test Files  1 passed (1)\n      Tests  1 passed (1)\n   Start at  11:18:54\n   Duration  3.13s (transform 361ms, setup 0ms, collect 1.42s, tests 2ms, environment 0ms, prepare 446ms)\n\n",
       "summary": {
         "total": 1,
         "passed": 1,
         "failed": 0,
         "skipped": 0,
-        "durationMs": 10780
+        "durationMs": 3130
       }
     },
     {
@@ -25,7 +25,7 @@
       "filePath": "tests/connection.test.ts",
       "passes": [
         {
-          "testName": "tests/connection.test.ts > openPostgres (connection) > connects, verifies connection, releases client, and returns pool 54ms"
+          "testName": "tests/connection.test.ts > openPostgres (connection) > connects, verifies connection, releases client, and returns pool 2ms"
         },
         {
           "testName": "tests/connection.test.ts > openPostgres (connection) > ends pool and rethrows if verification fails; always releases client 1ms"
@@ -33,13 +33,13 @@
       ],
       "failures": [],
       "skips": [],
-      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/connection.test.ts > openPostgres (connection) > connects, verifies connection, releases client, and returns pool 54ms\n ✓ tests/connection.test.ts > openPostgres (connection) > ends pool and rethrows if verification fails; always releases client 1ms\n\n Test Files  1 passed (1)\n      Tests  2 passed (2)\n   Start at  15:05:00\n   Duration  7.08s (transform 1.59s, setup 0ms, collect 1.83s, tests 73ms, environment 0ms, prepare 1.35s)\n\n",
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/connection.test.ts > openPostgres (connection) > connects, verifies connection, releases client, and returns pool 2ms\n ✓ tests/connection.test.ts > openPostgres (connection) > ends pool and rethrows if verification fails; always releases client 1ms\n\n Test Files  1 passed (1)\n      Tests  2 passed (2)\n   Start at  11:18:54\n   Duration  1.64s (transform 51ms, setup 0ms, collect 101ms, tests 3ms, environment 0ms, prepare 288ms)\n\n",
       "summary": {
         "total": 2,
         "passed": 2,
         "failed": 0,
         "skipped": 0,
-        "durationMs": 7080
+        "durationMs": 1640
       }
     },
     {
@@ -47,18 +47,21 @@
       "filePath": "tests/documents/addDocument.test.ts",
       "passes": [
         {
-          "testName": "tests/documents/addDocument.test.ts > Documents.addDocument > should insert a new document 2ms"
+          "testName": "tests/documents/addDocument.test.ts > Documents.addDocument > should insert a new document 3ms"
+        },
+        {
+          "testName": "tests/documents/addDocument.test.ts > Documents.addDocument > falls back to empty content when input.content is undefined 0ms"
         }
       ],
       "failures": [],
       "skips": [],
-      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/documents/addDocument.test.ts > Documents.addDocument > should insert a new document 2ms\n\n Test Files  1 passed (1)\n      Tests  1 passed (1)\n   Start at  15:05:00\n   Duration  9.92s (transform 1.39s, setup 0ms, collect 4.40s, tests 3ms, environment 0ms, prepare 999ms)\n\n",
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/documents/addDocument.test.ts > Documents.addDocument > should insert a new document 3ms\n ✓ tests/documents/addDocument.test.ts > Documents.addDocument > falls back to empty content when input.content is undefined 0ms\n\n Test Files  1 passed (1)\n      Tests  2 passed (2)\n   Start at  11:18:54\n   Duration  2.76s (transform 340ms, setup 0ms, collect 1.18s, tests 4ms, environment 0ms, prepare 224ms)\n\n",
       "summary": {
-        "total": 1,
-        "passed": 1,
+        "total": 2,
+        "passed": 2,
         "failed": 0,
         "skipped": 0,
-        "durationMs": 9920
+        "durationMs": 2760
       }
     },
     {
@@ -66,7 +69,7 @@
       "filePath": "tests/documents/clearDocuments.test.ts",
       "passes": [
         {
-          "testName": "tests/documents/clearDocuments.test.ts > Documents.clearDocuments > should clear documents by project 54ms"
+          "testName": "tests/documents/clearDocuments.test.ts > Documents.clearDocuments > should clear documents by project 2ms"
         },
         {
           "testName": "tests/documents/clearDocuments.test.ts > Documents.clearDocuments > should clear all documents 0ms"
@@ -74,13 +77,13 @@
       ],
       "failures": [],
       "skips": [],
-      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/documents/clearDocuments.test.ts > Documents.clearDocuments > should clear documents by project 54ms\n ✓ tests/documents/clearDocuments.test.ts > Documents.clearDocuments > should clear all documents 0ms\n\n Test Files  1 passed (1)\n      Tests  2 passed (2)\n   Start at  15:04:59\n   Duration  10.71s (transform 1.44s, setup 0ms, collect 5.59s, tests 93ms, environment 0ms, prepare 1.72s)\n\n",
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/documents/clearDocuments.test.ts > Documents.clearDocuments > should clear documents by project 2ms\n ✓ tests/documents/clearDocuments.test.ts > Documents.clearDocuments > should clear all documents 0ms\n\n Test Files  1 passed (1)\n      Tests  2 passed (2)\n   Start at  11:18:54\n   Duration  3.02s (transform 205ms, setup 0ms, collect 1.32s, tests 4ms, environment 0ms, prepare 74ms)\n\n",
       "summary": {
         "total": 2,
         "passed": 2,
         "failed": 0,
         "skipped": 0,
-        "durationMs": 10710
+        "durationMs": 3020
       }
     },
     {
@@ -92,17 +95,20 @@
         },
         {
           "testName": "tests/documents/deleteDocument.test.ts > Documents.deleteDocument > should return false if not deleted 0ms"
+        },
+        {
+          "testName": "tests/documents/deleteDocument.test.ts > Documents.deleteDocument > should return false when the driver omits rowCount entirely 0ms"
         }
       ],
       "failures": [],
       "skips": [],
-      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/documents/deleteDocument.test.ts > Documents.deleteDocument > should return true if deleted 2ms\n ✓ tests/documents/deleteDocument.test.ts > Documents.deleteDocument > should return false if not deleted 0ms\n\n Test Files  1 passed (1)\n      Tests  2 passed (2)\n   Start at  15:04:59\n   Duration  11.09s (transform 2.35s, setup 0ms, collect 8.63s, tests 9ms, environment 0ms, prepare 1.06s)\n\n",
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/documents/deleteDocument.test.ts > Documents.deleteDocument > should return true if deleted 2ms\n ✓ tests/documents/deleteDocument.test.ts > Documents.deleteDocument > should return false if not deleted 0ms\n ✓ tests/documents/deleteDocument.test.ts > Documents.deleteDocument > should return false when the driver omits rowCount entirely 0ms\n\n Test Files  1 passed (1)\n      Tests  3 passed (3)\n   Start at  11:18:54\n   Duration  2.97s (transform 371ms, setup 0ms, collect 1.33s, tests 3ms, environment 0ms, prepare 402ms)\n\n",
       "summary": {
-        "total": 2,
-        "passed": 2,
+        "total": 3,
+        "passed": 3,
         "failed": 0,
         "skipped": 0,
-        "durationMs": 11090
+        "durationMs": 2970
       }
     },
     {
@@ -110,21 +116,27 @@
       "filePath": "tests/documents/getDocumentById.test.ts",
       "passes": [
         {
-          "testName": "tests/documents/getDocumentById.test.ts > Documents.getDocumentById > should return a document if found 2ms"
+          "testName": "tests/documents/getDocumentById.test.ts > Documents.getDocumentById > should return a document if found 37ms"
         },
         {
           "testName": "tests/documents/getDocumentById.test.ts > Documents.getDocumentById > should return undefined if not found 0ms"
+        },
+        {
+          "testName": "tests/documents/getDocumentById.test.ts > Documents.getDocumentById > getDocumentBySrc returns the row when found 0ms"
+        },
+        {
+          "testName": "tests/documents/getDocumentById.test.ts > Documents.getDocumentById > getDocumentBySrc returns undefined when no row matches 0ms"
         }
       ],
       "failures": [],
       "skips": [],
-      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/documents/getDocumentById.test.ts > Documents.getDocumentById > should return a document if found 2ms\n ✓ tests/documents/getDocumentById.test.ts > Documents.getDocumentById > should return undefined if not found 0ms\n\n Test Files  1 passed (1)\n      Tests  2 passed (2)\n   Start at  15:05:00\n   Duration  9.92s (transform 1.50s, setup 0ms, collect 4.72s, tests 18ms, environment 0ms, prepare 1.32s)\n\n",
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/documents/getDocumentById.test.ts > Documents.getDocumentById > should return a document if found 37ms\n ✓ tests/documents/getDocumentById.test.ts > Documents.getDocumentById > should return undefined if not found 0ms\n ✓ tests/documents/getDocumentById.test.ts > Documents.getDocumentById > getDocumentBySrc returns the row when found 0ms\n ✓ tests/documents/getDocumentById.test.ts > Documents.getDocumentById > getDocumentBySrc returns undefined when no row matches 0ms\n\n Test Files  1 passed (1)\n      Tests  4 passed (4)\n   Start at  11:18:54\n   Duration  3.03s (transform 330ms, setup 0ms, collect 1.43s, tests 41ms, environment 0ms, prepare 399ms)\n\n",
       "summary": {
-        "total": 2,
-        "passed": 2,
+        "total": 4,
+        "passed": 4,
         "failed": 0,
         "skipped": 0,
-        "durationMs": 9920
+        "durationMs": 3030
       }
     },
     {
@@ -136,17 +148,26 @@
         },
         {
           "testName": "tests/documents/matchDocuments.test.ts > Documents.matchDocuments > should work with no filters 0ms"
+        },
+        {
+          "testName": "tests/documents/matchDocuments.test.ts > Documents.matchDocuments > should accept undefined options and treat them as no filter 0ms"
+        },
+        {
+          "testName": "tests/documents/matchDocuments.test.ts > Documents.matchDocuments > should pass every filter dimension into the SQL params 0ms"
+        },
+        {
+          "testName": "tests/documents/matchDocuments.test.ts > Documents.matchDocuments > should drop empty filter arrays from the query payload 0ms"
         }
       ],
       "failures": [],
       "skips": [],
-      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/documents/matchDocuments.test.ts > Documents.matchDocuments > should find documents by filters 3ms\n ✓ tests/documents/matchDocuments.test.ts > Documents.matchDocuments > should work with no filters 0ms\n\n Test Files  1 passed (1)\n      Tests  2 passed (2)\n   Start at  15:05:02\n   Duration  9.01s (transform 1.08s, setup 0ms, collect 3.57s, tests 4ms, environment 0ms, prepare 852ms)\n\n",
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/documents/matchDocuments.test.ts > Documents.matchDocuments > should find documents by filters 3ms\n ✓ tests/documents/matchDocuments.test.ts > Documents.matchDocuments > should work with no filters 0ms\n ✓ tests/documents/matchDocuments.test.ts > Documents.matchDocuments > should accept undefined options and treat them as no filter 0ms\n ✓ tests/documents/matchDocuments.test.ts > Documents.matchDocuments > should pass every filter dimension into the SQL params 0ms\n ✓ tests/documents/matchDocuments.test.ts > Documents.matchDocuments > should drop empty filter arrays from the query payload 0ms\n\n Test Files  1 passed (1)\n      Tests  5 passed (5)\n   Start at  11:18:54\n   Duration  3.13s (transform 521ms, setup 0ms, collect 1.89s, tests 5ms, environment 1ms, prepare 675ms)\n\n",
       "summary": {
-        "total": 2,
-        "passed": 2,
+        "total": 5,
+        "passed": 5,
         "failed": 0,
         "skipped": 0,
-        "durationMs": 9010
+        "durationMs": 3130
       }
     },
     {
@@ -154,27 +175,27 @@
       "filePath": "tests/documents/searchDocuments-advanced.test.ts",
       "passes": [
         {
-          "testName": "tests/documents/searchDocuments-advanced.test.ts > Documents.searchDocuments (advanced) > merges results from hybrid + name search into a single list (no duplicates) and uses name results first 19ms"
+          "testName": "tests/documents/searchDocuments-advanced.test.ts > Documents.searchDocuments (advanced) > merges results from hybrid + name search into a single list (no duplicates) and uses name results first 3ms"
         },
         {
-          "testName": "tests/documents/searchDocuments-advanced.test.ts > Documents.searchDocuments (advanced) > is deterministic and respects final API limit 1ms"
+          "testName": "tests/documents/searchDocuments-advanced.test.ts > Documents.searchDocuments (advanced) > is deterministic and respects final API limit 0ms"
         },
         {
-          "testName": "tests/documents/searchDocuments-advanced.test.ts > Documents.searchDocuments (advanced) > keyword list search: matches documents based on full keyword presence when textWeight=1 2ms"
+          "testName": "tests/documents/searchDocuments-advanced.test.ts > Documents.searchDocuments (advanced) > keyword list search: matches documents based on full keyword presence when textWeight=1 1ms"
         },
         {
-          "testName": "tests/documents/searchDocuments-advanced.test.ts > Documents.searchDocuments (advanced) > semantic-only search: can return synonym-like matches when textWeight=0 6ms"
+          "testName": "tests/documents/searchDocuments-advanced.test.ts > Documents.searchDocuments (advanced) > semantic-only search: can return synonym-like matches when textWeight=0 0ms"
         }
       ],
       "failures": [],
       "skips": [],
-      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/documents/searchDocuments-advanced.test.ts > Documents.searchDocuments (advanced) > merges results from hybrid + name search into a single list (no duplicates) and uses name results first 19ms\n ✓ tests/documents/searchDocuments-advanced.test.ts > Documents.searchDocuments (advanced) > is deterministic and respects final API limit 1ms\n ✓ tests/documents/searchDocuments-advanced.test.ts > Documents.searchDocuments (advanced) > keyword list search: matches documents based on full keyword presence when textWeight=1 2ms\n ✓ tests/documents/searchDocuments-advanced.test.ts > Documents.searchDocuments (advanced) > semantic-only search: can return synonym-like matches when textWeight=0 6ms\n\n Test Files  1 passed (1)\n      Tests  4 passed (4)\n   Start at  15:05:00\n   Duration  9.27s (transform 1.68s, setup 0ms, collect 4.01s, tests 37ms, environment 0ms, prepare 976ms)\n\n",
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/documents/searchDocuments-advanced.test.ts > Documents.searchDocuments (advanced) > merges results from hybrid + name search into a single list (no duplicates) and uses name results first 3ms\n ✓ tests/documents/searchDocuments-advanced.test.ts > Documents.searchDocuments (advanced) > is deterministic and respects final API limit 0ms\n ✓ tests/documents/searchDocuments-advanced.test.ts > Documents.searchDocuments (advanced) > keyword list search: matches documents based on full keyword presence when textWeight=1 1ms\n ✓ tests/documents/searchDocuments-advanced.test.ts > Documents.searchDocuments (advanced) > semantic-only search: can return synonym-like matches when textWeight=0 0ms\n\n Test Files  1 passed (1)\n      Tests  4 passed (4)\n   Start at  11:18:54\n   Duration  3.12s (transform 849ms, setup 0ms, collect 1.74s, tests 6ms, environment 0ms, prepare 491ms)\n\n",
       "summary": {
         "total": 4,
         "passed": 4,
         "failed": 0,
         "skipped": 0,
-        "durationMs": 9270
+        "durationMs": 3120
       }
     },
     {
@@ -190,13 +211,13 @@
       ],
       "failures": [],
       "skips": [],
-      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/documents/searchDocuments-name-search.test.ts > Direct name/src search (contract + interleaving) > returns name/src results when query matches name 2ms\n ✓ tests/documents/searchDocuments-name-search.test.ts > Direct name/src search (contract + interleaving) > returns [] for empty query 0ms\n\n Test Files  1 passed (1)\n      Tests  2 passed (2)\n   Start at  15:05:00\n   Duration  10.37s (transform 1.58s, setup 0ms, collect 4.72s, tests 4ms, environment 0ms, prepare 753ms)\n\n",
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/documents/searchDocuments-name-search.test.ts > Direct name/src search (contract + interleaving) > returns name/src results when query matches name 2ms\n ✓ tests/documents/searchDocuments-name-search.test.ts > Direct name/src search (contract + interleaving) > returns [] for empty query 0ms\n\n Test Files  1 passed (1)\n      Tests  2 passed (2)\n   Start at  11:18:54\n   Duration  3.19s (transform 644ms, setup 0ms, collect 1.93s, tests 4ms, environment 0ms, prepare 556ms)\n\n",
       "summary": {
         "total": 2,
         "passed": 2,
         "failed": 0,
         "skipped": 0,
-        "durationMs": 10370
+        "durationMs": 3190
       }
     },
     {
@@ -204,30 +225,45 @@
       "filePath": "tests/documents/searchDocuments.test.ts",
       "passes": [
         {
-          "testName": "tests/documents/searchDocuments.test.ts > Documents.searchDocuments > searchDocuments should embed query and pass weights 5ms"
+          "testName": "tests/documents/searchDocuments.test.ts > Documents.searchDocuments > searchDocuments should embed query and pass weights 2ms"
         },
         {
           "testName": "tests/documents/searchDocuments.test.ts > Documents.searchDocuments > searchDocuments should clamp and transform textWeight 0ms"
         },
         {
-          "testName": "tests/documents/searchDocuments.test.ts > Documents.searchDocuments > searchDocuments should pass {} filter when no filters provided 0ms"
+          "testName": "tests/documents/searchDocuments.test.ts > Documents.searchDocuments > searchDocuments should pass {} filter when no filters provided 3ms"
         },
         {
           "testName": "tests/documents/searchDocuments.test.ts > Documents.searchDocuments > searchDocuments should return deduped results across name + hybrid (name first) 0ms"
         },
         {
-          "testName": "tests/documents/searchDocuments.test.ts > Documents.searchDocuments > searchDocuments should return rows unchanged (including vecScore=0) 0ms"
+          "testName": "tests/documents/searchDocuments.test.ts > Documents.searchDocuments > searchDocuments should return rows unchanged (including vecScore=0) 2ms"
+        },
+        {
+          "testName": "tests/documents/searchDocuments.test.ts > Documents.searchDocuments > returns [] for whitespace-only query without hitting the embedder or db 0ms"
+        },
+        {
+          "testName": "tests/documents/searchDocuments.test.ts > Documents.searchDocuments > forwards every filter (types/ids/projectIds) into the hybrid filter JSON 0ms"
+        },
+        {
+          "testName": "tests/documents/searchDocuments.test.ts > Documents.searchDocuments > falls back to remaining name matches when hybrid is exhausted on a !pickName turn 0ms"
+        },
+        {
+          "testName": "tests/documents/searchDocuments.test.ts > Documents.searchDocuments > dedupes a row that appears in both hybrid and name 0ms"
+        },
+        {
+          "testName": "tests/documents/searchDocuments.test.ts > Documents.searchDocuments > respects the limit when both lists have plenty of rows 0ms"
         }
       ],
       "failures": [],
       "skips": [],
-      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/documents/searchDocuments.test.ts > Documents.searchDocuments > searchDocuments should embed query and pass weights 5ms\n ✓ tests/documents/searchDocuments.test.ts > Documents.searchDocuments > searchDocuments should clamp and transform textWeight 0ms\n ✓ tests/documents/searchDocuments.test.ts > Documents.searchDocuments > searchDocuments should pass {} filter when no filters provided 0ms\n ✓ tests/documents/searchDocuments.test.ts > Documents.searchDocuments > searchDocuments should return deduped results across name + hybrid (name first) 0ms\n ✓ tests/documents/searchDocuments.test.ts > Documents.searchDocuments > searchDocuments should return rows unchanged (including vecScore=0) 0ms\n\n Test Files  1 passed (1)\n      Tests  5 passed (5)\n   Start at  15:04:59\n   Duration  10.34s (transform 2.09s, setup 0ms, collect 6.03s, tests 11ms, environment 0ms, prepare 1.41s)\n\n",
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/documents/searchDocuments.test.ts > Documents.searchDocuments > searchDocuments should embed query and pass weights 2ms\n ✓ tests/documents/searchDocuments.test.ts > Documents.searchDocuments > searchDocuments should clamp and transform textWeight 0ms\n ✓ tests/documents/searchDocuments.test.ts > Documents.searchDocuments > searchDocuments should pass {} filter when no filters provided 3ms\n ✓ tests/documents/searchDocuments.test.ts > Documents.searchDocuments > searchDocuments should return deduped results across name + hybrid (name first) 0ms\n ✓ tests/documents/searchDocuments.test.ts > Documents.searchDocuments > searchDocuments should return rows unchanged (including vecScore=0) 2ms\n ✓ tests/documents/searchDocuments.test.ts > Documents.searchDocuments > returns [] for whitespace-only query without hitting the embedder or db 0ms\n ✓ tests/documents/searchDocuments.test.ts > Documents.searchDocuments > forwards every filter (types/ids/projectIds) into the hybrid filter JSON 0ms\n ✓ tests/documents/searchDocuments.test.ts > Documents.searchDocuments > falls back to remaining name matches when hybrid is exhausted on a !pickName turn 0ms\n ✓ tests/documents/searchDocuments.test.ts > Documents.searchDocuments > dedupes a row that appears in both hybrid and name 0ms\n ✓ tests/documents/searchDocuments.test.ts > Documents.searchDocuments > respects the limit when both lists have plenty of rows 0ms\n\n Test Files  1 passed (1)\n      Tests  10 passed (10)\n   Start at  11:18:57\n   Duration  2.26s (transform 260ms, setup 0ms, collect 1.84s, tests 11ms, environment 0ms, prepare 62ms)\n\n",
       "summary": {
-        "total": 5,
-        "passed": 5,
+        "total": 10,
+        "passed": 10,
         "failed": 0,
         "skipped": 0,
-        "durationMs": 10340
+        "durationMs": 2260
       }
     },
     {
@@ -235,7 +271,7 @@
       "filePath": "tests/documents/searchDocumentsForExact.test.ts",
       "passes": [
         {
-          "testName": "tests/documents/searchDocumentsForExact.test.ts > db.searchDocumentsForExact > throws if args.projectIds is missing/empty 2ms"
+          "testName": "tests/documents/searchDocumentsForExact.test.ts > db.searchDocumentsForExact > throws if args.projectIds is missing/empty 5ms"
         },
         {
           "testName": "tests/documents/searchDocumentsForExact.test.ts > db.searchDocumentsForExact > throws if args.needles is not string|string[] 0ms"
@@ -271,24 +307,24 @@
           "testName": "tests/documents/searchDocumentsForExact.test.ts > db.searchDocumentsForExact > clamps limit to [1..] 0ms"
         },
         {
-          "testName": "tests/documents/searchDocumentsForExact.test.ts > db.searchDocumentsForExact > normalizes pathPrefix before passing it as escapedPrefix 0ms"
+          "testName": "tests/documents/searchDocumentsForExact.test.ts > db.searchDocumentsForExact > normalizes pathPrefix before passing it as escapedPrefix 26ms"
         },
         {
-          "testName": "tests/documents/searchDocumentsForExact.test.ts > db.searchDocumentsForExact > maps src results and normalizes to unix separators 0ms"
+          "testName": "tests/documents/searchDocumentsForExact.test.ts > db.searchDocumentsForExact > maps src results and normalizes to unix separators 41ms"
         },
         {
-          "testName": "tests/documents/searchDocumentsForExact.test.ts > db.searchDocumentsForExact > handles DB returning undefined/null rows 0ms"
+          "testName": "tests/documents/searchDocumentsForExact.test.ts > db.searchDocumentsForExact > handles DB returning undefined/null rows 16ms"
         }
       ],
       "failures": [],
       "skips": [],
-      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/documents/searchDocumentsForExact.test.ts > db.searchDocumentsForExact > throws if args.projectIds is missing/empty 2ms\n ✓ tests/documents/searchDocumentsForExact.test.ts > db.searchDocumentsForExact > throws if args.needles is not string|string[] 0ms\n ✓ tests/documents/searchDocumentsForExact.test.ts > db.searchDocumentsForExact > throws if args.matchMode is not any|all 0ms\n ✓ tests/documents/searchDocumentsForExact.test.ts > db.searchDocumentsForExact > throws if args.caseSensitive is not boolean 0ms\n ✓ tests/documents/searchDocumentsForExact.test.ts > db.searchDocumentsForExact > throws if args.limit is not an integer 0ms\n ✓ tests/documents/searchDocumentsForExact.test.ts > db.searchDocumentsForExact > throws if args.pathPrefix is not a string 0ms\n ✓ tests/documents/searchDocumentsForExact.test.ts > db.searchDocumentsForExact > returns [] and does not hit DB for empty tokenization result 1ms\n ✓ tests/documents/searchDocumentsForExact.test.ts > db.searchDocumentsForExact > defaults caseSensitive=true and matchMode=any 0ms\n ✓ tests/documents/searchDocumentsForExact.test.ts > db.searchDocumentsForExact > tokenizes comma/semicolon separated input strings (trimming + dropping empties) 0ms\n ✓ tests/documents/searchDocumentsForExact.test.ts > db.searchDocumentsForExact > passes matchMode=all through to SQL 0ms\n ✓ tests/documents/searchDocumentsForExact.test.ts > db.searchDocumentsForExact > passes caseSensitive=false through to SQL 0ms\n ✓ tests/documents/searchDocumentsForExact.test.ts > db.searchDocumentsForExact > clamps limit to [1..] 0ms\n ✓ tests/documents/searchDocumentsForExact.test.ts > db.searchDocumentsForExact > normalizes pathPrefix before passing it as escapedPrefix 0ms\n ✓ tests/documents/searchDocumentsForExact.test.ts > db.searchDocumentsForExact > maps src results and normalizes to unix separators 0ms\n ✓ tests/documents/searchDocumentsForExact.test.ts > db.searchDocumentsForExact > handles DB returning undefined/null rows 0ms\n\n Test Files  1 passed (1)\n      Tests  15 passed (15)\n   Start at  15:05:00\n   Duration  9.99s (transform 2.21s, setup 0ms, collect 5.48s, tests 7ms, environment 0ms, prepare 728ms)\n\n",
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/documents/searchDocumentsForExact.test.ts > db.searchDocumentsForExact > throws if args.projectIds is missing/empty 5ms\n ✓ tests/documents/searchDocumentsForExact.test.ts > db.searchDocumentsForExact > throws if args.needles is not string|string[] 0ms\n ✓ tests/documents/searchDocumentsForExact.test.ts > db.searchDocumentsForExact > throws if args.matchMode is not any|all 0ms\n ✓ tests/documents/searchDocumentsForExact.test.ts > db.searchDocumentsForExact > throws if args.caseSensitive is not boolean 0ms\n ✓ tests/documents/searchDocumentsForExact.test.ts > db.searchDocumentsForExact > throws if args.limit is not an integer 0ms\n ✓ tests/documents/searchDocumentsForExact.test.ts > db.searchDocumentsForExact > throws if args.pathPrefix is not a string 0ms\n ✓ tests/documents/searchDocumentsForExact.test.ts > db.searchDocumentsForExact > returns [] and does not hit DB for empty tokenization result 1ms\n ✓ tests/documents/searchDocumentsForExact.test.ts > db.searchDocumentsForExact > defaults caseSensitive=true and matchMode=any 0ms\n ✓ tests/documents/searchDocumentsForExact.test.ts > db.searchDocumentsForExact > tokenizes comma/semicolon separated input strings (trimming + dropping empties) 0ms\n ✓ tests/documents/searchDocumentsForExact.test.ts > db.searchDocumentsForExact > passes matchMode=all through to SQL 0ms\n ✓ tests/documents/searchDocumentsForExact.test.ts > db.searchDocumentsForExact > passes caseSensitive=false through to SQL 0ms\n ✓ tests/documents/searchDocumentsForExact.test.ts > db.searchDocumentsForExact > clamps limit to [1..] 0ms\n ✓ tests/documents/searchDocumentsForExact.test.ts > db.searchDocumentsForExact > normalizes pathPrefix before passing it as escapedPrefix 26ms\n ✓ tests/documents/searchDocumentsForExact.test.ts > db.searchDocumentsForExact > maps src results and normalizes to unix separators 41ms\n ✓ tests/documents/searchDocumentsForExact.test.ts > db.searchDocumentsForExact > handles DB returning undefined/null rows 16ms\n\n Test Files  1 passed (1)\n      Tests  15 passed (15)\n   Start at  11:18:58\n   Duration  2.37s (transform 256ms, setup 0ms, collect 1.06s, tests 91ms, environment 0ms, prepare 198ms)\n\n",
       "summary": {
         "total": 15,
         "passed": 15,
         "failed": 0,
         "skipped": 0,
-        "durationMs": 9990
+        "durationMs": 2370
       }
     },
     {
@@ -296,7 +332,7 @@
       "filePath": "tests/documents/searchDocumentsForKeywords.test.ts",
       "passes": [
         {
-          "testName": "tests/documents/searchDocumentsForKeywords.test.ts > db.searchDocumentsForKeywords > throws if args.projectIds is missing/empty 3ms"
+          "testName": "tests/documents/searchDocumentsForKeywords.test.ts > db.searchDocumentsForKeywords > throws if args.projectIds is missing/empty 2ms"
         },
         {
           "testName": "tests/documents/searchDocumentsForKeywords.test.ts > db.searchDocumentsForKeywords > throws if args.keywords is not string|string[] 0ms"
@@ -311,10 +347,10 @@
           "testName": "tests/documents/searchDocumentsForKeywords.test.ts > db.searchDocumentsForKeywords > throws if args.pathPrefix is not a string 0ms"
         },
         {
-          "testName": "tests/documents/searchDocumentsForKeywords.test.ts > db.searchDocumentsForKeywords > returns [] and does not hit DB for empty tokenization result 3ms"
+          "testName": "tests/documents/searchDocumentsForKeywords.test.ts > db.searchDocumentsForKeywords > returns [] and does not hit DB for empty tokenization result 1ms"
         },
         {
-          "testName": "tests/documents/searchDocumentsForKeywords.test.ts > db.searchDocumentsForKeywords > tokenizes comma/semicolon separated input strings (trimming + dropping empties) 1ms"
+          "testName": "tests/documents/searchDocumentsForKeywords.test.ts > db.searchDocumentsForKeywords > tokenizes comma/semicolon separated input strings (trimming + dropping empties) 0ms"
         },
         {
           "testName": "tests/documents/searchDocumentsForKeywords.test.ts > db.searchDocumentsForKeywords > does not split on spaces (string tokenization only splits on comma/semicolon) 0ms"
@@ -323,10 +359,10 @@
           "testName": "tests/documents/searchDocumentsForKeywords.test.ts > db.searchDocumentsForKeywords > passes matchMode=all through to SQL 0ms"
         },
         {
-          "testName": "tests/documents/searchDocumentsForKeywords.test.ts > db.searchDocumentsForKeywords > defaults matchMode=any 0ms"
+          "testName": "tests/documents/searchDocumentsForKeywords.test.ts > db.searchDocumentsForKeywords > defaults matchMode=any 1ms"
         },
         {
-          "testName": "tests/documents/searchDocumentsForKeywords.test.ts > db.searchDocumentsForKeywords > clamps limit to [1..] 0ms"
+          "testName": "tests/documents/searchDocumentsForKeywords.test.ts > db.searchDocumentsForKeywords > clamps limit to [1..] 1ms"
         },
         {
           "testName": "tests/documents/searchDocumentsForKeywords.test.ts > db.searchDocumentsForKeywords > normalizes pathPrefix before passing it as escapedPrefix 0ms"
@@ -340,13 +376,13 @@
       ],
       "failures": [],
       "skips": [],
-      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/documents/searchDocumentsForKeywords.test.ts > db.searchDocumentsForKeywords > throws if args.projectIds is missing/empty 3ms\n ✓ tests/documents/searchDocumentsForKeywords.test.ts > db.searchDocumentsForKeywords > throws if args.keywords is not string|string[] 0ms\n ✓ tests/documents/searchDocumentsForKeywords.test.ts > db.searchDocumentsForKeywords > throws if args.matchMode is not any|all 0ms\n ✓ tests/documents/searchDocumentsForKeywords.test.ts > db.searchDocumentsForKeywords > throws if args.limit is not an integer 0ms\n ✓ tests/documents/searchDocumentsForKeywords.test.ts > db.searchDocumentsForKeywords > throws if args.pathPrefix is not a string 0ms\n ✓ tests/documents/searchDocumentsForKeywords.test.ts > db.searchDocumentsForKeywords > returns [] and does not hit DB for empty tokenization result 3ms\n ✓ tests/documents/searchDocumentsForKeywords.test.ts > db.searchDocumentsForKeywords > tokenizes comma/semicolon separated input strings (trimming + dropping empties) 1ms\n ✓ tests/documents/searchDocumentsForKeywords.test.ts > db.searchDocumentsForKeywords > does not split on spaces (string tokenization only splits on comma/semicolon) 0ms\n ✓ tests/documents/searchDocumentsForKeywords.test.ts > db.searchDocumentsForKeywords > passes matchMode=all through to SQL 0ms\n ✓ tests/documents/searchDocumentsForKeywords.test.ts > db.searchDocumentsForKeywords > defaults matchMode=any 0ms\n ✓ tests/documents/searchDocumentsForKeywords.test.ts > db.searchDocumentsForKeywords > clamps limit to [1..] 0ms\n ✓ tests/documents/searchDocumentsForKeywords.test.ts > db.searchDocumentsForKeywords > normalizes pathPrefix before passing it as escapedPrefix 0ms\n ✓ tests/documents/searchDocumentsForKeywords.test.ts > db.searchDocumentsForKeywords > maps src results and normalizes to unix separators 0ms\n ✓ tests/documents/searchDocumentsForKeywords.test.ts > db.searchDocumentsForKeywords > handles DB returning undefined/null rows 0ms\n\n Test Files  1 passed (1)\n      Tests  14 passed (14)\n   Start at  15:05:02\n   Duration  9.41s (transform 1.03s, setup 0ms, collect 3.56s, tests 11ms, environment 0ms, prepare 548ms)\n\n",
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/documents/searchDocumentsForKeywords.test.ts > db.searchDocumentsForKeywords > throws if args.projectIds is missing/empty 2ms\n ✓ tests/documents/searchDocumentsForKeywords.test.ts > db.searchDocumentsForKeywords > throws if args.keywords is not string|string[] 0ms\n ✓ tests/documents/searchDocumentsForKeywords.test.ts > db.searchDocumentsForKeywords > throws if args.matchMode is not any|all 0ms\n ✓ tests/documents/searchDocumentsForKeywords.test.ts > db.searchDocumentsForKeywords > throws if args.limit is not an integer 0ms\n ✓ tests/documents/searchDocumentsForKeywords.test.ts > db.searchDocumentsForKeywords > throws if args.pathPrefix is not a string 0ms\n ✓ tests/documents/searchDocumentsForKeywords.test.ts > db.searchDocumentsForKeywords > returns [] and does not hit DB for empty tokenization result 1ms\n ✓ tests/documents/searchDocumentsForKeywords.test.ts > db.searchDocumentsForKeywords > tokenizes comma/semicolon separated input strings (trimming + dropping empties) 0ms\n ✓ tests/documents/searchDocumentsForKeywords.test.ts > db.searchDocumentsForKeywords > does not split on spaces (string tokenization only splits on comma/semicolon) 0ms\n ✓ tests/documents/searchDocumentsForKeywords.test.ts > db.searchDocumentsForKeywords > passes matchMode=all through to SQL 0ms\n ✓ tests/documents/searchDocumentsForKeywords.test.ts > db.searchDocumentsForKeywords > defaults matchMode=any 1ms\n ✓ tests/documents/searchDocumentsForKeywords.test.ts > db.searchDocumentsForKeywords > clamps limit to [1..] 1ms\n ✓ tests/documents/searchDocumentsForKeywords.test.ts > db.searchDocumentsForKeywords > normalizes pathPrefix before passing it as escapedPrefix 0ms\n ✓ tests/documents/searchDocumentsForKeywords.test.ts > db.searchDocumentsForKeywords > maps src results and normalizes to unix separators 0ms\n ✓ tests/documents/searchDocumentsForKeywords.test.ts > db.searchDocumentsForKeywords > handles DB returning undefined/null rows 0ms\n\n Test Files  1 passed (1)\n      Tests  14 passed (14)\n   Start at  11:18:58\n   Duration  2.10s (transform 306ms, setup 0ms, collect 963ms, tests 8ms, environment 0ms, prepare 389ms)\n\n",
       "summary": {
         "total": 14,
         "passed": 14,
         "failed": 0,
         "skipped": 0,
-        "durationMs": 9410
+        "durationMs": 2100
       }
     },
     {
@@ -354,10 +390,10 @@
       "filePath": "tests/documents/searchDocumentsForPaths.test.ts",
       "passes": [
         {
-          "testName": "tests/documents/searchDocumentsForPaths.test.ts > db.searchDocumentsForPaths > throws if args.projectIds is missing/empty 88ms"
+          "testName": "tests/documents/searchDocumentsForPaths.test.ts > db.searchDocumentsForPaths > throws if args.projectIds is missing/empty 63ms"
         },
         {
-          "testName": "tests/documents/searchDocumentsForPaths.test.ts > db.searchDocumentsForPaths > throws if args.query is not a string 12ms"
+          "testName": "tests/documents/searchDocumentsForPaths.test.ts > db.searchDocumentsForPaths > throws if args.query is not a string 0ms"
         },
         {
           "testName": "tests/documents/searchDocumentsForPaths.test.ts > db.searchDocumentsForPaths > throws if args.limit is not an integer 0ms"
@@ -375,10 +411,10 @@
           "testName": "tests/documents/searchDocumentsForPaths.test.ts > db.searchDocumentsForPaths > clamps limit to [1..] 0ms"
         },
         {
-          "testName": "tests/documents/searchDocumentsForPaths.test.ts > db.searchDocumentsForPaths > escapes LIKE patterns in query and prefix (% and _) 0ms"
+          "testName": "tests/documents/searchDocumentsForPaths.test.ts > db.searchDocumentsForPaths > escapes LIKE patterns in query and prefix (% and _) 4ms"
         },
         {
-          "testName": "tests/documents/searchDocumentsForPaths.test.ts > db.searchDocumentsForPaths > uses null escapedPrefix when pathPrefix is empty/whitespace 0ms"
+          "testName": "tests/documents/searchDocumentsForPaths.test.ts > db.searchDocumentsForPaths > uses null escapedPrefix when pathPrefix is empty/whitespace 1ms"
         },
         {
           "testName": "tests/documents/searchDocumentsForPaths.test.ts > db.searchDocumentsForPaths > pathPrefix is normalized and passed as escapedPrefix (no leading slash, unix separators, ends with /) 0ms"
@@ -392,13 +428,13 @@
       ],
       "failures": [],
       "skips": [],
-      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/documents/searchDocumentsForPaths.test.ts > db.searchDocumentsForPaths > throws if args.projectIds is missing/empty 88ms\n ✓ tests/documents/searchDocumentsForPaths.test.ts > db.searchDocumentsForPaths > throws if args.query is not a string 12ms\n ✓ tests/documents/searchDocumentsForPaths.test.ts > db.searchDocumentsForPaths > throws if args.limit is not an integer 0ms\n ✓ tests/documents/searchDocumentsForPaths.test.ts > db.searchDocumentsForPaths > throws if args.pathPrefix is not a string 0ms\n ✓ tests/documents/searchDocumentsForPaths.test.ts > db.searchDocumentsForPaths > returns [] and does not hit DB for empty/whitespace query 1ms\n ✓ tests/documents/searchDocumentsForPaths.test.ts > db.searchDocumentsForPaths > trims query before using it (whitespace around query) 0ms\n ✓ tests/documents/searchDocumentsForPaths.test.ts > db.searchDocumentsForPaths > clamps limit to [1..] 0ms\n ✓ tests/documents/searchDocumentsForPaths.test.ts > db.searchDocumentsForPaths > escapes LIKE patterns in query and prefix (% and _) 0ms\n ✓ tests/documents/searchDocumentsForPaths.test.ts > db.searchDocumentsForPaths > uses null escapedPrefix when pathPrefix is empty/whitespace 0ms\n ✓ tests/documents/searchDocumentsForPaths.test.ts > db.searchDocumentsForPaths > pathPrefix is normalized and passed as escapedPrefix (no leading slash, unix separators, ends with /) 0ms\n ✓ tests/documents/searchDocumentsForPaths.test.ts > db.searchDocumentsForPaths > normalizes returned src path separators to unix and strips leading ./ 0ms\n ✓ tests/documents/searchDocumentsForPaths.test.ts > db.searchDocumentsForPaths > handles DB returning undefined/null rows 0ms\n\n Test Files  1 passed (1)\n      Tests  12 passed (12)\n   Start at  15:05:00\n   Duration  10.50s (transform 2.55s, setup 0ms, collect 5.49s, tests 104ms, environment 0ms, prepare 1.27s)\n\n",
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/documents/searchDocumentsForPaths.test.ts > db.searchDocumentsForPaths > throws if args.projectIds is missing/empty 63ms\n ✓ tests/documents/searchDocumentsForPaths.test.ts > db.searchDocumentsForPaths > throws if args.query is not a string 0ms\n ✓ tests/documents/searchDocumentsForPaths.test.ts > db.searchDocumentsForPaths > throws if args.limit is not an integer 0ms\n ✓ tests/documents/searchDocumentsForPaths.test.ts > db.searchDocumentsForPaths > throws if args.pathPrefix is not a string 0ms\n ✓ tests/documents/searchDocumentsForPaths.test.ts > db.searchDocumentsForPaths > returns [] and does not hit DB for empty/whitespace query 1ms\n ✓ tests/documents/searchDocumentsForPaths.test.ts > db.searchDocumentsForPaths > trims query before using it (whitespace around query) 0ms\n ✓ tests/documents/searchDocumentsForPaths.test.ts > db.searchDocumentsForPaths > clamps limit to [1..] 0ms\n ✓ tests/documents/searchDocumentsForPaths.test.ts > db.searchDocumentsForPaths > escapes LIKE patterns in query and prefix (% and _) 4ms\n ✓ tests/documents/searchDocumentsForPaths.test.ts > db.searchDocumentsForPaths > uses null escapedPrefix when pathPrefix is empty/whitespace 1ms\n ✓ tests/documents/searchDocumentsForPaths.test.ts > db.searchDocumentsForPaths > pathPrefix is normalized and passed as escapedPrefix (no leading slash, unix separators, ends with /) 0ms\n ✓ tests/documents/searchDocumentsForPaths.test.ts > db.searchDocumentsForPaths > normalizes returned src path separators to unix and strips leading ./ 0ms\n ✓ tests/documents/searchDocumentsForPaths.test.ts > db.searchDocumentsForPaths > handles DB returning undefined/null rows 0ms\n\n Test Files  1 passed (1)\n      Tests  12 passed (12)\n   Start at  11:18:58\n   Duration  2.28s (transform 349ms, setup 0ms, collect 1.06s, tests 72ms, environment 0ms, prepare 330ms)\n\n",
       "summary": {
         "total": 12,
         "passed": 12,
         "failed": 0,
         "skipped": 0,
-        "durationMs": 10500
+        "durationMs": 2280
       }
     },
     {
@@ -406,13 +442,16 @@
       "filePath": "tests/documents/updateDocument.test.ts",
       "passes": [
         {
-          "testName": "tests/documents/updateDocument.test.ts > Documents.updateDocument > should update an existing document (including embedding when content is provided) 18ms"
+          "testName": "tests/documents/updateDocument.test.ts > Documents.updateDocument > should update an existing document (including embedding when content is provided) 2ms"
         },
         {
-          "testName": "tests/documents/updateDocument.test.ts > Documents.updateDocument > should return undefined if document does not exist 5ms"
+          "testName": "tests/documents/updateDocument.test.ts > Documents.updateDocument > should return undefined if document does not exist 0ms"
         },
         {
-          "testName": "tests/documents/updateDocument.test.ts > Documents.updateDocument > should update without changing embedding if content is not provided 12ms"
+          "testName": "tests/documents/updateDocument.test.ts > Documents.updateDocument > should update without changing embedding if content is not provided 0ms"
+        },
+        {
+          "testName": "tests/documents/updateDocument.test.ts > Documents.updateDocument > treats patch.content === null as a clear-content (empty string) update 0ms"
         },
         {
           "testName": "tests/documents/updateDocument.test.ts > Documents.updateDocument > should return undefined if update returns no rows 0ms"
@@ -420,13 +459,347 @@
       ],
       "failures": [],
       "skips": [],
-      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/documents/updateDocument.test.ts > Documents.updateDocument > should update an existing document (including embedding when content is provided) 18ms\n ✓ tests/documents/updateDocument.test.ts > Documents.updateDocument > should return undefined if document does not exist 5ms\n ✓ tests/documents/updateDocument.test.ts > Documents.updateDocument > should update without changing embedding if content is not provided 12ms\n ✓ tests/documents/updateDocument.test.ts > Documents.updateDocument > should return undefined if update returns no rows 0ms\n\n Test Files  1 passed (1)\n      Tests  4 passed (4)\n   Start at  15:05:00\n   Duration  10.04s (transform 1.57s, setup 0ms, collect 3.97s, tests 35ms, environment 0ms, prepare 1.23s)\n\n",
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/documents/updateDocument.test.ts > Documents.updateDocument > should update an existing document (including embedding when content is provided) 2ms\n ✓ tests/documents/updateDocument.test.ts > Documents.updateDocument > should return undefined if document does not exist 0ms\n ✓ tests/documents/updateDocument.test.ts > Documents.updateDocument > should update without changing embedding if content is not provided 0ms\n ✓ tests/documents/updateDocument.test.ts > Documents.updateDocument > treats patch.content === null as a clear-content (empty string) update 0ms\n ✓ tests/documents/updateDocument.test.ts > Documents.updateDocument > should return undefined if update returns no rows 0ms\n\n Test Files  1 passed (1)\n      Tests  5 passed (5)\n   Start at  11:18:58\n   Duration  2.33s (transform 233ms, setup 0ms, collect 958ms, tests 9ms, environment 0ms, prepare 58ms)\n\n",
       "summary": {
-        "total": 4,
-        "passed": 4,
+        "total": 5,
+        "passed": 5,
         "failed": 0,
         "skipped": 0,
-        "durationMs": 10040
+        "durationMs": 2330
+      }
+    },
+    {
+      "status": "ok",
+      "filePath": "tests/documents/upsertDocuments.test.ts",
+      "passes": [
+        {
+          "testName": "tests/documents/upsertDocuments.test.ts > Documents.upsertDocuments > returns [] for an empty inputs array without touching the db 2ms"
+        },
+        {
+          "testName": "tests/documents/upsertDocuments.test.ts > Documents.upsertDocuments > treats undefined content as empty string in the change-detection query 0ms"
+        },
+        {
+          "testName": "tests/documents/upsertDocuments.test.ts > Documents.upsertDocuments > treats undefined content as empty string in the embedding text 1ms"
+        },
+        {
+          "testName": "tests/documents/upsertDocuments.test.ts > Documents.upsertDocuments > returns [] when getChangingDocuments reports nothing changed 0ms"
+        },
+        {
+          "testName": "tests/documents/upsertDocuments.test.ts > Documents.upsertDocuments > embeds, BEGINs, upserts each changed doc, and COMMITs 1ms"
+        },
+        {
+          "testName": "tests/documents/upsertDocuments.test.ts > Documents.upsertDocuments > skips documents not flagged as changing while still upserting the changed ones 0ms"
+        },
+        {
+          "testName": "tests/documents/upsertDocuments.test.ts > Documents.upsertDocuments > rolls back and rethrows when an upsert query fails 1ms"
+        },
+        {
+          "testName": "tests/documents/upsertDocuments.test.ts > Documents.upsertDocuments > rolls back and rethrows when embedding generation fails 0ms"
+        },
+        {
+          "testName": "tests/documents/upsertDocuments.test.ts > Documents.upsertDocuments > skips a row in the result if upsertDocument returns no rows 0ms"
+        },
+        {
+          "testName": "tests/documents/upsertDocuments.test.ts > Documents.upsertDocument > delegates to upsertDocuments and returns the first row 0ms"
+        },
+        {
+          "testName": "tests/documents/upsertDocuments.test.ts > Documents.upsertDocument > returns undefined when nothing was upserted 0ms"
+        }
+      ],
+      "failures": [],
+      "skips": [],
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/documents/upsertDocuments.test.ts > Documents.upsertDocuments > returns [] for an empty inputs array without touching the db 2ms\n ✓ tests/documents/upsertDocuments.test.ts > Documents.upsertDocuments > treats undefined content as empty string in the change-detection query 0ms\n ✓ tests/documents/upsertDocuments.test.ts > Documents.upsertDocuments > treats undefined content as empty string in the embedding text 1ms\n ✓ tests/documents/upsertDocuments.test.ts > Documents.upsertDocuments > returns [] when getChangingDocuments reports nothing changed 0ms\n ✓ tests/documents/upsertDocuments.test.ts > Documents.upsertDocuments > embeds, BEGINs, upserts each changed doc, and COMMITs 1ms\n ✓ tests/documents/upsertDocuments.test.ts > Documents.upsertDocuments > skips documents not flagged as changing while still upserting the changed ones 0ms\n ✓ tests/documents/upsertDocuments.test.ts > Documents.upsertDocuments > rolls back and rethrows when an upsert query fails 1ms\n ✓ tests/documents/upsertDocuments.test.ts > Documents.upsertDocuments > rolls back and rethrows when embedding generation fails 0ms\n ✓ tests/documents/upsertDocuments.test.ts > Documents.upsertDocuments > skips a row in the result if upsertDocument returns no rows 0ms\n ✓ tests/documents/upsertDocuments.test.ts > Documents.upsertDocument > delegates to upsertDocuments and returns the first row 0ms\n ✓ tests/documents/upsertDocuments.test.ts > Documents.upsertDocument > returns undefined when nothing was upserted 0ms\n\n Test Files  1 passed (1)\n      Tests  11 passed (11)\n   Start at  11:18:58\n   Duration  2.13s (transform 365ms, setup 0ms, collect 940ms, tests 7ms, environment 0ms, prepare 509ms)\n\n",
+      "summary": {
+        "total": 11,
+        "passed": 11,
+        "failed": 0,
+        "skipped": 0,
+        "durationMs": 2130
+      }
+    },
+    {
+      "status": "error",
+      "filePath": "tests/e2e/codebase-hybrid-search.e2e.test.ts",
+      "passes": [],
+      "failures": [],
+      "skips": [],
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n\nNo test files found, exiting with code 1\n\nfilter: tests/e2e/codebase-hybrid-search.e2e.test.ts\ninclude: src/**/*.test.ts, tests/**/*.test.ts\nexclude:  tests/e2e/**\n\n",
+      "summary": {
+        "total": 0,
+        "passed": 0,
+        "failed": 0,
+        "skipped": 0,
+        "durationMs": 1772
+      }
+    },
+    {
+      "status": "error",
+      "filePath": "tests/e2e/documents-hybrid-advanced.e2e.test.ts",
+      "passes": [],
+      "failures": [],
+      "skips": [],
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n\nNo test files found, exiting with code 1\n\nfilter: tests/e2e/documents-hybrid-advanced.e2e.test.ts\ninclude: src/**/*.test.ts, tests/**/*.test.ts\nexclude:  tests/e2e/**\n\n",
+      "summary": {
+        "total": 0,
+        "passed": 0,
+        "failed": 0,
+        "skipped": 0,
+        "durationMs": 1087
+      }
+    },
+    {
+      "status": "error",
+      "filePath": "tests/e2e/documents-hybrid.e2e.test.ts",
+      "passes": [],
+      "failures": [],
+      "skips": [],
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n\nNo test files found, exiting with code 1\n\nfilter: tests/e2e/documents-hybrid.e2e.test.ts\ninclude: src/**/*.test.ts, tests/**/*.test.ts\nexclude:  tests/e2e/**\n\n",
+      "summary": {
+        "total": 0,
+        "passed": 0,
+        "failed": 0,
+        "skipped": 0,
+        "durationMs": 1711
+      }
+    },
+    {
+      "status": "error",
+      "filePath": "tests/e2e/documents-improved-search-ranking.e2e.test.ts",
+      "passes": [],
+      "failures": [],
+      "skips": [],
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n\nNo test files found, exiting with code 1\n\nfilter: tests/e2e/documents-improved-search-ranking.e2e.test.ts\ninclude: src/**/*.test.ts, tests/**/*.test.ts\nexclude:  tests/e2e/**\n\n",
+      "summary": {
+        "total": 0,
+        "passed": 0,
+        "failed": 0,
+        "skipped": 0,
+        "durationMs": 2071
+      }
+    },
+    {
+      "status": "error",
+      "filePath": "tests/e2e/documents-indexing.e2e.test.ts",
+      "passes": [],
+      "failures": [],
+      "skips": [],
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n\nNo test files found, exiting with code 1\n\nfilter: tests/e2e/documents-indexing.e2e.test.ts\ninclude: src/**/*.test.ts, tests/**/*.test.ts\nexclude:  tests/e2e/**\n\n",
+      "summary": {
+        "total": 0,
+        "passed": 0,
+        "failed": 0,
+        "skipped": 0,
+        "durationMs": 1847
+      }
+    },
+    {
+      "status": "error",
+      "filePath": "tests/e2e/documents-name-search.e2e.test.ts",
+      "passes": [],
+      "failures": [],
+      "skips": [],
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n\nNo test files found, exiting with code 1\n\nfilter: tests/e2e/documents-name-search.e2e.test.ts\ninclude: src/**/*.test.ts, tests/**/*.test.ts\nexclude:  tests/e2e/**\n\n",
+      "summary": {
+        "total": 0,
+        "passed": 0,
+        "failed": 0,
+        "skipped": 0,
+        "durationMs": 1596
+      }
+    },
+    {
+      "status": "error",
+      "filePath": "tests/e2e/entities-hybrid-advanced.e2e.test.ts",
+      "passes": [],
+      "failures": [],
+      "skips": [],
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n\nNo test files found, exiting with code 1\n\nfilter: tests/e2e/entities-hybrid-advanced.e2e.test.ts\ninclude: src/**/*.test.ts, tests/**/*.test.ts\nexclude:  tests/e2e/**\n\n",
+      "summary": {
+        "total": 0,
+        "passed": 0,
+        "failed": 0,
+        "skipped": 0,
+        "durationMs": 1330
+      }
+    },
+    {
+      "status": "error",
+      "filePath": "tests/e2e/entities-hybrid.e2e.test.ts",
+      "passes": [],
+      "failures": [],
+      "skips": [],
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n\nNo test files found, exiting with code 1\n\nfilter: tests/e2e/entities-hybrid.e2e.test.ts\ninclude: src/**/*.test.ts, tests/**/*.test.ts\nexclude:  tests/e2e/**\n\n",
+      "summary": {
+        "total": 0,
+        "passed": 0,
+        "failed": 0,
+        "skipped": 0,
+        "durationMs": 1340
+      }
+    },
+    {
+      "status": "error",
+      "filePath": "tests/e2e/entities-improved-search-ranking.e2e.test.ts",
+      "passes": [],
+      "failures": [],
+      "skips": [],
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n\nNo test files found, exiting with code 1\n\nfilter: tests/e2e/entities-improved-search-ranking.e2e.test.ts\ninclude: src/**/*.test.ts, tests/**/*.test.ts\nexclude:  tests/e2e/**\n\n",
+      "summary": {
+        "total": 0,
+        "passed": 0,
+        "failed": 0,
+        "skipped": 0,
+        "durationMs": 1198
+      }
+    },
+    {
+      "status": "error",
+      "filePath": "tests/e2e/entities-indexing.e2e.test.ts",
+      "passes": [],
+      "failures": [],
+      "skips": [],
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n\nNo test files found, exiting with code 1\n\nfilter: tests/e2e/entities-indexing.e2e.test.ts\ninclude: src/**/*.test.ts, tests/**/*.test.ts\nexclude:  tests/e2e/**\n\n",
+      "summary": {
+        "total": 0,
+        "passed": 0,
+        "failed": 0,
+        "skipped": 0,
+        "durationMs": 1143
+      }
+    },
+    {
+      "status": "error",
+      "filePath": "tests/e2e/lifecycle/external.lifecycle.e2e.test.ts",
+      "passes": [],
+      "failures": [],
+      "skips": [],
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n\nNo test files found, exiting with code 1\n\nfilter: tests/e2e/lifecycle/external.lifecycle.e2e.test.ts\ninclude: src/**/*.test.ts, tests/**/*.test.ts\nexclude:  tests/e2e/**\n\n",
+      "summary": {
+        "total": 0,
+        "passed": 0,
+        "failed": 0,
+        "skipped": 0,
+        "durationMs": 1142
+      }
+    },
+    {
+      "status": "error",
+      "filePath": "tests/e2e/lifecycle/managed.lifecycle.e2e.test.ts",
+      "passes": [],
+      "failures": [],
+      "skips": [],
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n\nNo test files found, exiting with code 1\n\nfilter: tests/e2e/lifecycle/managed.lifecycle.e2e.test.ts\ninclude: src/**/*.test.ts, tests/**/*.test.ts\nexclude:  tests/e2e/**\n\n",
+      "summary": {
+        "total": 0,
+        "passed": 0,
+        "failed": 0,
+        "skipped": 0,
+        "durationMs": 1115
+      }
+    },
+    {
+      "status": "error",
+      "filePath": "tests/e2e/lifecycle/reusable.lifecycle.e2e.test.ts",
+      "passes": [],
+      "failures": [],
+      "skips": [],
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n\nNo test files found, exiting with code 1\n\nfilter: tests/e2e/lifecycle/reusable.lifecycle.e2e.test.ts\ninclude: src/**/*.test.ts, tests/**/*.test.ts\nexclude:  tests/e2e/**\n\n",
+      "summary": {
+        "total": 0,
+        "passed": 0,
+        "failed": 0,
+        "skipped": 0,
+        "durationMs": 1103
+      }
+    },
+    {
+      "status": "error",
+      "filePath": "tests/e2e/searchDocumentsForExact.e2e.test.ts",
+      "passes": [],
+      "failures": [],
+      "skips": [],
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n\nNo test files found, exiting with code 1\n\nfilter: tests/e2e/searchDocumentsForExact.e2e.test.ts\ninclude: src/**/*.test.ts, tests/**/*.test.ts\nexclude:  tests/e2e/**\n\n",
+      "summary": {
+        "total": 0,
+        "passed": 0,
+        "failed": 0,
+        "skipped": 0,
+        "durationMs": 1179
+      }
+    },
+    {
+      "status": "error",
+      "filePath": "tests/e2e/searchDocumentsForKeywords.e2e.test.ts",
+      "passes": [],
+      "failures": [],
+      "skips": [],
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n\nNo test files found, exiting with code 1\n\nfilter: tests/e2e/searchDocumentsForKeywords.e2e.test.ts\ninclude: src/**/*.test.ts, tests/**/*.test.ts\nexclude:  tests/e2e/**\n\n",
+      "summary": {
+        "total": 0,
+        "passed": 0,
+        "failed": 0,
+        "skipped": 0,
+        "durationMs": 1150
+      }
+    },
+    {
+      "status": "error",
+      "filePath": "tests/e2e/searchDocumentsForPaths.e2e.test.ts",
+      "passes": [],
+      "failures": [],
+      "skips": [],
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n\nNo test files found, exiting with code 1\n\nfilter: tests/e2e/searchDocumentsForPaths.e2e.test.ts\ninclude: src/**/*.test.ts, tests/**/*.test.ts\nexclude:  tests/e2e/**\n\n",
+      "summary": {
+        "total": 0,
+        "passed": 0,
+        "failed": 0,
+        "skipped": 0,
+        "durationMs": 986
+      }
+    },
+    {
+      "status": "error",
+      "filePath": "tests/e2e/searchEntitiesForExact.e2e.test.ts",
+      "passes": [],
+      "failures": [],
+      "skips": [],
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n\nNo test files found, exiting with code 1\n\nfilter: tests/e2e/searchEntitiesForExact.e2e.test.ts\ninclude: src/**/*.test.ts, tests/**/*.test.ts\nexclude:  tests/e2e/**\n\n",
+      "summary": {
+        "total": 0,
+        "passed": 0,
+        "failed": 0,
+        "skipped": 0,
+        "durationMs": 958
+      }
+    },
+    {
+      "status": "error",
+      "filePath": "tests/e2e/searchEntitiesForKeywords.e2e.test.ts",
+      "passes": [],
+      "failures": [],
+      "skips": [],
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n\nNo test files found, exiting with code 1\n\nfilter: tests/e2e/searchEntitiesForKeywords.e2e.test.ts\ninclude: src/**/*.test.ts, tests/**/*.test.ts\nexclude:  tests/e2e/**\n\n",
+      "summary": {
+        "total": 0,
+        "passed": 0,
+        "failed": 0,
+        "skipped": 0,
+        "durationMs": 1005
+      }
+    },
+    {
+      "status": "error",
+      "filePath": "tests/e2e/updates-and-fts.e2e.test.ts",
+      "passes": [],
+      "failures": [],
+      "skips": [],
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n\nNo test files found, exiting with code 1\n\nfilter: tests/e2e/updates-and-fts.e2e.test.ts\ninclude: src/**/*.test.ts, tests/**/*.test.ts\nexclude:  tests/e2e/**\n\n",
+      "summary": {
+        "total": 0,
+        "passed": 0,
+        "failed": 0,
+        "skipped": 0,
+        "durationMs": 1005
       }
     },
     {
@@ -508,13 +881,13 @@
       ],
       "failures": [],
       "skips": [],
-      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/embeddings.test.ts > createLocalEmbeddingProvider > embeds text and normalizes vectors to unit length by default 2ms\n ✓ tests/embeddings.test.ts > createLocalEmbeddingProvider > respects custom model and revision options 0ms\n ✓ tests/embeddings.test.ts > createLocalEmbeddingProvider > normalize: false returns non-unit vector 0ms\n ✓ tests/embeddings.test.ts > createLocalEmbeddingProvider > handles array-shaped outputs without .data field 0ms\n ✓ tests/embeddings.test.ts > createLocalEmbeddingProvider > handles flat array-shaped outputs 0ms\n ✓ tests/embeddings.test.ts > createLocalEmbeddingProvider > handles object output with index 0 containing an array (output?.[0] path) 0ms\n ✓ tests/embeddings.test.ts > createLocalEmbeddingProvider > handles tensor-like output with a .to() method 0ms\n ✓ tests/embeddings.test.ts > createLocalEmbeddingProvider > handles tensor-like output with to('cpu') returning an array (Array.isArray(maybe) true path) 0ms\n ✓ tests/embeddings.test.ts > createLocalEmbeddingProvider > handles tensor-like output with to('cpu') returning an object with data (Array.isArray(maybe) false path) 0ms\n ✓ tests/embeddings.test.ts > createLocalEmbeddingProvider > embedAsync handles output with data as a number array 0ms\n ✓ tests/embeddings.test.ts > createLocalEmbeddingProvider > embedAsync handles output with data as a Float32Array 0ms\n ✓ tests/embeddings.test.ts > createLocalEmbeddingProvider > embedBatch > embeds a batch of texts using nested array output 0ms\n ✓ tests/embeddings.test.ts > createLocalEmbeddingProvider > embedBatch > embeds a batch of texts using Tensor output 0ms\n ✓ tests/embeddings.test.ts > createLocalEmbeddingProvider > embedBatch > unwrapOutput handles function that expects batch texts 0ms\n ✓ tests/embeddings.test.ts > createLocalEmbeddingProvider > embedBatch > handles an empty array 0ms\n ✓ tests/embeddings.test.ts > createLocalEmbeddingProvider > embedBatch > throws an error for unsupported batch output format 1ms\n ✓ tests/embeddings.test.ts > createLocalEmbeddingProvider > embedBatch > throws if model returns null or undefined output 0ms\n ✓ tests/embeddings.test.ts > createLocalEmbeddingProvider > embedBatch > throws on unsupported output format (e.g. object without length) 0ms\n ✓ tests/embeddings.test.ts > createLocalEmbeddingProvider > embedBatch > throws on unsupported tensor shape 0ms\n ✓ tests/embeddings.test.ts > createLocalEmbeddingProvider > close > disposes the pipeline instance after it has been used 0ms\n ✓ tests/embeddings.test.ts > createLocalEmbeddingProvider > close > does nothing if the pipeline was never created 0ms\n ✓ tests/embeddings.test.ts > createLocalEmbeddingProvider > close > does not throw if dispose method is missing 0ms\n ✓ tests/embeddings.test.ts > createLocalEmbeddingProvider > close > handles errors during dispose gracefully 0ms\n ✓ tests/embeddings.test.ts > createLocalEmbeddingProvider > close > unwrapOutput breaks out of a function that throws 0ms\n\n Test Files  1 passed (1)\n      Tests  24 passed (24)\n   Start at  15:05:00\n   Duration  7.49s (transform 1.06s, setup 0ms, collect 2.05s, tests 7ms, environment 0ms, prepare 837ms)\n\n",
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/embeddings.test.ts > createLocalEmbeddingProvider > embeds text and normalizes vectors to unit length by default 2ms\n ✓ tests/embeddings.test.ts > createLocalEmbeddingProvider > respects custom model and revision options 0ms\n ✓ tests/embeddings.test.ts > createLocalEmbeddingProvider > normalize: false returns non-unit vector 0ms\n ✓ tests/embeddings.test.ts > createLocalEmbeddingProvider > handles array-shaped outputs without .data field 0ms\n ✓ tests/embeddings.test.ts > createLocalEmbeddingProvider > handles flat array-shaped outputs 0ms\n ✓ tests/embeddings.test.ts > createLocalEmbeddingProvider > handles object output with index 0 containing an array (output?.[0] path) 0ms\n ✓ tests/embeddings.test.ts > createLocalEmbeddingProvider > handles tensor-like output with a .to() method 0ms\n ✓ tests/embeddings.test.ts > createLocalEmbeddingProvider > handles tensor-like output with to('cpu') returning an array (Array.isArray(maybe) true path) 0ms\n ✓ tests/embeddings.test.ts > createLocalEmbeddingProvider > handles tensor-like output with to('cpu') returning an object with data (Array.isArray(maybe) false path) 0ms\n ✓ tests/embeddings.test.ts > createLocalEmbeddingProvider > embedAsync handles output with data as a number array 0ms\n ✓ tests/embeddings.test.ts > createLocalEmbeddingProvider > embedAsync handles output with data as a Float32Array 0ms\n ✓ tests/embeddings.test.ts > createLocalEmbeddingProvider > embedBatch > embeds a batch of texts using nested array output 0ms\n ✓ tests/embeddings.test.ts > createLocalEmbeddingProvider > embedBatch > embeds a batch of texts using Tensor output 0ms\n ✓ tests/embeddings.test.ts > createLocalEmbeddingProvider > embedBatch > unwrapOutput handles function that expects batch texts 0ms\n ✓ tests/embeddings.test.ts > createLocalEmbeddingProvider > embedBatch > handles an empty array 0ms\n ✓ tests/embeddings.test.ts > createLocalEmbeddingProvider > embedBatch > throws an error for unsupported batch output format 1ms\n ✓ tests/embeddings.test.ts > createLocalEmbeddingProvider > embedBatch > throws if model returns null or undefined output 0ms\n ✓ tests/embeddings.test.ts > createLocalEmbeddingProvider > embedBatch > throws on unsupported output format (e.g. object without length) 0ms\n ✓ tests/embeddings.test.ts > createLocalEmbeddingProvider > embedBatch > throws on unsupported tensor shape 0ms\n ✓ tests/embeddings.test.ts > createLocalEmbeddingProvider > close > disposes the pipeline instance after it has been used 0ms\n ✓ tests/embeddings.test.ts > createLocalEmbeddingProvider > close > does nothing if the pipeline was never created 0ms\n ✓ tests/embeddings.test.ts > createLocalEmbeddingProvider > close > does not throw if dispose method is missing 0ms\n ✓ tests/embeddings.test.ts > createLocalEmbeddingProvider > close > handles errors during dispose gracefully 0ms\n ✓ tests/embeddings.test.ts > createLocalEmbeddingProvider > close > unwrapOutput breaks out of a function that throws 0ms\n\n Test Files  1 passed (1)\n      Tests  24 passed (24)\n   Start at  11:19:03\n   Duration  763ms (transform 173ms, setup 0ms, collect 193ms, tests 7ms, environment 0ms, prepare 268ms)\n\n",
       "summary": {
         "total": 24,
         "passed": 24,
         "failed": 0,
         "skipped": 0,
-        "durationMs": 7490
+        "durationMs": 763
       }
     },
     {
@@ -530,13 +903,13 @@
       ],
       "failures": [],
       "skips": [],
-      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/entities/addEntity.test.ts > Entities.addEntity > should insert a new entity 2ms\n ✓ tests/entities/addEntity.test.ts > Entities.addEntity > should not embed if shouldEmbed is false 0ms\n\n Test Files  1 passed (1)\n      Tests  2 passed (2)\n   Start at  15:05:00\n   Duration  10.28s (transform 1.58s, setup 0ms, collect 5.15s, tests 4ms, environment 0ms, prepare 693ms)\n\n",
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/entities/addEntity.test.ts > Entities.addEntity > should insert a new entity 2ms\n ✓ tests/entities/addEntity.test.ts > Entities.addEntity > should not embed if shouldEmbed is false 0ms\n\n Test Files  1 passed (1)\n      Tests  2 passed (2)\n   Start at  11:19:03\n   Duration  2.53s (transform 530ms, setup 0ms, collect 1.94s, tests 3ms, environment 16ms, prepare 110ms)\n\n",
       "summary": {
         "total": 2,
         "passed": 2,
         "failed": 0,
         "skipped": 0,
-        "durationMs": 10280
+        "durationMs": 2530
       }
     },
     {
@@ -544,21 +917,27 @@
       "filePath": "tests/entities/clearEntities.test.ts",
       "passes": [
         {
-          "testName": "tests/entities/clearEntities.test.ts > Entities.clearEntities > should clear entities by project 2ms"
+          "testName": "tests/entities/clearEntities.test.ts > Entities.clearEntities > should clear entities by projectIds 2ms"
         },
         {
-          "testName": "tests/entities/clearEntities.test.ts > Entities.clearEntities > should clear all entities 0ms"
+          "testName": "tests/entities/clearEntities.test.ts > Entities.clearEntities > should clear entities by projectIds and types 0ms"
+        },
+        {
+          "testName": "tests/entities/clearEntities.test.ts > Entities.clearEntities > should ignore an empty types array and clear by projectIds only 0ms"
+        },
+        {
+          "testName": "tests/entities/clearEntities.test.ts > Entities.clearEntities > should reject an empty projectIds array 1ms"
         }
       ],
       "failures": [],
       "skips": [],
-      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/entities/clearEntities.test.ts > Entities.clearEntities > should clear entities by project 2ms\n ✓ tests/entities/clearEntities.test.ts > Entities.clearEntities > should clear all entities 0ms\n\n Test Files  1 passed (1)\n      Tests  2 passed (2)\n   Start at  15:04:59\n   Duration  10.03s (transform 2.70s, setup 0ms, collect 7.89s, tests 3ms, environment 0ms, prepare 763ms)\n\n",
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/entities/clearEntities.test.ts > Entities.clearEntities > should clear entities by projectIds 2ms\n ✓ tests/entities/clearEntities.test.ts > Entities.clearEntities > should clear entities by projectIds and types 0ms\n ✓ tests/entities/clearEntities.test.ts > Entities.clearEntities > should ignore an empty types array and clear by projectIds only 0ms\n ✓ tests/entities/clearEntities.test.ts > Entities.clearEntities > should reject an empty projectIds array 1ms\n\n Test Files  1 passed (1)\n      Tests  4 passed (4)\n   Start at  11:19:03\n   Duration  2.15s (transform 484ms, setup 0ms, collect 1.42s, tests 4ms, environment 0ms, prepare 297ms)\n\n",
       "summary": {
-        "total": 2,
-        "passed": 2,
+        "total": 4,
+        "passed": 4,
         "failed": 0,
         "skipped": 0,
-        "durationMs": 10030
+        "durationMs": 2150
       }
     },
     {
@@ -566,21 +945,24 @@
       "filePath": "tests/entities/deleteEntity.test.ts",
       "passes": [
         {
-          "testName": "tests/entities/deleteEntity.test.ts > Entities.deleteEntity > should return true if deleted 11ms"
+          "testName": "tests/entities/deleteEntity.test.ts > Entities.deleteEntity > should return true if deleted 2ms"
         },
         {
           "testName": "tests/entities/deleteEntity.test.ts > Entities.deleteEntity > should return false if not deleted 0ms"
+        },
+        {
+          "testName": "tests/entities/deleteEntity.test.ts > Entities.deleteEntity > should return false when the driver omits rowCount entirely 0ms"
         }
       ],
       "failures": [],
       "skips": [],
-      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/entities/deleteEntity.test.ts > Entities.deleteEntity > should return true if deleted 11ms\n ✓ tests/entities/deleteEntity.test.ts > Entities.deleteEntity > should return false if not deleted 0ms\n\n Test Files  1 passed (1)\n      Tests  2 passed (2)\n   Start at  15:05:00\n   Duration  10.02s (transform 1.29s, setup 0ms, collect 4.68s, tests 12ms, environment 0ms, prepare 1.06s)\n\n",
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/entities/deleteEntity.test.ts > Entities.deleteEntity > should return true if deleted 2ms\n ✓ tests/entities/deleteEntity.test.ts > Entities.deleteEntity > should return false if not deleted 0ms\n ✓ tests/entities/deleteEntity.test.ts > Entities.deleteEntity > should return false when the driver omits rowCount entirely 0ms\n\n Test Files  1 passed (1)\n      Tests  3 passed (3)\n   Start at  11:19:04\n   Duration  2.42s (transform 454ms, setup 0ms, collect 1.60s, tests 3ms, environment 0ms, prepare 184ms)\n\n",
       "summary": {
-        "total": 2,
-        "passed": 2,
+        "total": 3,
+        "passed": 3,
         "failed": 0,
         "skipped": 0,
-        "durationMs": 10020
+        "durationMs": 2420
       }
     },
     {
@@ -588,7 +970,7 @@
       "filePath": "tests/entities/getEntityById.test.ts",
       "passes": [
         {
-          "testName": "tests/entities/getEntityById.test.ts > Entities.getEntityById > should return an entity if found 13ms"
+          "testName": "tests/entities/getEntityById.test.ts > Entities.getEntityById > should return an entity if found 2ms"
         },
         {
           "testName": "tests/entities/getEntityById.test.ts > Entities.getEntityById > should return undefined if not found 0ms"
@@ -596,13 +978,13 @@
       ],
       "failures": [],
       "skips": [],
-      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/entities/getEntityById.test.ts > Entities.getEntityById > should return an entity if found 13ms\n ✓ tests/entities/getEntityById.test.ts > Entities.getEntityById > should return undefined if not found 0ms\n\n Test Files  1 passed (1)\n      Tests  2 passed (2)\n   Start at  15:04:59\n   Duration  10.44s (transform 2.77s, setup 0ms, collect 6.76s, tests 14ms, environment 0ms, prepare 1.20s)\n\n",
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/entities/getEntityById.test.ts > Entities.getEntityById > should return an entity if found 2ms\n ✓ tests/entities/getEntityById.test.ts > Entities.getEntityById > should return undefined if not found 0ms\n\n Test Files  1 passed (1)\n      Tests  2 passed (2)\n   Start at  11:19:04\n   Duration  2.54s (transform 440ms, setup 0ms, collect 1.75s, tests 3ms, environment 0ms, prepare 225ms)\n\n",
       "summary": {
         "total": 2,
         "passed": 2,
         "failed": 0,
         "skipped": 0,
-        "durationMs": 10440
+        "durationMs": 2540
       }
     },
     {
@@ -610,24 +992,30 @@
       "filePath": "tests/entities/matchEntities.test.ts",
       "passes": [
         {
-          "testName": "tests/entities/matchEntities.test.ts > Entities.matchEntities > should find entities by criteria (and include optional filter + limit) 30ms"
+          "testName": "tests/entities/matchEntities.test.ts > Entities.matchEntities > should find entities by criteria (and include optional filter + limit) 27ms"
         },
         {
-          "testName": "tests/entities/matchEntities.test.ts > Entities.matchEntities > should work with empty criteria 2ms"
+          "testName": "tests/entities/matchEntities.test.ts > Entities.matchEntities > should work with empty criteria 0ms"
         },
         {
-          "testName": "tests/entities/matchEntities.test.ts > Entities.matchEntities > should pass filter json when options include projectIds 1ms"
+          "testName": "tests/entities/matchEntities.test.ts > Entities.matchEntities > should pass filter json when options include projectIds 0ms"
+        },
+        {
+          "testName": "tests/entities/matchEntities.test.ts > Entities.matchEntities > builds a combined filter when types, ids, and projectIds are all present 2ms"
+        },
+        {
+          "testName": "tests/entities/matchEntities.test.ts > Entities.matchEntities > drops empty arrays from the filter without sending the keys 0ms"
         }
       ],
       "failures": [],
       "skips": [],
-      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/entities/matchEntities.test.ts > Entities.matchEntities > should find entities by criteria (and include optional filter + limit) 30ms\n ✓ tests/entities/matchEntities.test.ts > Entities.matchEntities > should work with empty criteria 2ms\n ✓ tests/entities/matchEntities.test.ts > Entities.matchEntities > should pass filter json when options include projectIds 1ms\n\n Test Files  1 passed (1)\n      Tests  3 passed (3)\n   Start at  15:05:00\n   Duration  10.85s (transform 1.64s, setup 0ms, collect 4.74s, tests 34ms, environment 123ms, prepare 640ms)\n\n",
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/entities/matchEntities.test.ts > Entities.matchEntities > should find entities by criteria (and include optional filter + limit) 27ms\n ✓ tests/entities/matchEntities.test.ts > Entities.matchEntities > should work with empty criteria 0ms\n ✓ tests/entities/matchEntities.test.ts > Entities.matchEntities > should pass filter json when options include projectIds 0ms\n ✓ tests/entities/matchEntities.test.ts > Entities.matchEntities > builds a combined filter when types, ids, and projectIds are all present 2ms\n ✓ tests/entities/matchEntities.test.ts > Entities.matchEntities > drops empty arrays from the filter without sending the keys 0ms\n\n Test Files  1 passed (1)\n      Tests  5 passed (5)\n   Start at  11:19:04\n   Duration  2.27s (transform 192ms, setup 0ms, collect 1.39s, tests 30ms, environment 0ms, prepare 139ms)\n\n",
       "summary": {
-        "total": 3,
-        "passed": 3,
+        "total": 5,
+        "passed": 5,
         "failed": 0,
         "skipped": 0,
-        "durationMs": 10850
+        "durationMs": 2270
       }
     },
     {
@@ -636,17 +1024,26 @@
       "passes": [
         {
           "testName": "tests/entities/searchEntities.test.ts > Entities.searchEntities > should perform a search 2ms"
+        },
+        {
+          "testName": "tests/entities/searchEntities.test.ts > Entities.searchEntities > returns [] for whitespace-only query 0ms"
+        },
+        {
+          "testName": "tests/entities/searchEntities.test.ts > Entities.searchEntities > forwards types/ids/projectIds into the filter JSON 0ms"
+        },
+        {
+          "testName": "tests/entities/searchEntities.test.ts > Entities.searchEntities > omits empty filter arrays 0ms"
         }
       ],
       "failures": [],
       "skips": [],
-      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/entities/searchEntities.test.ts > Entities.searchEntities > should perform a search 2ms\n\n Test Files  1 passed (1)\n      Tests  1 passed (1)\n   Start at  15:05:01\n   Duration  9.45s (transform 1.20s, setup 0ms, collect 3.67s, tests 3ms, environment 0ms, prepare 312ms)\n\n",
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/entities/searchEntities.test.ts > Entities.searchEntities > should perform a search 2ms\n ✓ tests/entities/searchEntities.test.ts > Entities.searchEntities > returns [] for whitespace-only query 0ms\n ✓ tests/entities/searchEntities.test.ts > Entities.searchEntities > forwards types/ids/projectIds into the filter JSON 0ms\n ✓ tests/entities/searchEntities.test.ts > Entities.searchEntities > omits empty filter arrays 0ms\n\n Test Files  1 passed (1)\n      Tests  4 passed (4)\n   Start at  11:19:05\n   Duration  2.18s (transform 263ms, setup 0ms, collect 1.61s, tests 4ms, environment 0ms, prepare 224ms)\n\n",
       "summary": {
-        "total": 1,
-        "passed": 1,
+        "total": 4,
+        "passed": 4,
         "failed": 0,
         "skipped": 0,
-        "durationMs": 9450
+        "durationMs": 2180
       }
     },
     {
@@ -654,16 +1051,16 @@
       "filePath": "tests/entities/searchEntitiesForExact.test.ts",
       "passes": [
         {
-          "testName": "tests/entities/searchEntitiesForExact.test.ts > db.searchEntitiesForExact > throws if args.projectIds is missing/empty 2ms"
+          "testName": "tests/entities/searchEntitiesForExact.test.ts > db.searchEntitiesForExact > throws if args.projectIds is missing/empty 3ms"
         },
         {
-          "testName": "tests/entities/searchEntitiesForExact.test.ts > db.searchEntitiesForExact > throws if args.needles is not string|string[] 0ms"
+          "testName": "tests/entities/searchEntitiesForExact.test.ts > db.searchEntitiesForExact > throws if args.needles is not string|string[] 1ms"
         },
         {
           "testName": "tests/entities/searchEntitiesForExact.test.ts > db.searchEntitiesForExact > throws if args.matchMode is not any|all 0ms"
         },
         {
-          "testName": "tests/entities/searchEntitiesForExact.test.ts > db.searchEntitiesForExact > throws if args.caseSensitive is not boolean 0ms"
+          "testName": "tests/entities/searchEntitiesForExact.test.ts > db.searchEntitiesForExact > throws if args.caseSensitive is not boolean 1ms"
         },
         {
           "testName": "tests/entities/searchEntitiesForExact.test.ts > db.searchEntitiesForExact > throws if args.limit is not an integer 0ms"
@@ -698,13 +1095,13 @@
       ],
       "failures": [],
       "skips": [],
-      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/entities/searchEntitiesForExact.test.ts > db.searchEntitiesForExact > throws if args.projectIds is missing/empty 2ms\n ✓ tests/entities/searchEntitiesForExact.test.ts > db.searchEntitiesForExact > throws if args.needles is not string|string[] 0ms\n ✓ tests/entities/searchEntitiesForExact.test.ts > db.searchEntitiesForExact > throws if args.matchMode is not any|all 0ms\n ✓ tests/entities/searchEntitiesForExact.test.ts > db.searchEntitiesForExact > throws if args.caseSensitive is not boolean 0ms\n ✓ tests/entities/searchEntitiesForExact.test.ts > db.searchEntitiesForExact > throws if args.limit is not an integer 0ms\n ✓ tests/entities/searchEntitiesForExact.test.ts > db.searchEntitiesForExact > throws if args.types is not string[] 0ms\n ✓ tests/entities/searchEntitiesForExact.test.ts > db.searchEntitiesForExact > returns [] and does not hit DB for empty tokenization result 1ms\n ✓ tests/entities/searchEntitiesForExact.test.ts > db.searchEntitiesForExact > defaults caseSensitive=true, defaults matchMode=any 1ms\n ✓ tests/entities/searchEntitiesForExact.test.ts > db.searchEntitiesForExact > tokenizes comma/semicolon separated input strings (trimming + dropping empties) 0ms\n ✓ tests/entities/searchEntitiesForExact.test.ts > db.searchEntitiesForExact > passes matchMode=all through to SQL 0ms\n ✓ tests/entities/searchEntitiesForExact.test.ts > db.searchEntitiesForExact > passes caseSensitive=false through to SQL 0ms\n ✓ tests/entities/searchEntitiesForExact.test.ts > db.searchEntitiesForExact > supports caseSensitive=false and matchMode=all (and optional types filter) 0ms\n ✓ tests/entities/searchEntitiesForExact.test.ts > db.searchEntitiesForExact > clamps limit to [1..] 0ms\n ✓ tests/entities/searchEntitiesForExact.test.ts > db.searchEntitiesForExact > handles DB returning undefined/null rows 0ms\n\n Test Files  1 passed (1)\n      Tests  14 passed (14)\n   Start at  15:05:01\n   Duration  9.60s (transform 1.60s, setup 0ms, collect 4.80s, tests 8ms, environment 0ms, prepare 430ms)\n\n",
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/entities/searchEntitiesForExact.test.ts > db.searchEntitiesForExact > throws if args.projectIds is missing/empty 3ms\n ✓ tests/entities/searchEntitiesForExact.test.ts > db.searchEntitiesForExact > throws if args.needles is not string|string[] 1ms\n ✓ tests/entities/searchEntitiesForExact.test.ts > db.searchEntitiesForExact > throws if args.matchMode is not any|all 0ms\n ✓ tests/entities/searchEntitiesForExact.test.ts > db.searchEntitiesForExact > throws if args.caseSensitive is not boolean 1ms\n ✓ tests/entities/searchEntitiesForExact.test.ts > db.searchEntitiesForExact > throws if args.limit is not an integer 0ms\n ✓ tests/entities/searchEntitiesForExact.test.ts > db.searchEntitiesForExact > throws if args.types is not string[] 0ms\n ✓ tests/entities/searchEntitiesForExact.test.ts > db.searchEntitiesForExact > returns [] and does not hit DB for empty tokenization result 1ms\n ✓ tests/entities/searchEntitiesForExact.test.ts > db.searchEntitiesForExact > defaults caseSensitive=true, defaults matchMode=any 1ms\n ✓ tests/entities/searchEntitiesForExact.test.ts > db.searchEntitiesForExact > tokenizes comma/semicolon separated input strings (trimming + dropping empties) 0ms\n ✓ tests/entities/searchEntitiesForExact.test.ts > db.searchEntitiesForExact > passes matchMode=all through to SQL 0ms\n ✓ tests/entities/searchEntitiesForExact.test.ts > db.searchEntitiesForExact > passes caseSensitive=false through to SQL 0ms\n ✓ tests/entities/searchEntitiesForExact.test.ts > db.searchEntitiesForExact > supports caseSensitive=false and matchMode=all (and optional types filter) 0ms\n ✓ tests/entities/searchEntitiesForExact.test.ts > db.searchEntitiesForExact > clamps limit to [1..] 0ms\n ✓ tests/entities/searchEntitiesForExact.test.ts > db.searchEntitiesForExact > handles DB returning undefined/null rows 0ms\n\n Test Files  1 passed (1)\n      Tests  14 passed (14)\n   Start at  11:19:05\n   Duration  1.96s (transform 362ms, setup 0ms, collect 1.37s, tests 9ms, environment 5ms, prepare 154ms)\n\n",
       "summary": {
         "total": 14,
         "passed": 14,
         "failed": 0,
         "skipped": 0,
-        "durationMs": 9600
+        "durationMs": 1960
       }
     },
     {
@@ -712,13 +1109,13 @@
       "filePath": "tests/entities/searchEntitiesForKeywords.test.ts",
       "passes": [
         {
-          "testName": "tests/entities/searchEntitiesForKeywords.test.ts > db.searchEntitiesForKeywords > throws if args.projectIds is missing/empty 2ms"
+          "testName": "tests/entities/searchEntitiesForKeywords.test.ts > db.searchEntitiesForKeywords > throws if args.projectIds is missing/empty 3ms"
         },
         {
           "testName": "tests/entities/searchEntitiesForKeywords.test.ts > db.searchEntitiesForKeywords > throws if args.keywords is not string|string[] 0ms"
         },
         {
-          "testName": "tests/entities/searchEntitiesForKeywords.test.ts > db.searchEntitiesForKeywords > throws if args.matchMode is not any|all 1ms"
+          "testName": "tests/entities/searchEntitiesForKeywords.test.ts > db.searchEntitiesForKeywords > throws if args.matchMode is not any|all 0ms"
         },
         {
           "testName": "tests/entities/searchEntitiesForKeywords.test.ts > db.searchEntitiesForKeywords > throws if args.limit is not an integer 0ms"
@@ -733,7 +1130,7 @@
           "testName": "tests/entities/searchEntitiesForKeywords.test.ts > db.searchEntitiesForKeywords > tokenizes, defaults matchMode=any, returns ids 1ms"
         },
         {
-          "testName": "tests/entities/searchEntitiesForKeywords.test.ts > db.searchEntitiesForKeywords > does not split on spaces (string tokenization only splits on comma/semicolon) 0ms"
+          "testName": "tests/entities/searchEntitiesForKeywords.test.ts > db.searchEntitiesForKeywords > does not split on spaces (string tokenization only splits on comma/semicolon) 1ms"
         },
         {
           "testName": "tests/entities/searchEntitiesForKeywords.test.ts > db.searchEntitiesForKeywords > supports matchMode=all and type filter 0ms"
@@ -750,13 +1147,13 @@
       ],
       "failures": [],
       "skips": [],
-      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/entities/searchEntitiesForKeywords.test.ts > db.searchEntitiesForKeywords > throws if args.projectIds is missing/empty 2ms\n ✓ tests/entities/searchEntitiesForKeywords.test.ts > db.searchEntitiesForKeywords > throws if args.keywords is not string|string[] 0ms\n ✓ tests/entities/searchEntitiesForKeywords.test.ts > db.searchEntitiesForKeywords > throws if args.matchMode is not any|all 1ms\n ✓ tests/entities/searchEntitiesForKeywords.test.ts > db.searchEntitiesForKeywords > throws if args.limit is not an integer 0ms\n ✓ tests/entities/searchEntitiesForKeywords.test.ts > db.searchEntitiesForKeywords > throws if args.types is not string[] 0ms\n ✓ tests/entities/searchEntitiesForKeywords.test.ts > db.searchEntitiesForKeywords > returns [] and does not hit DB for empty tokenization result 1ms\n ✓ tests/entities/searchEntitiesForKeywords.test.ts > db.searchEntitiesForKeywords > tokenizes, defaults matchMode=any, returns ids 1ms\n ✓ tests/entities/searchEntitiesForKeywords.test.ts > db.searchEntitiesForKeywords > does not split on spaces (string tokenization only splits on comma/semicolon) 0ms\n ✓ tests/entities/searchEntitiesForKeywords.test.ts > db.searchEntitiesForKeywords > supports matchMode=all and type filter 0ms\n ✓ tests/entities/searchEntitiesForKeywords.test.ts > db.searchEntitiesForKeywords > defaults matchMode=any when omitted 0ms\n ✓ tests/entities/searchEntitiesForKeywords.test.ts > db.searchEntitiesForKeywords > clamps limit to [1..] 0ms\n ✓ tests/entities/searchEntitiesForKeywords.test.ts > db.searchEntitiesForKeywords > handles DB returning undefined/null rows 0ms\n\n Test Files  1 passed (1)\n      Tests  12 passed (12)\n   Start at  15:05:05\n   Duration  6.70s (transform 1.25s, setup 0ms, collect 3.52s, tests 7ms, environment 0ms, prepare 488ms)\n\n",
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/entities/searchEntitiesForKeywords.test.ts > db.searchEntitiesForKeywords > throws if args.projectIds is missing/empty 3ms\n ✓ tests/entities/searchEntitiesForKeywords.test.ts > db.searchEntitiesForKeywords > throws if args.keywords is not string|string[] 0ms\n ✓ tests/entities/searchEntitiesForKeywords.test.ts > db.searchEntitiesForKeywords > throws if args.matchMode is not any|all 0ms\n ✓ tests/entities/searchEntitiesForKeywords.test.ts > db.searchEntitiesForKeywords > throws if args.limit is not an integer 0ms\n ✓ tests/entities/searchEntitiesForKeywords.test.ts > db.searchEntitiesForKeywords > throws if args.types is not string[] 0ms\n ✓ tests/entities/searchEntitiesForKeywords.test.ts > db.searchEntitiesForKeywords > returns [] and does not hit DB for empty tokenization result 1ms\n ✓ tests/entities/searchEntitiesForKeywords.test.ts > db.searchEntitiesForKeywords > tokenizes, defaults matchMode=any, returns ids 1ms\n ✓ tests/entities/searchEntitiesForKeywords.test.ts > db.searchEntitiesForKeywords > does not split on spaces (string tokenization only splits on comma/semicolon) 1ms\n ✓ tests/entities/searchEntitiesForKeywords.test.ts > db.searchEntitiesForKeywords > supports matchMode=all and type filter 0ms\n ✓ tests/entities/searchEntitiesForKeywords.test.ts > db.searchEntitiesForKeywords > defaults matchMode=any when omitted 0ms\n ✓ tests/entities/searchEntitiesForKeywords.test.ts > db.searchEntitiesForKeywords > clamps limit to [1..] 0ms\n ✓ tests/entities/searchEntitiesForKeywords.test.ts > db.searchEntitiesForKeywords > handles DB returning undefined/null rows 0ms\n\n Test Files  1 passed (1)\n      Tests  12 passed (12)\n   Start at  11:19:05\n   Duration  1.97s (transform 330ms, setup 0ms, collect 1.44s, tests 9ms, environment 9ms, prepare 59ms)\n\n",
       "summary": {
         "total": 12,
         "passed": 12,
         "failed": 0,
         "skipped": 0,
-        "durationMs": 6700
+        "durationMs": 1970
       }
     },
     {
@@ -764,7 +1161,7 @@
       "filePath": "tests/entities/updateEntity.test.ts",
       "passes": [
         {
-          "testName": "tests/entities/updateEntity.test.ts > Entities.updateEntity > should update an existing entity (including embedding when content is provided) 4ms"
+          "testName": "tests/entities/updateEntity.test.ts > Entities.updateEntity > should update an existing entity (including embedding when content is provided) 2ms"
         },
         {
           "testName": "tests/entities/updateEntity.test.ts > Entities.updateEntity > should return undefined if entity does not exist 0ms"
@@ -777,17 +1174,26 @@
         },
         {
           "testName": "tests/entities/updateEntity.test.ts > Entities.updateEntity > should return undefined if update returns no rows 0ms"
+        },
+        {
+          "testName": "tests/entities/updateEntity.test.ts > Entities.updateEntity > should re-embed existing content when shouldEmbed flips false→true with no content change 0ms"
+        },
+        {
+          "testName": "tests/entities/updateEntity.test.ts > Entities.updateEntity > should not re-embed when shouldEmbed stays true with no content change 0ms"
+        },
+        {
+          "testName": "tests/entities/updateEntity.test.ts > Entities.updateEntity > should not embed when content is patched but effective shouldEmbed is false 0ms"
         }
       ],
       "failures": [],
       "skips": [],
-      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/entities/updateEntity.test.ts > Entities.updateEntity > should update an existing entity (including embedding when content is provided) 4ms\n ✓ tests/entities/updateEntity.test.ts > Entities.updateEntity > should return undefined if entity does not exist 0ms\n ✓ tests/entities/updateEntity.test.ts > Entities.updateEntity > should update without changing embedding if content is not provided 0ms\n ✓ tests/entities/updateEntity.test.ts > Entities.updateEntity > should clear embedding if shouldEmbed is updated to false 0ms\n ✓ tests/entities/updateEntity.test.ts > Entities.updateEntity > should return undefined if update returns no rows 0ms\n\n Test Files  1 passed (1)\n      Tests  5 passed (5)\n   Start at  15:04:59\n   Duration  10.88s (transform 2.76s, setup 0ms, collect 8.13s, tests 13ms, environment 0ms, prepare 1.14s)\n\n",
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/entities/updateEntity.test.ts > Entities.updateEntity > should update an existing entity (including embedding when content is provided) 2ms\n ✓ tests/entities/updateEntity.test.ts > Entities.updateEntity > should return undefined if entity does not exist 0ms\n ✓ tests/entities/updateEntity.test.ts > Entities.updateEntity > should update without changing embedding if content is not provided 0ms\n ✓ tests/entities/updateEntity.test.ts > Entities.updateEntity > should clear embedding if shouldEmbed is updated to false 0ms\n ✓ tests/entities/updateEntity.test.ts > Entities.updateEntity > should return undefined if update returns no rows 0ms\n ✓ tests/entities/updateEntity.test.ts > Entities.updateEntity > should re-embed existing content when shouldEmbed flips false→true with no content change 0ms\n ✓ tests/entities/updateEntity.test.ts > Entities.updateEntity > should not re-embed when shouldEmbed stays true with no content change 0ms\n ✓ tests/entities/updateEntity.test.ts > Entities.updateEntity > should not embed when content is patched but effective shouldEmbed is false 0ms\n\n Test Files  1 passed (1)\n      Tests  8 passed (8)\n   Start at  11:19:06\n   Duration  1.77s (transform 296ms, setup 0ms, collect 1.17s, tests 5ms, environment 0ms, prepare 115ms)\n\n",
       "summary": {
-        "total": 5,
-        "passed": 5,
+        "total": 8,
+        "passed": 8,
         "failed": 0,
         "skipped": 0,
-        "durationMs": 10880
+        "durationMs": 1770
       }
     },
     {
@@ -795,16 +1201,16 @@
       "filePath": "tests/index-validation.test.ts",
       "passes": [
         {
-          "testName": "tests/index-validation.test.ts > TheFactoryDb validation and edges > addDocument rejects invalid input 4ms"
+          "testName": "tests/index-validation.test.ts > TheFactoryDb validation and edges > addDocument rejects invalid input 3ms"
         },
         {
-          "testName": "tests/index-validation.test.ts > TheFactoryDb validation and edges > updateDocument rejects invalid patch 2ms"
+          "testName": "tests/index-validation.test.ts > TheFactoryDb validation and edges > updateDocument rejects invalid patch 1ms"
         },
         {
-          "testName": "tests/index-validation.test.ts > TheFactoryDb validation and edges > addEntity rejects invalid input 1ms"
+          "testName": "tests/index-validation.test.ts > TheFactoryDb validation and edges > addEntity rejects invalid input 0ms"
         },
         {
-          "testName": "tests/index-validation.test.ts > TheFactoryDb validation and edges > updateEntity rejects invalid patch 1ms"
+          "testName": "tests/index-validation.test.ts > TheFactoryDb validation and edges > updateEntity rejects invalid patch 0ms"
         },
         {
           "testName": "tests/index-validation.test.ts > TheFactoryDb validation and edges > searchDocuments validates input and early-returns on empty query 1ms"
@@ -813,7 +1219,7 @@
           "testName": "tests/index-validation.test.ts > TheFactoryDb validation and edges > searchEntities validates input and clamps weights/limit 1ms"
         },
         {
-          "testName": "tests/index-validation.test.ts > TheFactoryDb validation and edges > matchDocuments rejects invalid options 1ms"
+          "testName": "tests/index-validation.test.ts > TheFactoryDb validation and edges > matchDocuments rejects invalid options 0ms"
         },
         {
           "testName": "tests/index-validation.test.ts > TheFactoryDb validation and edges > matchEntities accepts undefined options and builds null filter 1ms"
@@ -822,13 +1228,13 @@
           "testName": "tests/index-validation.test.ts > TheFactoryDb validation and edges > clearDocuments without projectIds clears all 0ms"
         },
         {
-          "testName": "tests/index-validation.test.ts > TheFactoryDb validation and edges > updateEntity without content change does not compute embedding 3ms"
+          "testName": "tests/index-validation.test.ts > TheFactoryDb validation and edges > updateEntity without content change does not compute embedding 0ms"
         },
         {
-          "testName": "tests/index-validation.test.ts > TheFactoryDb validation and edges > searchDocumentsForPaths validates args and early-returns on empty query 1ms"
+          "testName": "tests/index-validation.test.ts > TheFactoryDb validation and edges > searchDocumentsForPaths validates args and early-returns on empty query 0ms"
         },
         {
-          "testName": "tests/index-validation.test.ts > TheFactoryDb validation and edges > searchDocumentsForKeywords validates args and early-returns on empty tokens 0ms"
+          "testName": "tests/index-validation.test.ts > TheFactoryDb validation and edges > searchDocumentsForKeywords validates args and early-returns on empty tokens 1ms"
         },
         {
           "testName": "tests/index-validation.test.ts > TheFactoryDb validation and edges > searchDocumentsForExact validates args and early-returns on empty tokens 0ms"
@@ -836,13 +1242,13 @@
       ],
       "failures": [],
       "skips": [],
-      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/index-validation.test.ts > TheFactoryDb validation and edges > addDocument rejects invalid input 4ms\n ✓ tests/index-validation.test.ts > TheFactoryDb validation and edges > updateDocument rejects invalid patch 2ms\n ✓ tests/index-validation.test.ts > TheFactoryDb validation and edges > addEntity rejects invalid input 1ms\n ✓ tests/index-validation.test.ts > TheFactoryDb validation and edges > updateEntity rejects invalid patch 1ms\n ✓ tests/index-validation.test.ts > TheFactoryDb validation and edges > searchDocuments validates input and early-returns on empty query 1ms\n ✓ tests/index-validation.test.ts > TheFactoryDb validation and edges > searchEntities validates input and clamps weights/limit 1ms\n ✓ tests/index-validation.test.ts > TheFactoryDb validation and edges > matchDocuments rejects invalid options 1ms\n ✓ tests/index-validation.test.ts > TheFactoryDb validation and edges > matchEntities accepts undefined options and builds null filter 1ms\n ✓ tests/index-validation.test.ts > TheFactoryDb validation and edges > clearDocuments without projectIds clears all 0ms\n ✓ tests/index-validation.test.ts > TheFactoryDb validation and edges > updateEntity without content change does not compute embedding 3ms\n ✓ tests/index-validation.test.ts > TheFactoryDb validation and edges > searchDocumentsForPaths validates args and early-returns on empty query 1ms\n ✓ tests/index-validation.test.ts > TheFactoryDb validation and edges > searchDocumentsForKeywords validates args and early-returns on empty tokens 0ms\n ✓ tests/index-validation.test.ts > TheFactoryDb validation and edges > searchDocumentsForExact validates args and early-returns on empty tokens 0ms\n\n Test Files  1 passed (1)\n      Tests  13 passed (13)\n   Start at  15:05:04\n   Duration  7.15s (transform 1.02s, setup 0ms, collect 3.38s, tests 17ms, environment 0ms, prepare 505ms)\n\n",
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/index-validation.test.ts > TheFactoryDb validation and edges > addDocument rejects invalid input 3ms\n ✓ tests/index-validation.test.ts > TheFactoryDb validation and edges > updateDocument rejects invalid patch 1ms\n ✓ tests/index-validation.test.ts > TheFactoryDb validation and edges > addEntity rejects invalid input 0ms\n ✓ tests/index-validation.test.ts > TheFactoryDb validation and edges > updateEntity rejects invalid patch 0ms\n ✓ tests/index-validation.test.ts > TheFactoryDb validation and edges > searchDocuments validates input and early-returns on empty query 1ms\n ✓ tests/index-validation.test.ts > TheFactoryDb validation and edges > searchEntities validates input and clamps weights/limit 1ms\n ✓ tests/index-validation.test.ts > TheFactoryDb validation and edges > matchDocuments rejects invalid options 0ms\n ✓ tests/index-validation.test.ts > TheFactoryDb validation and edges > matchEntities accepts undefined options and builds null filter 1ms\n ✓ tests/index-validation.test.ts > TheFactoryDb validation and edges > clearDocuments without projectIds clears all 0ms\n ✓ tests/index-validation.test.ts > TheFactoryDb validation and edges > updateEntity without content change does not compute embedding 0ms\n ✓ tests/index-validation.test.ts > TheFactoryDb validation and edges > searchDocumentsForPaths validates args and early-returns on empty query 0ms\n ✓ tests/index-validation.test.ts > TheFactoryDb validation and edges > searchDocumentsForKeywords validates args and early-returns on empty tokens 1ms\n ✓ tests/index-validation.test.ts > TheFactoryDb validation and edges > searchDocumentsForExact validates args and early-returns on empty tokens 0ms\n\n Test Files  1 passed (1)\n      Tests  13 passed (13)\n   Start at  11:19:07\n   Duration  2.37s (transform 305ms, setup 0ms, collect 1.79s, tests 10ms, environment 0ms, prepare 69ms)\n\n",
       "summary": {
         "total": 13,
         "passed": 13,
         "failed": 0,
         "skipped": 0,
-        "durationMs": 7150
+        "durationMs": 2370
       }
     },
     {
@@ -873,13 +1279,47 @@
       ],
       "failures": [],
       "skips": [],
-      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/logger.test.ts > createLogger > should log debug messages when level is debug 1ms\n ✓ tests/logger.test.ts > createLogger > should log info messages when level is info 0ms\n ✓ tests/logger.test.ts > createLogger > should log warn messages when level is warn 0ms\n ✓ tests/logger.test.ts > createLogger > should log error messages when level is error 0ms\n ✓ tests/logger.test.ts > createLogger > should not log any messages when level is silent 0ms\n ✓ tests/logger.test.ts > createLogger > should default to info level if no level is provided 0ms\n ✓ tests/logger.test.ts > createLogger > should only log messages at or above the specified log level 0ms\n\n Test Files  1 passed (1)\n      Tests  7 passed (7)\n   Start at  15:05:02\n   Duration  5.13s (transform 270ms, setup 0ms, collect 791ms, tests 3ms, environment 0ms, prepare 369ms)\n\n",
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/logger.test.ts > createLogger > should log debug messages when level is debug 1ms\n ✓ tests/logger.test.ts > createLogger > should log info messages when level is info 0ms\n ✓ tests/logger.test.ts > createLogger > should log warn messages when level is warn 0ms\n ✓ tests/logger.test.ts > createLogger > should log error messages when level is error 0ms\n ✓ tests/logger.test.ts > createLogger > should not log any messages when level is silent 0ms\n ✓ tests/logger.test.ts > createLogger > should default to info level if no level is provided 0ms\n ✓ tests/logger.test.ts > createLogger > should only log messages at or above the specified log level 0ms\n\n Test Files  1 passed (1)\n      Tests  7 passed (7)\n   Start at  11:19:07\n   Duration  619ms (transform 48ms, setup 0ms, collect 61ms, tests 3ms, environment 0ms, prepare 173ms)\n\n",
       "summary": {
         "total": 7,
         "passed": 7,
         "failed": 0,
         "skipped": 0,
-        "durationMs": 5130
+        "durationMs": 619
+      }
+    },
+    {
+      "status": "ok",
+      "filePath": "tests/migrations-runner.test.ts",
+      "passes": [
+        {
+          "testName": "tests/migrations-runner.test.ts > runner.getDatabaseInfo() > reports schemaVersion, latestVersion, and pending list when given a Pool 4ms"
+        },
+        {
+          "testName": "tests/migrations-runner.test.ts > runner.getDatabaseInfo() > reports an empty pending list when already at latest 1ms"
+        },
+        {
+          "testName": "tests/migrations-runner.test.ts > runner.getDatabaseInfo() > builds its own Pool when given OpenDbOptions and ends it after use 1ms"
+        },
+        {
+          "testName": "tests/migrations-runner.test.ts > runner.getDatabaseInfo() > seeds thefactory.meta with schema_version=0 when the meta row is missing 0ms"
+        },
+        {
+          "testName": "tests/migrations-runner.test.ts > runner.migrateDatabase() > logs the plan but applies nothing when dryRun=true 1ms"
+        },
+        {
+          "testName": "tests/migrations-runner.test.ts > runner.migrateDatabase() > builds its own Pool when given OpenDbOptions and ends it after migrating 0ms"
+        }
+      ],
+      "failures": [],
+      "skips": [],
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/migrations-runner.test.ts > runner.getDatabaseInfo() > reports schemaVersion, latestVersion, and pending list when given a Pool 4ms\n ✓ tests/migrations-runner.test.ts > runner.getDatabaseInfo() > reports an empty pending list when already at latest 1ms\n ✓ tests/migrations-runner.test.ts > runner.getDatabaseInfo() > builds its own Pool when given OpenDbOptions and ends it after use 1ms\n ✓ tests/migrations-runner.test.ts > runner.getDatabaseInfo() > seeds thefactory.meta with schema_version=0 when the meta row is missing 0ms\n ✓ tests/migrations-runner.test.ts > runner.migrateDatabase() > logs the plan but applies nothing when dryRun=true 1ms\n ✓ tests/migrations-runner.test.ts > runner.migrateDatabase() > builds its own Pool when given OpenDbOptions and ends it after migrating 0ms\n\n Test Files  1 passed (1)\n      Tests  6 passed (6)\n   Start at  11:19:08\n   Duration  904ms (transform 295ms, setup 0ms, collect 459ms, tests 9ms, environment 0ms, prepare 66ms)\n\n",
+      "summary": {
+        "total": 6,
+        "passed": 6,
+        "failed": 0,
+        "skipped": 0,
+        "durationMs": 904
       }
     },
     {
@@ -896,7 +1336,7 @@
           "testName": "tests/migrations.test.ts > Migrations > is idempotent (does nothing if already at latest schema) 1ms"
         },
         {
-          "testName": "tests/migrations.test.ts > Migrations > retries lock acquisition on failure, and throws on timeout 828ms"
+          "testName": "tests/migrations.test.ts > Migrations > retries lock acquisition on failure, and throws on timeout 835ms"
         },
         {
           "testName": "tests/migrations.test.ts > Migrations > rolls back and rethrows if a migration fails 1ms"
@@ -904,13 +1344,96 @@
       ],
       "failures": [],
       "skips": [],
-      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/migrations.test.ts > Migrations > runs migrations automatically by default on new database (schemaVersion=0) 2ms\n ✓ tests/migrations.test.ts > Migrations > skips migrations if migrations: \"none\" 0ms\n ✓ tests/migrations.test.ts > Migrations > is idempotent (does nothing if already at latest schema) 1ms\n ✓ tests/migrations.test.ts > Migrations > retries lock acquisition on failure, and throws on timeout 828ms\n ✓ tests/migrations.test.ts > Migrations > rolls back and rethrows if a migration fails 1ms\n\n Test Files  1 passed (1)\n      Tests  5 passed (5)\n   Start at  15:05:00\n   Duration  8.80s (transform 1.69s, setup 0ms, collect 2.30s, tests 833ms, environment 0ms, prepare 813ms)\n\n",
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/migrations.test.ts > Migrations > runs migrations automatically by default on new database (schemaVersion=0) 2ms\n ✓ tests/migrations.test.ts > Migrations > skips migrations if migrations: \"none\" 0ms\n ✓ tests/migrations.test.ts > Migrations > is idempotent (does nothing if already at latest schema) 1ms\n ✓ tests/migrations.test.ts > Migrations > retries lock acquisition on failure, and throws on timeout 835ms\n ✓ tests/migrations.test.ts > Migrations > rolls back and rethrows if a migration fails 1ms\n\n Test Files  1 passed (1)\n      Tests  5 passed (5)\n   Start at  11:19:08\n   Duration  2.23s (transform 526ms, setup 0ms, collect 746ms, tests 840ms, environment 0ms, prepare 182ms)\n\n",
       "summary": {
         "total": 5,
         "passed": 5,
         "failed": 0,
         "skipped": 0,
-        "durationMs": 8800
+        "durationMs": 2230
+      }
+    },
+    {
+      "status": "ok",
+      "filePath": "tests/openDatabase.test.ts",
+      "passes": [
+        {
+          "testName": "tests/openDatabase.test.ts > openDatabase() > runs migrations when migrations=\"auto\" is set explicitly 1ms"
+        },
+        {
+          "testName": "tests/openDatabase.test.ts > openDatabase() > skips migrations entirely when migrations=\"none\" 0ms"
+        },
+        {
+          "testName": "tests/openDatabase.test.ts > openDatabase() > treats migrations={toVersion} as auto and forwards the cap to the runner 0ms"
+        },
+        {
+          "testName": "tests/openDatabase.test.ts > openDatabase() > close() swallows embedding-provider close errors and still ends the db pool 0ms"
+        },
+        {
+          "testName": "tests/openDatabase.test.ts > openDatabase() > close() works when the embedding provider has no close() method 0ms"
+        },
+        {
+          "testName": "tests/openDatabase.test.ts > openDatabase() > exposes raw() returning the underlying db 0ms"
+        }
+      ],
+      "failures": [],
+      "skips": [],
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/openDatabase.test.ts > openDatabase() > runs migrations when migrations=\"auto\" is set explicitly 1ms\n ✓ tests/openDatabase.test.ts > openDatabase() > skips migrations entirely when migrations=\"none\" 0ms\n ✓ tests/openDatabase.test.ts > openDatabase() > treats migrations={toVersion} as auto and forwards the cap to the runner 0ms\n ✓ tests/openDatabase.test.ts > openDatabase() > close() swallows embedding-provider close errors and still ends the db pool 0ms\n ✓ tests/openDatabase.test.ts > openDatabase() > close() works when the embedding provider has no close() method 0ms\n ✓ tests/openDatabase.test.ts > openDatabase() > exposes raw() returning the underlying db 0ms\n\n Test Files  1 passed (1)\n      Tests  6 passed (6)\n   Start at  11:19:08\n   Duration  2.13s (transform 324ms, setup 0ms, collect 1.42s, tests 4ms, environment 0ms, prepare 136ms)\n\n",
+      "summary": {
+        "total": 6,
+        "passed": 6,
+        "failed": 0,
+        "skipped": 0,
+        "durationMs": 2130
+      }
+    },
+    {
+      "status": "ok",
+      "filePath": "tests/runtime-edge-cases.test.ts",
+      "passes": [
+        {
+          "testName": "tests/runtime-edge-cases.test.ts > runtime edge cases > waitForSelect1 retries connect failures until one succeeds 524ms"
+        },
+        {
+          "testName": "tests/runtime-edge-cases.test.ts > runtime edge cases > safeDestroy swallows client.close errors and still stops the container 1ms"
+        },
+        {
+          "testName": "tests/runtime-edge-cases.test.ts > runtime edge cases > safeDestroy swallows admin pool errors when dropping an external db 0ms"
+        },
+        {
+          "testName": "tests/runtime-edge-cases.test.ts > runtime edge cases > safeDestroy swallows container.stop errors and still removes the handle from the cleanup set 0ms"
+        },
+        {
+          "testName": "tests/runtime-edge-cases.test.ts > runtime edge cases > waitForSelect1 swallows pool.end errors after a successful connect 0ms"
+        },
+        {
+          "testName": "tests/runtime-edge-cases.test.ts > runtime edge cases > createReusableDatabase forwards logLevel to the schema-init openDatabase call 2ms"
+        },
+        {
+          "testName": "tests/runtime-edge-cases.test.ts > runtime edge cases > createReusableDatabase pulls the image when listImages is empty 1ms"
+        },
+        {
+          "testName": "tests/runtime-edge-cases.test.ts > runtime edge cases > createReusableDatabase rejects when the image pull errors 1ms"
+        },
+        {
+          "testName": "tests/runtime-edge-cases.test.ts > runtime edge cases > createReusableDatabase tolerates a stream that throws on handler registration 0ms"
+        },
+        {
+          "testName": "tests/runtime-edge-cases.test.ts > runtime edge cases > createReusableDatabase throws when an existing container reports an empty port mapping 0ms"
+        },
+        {
+          "testName": "tests/runtime-edge-cases.test.ts > runtime edge cases > createReusableDatabase throws when an existing container has no Ports entry 0ms"
+        }
+      ],
+      "failures": [],
+      "skips": [],
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/runtime-edge-cases.test.ts > runtime edge cases > waitForSelect1 retries connect failures until one succeeds 524ms\n ✓ tests/runtime-edge-cases.test.ts > runtime edge cases > safeDestroy swallows client.close errors and still stops the container 1ms\n ✓ tests/runtime-edge-cases.test.ts > runtime edge cases > safeDestroy swallows admin pool errors when dropping an external db 0ms\n ✓ tests/runtime-edge-cases.test.ts > runtime edge cases > safeDestroy swallows container.stop errors and still removes the handle from the cleanup set 0ms\n ✓ tests/runtime-edge-cases.test.ts > runtime edge cases > waitForSelect1 swallows pool.end errors after a successful connect 0ms\n ✓ tests/runtime-edge-cases.test.ts > runtime edge cases > createReusableDatabase forwards logLevel to the schema-init openDatabase call 2ms\n ✓ tests/runtime-edge-cases.test.ts > runtime edge cases > createReusableDatabase pulls the image when listImages is empty 1ms\n ✓ tests/runtime-edge-cases.test.ts > runtime edge cases > createReusableDatabase rejects when the image pull errors 1ms\n ✓ tests/runtime-edge-cases.test.ts > runtime edge cases > createReusableDatabase tolerates a stream that throws on handler registration 0ms\n ✓ tests/runtime-edge-cases.test.ts > runtime edge cases > createReusableDatabase throws when an existing container reports an empty port mapping 0ms\n ✓ tests/runtime-edge-cases.test.ts > runtime edge cases > createReusableDatabase throws when an existing container has no Ports entry 0ms\n\n Test Files  1 passed (1)\n      Tests  11 passed (11)\n   Start at  11:19:09\n   Duration  2.25s (transform 103ms, setup 0ms, collect 113ms, tests 533ms, environment 0ms, prepare 265ms)\n\n",
+      "summary": {
+        "total": 11,
+        "passed": 11,
+        "failed": 0,
+        "skipped": 0,
+        "durationMs": 2250
       }
     },
     {
@@ -918,7 +1441,7 @@
       "filePath": "tests/runtime.test.ts",
       "passes": [
         {
-          "testName": "tests/runtime.test.ts > runtime.ts public API > createDatabase() managed mode: starts a container, waits for readiness, returns managed handle and destroy() stops container 3ms"
+          "testName": "tests/runtime.test.ts > runtime.ts public API > createDatabase() managed mode: starts a container, waits for readiness, returns managed handle and destroy() stops container 2ms"
         },
         {
           "testName": "tests/runtime.test.ts > runtime.ts public API > createDatabase() external mode: creates temp DB on provided server, waits for readiness, and destroy drops the db 1ms"
@@ -933,18 +1456,73 @@
           "testName": "tests/runtime.test.ts > runtime.ts public API > createReusableDatabase(): starts an existing stopped container and returns same mapping (created=false) 0ms"
         },
         {
+          "testName": "tests/runtime.test.ts > runtime.ts public API > createDatabase() managed mode with explicit containerName: passes name to GenericContainer.withName 0ms"
+        },
+        {
+          "testName": "tests/runtime.test.ts > runtime.ts public API > createDatabase() managed mode without containerName: does not call withName 0ms"
+        },
+        {
+          "testName": "tests/runtime.test.ts > runtime.ts public API > destroyReusableDatabase(): stops and removes the well-known thefactory-db container 0ms"
+        },
+        {
+          "testName": "tests/runtime.test.ts > runtime.ts public API > destroyReusableDatabase(): is a no-op when no container exists 0ms"
+        },
+        {
+          "testName": "tests/runtime.test.ts > runtime.ts public API > destroyDatabaseByContainerName(): stops and removes the named container 0ms"
+        },
+        {
+          "testName": "tests/runtime.test.ts > runtime.ts public API > destroyDatabaseByContainerName(): is a no-op when no container exists 0ms"
+        },
+        {
+          "testName": "tests/runtime.test.ts > runtime.ts public API > destroyDatabaseByContainerName(): does not call stop on an already-stopped container, but still removes 0ms"
+        },
+        {
           "testName": "tests/runtime.test.ts > runtime.ts public API > createReusableDatabase(): falls back to a different port when 5435 is occupied 0ms"
         }
       ],
       "failures": [],
       "skips": [],
-      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/runtime.test.ts > runtime.ts public API > createDatabase() managed mode: starts a container, waits for readiness, returns managed handle and destroy() stops container 3ms\n ✓ tests/runtime.test.ts > runtime.ts public API > createDatabase() external mode: creates temp DB on provided server, waits for readiness, and destroy drops the db 1ms\n ✓ tests/runtime.test.ts > runtime.ts public API > createReusableDatabase(): creates container on first call and returns created=true 1ms\n ✓ tests/runtime.test.ts > runtime.ts public API > createReusableDatabase(): returns existing running container mapping without creating (created=false) 0ms\n ✓ tests/runtime.test.ts > runtime.ts public API > createReusableDatabase(): starts an existing stopped container and returns same mapping (created=false) 0ms\n ✓ tests/runtime.test.ts > runtime.ts public API > createReusableDatabase(): falls back to a different port when 5435 is occupied 0ms\n\n Test Files  1 passed (1)\n      Tests  6 passed (6)\n   Start at  15:05:02\n   Duration  6.91s (transform 390ms, setup 0ms, collect 666ms, tests 6ms, environment 0ms, prepare 618ms)\n\n",
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/runtime.test.ts > runtime.ts public API > createDatabase() managed mode: starts a container, waits for readiness, returns managed handle and destroy() stops container 2ms\n ✓ tests/runtime.test.ts > runtime.ts public API > createDatabase() external mode: creates temp DB on provided server, waits for readiness, and destroy drops the db 1ms\n ✓ tests/runtime.test.ts > runtime.ts public API > createReusableDatabase(): creates container on first call and returns created=true 1ms\n ✓ tests/runtime.test.ts > runtime.ts public API > createReusableDatabase(): returns existing running container mapping without creating (created=false) 0ms\n ✓ tests/runtime.test.ts > runtime.ts public API > createReusableDatabase(): starts an existing stopped container and returns same mapping (created=false) 0ms\n ✓ tests/runtime.test.ts > runtime.ts public API > createDatabase() managed mode with explicit containerName: passes name to GenericContainer.withName 0ms\n ✓ tests/runtime.test.ts > runtime.ts public API > createDatabase() managed mode without containerName: does not call withName 0ms\n ✓ tests/runtime.test.ts > runtime.ts public API > destroyReusableDatabase(): stops and removes the well-known thefactory-db container 0ms\n ✓ tests/runtime.test.ts > runtime.ts public API > destroyReusableDatabase(): is a no-op when no container exists 0ms\n ✓ tests/runtime.test.ts > runtime.ts public API > destroyDatabaseByContainerName(): stops and removes the named container 0ms\n ✓ tests/runtime.test.ts > runtime.ts public API > destroyDatabaseByContainerName(): is a no-op when no container exists 0ms\n ✓ tests/runtime.test.ts > runtime.ts public API > destroyDatabaseByContainerName(): does not call stop on an already-stopped container, but still removes 0ms\n ✓ tests/runtime.test.ts > runtime.ts public API > createReusableDatabase(): falls back to a different port when 5435 is occupied 0ms\n\n Test Files  1 passed (1)\n      Tests  13 passed (13)\n   Start at  11:19:09\n   Duration  1.71s (transform 119ms, setup 0ms, collect 90ms, tests 6ms, environment 0ms, prepare 244ms)\n\n",
+      "summary": {
+        "total": 13,
+        "passed": 13,
+        "failed": 0,
+        "skipped": 0,
+        "durationMs": 1710
+      }
+    },
+    {
+      "status": "ok",
+      "filePath": "tests/sql-projections.test.ts",
+      "passes": [
+        {
+          "testName": "tests/sql-projections.test.ts > SQL projections — entity-shaped queries match the published Entity type > 'getEntityById' projects every required Entity field 1ms"
+        },
+        {
+          "testName": "tests/sql-projections.test.ts > SQL projections — entity-shaped queries match the published Entity type > 'insertEntity' projects every required Entity field 0ms"
+        },
+        {
+          "testName": "tests/sql-projections.test.ts > SQL projections — entity-shaped queries match the published Entity type > 'updateEntity' projects every required Entity field 0ms"
+        },
+        {
+          "testName": "tests/sql-projections.test.ts > SQL projections — entity-shaped queries match the published Entity type > 'matchEntities' projects every required Entity field 0ms"
+        },
+        {
+          "testName": "tests/sql-projections.test.ts > SQL projections — entity-shaped queries match the published Entity type > 'searchEntitiesQuery' projects every required Entity field 0ms"
+        },
+        {
+          "testName": "tests/sql-projections.test.ts > SQL projections — entity-shaped queries match the published Entity type > hybrid_search_entities RETURNS TABLE declares should_embed so searchEntitiesQuery can project it 0ms"
+        }
+      ],
+      "failures": [],
+      "skips": [],
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/sql-projections.test.ts > SQL projections — entity-shaped queries match the published Entity type > 'getEntityById' projects every required Entity field 1ms\n ✓ tests/sql-projections.test.ts > SQL projections — entity-shaped queries match the published Entity type > 'insertEntity' projects every required Entity field 0ms\n ✓ tests/sql-projections.test.ts > SQL projections — entity-shaped queries match the published Entity type > 'updateEntity' projects every required Entity field 0ms\n ✓ tests/sql-projections.test.ts > SQL projections — entity-shaped queries match the published Entity type > 'matchEntities' projects every required Entity field 0ms\n ✓ tests/sql-projections.test.ts > SQL projections — entity-shaped queries match the published Entity type > 'searchEntitiesQuery' projects every required Entity field 0ms\n ✓ tests/sql-projections.test.ts > SQL projections — entity-shaped queries match the published Entity type > hybrid_search_entities RETURNS TABLE declares should_embed so searchEntitiesQuery can project it 0ms\n\n Test Files  1 passed (1)\n      Tests  6 passed (6)\n   Start at  11:19:10\n   Duration  631ms (transform 188ms, setup 0ms, collect 249ms, tests 2ms, environment 0ms, prepare 98ms)\n\n",
       "summary": {
         "total": 6,
         "passed": 6,
         "failed": 0,
         "skipped": 0,
-        "durationMs": 6910
+        "durationMs": 631
       }
     },
     {
@@ -955,10 +1533,10 @@
           "testName": "tests/tokenizer.test.ts > tokenizer > uses tiktoken strategy when available 1ms"
         },
         {
-          "testName": "tests/tokenizer.test.ts > tokenizer > falls back to whitespace strategy when tiktoken fails (fresh encoding forces getEncoding call) 0ms"
+          "testName": "tests/tokenizer.test.ts > tokenizer > falls back to whitespace strategy when tiktoken throws at runtime 1ms"
         },
         {
-          "testName": "tests/tokenizer.test.ts > tokenizer > explicit whitespace strategy maps identical words to identical token ids 1ms"
+          "testName": "tests/tokenizer.test.ts > tokenizer > explicit whitespace strategy maps identical words to identical token ids 0ms"
         },
         {
           "testName": "tests/tokenizer.test.ts > tokenizer > toFtsText normalizes text 0ms"
@@ -966,13 +1544,13 @@
       ],
       "failures": [],
       "skips": [],
-      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/tokenizer.test.ts > tokenizer > uses tiktoken strategy when available 1ms\n ✓ tests/tokenizer.test.ts > tokenizer > falls back to whitespace strategy when tiktoken fails (fresh encoding forces getEncoding call) 0ms\n ✓ tests/tokenizer.test.ts > tokenizer > explicit whitespace strategy maps identical words to identical token ids 1ms\n ✓ tests/tokenizer.test.ts > tokenizer > toFtsText normalizes text 0ms\n\n Test Files  1 passed (1)\n      Tests  4 passed (4)\n   Start at  15:04:59\n   Duration  6.36s (transform 563ms, setup 0ms, collect 1.84s, tests 174ms, environment 0ms, prepare 833ms)\n\n",
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/tokenizer.test.ts > tokenizer > uses tiktoken strategy when available 1ms\n ✓ tests/tokenizer.test.ts > tokenizer > falls back to whitespace strategy when tiktoken throws at runtime 1ms\n ✓ tests/tokenizer.test.ts > tokenizer > explicit whitespace strategy maps identical words to identical token ids 0ms\n ✓ tests/tokenizer.test.ts > tokenizer > toFtsText normalizes text 0ms\n\n Test Files  1 passed (1)\n      Tests  4 passed (4)\n   Start at  11:19:10\n   Duration  571ms (transform 125ms, setup 0ms, collect 126ms, tests 3ms, environment 0ms, prepare 106ms)\n\n",
       "summary": {
         "total": 4,
         "passed": 4,
         "failed": 0,
         "skipped": 0,
-        "durationMs": 6360
+        "durationMs": 571
       }
     },
     {
@@ -1009,13 +1587,13 @@
       ],
       "failures": [],
       "skips": [],
-      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/utils/json.test.ts > stringifyJsonValues > flattens nested objects and arrays into value-only string 1ms\n ✓ tests/utils/json.test.ts > stringifyJsonValues > handles primitive values 0ms\n ✓ tests/utils/json.test.ts > stringifyJsonValues > ignores functions and symbols and non-finite numbers 0ms\n ✓ tests/utils/json.test.ts > stringifyJsonValues > handles cycles gracefully 0ms\n ✓ tests/utils/json.test.ts > stringifyJsonValues > stable ordering regardless of original insertion order 0ms\n ✓ tests/utils/json.test.ts > stringifyJsonValues > handles bigint primitives by stringifying them 0ms\n ✓ tests/utils/json.test.ts > stringifyJsonValues > ignores properties that throw on access (property getter throws) 0ms\n ✓ tests/utils/json.test.ts > stringifyJsonValues > swallows unexpected traversal errors at top level (outer try/catch) 0ms\n ✓ tests/utils/json.test.ts > stringifyJsonValues > omits empty strings from output 0ms\n\n Test Files  1 passed (1)\n      Tests  9 passed (9)\n   Start at  15:05:00\n   Duration  6.29s (transform 834ms, setup 0ms, collect 1.43s, tests 38ms, environment 0ms, prepare 1.84s)\n\n",
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/utils/json.test.ts > stringifyJsonValues > flattens nested objects and arrays into value-only string 1ms\n ✓ tests/utils/json.test.ts > stringifyJsonValues > handles primitive values 0ms\n ✓ tests/utils/json.test.ts > stringifyJsonValues > ignores functions and symbols and non-finite numbers 0ms\n ✓ tests/utils/json.test.ts > stringifyJsonValues > handles cycles gracefully 0ms\n ✓ tests/utils/json.test.ts > stringifyJsonValues > stable ordering regardless of original insertion order 0ms\n ✓ tests/utils/json.test.ts > stringifyJsonValues > handles bigint primitives by stringifying them 0ms\n ✓ tests/utils/json.test.ts > stringifyJsonValues > ignores properties that throw on access (property getter throws) 0ms\n ✓ tests/utils/json.test.ts > stringifyJsonValues > swallows unexpected traversal errors at top level (outer try/catch) 0ms\n ✓ tests/utils/json.test.ts > stringifyJsonValues > omits empty strings from output 0ms\n\n Test Files  1 passed (1)\n      Tests  9 passed (9)\n   Start at  11:19:10\n   Duration  636ms (transform 70ms, setup 0ms, collect 114ms, tests 9ms, environment 0ms, prepare 115ms)\n\n",
       "summary": {
         "total": 9,
         "passed": 9,
         "failed": 0,
         "skipped": 0,
-        "durationMs": 6290
+        "durationMs": 636
       }
     },
     {
@@ -1023,18 +1601,54 @@
       "filePath": "tests/utils.test.ts",
       "passes": [
         {
-          "testName": "tests/utils.test.ts > utils.SQL registry > contains required SQL keys and non-empty strings 49ms"
+          "testName": "tests/utils.test.ts > utils.prepareQuery > coerces null/undefined to an empty string 1ms"
+        },
+        {
+          "testName": "tests/utils.test.ts > utils.prepareQuery > trims surrounding whitespace from a real string 0ms"
+        },
+        {
+          "testName": "tests/utils.test.ts > utils.normalizeDocPath > returns the input unchanged when it is empty/falsy 0ms"
+        },
+        {
+          "testName": "tests/utils.test.ts > utils.normalizeDocPath > normalizes Windows separators and strips a leading \"./\" 0ms"
+        },
+        {
+          "testName": "tests/utils.test.ts > utils.normalizePathPrefix > returns undefined for an empty/missing prefix 0ms"
+        },
+        {
+          "testName": "tests/utils.test.ts > utils.normalizePathPrefix > returns undefined when normalization collapses to nothing 0ms"
+        },
+        {
+          "testName": "tests/utils.test.ts > utils.normalizePathPrefix > strips a leading slash and normalizes separators 0ms"
+        },
+        {
+          "testName": "tests/utils.test.ts > utils.escapeLikePattern > escapes backslash, percent, and underscore for LIKE patterns 0ms"
+        },
+        {
+          "testName": "tests/utils.test.ts > utils.toTokens > trims and filters when given a string array 0ms"
+        },
+        {
+          "testName": "tests/utils.test.ts > utils.toTokens > splits on commas/semicolons and drops empties 0ms"
+        },
+        {
+          "testName": "tests/utils.test.ts > utils.buildEmbeddingTextForDoc > joins type/name/src/content with newlines and skips falsy parts 0ms"
+        },
+        {
+          "testName": "tests/utils.test.ts > utils.toVectorLiteral > stringifies numeric arrays and Float32Array alike 0ms"
+        },
+        {
+          "testName": "tests/utils.test.ts > utils.SQL registry > contains required SQL keys and non-empty strings 1ms"
         }
       ],
       "failures": [],
       "skips": [],
-      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/utils.test.ts > utils.SQL registry > contains required SQL keys and non-empty strings 49ms\n\n Test Files  1 passed (1)\n      Tests  1 passed (1)\n   Start at  15:04:59\n   Duration  6.82s (transform 2.01s, setup 0ms, collect 2.81s, tests 53ms, environment 0ms, prepare 1.42s)\n\n",
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/utils.test.ts > utils.prepareQuery > coerces null/undefined to an empty string 1ms\n ✓ tests/utils.test.ts > utils.prepareQuery > trims surrounding whitespace from a real string 0ms\n ✓ tests/utils.test.ts > utils.normalizeDocPath > returns the input unchanged when it is empty/falsy 0ms\n ✓ tests/utils.test.ts > utils.normalizeDocPath > normalizes Windows separators and strips a leading \"./\" 0ms\n ✓ tests/utils.test.ts > utils.normalizePathPrefix > returns undefined for an empty/missing prefix 0ms\n ✓ tests/utils.test.ts > utils.normalizePathPrefix > returns undefined when normalization collapses to nothing 0ms\n ✓ tests/utils.test.ts > utils.normalizePathPrefix > strips a leading slash and normalizes separators 0ms\n ✓ tests/utils.test.ts > utils.escapeLikePattern > escapes backslash, percent, and underscore for LIKE patterns 0ms\n ✓ tests/utils.test.ts > utils.toTokens > trims and filters when given a string array 0ms\n ✓ tests/utils.test.ts > utils.toTokens > splits on commas/semicolons and drops empties 0ms\n ✓ tests/utils.test.ts > utils.buildEmbeddingTextForDoc > joins type/name/src/content with newlines and skips falsy parts 0ms\n ✓ tests/utils.test.ts > utils.toVectorLiteral > stringifies numeric arrays and Float32Array alike 0ms\n ✓ tests/utils.test.ts > utils.SQL registry > contains required SQL keys and non-empty strings 1ms\n\n Test Files  1 passed (1)\n      Tests  13 passed (13)\n   Start at  11:19:11\n   Duration  399ms (transform 57ms, setup 0ms, collect 52ms, tests 3ms, environment 0ms, prepare 83ms)\n\n",
       "summary": {
-        "total": 1,
-        "passed": 1,
+        "total": 13,
+        "passed": 13,
         "failed": 0,
         "skipped": 0,
-        "durationMs": 6820
+        "durationMs": 399
       }
     },
     {
@@ -1042,7 +1656,7 @@
       "filePath": "tests/validation.test.ts",
       "passes": [
         {
-          "testName": "tests/validation.test.ts > validation > assertDocumentInput > accepts valid input 6ms"
+          "testName": "tests/validation.test.ts > validation > assertDocumentInput > accepts valid input 1ms"
         },
         {
           "testName": "tests/validation.test.ts > validation > assertDocumentInput > rejects invalid shapes 0ms"
@@ -1075,7 +1689,7 @@
           "testName": "tests/validation.test.ts > validation > assertSearchParams > accepts valid search params 0ms"
         },
         {
-          "testName": "tests/validation.test.ts > validation > assertSearchParams > rejects invalid search params 1ms"
+          "testName": "tests/validation.test.ts > validation > assertSearchParams > rejects invalid search params 0ms"
         },
         {
           "testName": "tests/validation.test.ts > validation > assertSearchDocumentsForPathsArgs > accepts valid args 0ms"
@@ -1090,6 +1704,57 @@
           "testName": "tests/validation.test.ts > validation > assertSearchDocumentsForKeywordsArgs > rejects invalid args 0ms"
         },
         {
+          "testName": "tests/validation.test.ts > validation > branch edge cases > rejects DocumentInput.src that is not a string at all 0ms"
+        },
+        {
+          "testName": "tests/validation.test.ts > validation > branch edge cases > rejects DocumentInput.name that is not a string 0ms"
+        },
+        {
+          "testName": "tests/validation.test.ts > validation > branch edge cases > accepts DocumentInput with no metadata field at all 0ms"
+        },
+        {
+          "testName": "tests/validation.test.ts > validation > branch edge cases > rejects DocumentInput.metadata that is not a plain object 0ms"
+        },
+        {
+          "testName": "tests/validation.test.ts > validation > branch edge cases > accepts DocumentPatch with name=null and src=null and content=null 0ms"
+        },
+        {
+          "testName": "tests/validation.test.ts > validation > branch edge cases > rejects DocumentPatch.name that is neither string nor null 0ms"
+        },
+        {
+          "testName": "tests/validation.test.ts > validation > branch edge cases > rejects EntityPatch.type that is neither string nor null 0ms"
+        },
+        {
+          "testName": "tests/validation.test.ts > validation > branch edge cases > accepts EntityPatch with type=null 0ms"
+        },
+        {
+          "testName": "tests/validation.test.ts > validation > branch edge cases > rejects EntityPatch.content scalar 0ms"
+        },
+        {
+          "testName": "tests/validation.test.ts > validation > branch edge cases > rejects MatchParams.limit that is not an integer 0ms"
+        },
+        {
+          "testName": "tests/validation.test.ts > validation > branch edge cases > throws when SearchParams is undefined or null 0ms"
+        },
+        {
+          "testName": "tests/validation.test.ts > validation > branch edge cases > rejects null args for entity search assertions 0ms"
+        },
+        {
+          "testName": "tests/validation.test.ts > validation > branch edge cases > accepts assertSearchEntitiesForKeywordsArgs with all optional fields populated 0ms"
+        },
+        {
+          "testName": "tests/validation.test.ts > validation > branch edge cases > rejects assertSearchEntitiesForKeywordsArgs with non-array types 0ms"
+        },
+        {
+          "testName": "tests/validation.test.ts > validation > branch edge cases > accepts assertSearchEntitiesForExactArgs with all optional fields populated 0ms"
+        },
+        {
+          "testName": "tests/validation.test.ts > validation > branch edge cases > rejects assertSearchEntitiesForExactArgs with non-boolean caseSensitive 0ms"
+        },
+        {
+          "testName": "tests/validation.test.ts > validation > branch edge cases > rejects assertSearchEntitiesForExactArgs with non-array types 0ms"
+        },
+        {
           "testName": "tests/validation.test.ts > validation > assertSearchDocumentsForExactArgs > accepts valid args 0ms"
         },
         {
@@ -1098,21 +1763,21 @@
       ],
       "failures": [],
       "skips": [],
-      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/validation.test.ts > validation > assertDocumentInput > accepts valid input 6ms\n ✓ tests/validation.test.ts > validation > assertDocumentInput > rejects invalid shapes 0ms\n ✓ tests/validation.test.ts > validation > assertDocumentPatch > accepts valid patch values 0ms\n ✓ tests/validation.test.ts > validation > assertDocumentPatch > rejects invalid patch 0ms\n ✓ tests/validation.test.ts > validation > assertEntityInput > accepts valid entity input 0ms\n ✓ tests/validation.test.ts > validation > assertEntityInput > rejects invalid entity input 0ms\n ✓ tests/validation.test.ts > validation > assertEntityPatch > accepts valid patches 0ms\n ✓ tests/validation.test.ts > validation > assertEntityPatch > rejects invalid patches 0ms\n ✓ tests/validation.test.ts > validation > assertMatchParams > accepts valid options 0ms\n ✓ tests/validation.test.ts > validation > assertMatchParams > rejects invalid options 0ms\n ✓ tests/validation.test.ts > validation > assertSearchParams > accepts valid search params 0ms\n ✓ tests/validation.test.ts > validation > assertSearchParams > rejects invalid search params 1ms\n ✓ tests/validation.test.ts > validation > assertSearchDocumentsForPathsArgs > accepts valid args 0ms\n ✓ tests/validation.test.ts > validation > assertSearchDocumentsForPathsArgs > rejects invalid args 0ms\n ✓ tests/validation.test.ts > validation > assertSearchDocumentsForKeywordsArgs > accepts valid args 0ms\n ✓ tests/validation.test.ts > validation > assertSearchDocumentsForKeywordsArgs > rejects invalid args 0ms\n ✓ tests/validation.test.ts > validation > assertSearchDocumentsForExactArgs > accepts valid args 0ms\n ✓ tests/validation.test.ts > validation > assertSearchDocumentsForExactArgs > rejects invalid args 0ms\n\n Test Files  1 passed (1)\n      Tests  18 passed (18)\n   Start at  15:05:00\n   Duration  6.85s (transform 1.97s, setup 0ms, collect 1.99s, tests 11ms, environment 1ms, prepare 806ms)\n\n",
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/validation.test.ts > validation > assertDocumentInput > accepts valid input 1ms\n ✓ tests/validation.test.ts > validation > assertDocumentInput > rejects invalid shapes 0ms\n ✓ tests/validation.test.ts > validation > assertDocumentPatch > accepts valid patch values 0ms\n ✓ tests/validation.test.ts > validation > assertDocumentPatch > rejects invalid patch 0ms\n ✓ tests/validation.test.ts > validation > assertEntityInput > accepts valid entity input 0ms\n ✓ tests/validation.test.ts > validation > assertEntityInput > rejects invalid entity input 0ms\n ✓ tests/validation.test.ts > validation > assertEntityPatch > accepts valid patches 0ms\n ✓ tests/validation.test.ts > validation > assertEntityPatch > rejects invalid patches 0ms\n ✓ tests/validation.test.ts > validation > assertMatchParams > accepts valid options 0ms\n ✓ tests/validation.test.ts > validation > assertMatchParams > rejects invalid options 0ms\n ✓ tests/validation.test.ts > validation > assertSearchParams > accepts valid search params 0ms\n ✓ tests/validation.test.ts > validation > assertSearchParams > rejects invalid search params 0ms\n ✓ tests/validation.test.ts > validation > assertSearchDocumentsForPathsArgs > accepts valid args 0ms\n ✓ tests/validation.test.ts > validation > assertSearchDocumentsForPathsArgs > rejects invalid args 0ms\n ✓ tests/validation.test.ts > validation > assertSearchDocumentsForKeywordsArgs > accepts valid args 0ms\n ✓ tests/validation.test.ts > validation > assertSearchDocumentsForKeywordsArgs > rejects invalid args 0ms\n ✓ tests/validation.test.ts > validation > branch edge cases > rejects DocumentInput.src that is not a string at all 0ms\n ✓ tests/validation.test.ts > validation > branch edge cases > rejects DocumentInput.name that is not a string 0ms\n ✓ tests/validation.test.ts > validation > branch edge cases > accepts DocumentInput with no metadata field at all 0ms\n ✓ tests/validation.test.ts > validation > branch edge cases > rejects DocumentInput.metadata that is not a plain object 0ms\n ✓ tests/validation.test.ts > validation > branch edge cases > accepts DocumentPatch with name=null and src=null and content=null 0ms\n ✓ tests/validation.test.ts > validation > branch edge cases > rejects DocumentPatch.name that is neither string nor null 0ms\n ✓ tests/validation.test.ts > validation > branch edge cases > rejects EntityPatch.type that is neither string nor null 0ms\n ✓ tests/validation.test.ts > validation > branch edge cases > accepts EntityPatch with type=null 0ms\n ✓ tests/validation.test.ts > validation > branch edge cases > rejects EntityPatch.content scalar 0ms\n ✓ tests/validation.test.ts > validation > branch edge cases > rejects MatchParams.limit that is not an integer 0ms\n ✓ tests/validation.test.ts > validation > branch edge cases > throws when SearchParams is undefined or null 0ms\n ✓ tests/validation.test.ts > validation > branch edge cases > rejects null args for entity search assertions 0ms\n ✓ tests/validation.test.ts > validation > branch edge cases > accepts assertSearchEntitiesForKeywordsArgs with all optional fields populated 0ms\n ✓ tests/validation.test.ts > validation > branch edge cases > rejects assertSearchEntitiesForKeywordsArgs with non-array types 0ms\n ✓ tests/validation.test.ts > validation > branch edge cases > accepts assertSearchEntitiesForExactArgs with all optional fields populated 0ms\n ✓ tests/validation.test.ts > validation > branch edge cases > rejects assertSearchEntitiesForExactArgs with non-boolean caseSensitive 0ms\n ✓ tests/validation.test.ts > validation > branch edge cases > rejects assertSearchEntitiesForExactArgs with non-array types 0ms\n ✓ tests/validation.test.ts > validation > assertSearchDocumentsForExactArgs > accepts valid args 0ms\n ✓ tests/validation.test.ts > validation > assertSearchDocumentsForExactArgs > rejects invalid args 0ms\n\n Test Files  1 passed (1)\n      Tests  35 passed (35)\n   Start at  11:19:11\n   Duration  397ms (transform 32ms, setup 0ms, collect 33ms, tests 6ms, environment 0ms, prepare 37ms)\n\n",
       "summary": {
-        "total": 18,
-        "passed": 18,
+        "total": 35,
+        "passed": 35,
         "failed": 0,
         "skipped": 0,
-        "durationMs": 6850
+        "durationMs": 397
       }
     }
   ],
   "summary": {
-    "total": 198,
-    "passed": 198,
+    "total": 298,
+    "passed": 298,
     "failed": 0,
     "skipped": 0,
-    "durationMs": 288480
+    "durationMs": 99598
   }
 }

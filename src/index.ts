@@ -3,6 +3,8 @@
 
 export { openDatabase } from './client/openDatabase.js'
 export type { TheFactoryDb } from './client/types.js'
+export { probeDatabase } from './connection.js'
+export type { ProbeResult } from './connection.js'
 
 // Runtime lifecycle helpers (managed/external ephemeral DB)
 export {

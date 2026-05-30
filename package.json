@@ -31,7 +31,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:cov": "vitest run --coverage --coverage.reportOnFailure",
-    "test:e2e": "cross-env RUN_E2E=1 DATABASE_URL=postgresql://user:password@localhost:65432/thefactory-db vitest run tests/e2e --no-file-parallelism --test-timeout=120000",
+    "test:e2e": "cross-env RUN_E2E=1 DATABASE_URL=postgresql://user:password@localhost:65432/thefactory-db vitest run --config vitest.e2e.config.ts",
     "clean": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\"",
     "pack": "npm run clean && npm run build && npm pack --json",
     "prepublishOnly": "npm run build"
@@ -64,6 +64,32 @@
     "url": "https://github.com/cloudjubei/thefactory-db/issues"
   },
   "homepage": "https://github.com/cloudjubei/thefactory-db#readme",
+  "factory": {
+    "tests": {
+      "configs": [
+        {
+          "path": "vitest.e2e.config.ts",
+          "label": "E2E (postgres)",
+          "env": [
+            {
+              "name": "RUN_E2E",
+              "label": "Run E2E tests",
+              "type": "flag",
+              "trueValue": "1",
+              "default": "1"
+            },
+            {
+              "name": "DATABASE_URL",
+              "label": "Database URL",
+              "type": "string",
+              "placeholder": "postgresql://user:password@localhost:65432/thefactory-db",
+              "default": "postgresql://user:password@localhost:65432/thefactory-db"
+            }
+          ]
+        }
+      ]
+    }
+  },
   "keywords": [
     "postgres",
     "postgresql",

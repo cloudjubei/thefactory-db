@@ -104,11 +104,11 @@ describe('TheFactoryDb validation and edges', () => {
     await expect(db.matchDocuments({ limit: 0 })).rejects.toThrow()
   })
 
-  it('matchEntities accepts undefined options and builds null filter', async () => {
+  it('matchEntities accepts undefined options and builds null criteria + null filter', async () => {
     const db = await openDatabase({ connectionString: 'test' })
     mockDbClient.query.mockResolvedValue({ rows: [] })
     await db.matchEntities(undefined, undefined)
-    expect(mockDbClient.query).toHaveBeenCalledWith('FAKE_SQL', [JSON.stringify({}), null, 20])
+    expect(mockDbClient.query).toHaveBeenCalledWith('FAKE_SQL', [null, null, 20])
   })
 
   it('clearDocuments without projectIds clears all', async () => {

@@ -45,3 +45,43 @@ describe('SQL projections — entity-shaped queries match the published Entity t
     expect(SQL.hybridSearch).toMatch(/RETURNS TABLE\s*\(([^)]*\bshould_embed\s+boolean\b)/i)
   })
 })
+
+describe('SQL.matchEntities — null-criteria short-circuit', () => {
+  // Why: when the caller has no criteria (the common "list this project's
+  // entities" path), the SQL must NOT apply `content @> $1::jsonb`. That
+  // predicate is semantically vacuous for `$1 = '{}'` but forces a per-row
+  // jsonb evaluation against `content` — kills the index plan on large
+  // projects. Guarding the clause with `$1::jsonb IS NULL OR ...` lets the
+  // planner skip the per-row work when $1 is passed as NULL.
+
+  it('guards `content @> $1` so it is skipped when $1 IS NULL', () => {
+    // Tolerant of whitespace / parenthesisation; the key is that the
+    // `content @> $1::jsonb` predicate sits inside an `$1::jsonb IS NULL OR`
+    // alternative so it never runs against every row when criteria is null.
+    expect(SQL.matchEntities).toMatch(
+      /\$1::jsonb\s+IS\s+NULL\s+OR\s+content\s*@>\s*\$1::jsonb/i,
+    )
+  })
+
+  it('does NOT apply `content @> $1` unconditionally (no bare `WHERE content @> $1`)', () => {
+    // Drift guard: catches the original shape `WHERE content @> $1::jsonb`
+    // (no surrounding NULL-or alternative) coming back in a future edit.
+    expect(SQL.matchEntities).not.toMatch(
+      /WHERE\s+content\s*@>\s*\$1::jsonb\b\s*AND/i,
+    )
+  })
+})
+
+describe('SQL.schema — entities composite index for project_id + updated_at DESC', () => {
+  // Why: `matchEntities` filters by `project_id` and orders by `updated_at
+  // DESC` with a small LIMIT. Without a composite index, Postgres has to
+  // sort the entire project's rowset before picking the top N. Adding
+  // `(project_id, updated_at DESC)` lets the planner walk the index in
+  // order and stop at LIMIT — milliseconds even on millions of rows.
+
+  it('schema creates a (project_id, updated_at DESC) index on entities', () => {
+    expect(SQL.schema).toMatch(
+      /CREATE\s+INDEX\s+IF\s+NOT\s+EXISTS\s+\w*project_id_updated_at\w*\s+ON\s+entities\s*\(\s*project_id\s*,\s*updated_at\s+DESC\s*\)/i,
+    )
+  })
+})

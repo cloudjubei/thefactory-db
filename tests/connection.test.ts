@@ -17,7 +17,7 @@ const hoisted = vi.hoisted(() => {
 vi.mock('pg', () => ({ Pool: hoisted.PoolCtor }))
 
 // Import after mocks so they take effect
-import { openPostgres } from '../src/connection'
+import { openPostgres, probeDatabase } from '../src/connection'
 
 describe('openPostgres (connection)', () => {
   beforeEach(() => {
@@ -33,9 +33,16 @@ describe('openPostgres (connection)', () => {
 
     const pool = await openPostgres('postgres://user:pass@host:5432/db')
 
-    expect(hoisted.PoolCtor).toHaveBeenCalledWith({
-      connectionString: 'postgres://user:pass@host:5432/db',
-    })
+    // `connectionTimeoutMillis` is required: pg's default is "wait
+    // forever". Without it a stopped DB container hangs the entire
+    // backend boot — exactly the symptom we just hit. The exact value
+    // doesn't matter for correctness here, just that it is finite.
+    expect(hoisted.PoolCtor).toHaveBeenCalledWith(
+      expect.objectContaining({
+        connectionString: 'postgres://user:pass@host:5432/db',
+        connectionTimeoutMillis: expect.any(Number),
+      }),
+    )
     expect(hoisted.poolMock.connect).toHaveBeenCalledTimes(1)
 
     // Expect 'SELECT 1' to be executed
@@ -64,5 +71,86 @@ describe('openPostgres (connection)', () => {
     expect(hoisted.poolMock.end).toHaveBeenCalledTimes(1)
     // Client released in finally regardless of error
     expect(hoisted.clientMock.release).toHaveBeenCalledTimes(1)
+  })
+})
+
+describe('probeDatabase (fresh, timeout-bounded health probe)', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+    hoisted.clientMock.query.mockReset()
+    hoisted.clientMock.release.mockReset()
+    hoisted.poolMock.connect.mockReset().mockResolvedValue(hoisted.clientMock)
+    hoisted.poolMock.end.mockReset()
+  })
+
+  it('returns { ok: true } when SELECT 1 round-trips successfully', async () => {
+    hoisted.clientMock.query.mockResolvedValue({ rows: [{ '?column?': 1 }] })
+
+    const result = await probeDatabase('postgres://u:p@h/db')
+
+    expect(result).toEqual({ ok: true })
+  })
+
+  it('uses a fresh pool (does NOT share state with openPostgres)', async () => {
+    hoisted.clientMock.query.mockResolvedValue({ rows: [] })
+
+    await probeDatabase('postgres://u:p@h/db')
+
+    // A new Pool is constructed for the probe — the whole point is that a
+    // health check works even when a prior `openPostgres` pool is wedged.
+    expect(hoisted.PoolCtor).toHaveBeenCalled()
+  })
+
+  it('passes a connectionTimeoutMillis so a network-level hang surfaces', async () => {
+    hoisted.clientMock.query.mockResolvedValue({ rows: [] })
+
+    await probeDatabase('postgres://u:p@h/db', 1234)
+
+    const callArgs = hoisted.PoolCtor.mock.calls.at(-1)?.[0] ?? {}
+    expect(callArgs.connectionString).toBe('postgres://u:p@h/db')
+    expect(callArgs.connectionTimeoutMillis).toBe(1234)
+  })
+
+  it('closes the throwaway pool whether the probe succeeds or fails', async () => {
+    hoisted.clientMock.query.mockResolvedValue({ rows: [] })
+
+    await probeDatabase('postgres://u:p@h/db')
+
+    expect(hoisted.poolMock.end).toHaveBeenCalledTimes(1)
+  })
+
+  it('returns { ok: false, error } when connect fails (does not throw)', async () => {
+    const err = new Error('ECONNREFUSED 127.0.0.1:5432')
+    hoisted.poolMock.connect.mockReset().mockRejectedValueOnce(err)
+
+    const result = await probeDatabase('postgres://u:p@h/db')
+
+    expect(result.ok).toBe(false)
+    if (!result.ok) expect(result.error).toMatch(/ECONNREFUSED/)
+  })
+
+  it('returns { ok: false, error } when SELECT 1 fails (does not throw)', async () => {
+    hoisted.clientMock.query.mockRejectedValueOnce(new Error('boom'))
+
+    const result = await probeDatabase('postgres://u:p@h/db')
+
+    expect(result.ok).toBe(false)
+    if (!result.ok) expect(result.error).toMatch(/boom/)
+    // Client must still be released and pool closed on failure.
+    expect(hoisted.clientMock.release).toHaveBeenCalledTimes(1)
+    expect(hoisted.poolMock.end).toHaveBeenCalledTimes(1)
+  })
+
+  it('returns { ok: false, error } when the probe itself exceeds the timeout', async () => {
+    // Connect resolves only after a delay longer than the probe timeout —
+    // the probe must give up and report the timeout rather than hang.
+    hoisted.poolMock.connect.mockReset().mockImplementation(
+      () => new Promise((resolve) => setTimeout(() => resolve(hoisted.clientMock), 200)),
+    )
+
+    const result = await probeDatabase('postgres://u:p@h/db', 30)
+
+    expect(result.ok).toBe(false)
+    if (!result.ok) expect(result.error).toMatch(/timed\s*out|timeout/i)
   })
 })

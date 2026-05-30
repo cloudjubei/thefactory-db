@@ -159,9 +159,19 @@ export function createEntityApi({
     if (options?.ids && options.ids.length > 0) filter.ids = options.ids
     if (options?.projectIds && options.projectIds.length > 0) filter.projectIds = options.projectIds
 
+    // When the caller has no criteria, pass NULL for $1 so the SQL skips the
+    // `content @> $1::jsonb` predicate entirely. `'{}'` is semantically a
+    // no-op but still forces a per-row jsonb evaluation; on large projects
+    // that's the difference between a sort-on-millions and an index walk.
+    const hasCriteria =
+      criteria !== undefined &&
+      criteria !== null &&
+      typeof criteria === 'object' &&
+      Object.keys(criteria).length > 0
+
     const limit = Math.max(1, options?.limit ?? 20)
     const r = await db.query(SQL.matchEntities, [
-      JSON.stringify(criteria ?? {}),
+      hasCriteria ? JSON.stringify(criteria) : null,
       Object.keys(filter).length ? JSON.stringify(filter) : null,
       limit,
     ])

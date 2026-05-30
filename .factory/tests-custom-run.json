@@ -1,0 +1,1099 @@
+{
+  "status": "error",
+  "tests": [
+    {
+      "status": "error",
+      "filePath": "tests/close.test.ts",
+      "passes": [],
+      "failures": [],
+      "skips": [],
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n\nNo test files found, exiting with code 1\n\nfilter: tests/close.test.ts\ninclude: tests/e2e/**/*.test.ts\nexclude:  **/node_modules/**, **/dist/**, **/cypress/**, **/.{idea,git,cache,output,temp}/**, **/{karma,rollup,webpack,vite,vitest,jest,ava,babel,nyc,cypress,tsup,build,eslint,prettier}.config.*\n\n",
+      "summary": {
+        "total": 0,
+        "passed": 0,
+        "failed": 0,
+        "skipped": 0,
+        "durationMs": 1030
+      }
+    },
+    {
+      "status": "error",
+      "filePath": "tests/connection.test.ts",
+      "passes": [],
+      "failures": [],
+      "skips": [],
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n\nNo test files found, exiting with code 1\n\nfilter: tests/connection.test.ts\ninclude: tests/e2e/**/*.test.ts\nexclude:  **/node_modules/**, **/dist/**, **/cypress/**, **/.{idea,git,cache,output,temp}/**, **/{karma,rollup,webpack,vite,vitest,jest,ava,babel,nyc,cypress,tsup,build,eslint,prettier}.config.*\n\n",
+      "summary": {
+        "total": 0,
+        "passed": 0,
+        "failed": 0,
+        "skipped": 0,
+        "durationMs": 1031
+      }
+    },
+    {
+      "status": "error",
+      "filePath": "tests/documents/addDocument.test.ts",
+      "passes": [],
+      "failures": [],
+      "skips": [],
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n\nNo test files found, exiting with code 1\n\nfilter: tests/documents/addDocument.test.ts\ninclude: tests/e2e/**/*.test.ts\nexclude:  **/node_modules/**, **/dist/**, **/cypress/**, **/.{idea,git,cache,output,temp}/**, **/{karma,rollup,webpack,vite,vitest,jest,ava,babel,nyc,cypress,tsup,build,eslint,prettier}.config.*\n\n",
+      "summary": {
+        "total": 0,
+        "passed": 0,
+        "failed": 0,
+        "skipped": 0,
+        "durationMs": 1031
+      }
+    },
+    {
+      "status": "error",
+      "filePath": "tests/documents/clearDocuments.test.ts",
+      "passes": [],
+      "failures": [],
+      "skips": [],
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n\nNo test files found, exiting with code 1\n\nfilter: tests/documents/clearDocuments.test.ts\ninclude: tests/e2e/**/*.test.ts\nexclude:  **/node_modules/**, **/dist/**, **/cypress/**, **/.{idea,git,cache,output,temp}/**, **/{karma,rollup,webpack,vite,vitest,jest,ava,babel,nyc,cypress,tsup,build,eslint,prettier}.config.*\n\n",
+      "summary": {
+        "total": 0,
+        "passed": 0,
+        "failed": 0,
+        "skipped": 0,
+        "durationMs": 1108
+      }
+    },
+    {
+      "status": "error",
+      "filePath": "tests/documents/deleteDocument.test.ts",
+      "passes": [],
+      "failures": [],
+      "skips": [],
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n\nNo test files found, exiting with code 1\n\nfilter: tests/documents/deleteDocument.test.ts\ninclude: tests/e2e/**/*.test.ts\nexclude:  **/node_modules/**, **/dist/**, **/cypress/**, **/.{idea,git,cache,output,temp}/**, **/{karma,rollup,webpack,vite,vitest,jest,ava,babel,nyc,cypress,tsup,build,eslint,prettier}.config.*\n\n",
+      "summary": {
+        "total": 0,
+        "passed": 0,
+        "failed": 0,
+        "skipped": 0,
+        "durationMs": 1023
+      }
+    },
+    {
+      "status": "error",
+      "filePath": "tests/documents/getDocumentById.test.ts",
+      "passes": [],
+      "failures": [],
+      "skips": [],
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n\nNo test files found, exiting with code 1\n\nfilter: tests/documents/getDocumentById.test.ts\ninclude: tests/e2e/**/*.test.ts\nexclude:  **/node_modules/**, **/dist/**, **/cypress/**, **/.{idea,git,cache,output,temp}/**, **/{karma,rollup,webpack,vite,vitest,jest,ava,babel,nyc,cypress,tsup,build,eslint,prettier}.config.*\n\n",
+      "summary": {
+        "total": 0,
+        "passed": 0,
+        "failed": 0,
+        "skipped": 0,
+        "durationMs": 1336
+      }
+    },
+    {
+      "status": "error",
+      "filePath": "tests/documents/matchDocuments.test.ts",
+      "passes": [],
+      "failures": [],
+      "skips": [],
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n\nNo test files found, exiting with code 1\n\nfilter: tests/documents/matchDocuments.test.ts\ninclude: tests/e2e/**/*.test.ts\nexclude:  **/node_modules/**, **/dist/**, **/cypress/**, **/.{idea,git,cache,output,temp}/**, **/{karma,rollup,webpack,vite,vitest,jest,ava,babel,nyc,cypress,tsup,build,eslint,prettier}.config.*\n\n",
+      "summary": {
+        "total": 0,
+        "passed": 0,
+        "failed": 0,
+        "skipped": 0,
+        "durationMs": 1197
+      }
+    },
+    {
+      "status": "error",
+      "filePath": "tests/documents/searchDocuments-advanced.test.ts",
+      "passes": [],
+      "failures": [],
+      "skips": [],
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n\nNo test files found, exiting with code 1\n\nfilter: tests/documents/searchDocuments-advanced.test.ts\ninclude: tests/e2e/**/*.test.ts\nexclude:  **/node_modules/**, **/dist/**, **/cypress/**, **/.{idea,git,cache,output,temp}/**, **/{karma,rollup,webpack,vite,vitest,jest,ava,babel,nyc,cypress,tsup,build,eslint,prettier}.config.*\n\n",
+      "summary": {
+        "total": 0,
+        "passed": 0,
+        "failed": 0,
+        "skipped": 0,
+        "durationMs": 1075
+      }
+    },
+    {
+      "status": "error",
+      "filePath": "tests/documents/searchDocuments-name-search.test.ts",
+      "passes": [],
+      "failures": [],
+      "skips": [],
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n\nNo test files found, exiting with code 1\n\nfilter: tests/documents/searchDocuments-name-search.test.ts\ninclude: tests/e2e/**/*.test.ts\nexclude:  **/node_modules/**, **/dist/**, **/cypress/**, **/.{idea,git,cache,output,temp}/**, **/{karma,rollup,webpack,vite,vitest,jest,ava,babel,nyc,cypress,tsup,build,eslint,prettier}.config.*\n\n",
+      "summary": {
+        "total": 0,
+        "passed": 0,
+        "failed": 0,
+        "skipped": 0,
+        "durationMs": 1022
+      }
+    },
+    {
+      "status": "error",
+      "filePath": "tests/documents/searchDocuments.test.ts",
+      "passes": [],
+      "failures": [],
+      "skips": [],
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n\nNo test files found, exiting with code 1\n\nfilter: tests/documents/searchDocuments.test.ts\ninclude: tests/e2e/**/*.test.ts\nexclude:  **/node_modules/**, **/dist/**, **/cypress/**, **/.{idea,git,cache,output,temp}/**, **/{karma,rollup,webpack,vite,vitest,jest,ava,babel,nyc,cypress,tsup,build,eslint,prettier}.config.*\n\n",
+      "summary": {
+        "total": 0,
+        "passed": 0,
+        "failed": 0,
+        "skipped": 0,
+        "durationMs": 1000
+      }
+    },
+    {
+      "status": "error",
+      "filePath": "tests/documents/searchDocumentsForExact.test.ts",
+      "passes": [],
+      "failures": [],
+      "skips": [],
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n\nNo test files found, exiting with code 1\n\nfilter: tests/documents/searchDocumentsForExact.test.ts\ninclude: tests/e2e/**/*.test.ts\nexclude:  **/node_modules/**, **/dist/**, **/cypress/**, **/.{idea,git,cache,output,temp}/**, **/{karma,rollup,webpack,vite,vitest,jest,ava,babel,nyc,cypress,tsup,build,eslint,prettier}.config.*\n\n",
+      "summary": {
+        "total": 0,
+        "passed": 0,
+        "failed": 0,
+        "skipped": 0,
+        "durationMs": 959
+      }
+    },
+    {
+      "status": "error",
+      "filePath": "tests/documents/searchDocumentsForKeywords.test.ts",
+      "passes": [],
+      "failures": [],
+      "skips": [],
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n\nNo test files found, exiting with code 1\n\nfilter: tests/documents/searchDocumentsForKeywords.test.ts\ninclude: tests/e2e/**/*.test.ts\nexclude:  **/node_modules/**, **/dist/**, **/cypress/**, **/.{idea,git,cache,output,temp}/**, **/{karma,rollup,webpack,vite,vitest,jest,ava,babel,nyc,cypress,tsup,build,eslint,prettier}.config.*\n\n",
+      "summary": {
+        "total": 0,
+        "passed": 0,
+        "failed": 0,
+        "skipped": 0,
+        "durationMs": 974
+      }
+    },
+    {
+      "status": "error",
+      "filePath": "tests/documents/searchDocumentsForPaths.test.ts",
+      "passes": [],
+      "failures": [],
+      "skips": [],
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n\nNo test files found, exiting with code 1\n\nfilter: tests/documents/searchDocumentsForPaths.test.ts\ninclude: tests/e2e/**/*.test.ts\nexclude:  **/node_modules/**, **/dist/**, **/cypress/**, **/.{idea,git,cache,output,temp}/**, **/{karma,rollup,webpack,vite,vitest,jest,ava,babel,nyc,cypress,tsup,build,eslint,prettier}.config.*\n\n",
+      "summary": {
+        "total": 0,
+        "passed": 0,
+        "failed": 0,
+        "skipped": 0,
+        "durationMs": 943
+      }
+    },
+    {
+      "status": "error",
+      "filePath": "tests/documents/updateDocument.test.ts",
+      "passes": [],
+      "failures": [],
+      "skips": [],
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n\nNo test files found, exiting with code 1\n\nfilter: tests/documents/updateDocument.test.ts\ninclude: tests/e2e/**/*.test.ts\nexclude:  **/node_modules/**, **/dist/**, **/cypress/**, **/.{idea,git,cache,output,temp}/**, **/{karma,rollup,webpack,vite,vitest,jest,ava,babel,nyc,cypress,tsup,build,eslint,prettier}.config.*\n\n",
+      "summary": {
+        "total": 0,
+        "passed": 0,
+        "failed": 0,
+        "skipped": 0,
+        "durationMs": 942
+      }
+    },
+    {
+      "status": "error",
+      "filePath": "tests/documents/upsertDocuments.test.ts",
+      "passes": [],
+      "failures": [],
+      "skips": [],
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n\nNo test files found, exiting with code 1\n\nfilter: tests/documents/upsertDocuments.test.ts\ninclude: tests/e2e/**/*.test.ts\nexclude:  **/node_modules/**, **/dist/**, **/cypress/**, **/.{idea,git,cache,output,temp}/**, **/{karma,rollup,webpack,vite,vitest,jest,ava,babel,nyc,cypress,tsup,build,eslint,prettier}.config.*\n\n",
+      "summary": {
+        "total": 0,
+        "passed": 0,
+        "failed": 0,
+        "skipped": 0,
+        "durationMs": 907
+      }
+    },
+    {
+      "status": "fail",
+      "filePath": "tests/e2e/codebase-hybrid-search.e2e.test.ts",
+      "passes": [
+        {
+          "testName": "tests/e2e/codebase-hybrid-search.e2e.test.ts > E2E: Codebase Hybrid Search (real DB) > w=1 (text-only): \"hybrid search function\" should return SQL and source files 13ms"
+        },
+        {
+          "testName": "tests/e2e/codebase-hybrid-search.e2e.test.ts > E2E: Codebase Hybrid Search (real DB) > w=1 (text-only): \"pgvector\" should return md files, tests and scripts 5ms"
+        },
+        {
+          "testName": "tests/e2e/codebase-hybrid-search.e2e.test.ts > E2E: Codebase Hybrid Search (real DB) > w=0 (semantic-only): \"pgvector\" should find files related to vector databases 5ms"
+        }
+      ],
+      "failures": [
+        {
+          "testName": "E2E: Codebase Hybrid Search (real DB) > w=0 (semantic-only): \"hybrid search function\" should prioritize semantically relevant files",
+          "message": "AssertionError: expected [ 'docs/SEARCH_IMPROVED.md', …(9) ] to deeply equal [ 'docs/SEARCH_IMPROVED.md', …(9) ]\n\u001b[32m- Expected\u001b[39m\n\u001b[31m+ Received\u001b[39m\n\u001b[2m  [\u001b[22m\n\u001b[2m    \"docs/SEARCH_IMPROVED.md\",\u001b[22m\n\u001b[2m    \"src/migrations/001-init.ts\",\u001b[22m\n\u001b[2m    \"scripts/example.ts\",\u001b[22m\n\u001b[32m-   \"src/validation.ts\",\u001b[39m\n\u001b[2m    \"scripts/test.ts\",\u001b[22m\n\u001b[32m-   \"src/client/types.ts\",\u001b[39m\n\u001b[31m+   \"src/validation.ts\",\u001b[39m\n\u001b[2m    \"src/utils/json.ts\",\u001b[22m\n\u001b[2m    \"docs/CODE_STANDARD.md\",\u001b[22m\n\u001b[2m    \"scripts/count.ts\",\u001b[22m\n\u001b[31m+   \"src/client/types.ts\",\u001b[39m\n\u001b[2m    \"src/types.ts\",\u001b[22m\n\u001b[2m  ]\u001b[22m\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯",
+          "stack": "FAIL  tests/e2e/codebase-hybrid-search.e2e.test.ts > E2E: Codebase Hybrid Search (real DB) > w=0 (semantic-only): \"hybrid search function\" should prioritize semantically relevant files\n❯ tests/e2e/codebase-hybrid-search.e2e.test.ts:97:18\n     95|     const res = await run('hybrid search function', 0)\n     96|     const srcs = res.map((r) => r.src)\n     97|     expect(srcs).toEqual([\n       |                  ^\n     98|       'docs/SEARCH_IMPROVED.md',\n     99|       'src/migrations/001-init.ts',",
+          "line": 97,
+          "column": 18
+        },
+        {
+          "testName": "E2E: Codebase Hybrid Search (real DB) > w=0.5 (balanced): \"hybrid search function\" results should be a mix",
+          "message": "AssertionError: expected [ 'docs/SEARCH_IMPROVED.md', …(9) ] to deeply equal [ 'docs/SEARCH_IMPROVED.md', …(9) ]\n\u001b[32m- Expected\u001b[39m\n\u001b[31m+ Received\u001b[39m\n\u001b[2m  [\u001b[22m\n\u001b[2m    \"docs/SEARCH_IMPROVED.md\",\u001b[22m\n\u001b[32m-   \"src/validation.ts\",\u001b[39m\n\u001b[2m    \"src/migrations/001-init.ts\",\u001b[22m\n\u001b[31m+   \"src/validation.ts\",\u001b[39m\n\u001b[2m    \"scripts/example.ts\",\u001b[22m\n\u001b[2m    \"src/types.ts\",\u001b[22m\n\u001b[2m    \"src/sql.ts\",\u001b[22m\n\u001b[31m+   \"scripts/test.ts\",\u001b[39m\n\u001b[2m    \"src/client/types.ts\",\u001b[22m\n\u001b[32m-   \"scripts/test.ts\",\u001b[39m\n\u001b[2m    \"docs/FILE_ORGANISATION.md\",\u001b[22m\n\u001b[2m    \"src/client/entities.ts\",\u001b[22m\n\u001b[2m  ]\u001b[22m\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯",
+          "stack": "FAIL  tests/e2e/codebase-hybrid-search.e2e.test.ts > E2E: Codebase Hybrid Search (real DB) > w=0.5 (balanced): \"hybrid search function\" results should be a mix\n❯ tests/e2e/codebase-hybrid-search.e2e.test.ts:114:18\n    112|     const res = await run('hybrid search function', 0.5)\n    113|     const srcs = res.map((r) => r.src)\n    114|     expect(srcs).toEqual([\n       |                  ^\n    115|       'docs/SEARCH_IMPROVED.md',\n    116|       'src/validation.ts',",
+          "line": 114,
+          "column": 18
+        }
+      ],
+      "skips": [],
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/e2e/codebase-hybrid-search.e2e.test.ts > E2E: Codebase Hybrid Search (real DB) > w=1 (text-only): \"hybrid search function\" should return SQL and source files 13ms\n × tests/e2e/codebase-hybrid-search.e2e.test.ts > E2E: Codebase Hybrid Search (real DB) > w=0 (semantic-only): \"hybrid search function\" should prioritize semantically relevant files 13ms\n   → expected [ 'docs/SEARCH_IMPROVED.md', …(9) ] to deeply equal [ 'docs/SEARCH_IMPROVED.md', …(9) ]\n × tests/e2e/codebase-hybrid-search.e2e.test.ts > E2E: Codebase Hybrid Search (real DB) > w=0.5 (balanced): \"hybrid search function\" results should be a mix 8ms\n   → expected [ 'docs/SEARCH_IMPROVED.md', …(9) ] to deeply equal [ 'docs/SEARCH_IMPROVED.md', …(9) ]\n ✓ tests/e2e/codebase-hybrid-search.e2e.test.ts > E2E: Codebase Hybrid Search (real DB) > w=1 (text-only): \"pgvector\" should return md files, tests and scripts 5ms\n ✓ tests/e2e/codebase-hybrid-search.e2e.test.ts > E2E: Codebase Hybrid Search (real DB) > w=0 (semantic-only): \"pgvector\" should find files related to vector databases 5ms\n\n Test Files  1 failed (1)\n      Tests  2 failed | 3 passed (5)\n   Start at  11:18:14\n   Duration  11.86s (transform 203ms, setup 0ms, collect 749ms, tests 10.79s, environment 0ms, prepare 116ms)\n\n\n\n⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯\n\n FAIL  tests/e2e/codebase-hybrid-search.e2e.test.ts > E2E: Codebase Hybrid Search (real DB) > w=0 (semantic-only): \"hybrid search function\" should prioritize semantically relevant files\nAssertionError: expected [ 'docs/SEARCH_IMPROVED.md', …(9) ] to deeply equal [ 'docs/SEARCH_IMPROVED.md', …(9) ]\n\n\u001b[32m- Expected\u001b[39m\n\u001b[31m+ Received\u001b[39m\n\n\u001b[2m  [\u001b[22m\n\u001b[2m    \"docs/SEARCH_IMPROVED.md\",\u001b[22m\n\u001b[2m    \"src/migrations/001-init.ts\",\u001b[22m\n\u001b[2m    \"scripts/example.ts\",\u001b[22m\n\u001b[32m-   \"src/validation.ts\",\u001b[39m\n\u001b[2m    \"scripts/test.ts\",\u001b[22m\n\u001b[32m-   \"src/client/types.ts\",\u001b[39m\n\u001b[31m+   \"src/validation.ts\",\u001b[39m\n\u001b[2m    \"src/utils/json.ts\",\u001b[22m\n\u001b[2m    \"docs/CODE_STANDARD.md\",\u001b[22m\n\u001b[2m    \"scripts/count.ts\",\u001b[22m\n\u001b[31m+   \"src/client/types.ts\",\u001b[39m\n\u001b[2m    \"src/types.ts\",\u001b[22m\n\u001b[2m  ]\u001b[22m\n\n ❯ tests/e2e/codebase-hybrid-search.e2e.test.ts:97:18\n     95|     const res = await run('hybrid search function', 0)\n     96|     const srcs = res.map((r) => r.src)\n     97|     expect(srcs).toEqual([\n       |                  ^\n     98|       'docs/SEARCH_IMPROVED.md',\n     99|       'src/migrations/001-init.ts',\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯\n\n FAIL  tests/e2e/codebase-hybrid-search.e2e.test.ts > E2E: Codebase Hybrid Search (real DB) > w=0.5 (balanced): \"hybrid search function\" results should be a mix\nAssertionError: expected [ 'docs/SEARCH_IMPROVED.md', …(9) ] to deeply equal [ 'docs/SEARCH_IMPROVED.md', …(9) ]\n\n\u001b[32m- Expected\u001b[39m\n\u001b[31m+ Received\u001b[39m\n\n\u001b[2m  [\u001b[22m\n\u001b[2m    \"docs/SEARCH_IMPROVED.md\",\u001b[22m\n\u001b[32m-   \"src/validation.ts\",\u001b[39m\n\u001b[2m    \"src/migrations/001-init.ts\",\u001b[22m\n\u001b[31m+   \"src/validation.ts\",\u001b[39m\n\u001b[2m    \"scripts/example.ts\",\u001b[22m\n\u001b[2m    \"src/types.ts\",\u001b[22m\n\u001b[2m    \"src/sql.ts\",\u001b[22m\n\u001b[31m+   \"scripts/test.ts\",\u001b[39m\n\u001b[2m    \"src/client/types.ts\",\u001b[22m\n\u001b[32m-   \"scripts/test.ts\",\u001b[39m\n\u001b[2m    \"docs/FILE_ORGANISATION.md\",\u001b[22m\n\u001b[2m    \"src/client/entities.ts\",\u001b[22m\n\u001b[2m  ]\u001b[22m\n\n ❯ tests/e2e/codebase-hybrid-search.e2e.test.ts:114:18\n    112|     const res = await run('hybrid search function', 0.5)\n    113|     const srcs = res.map((r) => r.src)\n    114|     expect(srcs).toEqual([\n       |                  ^\n    115|       'docs/SEARCH_IMPROVED.md',\n    116|       'src/validation.ts',\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯\n\n",
+      "summary": {
+        "total": 5,
+        "passed": 3,
+        "failed": 2,
+        "skipped": 0,
+        "durationMs": 11860
+      }
+    },
+    {
+      "status": "ok",
+      "filePath": "tests/e2e/documents-hybrid-advanced.e2e.test.ts",
+      "passes": [
+        {
+          "testName": "tests/e2e/documents-hybrid-advanced.e2e.test.ts > E2E: Documents Hybrid Search Advanced (real DB) > w=0 (semantic-only): title-only (filename) can still surface near top due to name boost; content-strong remains top 110ms"
+        },
+        {
+          "testName": "tests/e2e/documents-hybrid-advanced.e2e.test.ts > E2E: Documents Hybrid Search Advanced (real DB) > w=0.2: both signals contribute; title-only and semantic-only should be present near top-12 65ms"
+        },
+        {
+          "testName": "tests/e2e/documents-hybrid-advanced.e2e.test.ts > E2E: Documents Hybrid Search Advanced (real DB) > w=0.5: balanced; both semantic-only and title-only appear in top-10 40ms"
+        },
+        {
+          "testName": "tests/e2e/documents-hybrid-advanced.e2e.test.ts > E2E: Documents Hybrid Search Advanced (real DB) > w=0.8: title-only (filename) should be stronger and appear in top-6 9ms"
+        },
+        {
+          "testName": "tests/e2e/documents-hybrid-advanced.e2e.test.ts > E2E: Documents Hybrid Search Advanced (real DB) > w=1 (text-only): filename (src) match enables retrieval even with unrelated content 15ms"
+        },
+        {
+          "testName": "tests/e2e/documents-hybrid-advanced.e2e.test.ts > E2E: Documents Hybrid Search Advanced (real DB) > filename (src) contributes to textScore: top results include src hits when textWeight=1 7ms"
+        },
+        {
+          "testName": "tests/e2e/documents-hybrid-advanced.e2e.test.ts > E2E: Documents Keyword List Search > with textWeight=1, should only return documents with all keywords 23ms"
+        },
+        {
+          "testName": "tests/e2e/documents-hybrid-advanced.e2e.test.ts > E2E: Documents Keyword List Search > with textWeight=0, should return semantically similar documents 10ms"
+        },
+        {
+          "testName": "tests/e2e/documents-hybrid-advanced.e2e.test.ts > E2E: Documents Keyword List Search > with textWeight=1 and no matching documents, should return something but with a score clos to 0 5ms"
+        }
+      ],
+      "failures": [],
+      "skips": [],
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/e2e/documents-hybrid-advanced.e2e.test.ts > E2E: Documents Hybrid Search Advanced (real DB) > w=0 (semantic-only): title-only (filename) can still surface near top due to name boost; content-strong remains top 110ms\n ✓ tests/e2e/documents-hybrid-advanced.e2e.test.ts > E2E: Documents Hybrid Search Advanced (real DB) > w=0.2: both signals contribute; title-only and semantic-only should be present near top-12 65ms\n ✓ tests/e2e/documents-hybrid-advanced.e2e.test.ts > E2E: Documents Hybrid Search Advanced (real DB) > w=0.5: balanced; both semantic-only and title-only appear in top-10 40ms\n ✓ tests/e2e/documents-hybrid-advanced.e2e.test.ts > E2E: Documents Hybrid Search Advanced (real DB) > w=0.8: title-only (filename) should be stronger and appear in top-6 9ms\n ✓ tests/e2e/documents-hybrid-advanced.e2e.test.ts > E2E: Documents Hybrid Search Advanced (real DB) > w=1 (text-only): filename (src) match enables retrieval even with unrelated content 15ms\n ✓ tests/e2e/documents-hybrid-advanced.e2e.test.ts > E2E: Documents Hybrid Search Advanced (real DB) > filename (src) contributes to textScore: top results include src hits when textWeight=1 7ms\n ✓ tests/e2e/documents-hybrid-advanced.e2e.test.ts > E2E: Documents Keyword List Search > with textWeight=1, should only return documents with all keywords 23ms\n ✓ tests/e2e/documents-hybrid-advanced.e2e.test.ts > E2E: Documents Keyword List Search > with textWeight=0, should return semantically similar documents 10ms\n ✓ tests/e2e/documents-hybrid-advanced.e2e.test.ts > E2E: Documents Keyword List Search > with textWeight=1 and no matching documents, should return something but with a score clos to 0 5ms\n\n Test Files  1 passed (1)\n      Tests  9 passed (9)\n   Start at  11:18:14\n   Duration  3.61s (transform 223ms, setup 0ms, collect 746ms, tests 2.55s, environment 0ms, prepare 92ms)\n\n",
+      "summary": {
+        "total": 9,
+        "passed": 9,
+        "failed": 0,
+        "skipped": 0,
+        "durationMs": 3610
+      }
+    },
+    {
+      "status": "ok",
+      "filePath": "tests/e2e/documents-hybrid.e2e.test.ts",
+      "passes": [
+        {
+          "testName": "tests/e2e/documents-hybrid.e2e.test.ts > E2E: Documents Hybrid Search (real DB) > ranks content, title-only (src), and semantic-only documents across weights 555ms"
+        },
+        {
+          "testName": "tests/e2e/documents-hybrid.e2e.test.ts > E2E: Documents Hybrid Search (real DB) > supports matchDocuments filtering by project 2ms"
+        }
+      ],
+      "failures": [],
+      "skips": [],
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/e2e/documents-hybrid.e2e.test.ts > E2E: Documents Hybrid Search (real DB) > ranks content, title-only (src), and semantic-only documents across weights 555ms\n ✓ tests/e2e/documents-hybrid.e2e.test.ts > E2E: Documents Hybrid Search (real DB) > supports matchDocuments filtering by project 2ms\n\n Test Files  1 passed (1)\n      Tests  2 passed (2)\n   Start at  11:18:14\n   Duration  1.73s (transform 184ms, setup 0ms, collect 705ms, tests 685ms, environment 0ms, prepare 62ms)\n\n",
+      "summary": {
+        "total": 2,
+        "passed": 2,
+        "failed": 0,
+        "skipped": 0,
+        "durationMs": 1730
+      }
+    },
+    {
+      "status": "ok",
+      "filePath": "tests/e2e/documents-improved-search-ranking.e2e.test.ts",
+      "passes": [
+        {
+          "testName": "tests/e2e/documents-improved-search-ranking.e2e.test.ts > E2E: Documents Improved Search Ranking > keyword ranking: more distinct-token matches rank first (matchMode=any) 63ms"
+        },
+        {
+          "testName": "tests/e2e/documents-improved-search-ranking.e2e.test.ts > E2E: Documents Improved Search Ranking > keyword matchMode=all requires all tokens to be present 3ms"
+        },
+        {
+          "testName": "tests/e2e/documents-improved-search-ranking.e2e.test.ts > E2E: Documents Improved Search Ranking > exact ranking: more distinct-needle matches rank first (caseSensitive=false) 4ms"
+        },
+        {
+          "testName": "tests/e2e/documents-improved-search-ranking.e2e.test.ts > E2E: Documents Improved Search Ranking > exact search: caseSensitive=true excludes differently-cased needle 4ms"
+        },
+        {
+          "testName": "tests/e2e/documents-improved-search-ranking.e2e.test.ts > E2E: Documents Improved Search Ranking > pathPrefix scopes results (only returns within prefix) 2ms"
+        }
+      ],
+      "failures": [],
+      "skips": [],
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/e2e/documents-improved-search-ranking.e2e.test.ts > E2E: Documents Improved Search Ranking > keyword ranking: more distinct-token matches rank first (matchMode=any) 63ms\n ✓ tests/e2e/documents-improved-search-ranking.e2e.test.ts > E2E: Documents Improved Search Ranking > keyword matchMode=all requires all tokens to be present 3ms\n ✓ tests/e2e/documents-improved-search-ranking.e2e.test.ts > E2E: Documents Improved Search Ranking > exact ranking: more distinct-needle matches rank first (caseSensitive=false) 4ms\n ✓ tests/e2e/documents-improved-search-ranking.e2e.test.ts > E2E: Documents Improved Search Ranking > exact search: caseSensitive=true excludes differently-cased needle 4ms\n ✓ tests/e2e/documents-improved-search-ranking.e2e.test.ts > E2E: Documents Improved Search Ranking > pathPrefix scopes results (only returns within prefix) 2ms\n\n Test Files  1 passed (1)\n      Tests  5 passed (5)\n   Start at  11:18:14\n   Duration  1.80s (transform 211ms, setup 0ms, collect 906ms, tests 599ms, environment 0ms, prepare 84ms)\n\n",
+      "summary": {
+        "total": 5,
+        "passed": 5,
+        "failed": 0,
+        "skipped": 0,
+        "durationMs": 1800
+      }
+    },
+    {
+      "status": "ok",
+      "filePath": "tests/e2e/documents-indexing.e2e.test.ts",
+      "passes": [
+        {
+          "testName": "tests/e2e/documents-indexing.e2e.test.ts > E2E: Documents Indexing (real DB) > add/get/update/delete/getBySrc/clear 445ms"
+        },
+        {
+          "testName": "tests/e2e/documents-indexing.e2e.test.ts > E2E: Documents Indexing (real DB) > upsertDocuments in a batch 300ms"
+        }
+      ],
+      "failures": [],
+      "skips": [],
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/e2e/documents-indexing.e2e.test.ts > E2E: Documents Indexing (real DB) > add/get/update/delete/getBySrc/clear 445ms\n ✓ tests/e2e/documents-indexing.e2e.test.ts > E2E: Documents Indexing (real DB) > upsertDocuments in a batch 300ms\n\n Test Files  1 passed (1)\n      Tests  2 passed (2)\n   Start at  11:18:14\n   Duration  2.03s (transform 226ms, setup 0ms, collect 871ms, tests 882ms, environment 0ms, prepare 66ms)\n\n",
+      "summary": {
+        "total": 2,
+        "passed": 2,
+        "failed": 0,
+        "skipped": 0,
+        "durationMs": 2030
+      }
+    },
+    {
+      "status": "ok",
+      "filePath": "tests/e2e/documents-name-search.e2e.test.ts",
+      "passes": [
+        {
+          "testName": "tests/e2e/documents-name-search.e2e.test.ts > E2E: Documents Name/Src Direct Search > query with extension returns expected docs in shorter-name-first order 48ms"
+        },
+        {
+          "testName": "tests/e2e/documents-name-search.e2e.test.ts > E2E: Documents Name/Src Direct Search > query without extension also returns expected docs in shorter-name-first order 68ms"
+        },
+        {
+          "testName": "tests/e2e/documents-name-search.e2e.test.ts > E2E: Documents Name/Src Direct Search > full path query prefers exact src equality (full_raw on src) 12ms"
+        },
+        {
+          "testName": "tests/e2e/documents-name-search.e2e.test.ts > E2E: Documents Name/Src Direct Search > projectIds filter is honored 20ms"
+        },
+        {
+          "testName": "tests/e2e/documents-name-search.e2e.test.ts > E2E: Documents Name/Src Direct Search > multi-dot filenames: exact and base queries (E2E) 96ms"
+        }
+      ],
+      "failures": [],
+      "skips": [],
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/e2e/documents-name-search.e2e.test.ts > E2E: Documents Name/Src Direct Search > query with extension returns expected docs in shorter-name-first order 48ms\n ✓ tests/e2e/documents-name-search.e2e.test.ts > E2E: Documents Name/Src Direct Search > query without extension also returns expected docs in shorter-name-first order 68ms\n ✓ tests/e2e/documents-name-search.e2e.test.ts > E2E: Documents Name/Src Direct Search > full path query prefers exact src equality (full_raw on src) 12ms\n ✓ tests/e2e/documents-name-search.e2e.test.ts > E2E: Documents Name/Src Direct Search > projectIds filter is honored 20ms\n ✓ tests/e2e/documents-name-search.e2e.test.ts > E2E: Documents Name/Src Direct Search > multi-dot filenames: exact and base queries (E2E) 96ms\n\n Test Files  1 passed (1)\n      Tests  5 passed (5)\n   Start at  11:18:14\n   Duration  1.91s (transform 194ms, setup 0ms, collect 891ms, tests 763ms, environment 0ms, prepare 57ms)\n\n",
+      "summary": {
+        "total": 5,
+        "passed": 5,
+        "failed": 0,
+        "skipped": 0,
+        "durationMs": 1910
+      }
+    },
+    {
+      "status": "skipped",
+      "filePath": "tests/e2e/entities-hybrid-advanced.e2e.test.ts",
+      "passes": [],
+      "failures": [],
+      "skips": [],
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ↓ tests/e2e/entities-hybrid-advanced.e2e.test.ts > E2E: Entities Hybrid Search Advanced (real DB) > w=0 (semantic-only): semantic entities appear above controls and near top\n ↓ tests/e2e/entities-hybrid-advanced.e2e.test.ts > E2E: Entities Hybrid Search Advanced (real DB) > w=0.2: both signals; semantic and keyword groups in top-10\n ↓ tests/e2e/entities-hybrid-advanced.e2e.test.ts > E2E: Entities Hybrid Search Advanced (real DB) > w=0.5: balanced; both groups present in top-8\n ↓ tests/e2e/entities-hybrid-advanced.e2e.test.ts > E2E: Entities Hybrid Search Advanced (real DB) > w=0.8: keyword dominance increases; keyword beats semantic\n ↓ tests/e2e/entities-hybrid-advanced.e2e.test.ts > E2E: Entities Hybrid Search Advanced (real DB) > w=1 (text-only): keyword entities dominate top-3\n ↓ tests/e2e/entities-hybrid-advanced.e2e.test.ts > E2E: Entities Hybrid Search Advanced (real DB) > does not use metadata for search\n ↓ tests/e2e/entities-hybrid-advanced.e2e.test.ts > E2E: Entities Keyword List Search > with textWeight=1, should only return entities with all keywords\n ↓ tests/e2e/entities-hybrid-advanced.e2e.test.ts > E2E: Entities Keyword List Search > with textWeight=0, should return semantically similar entities\n ↓ tests/e2e/entities-hybrid-advanced.e2e.test.ts > E2E: Entities Keyword List Search > with textWeight=1 and no matching entities, should not match noMatch\n\n Test Files  1 failed (1)\n      Tests  9 skipped (9)\n   Start at  11:18:15\n   Duration  1.55s (transform 263ms, setup 0ms, collect 1.21s, tests 116ms, environment 0ms, prepare 46ms)\n\n\n\n⎯⎯⎯⎯⎯⎯ Failed Suites 2 ⎯⎯⎯⎯⎯⎯⎯\n\n FAIL  tests/e2e/entities-hybrid-advanced.e2e.test.ts > E2E: Entities Hybrid Search Advanced (real DB)\nError: clearEntities: projectIds is required and must be non-empty\n ❯ Object.clearEntities src/client/entities.ts:173:13\n    171|   async function clearEntities(filter: { projectIds: string[]; types?:…\n    172|     if (!filter?.projectIds || filter.projectIds.length === 0) {\n    173|       throw new Error('clearEntities: projectIds is required and must …\n       |             ^\n    174|     }\n    175|     const projectIds = filter.projectIds\n ❯ tests/e2e/entities-hybrid-advanced.e2e.test.ts:21:16\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯\n\n FAIL  tests/e2e/entities-hybrid-advanced.e2e.test.ts > E2E: Entities Hybrid Search Advanced (real DB)\nError: clearEntities: projectIds is required and must be non-empty\n ❯ Object.clearEntities src/client/entities.ts:173:13\n    171|   async function clearEntities(filter: { projectIds: string[]; types?:…\n    172|     if (!filter?.projectIds || filter.projectIds.length === 0) {\n    173|       throw new Error('clearEntities: projectIds is required and must …\n       |             ^\n    174|     }\n    175|     const projectIds = filter.projectIds\n ❯ tests/e2e/entities-hybrid-advanced.e2e.test.ts:69:18\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯\n\n FAIL  tests/e2e/entities-hybrid-advanced.e2e.test.ts > E2E: Entities Keyword List Search\nError: clearEntities: projectIds is required and must be non-empty\n ❯ Object.clearEntities src/client/entities.ts:173:13\n    171|   async function clearEntities(filter: { projectIds: string[]; types?:…\n    172|     if (!filter?.projectIds || filter.projectIds.length === 0) {\n    173|       throw new Error('clearEntities: projectIds is required and must …\n       |             ^\n    174|     }\n    175|     const projectIds = filter.projectIds\n ❯ tests/e2e/entities-hybrid-advanced.e2e.test.ts:201:14\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯\n\n FAIL  tests/e2e/entities-hybrid-advanced.e2e.test.ts > E2E: Entities Keyword List Search\nError: clearEntities: projectIds is required and must be non-empty\n ❯ Object.clearEntities src/client/entities.ts:173:13\n    171|   async function clearEntities(filter: { projectIds: string[]; types?:…\n    172|     if (!filter?.projectIds || filter.projectIds.length === 0) {\n    173|       throw new Error('clearEntities: projectIds is required and must …\n       |             ^\n    174|     }\n    175|     const projectIds = filter.projectIds\n ❯ tests/e2e/entities-hybrid-advanced.e2e.test.ts:272:16\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/4]⎯\n\n",
+      "summary": {
+        "total": 9,
+        "passed": 0,
+        "failed": 0,
+        "skipped": 9,
+        "durationMs": 1550
+      }
+    },
+    {
+      "status": "fail",
+      "filePath": "tests/e2e/entities-hybrid.e2e.test.ts",
+      "passes": [],
+      "failures": [
+        {
+          "testName": "E2E: Entities Hybrid Search (real DB) > hybrid search returns results and respects weights",
+          "message": "error: column \"should_embed\" does not exist",
+          "stack": "FAIL  tests/e2e/entities-hybrid.e2e.test.ts > E2E: Entities Hybrid Search (real DB) > hybrid search returns results and respects weights\n❯ node_modules/pg-pool/index.js:45:11\n❯ Object.searchEntities src/client/entities.ts:134:15\n    132|     if (params.projectIds && params.projectIds.length > 0) filter.proj…\n    133|\n    134|     const r = await db.query(SQL.searchEntitiesQuery, [\n       |               ^\n    135|       query,\n    136|       qvec,\n❯ tests/e2e/entities-hybrid.e2e.test.ts:37:16",
+          "line": 37,
+          "column": 16
+        }
+      ],
+      "skips": [],
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n × tests/e2e/entities-hybrid.e2e.test.ts > E2E: Entities Hybrid Search (real DB) > hybrid search returns results and respects weights 403ms\n   → column \"should_embed\" does not exist\n × tests/e2e/entities-hybrid.e2e.test.ts > E2E: Entities Hybrid Search (real DB) > does not use metadata for search 143ms\n   → column \"should_embed\" does not exist\n × tests/e2e/entities-hybrid.e2e.test.ts > E2E: Entities Hybrid Search (real DB) > includes non-embedded entities and returns vecScore=0 for them 98ms\n   → column \"should_embed\" does not exist\n\n Test Files  1 failed (1)\n      Tests  3 failed (3)\n   Start at  11:18:15\n   Duration  2.05s (transform 241ms, setup 0ms, collect 893ms, tests 904ms, environment 0ms, prepare 59ms)\n\n\n\n⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯\n\n FAIL  tests/e2e/entities-hybrid.e2e.test.ts > E2E: Entities Hybrid Search (real DB)\nError: clearEntities: projectIds is required and must be non-empty\n ❯ Object.clearEntities src/client/entities.ts:173:13\n    171|   async function clearEntities(filter: { projectIds: string[]; types?:…\n    172|     if (!filter?.projectIds || filter.projectIds.length === 0) {\n    173|       throw new Error('clearEntities: projectIds is required and must …\n       |             ^\n    174|     }\n    175|     const projectIds = filter.projectIds\n ❯ tests/e2e/entities-hybrid.e2e.test.ts:18:16\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯\n\n\n⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯\n\n FAIL  tests/e2e/entities-hybrid.e2e.test.ts > E2E: Entities Hybrid Search (real DB) > hybrid search returns results and respects weights\nerror: column \"should_embed\" does not exist\n ❯ node_modules/pg-pool/index.js:45:11\n ❯ Object.searchEntities src/client/entities.ts:134:15\n    132|     if (params.projectIds && params.projectIds.length > 0) filter.proj…\n    133| \n    134|     const r = await db.query(SQL.searchEntitiesQuery, [\n       |               ^\n    135|       query,\n    136|       qvec,\n ❯ tests/e2e/entities-hybrid.e2e.test.ts:37:16\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯\nSerialized Error: { length: 112, severity: 'ERROR', code: '42703', detail: undefined, hint: undefined, position: '65', internalPosition: undefined, internalQuery: undefined, where: undefined, schema: undefined, table: undefined, dataType: undefined, constraint: undefined, file: 'parse_relation.c', routine: 'errorMissingColumn' }\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯\n\n FAIL  tests/e2e/entities-hybrid.e2e.test.ts > E2E: Entities Hybrid Search (real DB) > does not use metadata for search\nerror: column \"should_embed\" does not exist\n ❯ node_modules/pg-pool/index.js:45:11\n ❯ Object.searchEntities src/client/entities.ts:134:15\n    132|     if (params.projectIds && params.projectIds.length > 0) filter.proj…\n    133| \n    134|     const r = await db.query(SQL.searchEntitiesQuery, [\n       |               ^\n    135|       query,\n    136|       qvec,\n ❯ tests/e2e/entities-hybrid.e2e.test.ts:81:22\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯\nSerialized Error: { length: 112, severity: 'ERROR', code: '42703', detail: undefined, hint: undefined, position: '65', internalPosition: undefined, internalQuery: undefined, where: undefined, schema: undefined, table: undefined, dataType: undefined, constraint: undefined, file: 'parse_relation.c', routine: 'errorMissingColumn' }\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯\n\n FAIL  tests/e2e/entities-hybrid.e2e.test.ts > E2E: Entities Hybrid Search (real DB) > includes non-embedded entities and returns vecScore=0 for them\nerror: column \"should_embed\" does not exist\n ❯ node_modules/pg-pool/index.js:45:11\n ❯ Object.searchEntities src/client/entities.ts:134:15\n    132|     if (params.projectIds && params.projectIds.length > 0) filter.proj…\n    133| \n    134|     const r = await db.query(SQL.searchEntitiesQuery, [\n       |               ^\n    135|       query,\n    136|       qvec,\n ❯ tests/e2e/entities-hybrid.e2e.test.ts:114:21\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯\nSerialized Error: { length: 112, severity: 'ERROR', code: '42703', detail: undefined, hint: undefined, position: '65', internalPosition: undefined, internalQuery: undefined, where: undefined, schema: undefined, table: undefined, dataType: undefined, constraint: undefined, file: 'parse_relation.c', routine: 'errorMissingColumn' }\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/4]⎯\n\n",
+      "summary": {
+        "total": 3,
+        "passed": 0,
+        "failed": 3,
+        "skipped": 0,
+        "durationMs": 2050
+      }
+    },
+    {
+      "status": "skipped",
+      "filePath": "tests/e2e/entities-improved-search-ranking.e2e.test.ts",
+      "passes": [],
+      "failures": [],
+      "skips": [],
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ↓ tests/e2e/entities-improved-search-ranking.e2e.test.ts > E2E: Entities Improved Search Ranking > keyword ranking: more distinct-token matches rank first (matchMode=any)\n ↓ tests/e2e/entities-improved-search-ranking.e2e.test.ts > E2E: Entities Improved Search Ranking > keyword matchMode=all requires all tokens to be present\n ↓ tests/e2e/entities-improved-search-ranking.e2e.test.ts > E2E: Entities Improved Search Ranking > exact search: caseSensitive=false includes differently-cased needle\n ↓ tests/e2e/entities-improved-search-ranking.e2e.test.ts > E2E: Entities Improved Search Ranking > exact search: caseSensitive=true excludes differently-cased needle\n ↓ tests/e2e/entities-improved-search-ranking.e2e.test.ts > E2E: Entities Improved Search Ranking > type filter restricts results\n\n Test Files  1 failed (1)\n      Tests  5 skipped (5)\n   Start at  11:18:14\n   Duration  1.20s (transform 230ms, setup 0ms, collect 926ms, tests 50ms, environment 0ms, prepare 65ms)\n\n\n\n⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯\n\n FAIL  tests/e2e/entities-improved-search-ranking.e2e.test.ts > E2E: Entities Improved Search Ranking\nError: clearEntities: projectIds is required and must be non-empty\n ❯ Object.clearEntities src/client/entities.ts:173:13\n    171|   async function clearEntities(filter: { projectIds: string[]; types?:…\n    172|     if (!filter?.projectIds || filter.projectIds.length === 0) {\n    173|       throw new Error('clearEntities: projectIds is required and must …\n       |             ^\n    174|     }\n    175|     const projectIds = filter.projectIds\n ❯ tests/e2e/entities-improved-search-ranking.e2e.test.ts:15:16\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯\n\n FAIL  tests/e2e/entities-improved-search-ranking.e2e.test.ts > E2E: Entities Improved Search Ranking\nError: clearEntities: projectIds is required and must be non-empty\n ❯ Object.clearEntities src/client/entities.ts:173:13\n    171|   async function clearEntities(filter: { projectIds: string[]; types?:…\n    172|     if (!filter?.projectIds || filter.projectIds.length === 0) {\n    173|       throw new Error('clearEntities: projectIds is required and must …\n       |             ^\n    174|     }\n    175|     const projectIds = filter.projectIds\n ❯ tests/e2e/entities-improved-search-ranking.e2e.test.ts:29:18\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯\n\n",
+      "summary": {
+        "total": 5,
+        "passed": 0,
+        "failed": 0,
+        "skipped": 5,
+        "durationMs": 1200
+      }
+    },
+    {
+      "status": "fail",
+      "filePath": "tests/e2e/entities-indexing.e2e.test.ts",
+      "passes": [],
+      "failures": [
+        {
+          "testName": "E2E: Entities Indexing (real DB) > add/get/update/delete/match/clear",
+          "message": "Error: clearEntities: projectIds is required and must be non-empty\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯",
+          "stack": "FAIL  tests/e2e/entities-indexing.e2e.test.ts > E2E: Entities Indexing (real DB) > add/get/update/delete/match/clear\n❯ Object.clearEntities src/client/entities.ts:173:13\n    171|   async function clearEntities(filter: { projectIds: string[]; types?:…\n    172|     if (!filter?.projectIds || filter.projectIds.length === 0) {\n    173|       throw new Error('clearEntities: projectIds is required and must …\n       |             ^\n    174|     }\n    175|     const projectIds = filter.projectIds\n❯ tests/e2e/entities-indexing.e2e.test.ts:61:14",
+          "line": 61,
+          "column": 14
+        }
+      ],
+      "skips": [],
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n × tests/e2e/entities-indexing.e2e.test.ts > E2E: Entities Indexing (real DB) > add/get/update/delete/match/clear 288ms\n   → clearEntities: projectIds is required and must be non-empty\n\n Test Files  1 failed (1)\n      Tests  1 failed (1)\n   Start at  11:18:17\n   Duration  1.53s (transform 185ms, setup 0ms, collect 793ms, tests 447ms, environment 7ms, prepare 85ms)\n\n\n\n⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯\n\n FAIL  tests/e2e/entities-indexing.e2e.test.ts > E2E: Entities Indexing (real DB)\nError: clearEntities: projectIds is required and must be non-empty\n ❯ Object.clearEntities src/client/entities.ts:173:13\n    171|   async function clearEntities(filter: { projectIds: string[]; types?:…\n    172|     if (!filter?.projectIds || filter.projectIds.length === 0) {\n    173|       throw new Error('clearEntities: projectIds is required and must …\n       |             ^\n    174|     }\n    175|     const projectIds = filter.projectIds\n ❯ tests/e2e/entities-indexing.e2e.test.ts:18:16\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯\n\n\n⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯\n\n FAIL  tests/e2e/entities-indexing.e2e.test.ts > E2E: Entities Indexing (real DB) > add/get/update/delete/match/clear\nError: clearEntities: projectIds is required and must be non-empty\n ❯ Object.clearEntities src/client/entities.ts:173:13\n    171|   async function clearEntities(filter: { projectIds: string[]; types?:…\n    172|     if (!filter?.projectIds || filter.projectIds.length === 0) {\n    173|       throw new Error('clearEntities: projectIds is required and must …\n       |             ^\n    174|     }\n    175|     const projectIds = filter.projectIds\n ❯ tests/e2e/entities-indexing.e2e.test.ts:61:14\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯\n\n",
+      "summary": {
+        "total": 1,
+        "passed": 0,
+        "failed": 1,
+        "skipped": 0,
+        "durationMs": 1530
+      }
+    },
+    {
+      "status": "skipped",
+      "filePath": "tests/e2e/lifecycle/external.lifecycle.e2e.test.ts",
+      "passes": [],
+      "failures": [],
+      "skips": [],
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ↓ tests/e2e/lifecycle/external.lifecycle.e2e.test.ts > E2E: Lifecycle (external server) > creates a temporary database, initializes schema, and drops it on destroy\n\n Test Files  1 skipped (1)\n      Tests  1 skipped (1)\n   Start at  11:18:17\n   Duration  960ms (transform 156ms, setup 0ms, collect 756ms, tests 0ms, environment 0ms, prepare 59ms)\n\n",
+      "summary": {
+        "total": 1,
+        "passed": 0,
+        "failed": 0,
+        "skipped": 1,
+        "durationMs": 960
+      }
+    },
+    {
+      "status": "fail",
+      "filePath": "tests/e2e/lifecycle/managed.lifecycle.e2e.test.ts",
+      "passes": [],
+      "failures": [
+        {
+          "testName": "E2E: Lifecycle (managed container) > starts fresh pgvector container, performs ops, and destroys cleanly",
+          "message": "error: column \"should_embed\" does not exist",
+          "stack": "FAIL  tests/e2e/lifecycle/managed.lifecycle.e2e.test.ts > E2E: Lifecycle (managed container) > starts fresh pgvector container, performs ops, and destroys cleanly\n❯ node_modules/pg-pool/index.js:45:11\n❯ Object.searchEntities src/client/entities.ts:134:15\n    132|     if (params.projectIds && params.projectIds.length > 0) filter.proj…\n    133|\n    134|     const r = await db.query(SQL.searchEntitiesQuery, [\n       |               ^\n    135|       query,\n    136|       qvec,\n❯ tests/e2e/lifecycle/managed.lifecycle.e2e.test.ts:65:20",
+          "line": 65,
+          "column": 20
+        }
+      ],
+      "skips": [],
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n × tests/e2e/lifecycle/managed.lifecycle.e2e.test.ts > E2E: Lifecycle (managed container) > starts fresh pgvector container, performs ops, and destroys cleanly 4120ms\n   → column \"should_embed\" does not exist\n\n Test Files  1 failed (1)\n      Tests  1 failed (1)\n   Start at  11:18:17\n   Duration  6.02s (transform 191ms, setup 0ms, collect 690ms, tests 4.12s, environment 0ms, prepare 56ms)\n\n\n\n⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯\n\n FAIL  tests/e2e/lifecycle/managed.lifecycle.e2e.test.ts > E2E: Lifecycle (managed container) > starts fresh pgvector container, performs ops, and destroys cleanly\nerror: column \"should_embed\" does not exist\n ❯ node_modules/pg-pool/index.js:45:11\n ❯ Object.searchEntities src/client/entities.ts:134:15\n    132|     if (params.projectIds && params.projectIds.length > 0) filter.proj…\n    133| \n    134|     const r = await db.query(SQL.searchEntitiesQuery, [\n       |               ^\n    135|       query,\n    136|       qvec,\n ❯ tests/e2e/lifecycle/managed.lifecycle.e2e.test.ts:65:20\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯\nSerialized Error: { length: 112, severity: 'ERROR', code: '42703', detail: undefined, hint: undefined, position: '65', internalPosition: undefined, internalQuery: undefined, where: undefined, schema: undefined, table: undefined, dataType: undefined, constraint: undefined, file: 'parse_relation.c', routine: 'errorMissingColumn' }\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯\n\n",
+      "summary": {
+        "total": 1,
+        "passed": 0,
+        "failed": 1,
+        "skipped": 0,
+        "durationMs": 6020
+      }
+    },
+    {
+      "status": "ok",
+      "filePath": "tests/e2e/lifecycle/reusable.lifecycle.e2e.test.ts",
+      "passes": [
+        {
+          "testName": "tests/e2e/lifecycle/reusable.lifecycle.e2e.test.ts > E2E: Lifecycle (reusable provisioning) > is idempotent and schema is initialized for connections 192ms"
+        }
+      ],
+      "failures": [],
+      "skips": [],
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/e2e/lifecycle/reusable.lifecycle.e2e.test.ts > E2E: Lifecycle (reusable provisioning) > is idempotent and schema is initialized for connections 192ms\n\n Test Files  1 passed (1)\n      Tests  1 passed (1)\n   Start at  11:18:18\n   Duration  1.08s (transform 160ms, setup 0ms, collect 595ms, tests 193ms, environment 0ms, prepare 38ms)\n\n",
+      "summary": {
+        "total": 1,
+        "passed": 1,
+        "failed": 0,
+        "skipped": 0,
+        "durationMs": 1080
+      }
+    },
+    {
+      "status": "ok",
+      "filePath": "tests/e2e/searchDocumentsForExact.e2e.test.ts",
+      "passes": [
+        {
+          "testName": "tests/e2e/searchDocumentsForExact.e2e.test.ts > E2E: db.searchDocumentsForExact > throws if args.projectIds is missing/empty 1ms"
+        },
+        {
+          "testName": "tests/e2e/searchDocumentsForExact.e2e.test.ts > E2E: db.searchDocumentsForExact > throws if args.needles is not string|string[] 0ms"
+        },
+        {
+          "testName": "tests/e2e/searchDocumentsForExact.e2e.test.ts > E2E: db.searchDocumentsForExact > throws if args.matchMode is invalid 0ms"
+        },
+        {
+          "testName": "tests/e2e/searchDocumentsForExact.e2e.test.ts > E2E: db.searchDocumentsForExact > throws if args.caseSensitive is not boolean 0ms"
+        },
+        {
+          "testName": "tests/e2e/searchDocumentsForExact.e2e.test.ts > E2E: db.searchDocumentsForExact > tokenizes when needles is string: split on comma/semicolon only 8ms"
+        },
+        {
+          "testName": "tests/e2e/searchDocumentsForExact.e2e.test.ts > E2E: db.searchDocumentsForExact > drops empty tokens after tokenization 16ms"
+        },
+        {
+          "testName": "tests/e2e/searchDocumentsForExact.e2e.test.ts > E2E: db.searchDocumentsForExact > returns [] if tokenization produces zero tokens 0ms"
+        },
+        {
+          "testName": "tests/e2e/searchDocumentsForExact.e2e.test.ts > E2E: db.searchDocumentsForExact > default matchMode is any 14ms"
+        },
+        {
+          "testName": "tests/e2e/searchDocumentsForExact.e2e.test.ts > E2E: db.searchDocumentsForExact > matchMode=all requires all needles 12ms"
+        },
+        {
+          "testName": "tests/e2e/searchDocumentsForExact.e2e.test.ts > E2E: db.searchDocumentsForExact > default caseSensitive is true 5ms"
+        },
+        {
+          "testName": "tests/e2e/searchDocumentsForExact.e2e.test.ts > E2E: db.searchDocumentsForExact > caseSensitive=false includes differently-cased needle 10ms"
+        },
+        {
+          "testName": "tests/e2e/searchDocumentsForExact.e2e.test.ts > E2E: db.searchDocumentsForExact > pathPrefix scopes results 3ms"
+        },
+        {
+          "testName": "tests/e2e/searchDocumentsForExact.e2e.test.ts > E2E: db.searchDocumentsForExact > clamps limit to [1..1000] 16ms"
+        },
+        {
+          "testName": "tests/e2e/searchDocumentsForExact.e2e.test.ts > E2E: db.searchDocumentsForExact > ranking: more distinct needles matched ranks first 13ms"
+        }
+      ],
+      "failures": [],
+      "skips": [],
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/e2e/searchDocumentsForExact.e2e.test.ts > E2E: db.searchDocumentsForExact > throws if args.projectIds is missing/empty 1ms\n ✓ tests/e2e/searchDocumentsForExact.e2e.test.ts > E2E: db.searchDocumentsForExact > throws if args.needles is not string|string[] 0ms\n ✓ tests/e2e/searchDocumentsForExact.e2e.test.ts > E2E: db.searchDocumentsForExact > throws if args.matchMode is invalid 0ms\n ✓ tests/e2e/searchDocumentsForExact.e2e.test.ts > E2E: db.searchDocumentsForExact > throws if args.caseSensitive is not boolean 0ms\n ✓ tests/e2e/searchDocumentsForExact.e2e.test.ts > E2E: db.searchDocumentsForExact > tokenizes when needles is string: split on comma/semicolon only 8ms\n ✓ tests/e2e/searchDocumentsForExact.e2e.test.ts > E2E: db.searchDocumentsForExact > drops empty tokens after tokenization 16ms\n ✓ tests/e2e/searchDocumentsForExact.e2e.test.ts > E2E: db.searchDocumentsForExact > returns [] if tokenization produces zero tokens 0ms\n ✓ tests/e2e/searchDocumentsForExact.e2e.test.ts > E2E: db.searchDocumentsForExact > default matchMode is any 14ms\n ✓ tests/e2e/searchDocumentsForExact.e2e.test.ts > E2E: db.searchDocumentsForExact > matchMode=all requires all needles 12ms\n ✓ tests/e2e/searchDocumentsForExact.e2e.test.ts > E2E: db.searchDocumentsForExact > default caseSensitive is true 5ms\n ✓ tests/e2e/searchDocumentsForExact.e2e.test.ts > E2E: db.searchDocumentsForExact > caseSensitive=false includes differently-cased needle 10ms\n ✓ tests/e2e/searchDocumentsForExact.e2e.test.ts > E2E: db.searchDocumentsForExact > pathPrefix scopes results 3ms\n ✓ tests/e2e/searchDocumentsForExact.e2e.test.ts > E2E: db.searchDocumentsForExact > clamps limit to [1..1000] 16ms\n ✓ tests/e2e/searchDocumentsForExact.e2e.test.ts > E2E: db.searchDocumentsForExact > ranking: more distinct needles matched ranks first 13ms\n\n Test Files  1 passed (1)\n      Tests  14 passed (14)\n   Start at  11:18:18\n   Duration  1.96s (transform 183ms, setup 0ms, collect 1.06s, tests 625ms, environment 0ms, prepare 78ms)\n\n",
+      "summary": {
+        "total": 14,
+        "passed": 14,
+        "failed": 0,
+        "skipped": 0,
+        "durationMs": 1960
+      }
+    },
+    {
+      "status": "ok",
+      "filePath": "tests/e2e/searchDocumentsForKeywords.e2e.test.ts",
+      "passes": [
+        {
+          "testName": "tests/e2e/searchDocumentsForKeywords.e2e.test.ts > E2E: db.searchDocumentsForKeywords > throws if args.projectIds is missing/empty 4ms"
+        },
+        {
+          "testName": "tests/e2e/searchDocumentsForKeywords.e2e.test.ts > E2E: db.searchDocumentsForKeywords > throws if args.keywords is not string|string[] 0ms"
+        },
+        {
+          "testName": "tests/e2e/searchDocumentsForKeywords.e2e.test.ts > E2E: db.searchDocumentsForKeywords > throws if args.matchMode is invalid 0ms"
+        },
+        {
+          "testName": "tests/e2e/searchDocumentsForKeywords.e2e.test.ts > E2E: db.searchDocumentsForKeywords > tokenizes when keywords is string: split on comma/semicolon only 15ms"
+        },
+        {
+          "testName": "tests/e2e/searchDocumentsForKeywords.e2e.test.ts > E2E: db.searchDocumentsForKeywords > drops empty tokens after tokenization 5ms"
+        },
+        {
+          "testName": "tests/e2e/searchDocumentsForKeywords.e2e.test.ts > E2E: db.searchDocumentsForKeywords > returns [] if tokenization produces zero tokens 0ms"
+        },
+        {
+          "testName": "tests/e2e/searchDocumentsForKeywords.e2e.test.ts > E2E: db.searchDocumentsForKeywords > default matchMode is any 26ms"
+        },
+        {
+          "testName": "tests/e2e/searchDocumentsForKeywords.e2e.test.ts > E2E: db.searchDocumentsForKeywords > matchMode=all requires all tokens 11ms"
+        },
+        {
+          "testName": "tests/e2e/searchDocumentsForKeywords.e2e.test.ts > E2E: db.searchDocumentsForKeywords > case-insensitive by default 8ms"
+        },
+        {
+          "testName": "tests/e2e/searchDocumentsForKeywords.e2e.test.ts > E2E: db.searchDocumentsForKeywords > pathPrefix scopes results 20ms"
+        },
+        {
+          "testName": "tests/e2e/searchDocumentsForKeywords.e2e.test.ts > E2E: db.searchDocumentsForKeywords > clamps limit to [1..1000] 15ms"
+        },
+        {
+          "testName": "tests/e2e/searchDocumentsForKeywords.e2e.test.ts > E2E: db.searchDocumentsForKeywords > returns project-relative, unix-normalized paths 3ms"
+        },
+        {
+          "testName": "tests/e2e/searchDocumentsForKeywords.e2e.test.ts > E2E: db.searchDocumentsForKeywords > ranking: more distinct token matches rank first 4ms"
+        }
+      ],
+      "failures": [],
+      "skips": [],
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/e2e/searchDocumentsForKeywords.e2e.test.ts > E2E: db.searchDocumentsForKeywords > throws if args.projectIds is missing/empty 4ms\n ✓ tests/e2e/searchDocumentsForKeywords.e2e.test.ts > E2E: db.searchDocumentsForKeywords > throws if args.keywords is not string|string[] 0ms\n ✓ tests/e2e/searchDocumentsForKeywords.e2e.test.ts > E2E: db.searchDocumentsForKeywords > throws if args.matchMode is invalid 0ms\n ✓ tests/e2e/searchDocumentsForKeywords.e2e.test.ts > E2E: db.searchDocumentsForKeywords > tokenizes when keywords is string: split on comma/semicolon only 15ms\n ✓ tests/e2e/searchDocumentsForKeywords.e2e.test.ts > E2E: db.searchDocumentsForKeywords > drops empty tokens after tokenization 5ms\n ✓ tests/e2e/searchDocumentsForKeywords.e2e.test.ts > E2E: db.searchDocumentsForKeywords > returns [] if tokenization produces zero tokens 0ms\n ✓ tests/e2e/searchDocumentsForKeywords.e2e.test.ts > E2E: db.searchDocumentsForKeywords > default matchMode is any 26ms\n ✓ tests/e2e/searchDocumentsForKeywords.e2e.test.ts > E2E: db.searchDocumentsForKeywords > matchMode=all requires all tokens 11ms\n ✓ tests/e2e/searchDocumentsForKeywords.e2e.test.ts > E2E: db.searchDocumentsForKeywords > case-insensitive by default 8ms\n ✓ tests/e2e/searchDocumentsForKeywords.e2e.test.ts > E2E: db.searchDocumentsForKeywords > pathPrefix scopes results 20ms\n ✓ tests/e2e/searchDocumentsForKeywords.e2e.test.ts > E2E: db.searchDocumentsForKeywords > clamps limit to [1..1000] 15ms\n ✓ tests/e2e/searchDocumentsForKeywords.e2e.test.ts > E2E: db.searchDocumentsForKeywords > returns project-relative, unix-normalized paths 3ms\n ✓ tests/e2e/searchDocumentsForKeywords.e2e.test.ts > E2E: db.searchDocumentsForKeywords > ranking: more distinct token matches rank first 4ms\n\n Test Files  1 passed (1)\n      Tests  13 passed (13)\n   Start at  11:18:18\n   Duration  2.22s (transform 221ms, setup 0ms, collect 1.14s, tests 765ms, environment 0ms, prepare 84ms)\n\n",
+      "summary": {
+        "total": 13,
+        "passed": 13,
+        "failed": 0,
+        "skipped": 0,
+        "durationMs": 2220
+      }
+    },
+    {
+      "status": "ok",
+      "filePath": "tests/e2e/searchDocumentsForPaths.e2e.test.ts",
+      "passes": [
+        {
+          "testName": "tests/e2e/searchDocumentsForPaths.e2e.test.ts > E2E: db.searchDocumentsForPaths > throws if args.projectIds is missing/empty 1ms"
+        },
+        {
+          "testName": "tests/e2e/searchDocumentsForPaths.e2e.test.ts > E2E: db.searchDocumentsForPaths > throws if args.query is not a string 0ms"
+        },
+        {
+          "testName": "tests/e2e/searchDocumentsForPaths.e2e.test.ts > E2E: db.searchDocumentsForPaths > throws if args.limit is not an integer 0ms"
+        },
+        {
+          "testName": "tests/e2e/searchDocumentsForPaths.e2e.test.ts > E2E: db.searchDocumentsForPaths > throws if args.pathPrefix is not a string 1ms"
+        },
+        {
+          "testName": "tests/e2e/searchDocumentsForPaths.e2e.test.ts > E2E: db.searchDocumentsForPaths > returns [] and does not hit DB for empty/whitespace query 15ms"
+        },
+        {
+          "testName": "tests/e2e/searchDocumentsForPaths.e2e.test.ts > E2E: db.searchDocumentsForPaths > trims query before using it (whitespace around query) 41ms"
+        },
+        {
+          "testName": "tests/e2e/searchDocumentsForPaths.e2e.test.ts > E2E: db.searchDocumentsForPaths > clamps limit to [1..1000] 16ms"
+        },
+        {
+          "testName": "tests/e2e/searchDocumentsForPaths.e2e.test.ts > E2E: db.searchDocumentsForPaths > escapes LIKE patterns in query and prefix (% and _) 27ms"
+        },
+        {
+          "testName": "tests/e2e/searchDocumentsForPaths.e2e.test.ts > E2E: db.searchDocumentsForPaths > uses null escapedPrefix when pathPrefix is empty/whitespace 18ms"
+        },
+        {
+          "testName": "tests/e2e/searchDocumentsForPaths.e2e.test.ts > E2E: db.searchDocumentsForPaths > pathPrefix is normalized and passed as escapedPrefix (no leading slash, unix separators, ends with /) 6ms"
+        },
+        {
+          "testName": "tests/e2e/searchDocumentsForPaths.e2e.test.ts > E2E: db.searchDocumentsForPaths > normalizes returned src path separators to unix and strips leading ./ 5ms"
+        },
+        {
+          "testName": "tests/e2e/searchDocumentsForPaths.e2e.test.ts > E2E: db.searchDocumentsForPaths > handles empty result set gracefully 2ms"
+        }
+      ],
+      "failures": [],
+      "skips": [],
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ✓ tests/e2e/searchDocumentsForPaths.e2e.test.ts > E2E: db.searchDocumentsForPaths > throws if args.projectIds is missing/empty 1ms\n ✓ tests/e2e/searchDocumentsForPaths.e2e.test.ts > E2E: db.searchDocumentsForPaths > throws if args.query is not a string 0ms\n ✓ tests/e2e/searchDocumentsForPaths.e2e.test.ts > E2E: db.searchDocumentsForPaths > throws if args.limit is not an integer 0ms\n ✓ tests/e2e/searchDocumentsForPaths.e2e.test.ts > E2E: db.searchDocumentsForPaths > throws if args.pathPrefix is not a string 1ms\n ✓ tests/e2e/searchDocumentsForPaths.e2e.test.ts > E2E: db.searchDocumentsForPaths > returns [] and does not hit DB for empty/whitespace query 15ms\n ✓ tests/e2e/searchDocumentsForPaths.e2e.test.ts > E2E: db.searchDocumentsForPaths > trims query before using it (whitespace around query) 41ms\n ✓ tests/e2e/searchDocumentsForPaths.e2e.test.ts > E2E: db.searchDocumentsForPaths > clamps limit to [1..1000] 16ms\n ✓ tests/e2e/searchDocumentsForPaths.e2e.test.ts > E2E: db.searchDocumentsForPaths > escapes LIKE patterns in query and prefix (% and _) 27ms\n ✓ tests/e2e/searchDocumentsForPaths.e2e.test.ts > E2E: db.searchDocumentsForPaths > uses null escapedPrefix when pathPrefix is empty/whitespace 18ms\n ✓ tests/e2e/searchDocumentsForPaths.e2e.test.ts > E2E: db.searchDocumentsForPaths > pathPrefix is normalized and passed as escapedPrefix (no leading slash, unix separators, ends with /) 6ms\n ✓ tests/e2e/searchDocumentsForPaths.e2e.test.ts > E2E: db.searchDocumentsForPaths > normalizes returned src path separators to unix and strips leading ./ 5ms\n ✓ tests/e2e/searchDocumentsForPaths.e2e.test.ts > E2E: db.searchDocumentsForPaths > handles empty result set gracefully 2ms\n\n Test Files  1 passed (1)\n      Tests  12 passed (12)\n   Start at  11:18:18\n   Duration  2.41s (transform 157ms, setup 0ms, collect 1.12s, tests 1.01s, environment 0ms, prepare 45ms)\n\n",
+      "summary": {
+        "total": 12,
+        "passed": 12,
+        "failed": 0,
+        "skipped": 0,
+        "durationMs": 2410
+      }
+    },
+    {
+      "status": "skipped",
+      "filePath": "tests/e2e/searchEntitiesForExact.e2e.test.ts",
+      "passes": [],
+      "failures": [],
+      "skips": [],
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ↓ tests/e2e/searchEntitiesForExact.e2e.test.ts > E2E: db.searchEntitiesForExact > throws if args.projectIds is missing/empty\n ↓ tests/e2e/searchEntitiesForExact.e2e.test.ts > E2E: db.searchEntitiesForExact > throws if args.needles is not string|string[]\n ↓ tests/e2e/searchEntitiesForExact.e2e.test.ts > E2E: db.searchEntitiesForExact > throws if args.matchMode is invalid\n ↓ tests/e2e/searchEntitiesForExact.e2e.test.ts > E2E: db.searchEntitiesForExact > throws if args.caseSensitive is not boolean\n ↓ tests/e2e/searchEntitiesForExact.e2e.test.ts > E2E: db.searchEntitiesForExact > throws if args.types is not string[]\n ↓ tests/e2e/searchEntitiesForExact.e2e.test.ts > E2E: db.searchEntitiesForExact > tokenizes when needles is string: split on comma/semicolon only\n ↓ tests/e2e/searchEntitiesForExact.e2e.test.ts > E2E: db.searchEntitiesForExact > drops empty tokens after tokenization\n ↓ tests/e2e/searchEntitiesForExact.e2e.test.ts > E2E: db.searchEntitiesForExact > returns [] if tokenization produces zero tokens\n ↓ tests/e2e/searchEntitiesForExact.e2e.test.ts > E2E: db.searchEntitiesForExact > default matchMode is any\n ↓ tests/e2e/searchEntitiesForExact.e2e.test.ts > E2E: db.searchEntitiesForExact > matchMode=all requires all needles\n ↓ tests/e2e/searchEntitiesForExact.e2e.test.ts > E2E: db.searchEntitiesForExact > default caseSensitive is true\n ↓ tests/e2e/searchEntitiesForExact.e2e.test.ts > E2E: db.searchEntitiesForExact > caseSensitive=false includes differently-cased needle\n ↓ tests/e2e/searchEntitiesForExact.e2e.test.ts > E2E: db.searchEntitiesForExact > type filter restricts results\n ↓ tests/e2e/searchEntitiesForExact.e2e.test.ts > E2E: db.searchEntitiesForExact > clamps limit to [1..1000]\n ↓ tests/e2e/searchEntitiesForExact.e2e.test.ts > E2E: db.searchEntitiesForExact > ranking: more distinct needles matched ranks first\n\n Test Files  1 failed (1)\n      Tests  15 skipped (15)\n   Start at  11:18:18\n   Duration  1.59s (transform 248ms, setup 0ms, collect 917ms, tests 315ms, environment 0ms, prepare 71ms)\n\n\n\n⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯\n\n FAIL  tests/e2e/searchEntitiesForExact.e2e.test.ts > E2E: db.searchEntitiesForExact\nError: clearEntities: projectIds is required and must be non-empty\n ❯ Object.clearEntities src/client/entities.ts:173:13\n    171|   async function clearEntities(filter: { projectIds: string[]; types?:…\n    172|     if (!filter?.projectIds || filter.projectIds.length === 0) {\n    173|       throw new Error('clearEntities: projectIds is required and must …\n       |             ^\n    174|     }\n    175|     const projectIds = filter.projectIds\n ❯ tests/e2e/searchEntitiesForExact.e2e.test.ts:13:14\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯\n\n FAIL  tests/e2e/searchEntitiesForExact.e2e.test.ts > E2E: db.searchEntitiesForExact\nError: clearEntities: projectIds is required and must be non-empty\n ❯ Object.clearEntities src/client/entities.ts:173:13\n    171|   async function clearEntities(filter: { projectIds: string[]; types?:…\n    172|     if (!filter?.projectIds || filter.projectIds.length === 0) {\n    173|       throw new Error('clearEntities: projectIds is required and must …\n       |             ^\n    174|     }\n    175|     const projectIds = filter.projectIds\n ❯ tests/e2e/searchEntitiesForExact.e2e.test.ts:22:20\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯\n\n",
+      "summary": {
+        "total": 15,
+        "passed": 0,
+        "failed": 0,
+        "skipped": 15,
+        "durationMs": 1590
+      }
+    },
+    {
+      "status": "skipped",
+      "filePath": "tests/e2e/searchEntitiesForKeywords.e2e.test.ts",
+      "passes": [],
+      "failures": [],
+      "skips": [],
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ↓ tests/e2e/searchEntitiesForKeywords.e2e.test.ts > E2E: db.searchEntitiesForKeywords > throws if args.projectIds is missing/empty\n ↓ tests/e2e/searchEntitiesForKeywords.e2e.test.ts > E2E: db.searchEntitiesForKeywords > throws if args.keywords is not string|string[]\n ↓ tests/e2e/searchEntitiesForKeywords.e2e.test.ts > E2E: db.searchEntitiesForKeywords > throws if args.matchMode is invalid\n ↓ tests/e2e/searchEntitiesForKeywords.e2e.test.ts > E2E: db.searchEntitiesForKeywords > throws if args.types is not string[]\n ↓ tests/e2e/searchEntitiesForKeywords.e2e.test.ts > E2E: db.searchEntitiesForKeywords > tokenizes when keywords is string: split on comma/semicolon only\n ↓ tests/e2e/searchEntitiesForKeywords.e2e.test.ts > E2E: db.searchEntitiesForKeywords > drops empty tokens after tokenization\n ↓ tests/e2e/searchEntitiesForKeywords.e2e.test.ts > E2E: db.searchEntitiesForKeywords > returns [] if tokenization produces zero tokens\n ↓ tests/e2e/searchEntitiesForKeywords.e2e.test.ts > E2E: db.searchEntitiesForKeywords > default matchMode is any\n ↓ tests/e2e/searchEntitiesForKeywords.e2e.test.ts > E2E: db.searchEntitiesForKeywords > matchMode=all requires all tokens\n ↓ tests/e2e/searchEntitiesForKeywords.e2e.test.ts > E2E: db.searchEntitiesForKeywords > case-insensitive by default\n ↓ tests/e2e/searchEntitiesForKeywords.e2e.test.ts > E2E: db.searchEntitiesForKeywords > type filter restricts results\n ↓ tests/e2e/searchEntitiesForKeywords.e2e.test.ts > E2E: db.searchEntitiesForKeywords > clamps limit to [1..1000]\n ↓ tests/e2e/searchEntitiesForKeywords.e2e.test.ts > E2E: db.searchEntitiesForKeywords > ranking: more distinct token matches rank first\n\n Test Files  1 failed (1)\n      Tests  13 skipped (13)\n   Start at  11:18:20\n   Duration  1.72s (transform 395ms, setup 0ms, collect 1.21s, tests 149ms, environment 0ms, prepare 128ms)\n\n\n\n⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯\n\n FAIL  tests/e2e/searchEntitiesForKeywords.e2e.test.ts > E2E: db.searchEntitiesForKeywords\nError: clearEntities: projectIds is required and must be non-empty\n ❯ Object.clearEntities src/client/entities.ts:173:13\n    171|   async function clearEntities(filter: { projectIds: string[]; types?:…\n    172|     if (!filter?.projectIds || filter.projectIds.length === 0) {\n    173|       throw new Error('clearEntities: projectIds is required and must …\n       |             ^\n    174|     }\n    175|     const projectIds = filter.projectIds\n ❯ tests/e2e/searchEntitiesForKeywords.e2e.test.ts:13:14\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯\n\n FAIL  tests/e2e/searchEntitiesForKeywords.e2e.test.ts > E2E: db.searchEntitiesForKeywords\nError: clearEntities: projectIds is required and must be non-empty\n ❯ Object.clearEntities src/client/entities.ts:173:13\n    171|   async function clearEntities(filter: { projectIds: string[]; types?:…\n    172|     if (!filter?.projectIds || filter.projectIds.length === 0) {\n    173|       throw new Error('clearEntities: projectIds is required and must …\n       |             ^\n    174|     }\n    175|     const projectIds = filter.projectIds\n ❯ tests/e2e/searchEntitiesForKeywords.e2e.test.ts:22:20\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯\n\n",
+      "summary": {
+        "total": 13,
+        "passed": 0,
+        "failed": 0,
+        "skipped": 13,
+        "durationMs": 1720
+      }
+    },
+    {
+      "status": "skipped",
+      "filePath": "tests/e2e/updates-and-fts.e2e.test.ts",
+      "passes": [],
+      "failures": [],
+      "skips": [],
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n ↓ tests/e2e/updates-and-fts.e2e.test.ts > E2E: Updates and FTS regeneration (real DB) > documents: updates should regenerate updatedAt\n ↓ tests/e2e/updates-and-fts.e2e.test.ts > E2E: Updates and FTS regeneration (real DB) > entities: updates should regenerate updatedAt and FTS on content changes\n\n Test Files  1 failed (1)\n      Tests  2 skipped (2)\n   Start at  11:18:20\n   Duration  1.65s (transform 283ms, setup 0ms, collect 1.04s, tests 133ms, environment 0ms, prepare 256ms)\n\n\n\n⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯\n\n FAIL  tests/e2e/updates-and-fts.e2e.test.ts > E2E: Updates and FTS regeneration (real DB)\nError: clearEntities: projectIds is required and must be non-empty\n ❯ Object.clearEntities src/client/entities.ts:173:13\n    171|   async function clearEntities(filter: { projectIds: string[]; types?:…\n    172|     if (!filter?.projectIds || filter.projectIds.length === 0) {\n    173|       throw new Error('clearEntities: projectIds is required and must …\n       |             ^\n    174|     }\n    175|     const projectIds = filter.projectIds\n ❯ tests/e2e/updates-and-fts.e2e.test.ts:16:16\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯\n\n FAIL  tests/e2e/updates-and-fts.e2e.test.ts > E2E: Updates and FTS regeneration (real DB)\nError: clearEntities: projectIds is required and must be non-empty\n ❯ Object.clearEntities src/client/entities.ts:173:13\n    171|   async function clearEntities(filter: { projectIds: string[]; types?:…\n    172|     if (!filter?.projectIds || filter.projectIds.length === 0) {\n    173|       throw new Error('clearEntities: projectIds is required and must …\n       |             ^\n    174|     }\n    175|     const projectIds = filter.projectIds\n ❯ tests/e2e/updates-and-fts.e2e.test.ts:22:18\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯\n\n",
+      "summary": {
+        "total": 2,
+        "passed": 0,
+        "failed": 0,
+        "skipped": 2,
+        "durationMs": 1650
+      }
+    },
+    {
+      "status": "error",
+      "filePath": "tests/embeddings.test.ts",
+      "passes": [],
+      "failures": [],
+      "skips": [],
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n\nNo test files found, exiting with code 1\n\nfilter: tests/embeddings.test.ts\ninclude: tests/e2e/**/*.test.ts\nexclude:  **/node_modules/**, **/dist/**, **/cypress/**, **/.{idea,git,cache,output,temp}/**, **/{karma,rollup,webpack,vite,vitest,jest,ava,babel,nyc,cypress,tsup,build,eslint,prettier}.config.*\n\n",
+      "summary": {
+        "total": 0,
+        "passed": 0,
+        "failed": 0,
+        "skipped": 0,
+        "durationMs": 1231
+      }
+    },
+    {
+      "status": "error",
+      "filePath": "tests/entities/addEntity.test.ts",
+      "passes": [],
+      "failures": [],
+      "skips": [],
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n\nNo test files found, exiting with code 1\n\nfilter: tests/entities/addEntity.test.ts\ninclude: tests/e2e/**/*.test.ts\nexclude:  **/node_modules/**, **/dist/**, **/cypress/**, **/.{idea,git,cache,output,temp}/**, **/{karma,rollup,webpack,vite,vitest,jest,ava,babel,nyc,cypress,tsup,build,eslint,prettier}.config.*\n\n",
+      "summary": {
+        "total": 0,
+        "passed": 0,
+        "failed": 0,
+        "skipped": 0,
+        "durationMs": 1090
+      }
+    },
+    {
+      "status": "error",
+      "filePath": "tests/entities/clearEntities.test.ts",
+      "passes": [],
+      "failures": [],
+      "skips": [],
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n\nNo test files found, exiting with code 1\n\nfilter: tests/entities/clearEntities.test.ts\ninclude: tests/e2e/**/*.test.ts\nexclude:  **/node_modules/**, **/dist/**, **/cypress/**, **/.{idea,git,cache,output,temp}/**, **/{karma,rollup,webpack,vite,vitest,jest,ava,babel,nyc,cypress,tsup,build,eslint,prettier}.config.*\n\n",
+      "summary": {
+        "total": 0,
+        "passed": 0,
+        "failed": 0,
+        "skipped": 0,
+        "durationMs": 1052
+      }
+    },
+    {
+      "status": "error",
+      "filePath": "tests/entities/deleteEntity.test.ts",
+      "passes": [],
+      "failures": [],
+      "skips": [],
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n\nNo test files found, exiting with code 1\n\nfilter: tests/entities/deleteEntity.test.ts\ninclude: tests/e2e/**/*.test.ts\nexclude:  **/node_modules/**, **/dist/**, **/cypress/**, **/.{idea,git,cache,output,temp}/**, **/{karma,rollup,webpack,vite,vitest,jest,ava,babel,nyc,cypress,tsup,build,eslint,prettier}.config.*\n\n",
+      "summary": {
+        "total": 0,
+        "passed": 0,
+        "failed": 0,
+        "skipped": 0,
+        "durationMs": 954
+      }
+    },
+    {
+      "status": "error",
+      "filePath": "tests/entities/getEntityById.test.ts",
+      "passes": [],
+      "failures": [],
+      "skips": [],
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n\nNo test files found, exiting with code 1\n\nfilter: tests/entities/getEntityById.test.ts\ninclude: tests/e2e/**/*.test.ts\nexclude:  **/node_modules/**, **/dist/**, **/cypress/**, **/.{idea,git,cache,output,temp}/**, **/{karma,rollup,webpack,vite,vitest,jest,ava,babel,nyc,cypress,tsup,build,eslint,prettier}.config.*\n\n",
+      "summary": {
+        "total": 0,
+        "passed": 0,
+        "failed": 0,
+        "skipped": 0,
+        "durationMs": 1144
+      }
+    },
+    {
+      "status": "error",
+      "filePath": "tests/entities/matchEntities.test.ts",
+      "passes": [],
+      "failures": [],
+      "skips": [],
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n\nNo test files found, exiting with code 1\n\nfilter: tests/entities/matchEntities.test.ts\ninclude: tests/e2e/**/*.test.ts\nexclude:  **/node_modules/**, **/dist/**, **/cypress/**, **/.{idea,git,cache,output,temp}/**, **/{karma,rollup,webpack,vite,vitest,jest,ava,babel,nyc,cypress,tsup,build,eslint,prettier}.config.*\n\n",
+      "summary": {
+        "total": 0,
+        "passed": 0,
+        "failed": 0,
+        "skipped": 0,
+        "durationMs": 1236
+      }
+    },
+    {
+      "status": "error",
+      "filePath": "tests/entities/searchEntities.test.ts",
+      "passes": [],
+      "failures": [],
+      "skips": [],
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n\nNo test files found, exiting with code 1\n\nfilter: tests/entities/searchEntities.test.ts\ninclude: tests/e2e/**/*.test.ts\nexclude:  **/node_modules/**, **/dist/**, **/cypress/**, **/.{idea,git,cache,output,temp}/**, **/{karma,rollup,webpack,vite,vitest,jest,ava,babel,nyc,cypress,tsup,build,eslint,prettier}.config.*\n\n",
+      "summary": {
+        "total": 0,
+        "passed": 0,
+        "failed": 0,
+        "skipped": 0,
+        "durationMs": 1180
+      }
+    },
+    {
+      "status": "error",
+      "filePath": "tests/entities/searchEntitiesForExact.test.ts",
+      "passes": [],
+      "failures": [],
+      "skips": [],
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n\nNo test files found, exiting with code 1\n\nfilter: tests/entities/searchEntitiesForExact.test.ts\ninclude: tests/e2e/**/*.test.ts\nexclude:  **/node_modules/**, **/dist/**, **/cypress/**, **/.{idea,git,cache,output,temp}/**, **/{karma,rollup,webpack,vite,vitest,jest,ava,babel,nyc,cypress,tsup,build,eslint,prettier}.config.*\n\n",
+      "summary": {
+        "total": 0,
+        "passed": 0,
+        "failed": 0,
+        "skipped": 0,
+        "durationMs": 1003
+      }
+    },
+    {
+      "status": "error",
+      "filePath": "tests/entities/searchEntitiesForKeywords.test.ts",
+      "passes": [],
+      "failures": [],
+      "skips": [],
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n\nNo test files found, exiting with code 1\n\nfilter: tests/entities/searchEntitiesForKeywords.test.ts\ninclude: tests/e2e/**/*.test.ts\nexclude:  **/node_modules/**, **/dist/**, **/cypress/**, **/.{idea,git,cache,output,temp}/**, **/{karma,rollup,webpack,vite,vitest,jest,ava,babel,nyc,cypress,tsup,build,eslint,prettier}.config.*\n\n",
+      "summary": {
+        "total": 0,
+        "passed": 0,
+        "failed": 0,
+        "skipped": 0,
+        "durationMs": 1164
+      }
+    },
+    {
+      "status": "error",
+      "filePath": "tests/entities/updateEntity.test.ts",
+      "passes": [],
+      "failures": [],
+      "skips": [],
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n\nNo test files found, exiting with code 1\n\nfilter: tests/entities/updateEntity.test.ts\ninclude: tests/e2e/**/*.test.ts\nexclude:  **/node_modules/**, **/dist/**, **/cypress/**, **/.{idea,git,cache,output,temp}/**, **/{karma,rollup,webpack,vite,vitest,jest,ava,babel,nyc,cypress,tsup,build,eslint,prettier}.config.*\n\n",
+      "summary": {
+        "total": 0,
+        "passed": 0,
+        "failed": 0,
+        "skipped": 0,
+        "durationMs": 1280
+      }
+    },
+    {
+      "status": "error",
+      "filePath": "tests/index-validation.test.ts",
+      "passes": [],
+      "failures": [],
+      "skips": [],
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n\nNo test files found, exiting with code 1\n\nfilter: tests/index-validation.test.ts\ninclude: tests/e2e/**/*.test.ts\nexclude:  **/node_modules/**, **/dist/**, **/cypress/**, **/.{idea,git,cache,output,temp}/**, **/{karma,rollup,webpack,vite,vitest,jest,ava,babel,nyc,cypress,tsup,build,eslint,prettier}.config.*\n\n",
+      "summary": {
+        "total": 0,
+        "passed": 0,
+        "failed": 0,
+        "skipped": 0,
+        "durationMs": 1214
+      }
+    },
+    {
+      "status": "error",
+      "filePath": "tests/logger.test.ts",
+      "passes": [],
+      "failures": [],
+      "skips": [],
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n\nNo test files found, exiting with code 1\n\nfilter: tests/logger.test.ts\ninclude: tests/e2e/**/*.test.ts\nexclude:  **/node_modules/**, **/dist/**, **/cypress/**, **/.{idea,git,cache,output,temp}/**, **/{karma,rollup,webpack,vite,vitest,jest,ava,babel,nyc,cypress,tsup,build,eslint,prettier}.config.*\n\n",
+      "summary": {
+        "total": 0,
+        "passed": 0,
+        "failed": 0,
+        "skipped": 0,
+        "durationMs": 1060
+      }
+    },
+    {
+      "status": "error",
+      "filePath": "tests/migrations-runner.test.ts",
+      "passes": [],
+      "failures": [],
+      "skips": [],
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n\nNo test files found, exiting with code 1\n\nfilter: tests/migrations-runner.test.ts\ninclude: tests/e2e/**/*.test.ts\nexclude:  **/node_modules/**, **/dist/**, **/cypress/**, **/.{idea,git,cache,output,temp}/**, **/{karma,rollup,webpack,vite,vitest,jest,ava,babel,nyc,cypress,tsup,build,eslint,prettier}.config.*\n\n",
+      "summary": {
+        "total": 0,
+        "passed": 0,
+        "failed": 0,
+        "skipped": 0,
+        "durationMs": 1360
+      }
+    },
+    {
+      "status": "error",
+      "filePath": "tests/migrations.test.ts",
+      "passes": [],
+      "failures": [],
+      "skips": [],
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n\nNo test files found, exiting with code 1\n\nfilter: tests/migrations.test.ts\ninclude: tests/e2e/**/*.test.ts\nexclude:  **/node_modules/**, **/dist/**, **/cypress/**, **/.{idea,git,cache,output,temp}/**, **/{karma,rollup,webpack,vite,vitest,jest,ava,babel,nyc,cypress,tsup,build,eslint,prettier}.config.*\n\n",
+      "summary": {
+        "total": 0,
+        "passed": 0,
+        "failed": 0,
+        "skipped": 0,
+        "durationMs": 1187
+      }
+    },
+    {
+      "status": "error",
+      "filePath": "tests/openDatabase.test.ts",
+      "passes": [],
+      "failures": [],
+      "skips": [],
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n\nNo test files found, exiting with code 1\n\nfilter: tests/openDatabase.test.ts\ninclude: tests/e2e/**/*.test.ts\nexclude:  **/node_modules/**, **/dist/**, **/cypress/**, **/.{idea,git,cache,output,temp}/**, **/{karma,rollup,webpack,vite,vitest,jest,ava,babel,nyc,cypress,tsup,build,eslint,prettier}.config.*\n\n",
+      "summary": {
+        "total": 0,
+        "passed": 0,
+        "failed": 0,
+        "skipped": 0,
+        "durationMs": 1105
+      }
+    },
+    {
+      "status": "error",
+      "filePath": "tests/runtime-edge-cases.test.ts",
+      "passes": [],
+      "failures": [],
+      "skips": [],
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n\nNo test files found, exiting with code 1\n\nfilter: tests/runtime-edge-cases.test.ts\ninclude: tests/e2e/**/*.test.ts\nexclude:  **/node_modules/**, **/dist/**, **/cypress/**, **/.{idea,git,cache,output,temp}/**, **/{karma,rollup,webpack,vite,vitest,jest,ava,babel,nyc,cypress,tsup,build,eslint,prettier}.config.*\n\n",
+      "summary": {
+        "total": 0,
+        "passed": 0,
+        "failed": 0,
+        "skipped": 0,
+        "durationMs": 1254
+      }
+    },
+    {
+      "status": "error",
+      "filePath": "tests/runtime.test.ts",
+      "passes": [],
+      "failures": [],
+      "skips": [],
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n\nNo test files found, exiting with code 1\n\nfilter: tests/runtime.test.ts\ninclude: tests/e2e/**/*.test.ts\nexclude:  **/node_modules/**, **/dist/**, **/cypress/**, **/.{idea,git,cache,output,temp}/**, **/{karma,rollup,webpack,vite,vitest,jest,ava,babel,nyc,cypress,tsup,build,eslint,prettier}.config.*\n\n",
+      "summary": {
+        "total": 0,
+        "passed": 0,
+        "failed": 0,
+        "skipped": 0,
+        "durationMs": 1035
+      }
+    },
+    {
+      "status": "error",
+      "filePath": "tests/sql-projections.test.ts",
+      "passes": [],
+      "failures": [],
+      "skips": [],
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n\nNo test files found, exiting with code 1\n\nfilter: tests/sql-projections.test.ts\ninclude: tests/e2e/**/*.test.ts\nexclude:  **/node_modules/**, **/dist/**, **/cypress/**, **/.{idea,git,cache,output,temp}/**, **/{karma,rollup,webpack,vite,vitest,jest,ava,babel,nyc,cypress,tsup,build,eslint,prettier}.config.*\n\n",
+      "summary": {
+        "total": 0,
+        "passed": 0,
+        "failed": 0,
+        "skipped": 0,
+        "durationMs": 1090
+      }
+    },
+    {
+      "status": "error",
+      "filePath": "tests/tokenizer.test.ts",
+      "passes": [],
+      "failures": [],
+      "skips": [],
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n\nNo test files found, exiting with code 1\n\nfilter: tests/tokenizer.test.ts\ninclude: tests/e2e/**/*.test.ts\nexclude:  **/node_modules/**, **/dist/**, **/cypress/**, **/.{idea,git,cache,output,temp}/**, **/{karma,rollup,webpack,vite,vitest,jest,ava,babel,nyc,cypress,tsup,build,eslint,prettier}.config.*\n\n",
+      "summary": {
+        "total": 0,
+        "passed": 0,
+        "failed": 0,
+        "skipped": 0,
+        "durationMs": 1034
+      }
+    },
+    {
+      "status": "error",
+      "filePath": "tests/utils/json.test.ts",
+      "passes": [],
+      "failures": [],
+      "skips": [],
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n\nNo test files found, exiting with code 1\n\nfilter: tests/utils/json.test.ts\ninclude: tests/e2e/**/*.test.ts\nexclude:  **/node_modules/**, **/dist/**, **/cypress/**, **/.{idea,git,cache,output,temp}/**, **/{karma,rollup,webpack,vite,vitest,jest,ava,babel,nyc,cypress,tsup,build,eslint,prettier}.config.*\n\n",
+      "summary": {
+        "total": 0,
+        "passed": 0,
+        "failed": 0,
+        "skipped": 0,
+        "durationMs": 807
+      }
+    },
+    {
+      "status": "error",
+      "filePath": "tests/utils.test.ts",
+      "passes": [],
+      "failures": [],
+      "skips": [],
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n\nNo test files found, exiting with code 1\n\nfilter: tests/utils.test.ts\ninclude: tests/e2e/**/*.test.ts\nexclude:  **/node_modules/**, **/dist/**, **/cypress/**, **/.{idea,git,cache,output,temp}/**, **/{karma,rollup,webpack,vite,vitest,jest,ava,babel,nyc,cypress,tsup,build,eslint,prettier}.config.*\n\n",
+      "summary": {
+        "total": 0,
+        "passed": 0,
+        "failed": 0,
+        "skipped": 0,
+        "durationMs": 698
+      }
+    },
+    {
+      "status": "error",
+      "filePath": "tests/validation.test.ts",
+      "passes": [],
+      "failures": [],
+      "skips": [],
+      "rawText": "\n RUN  v3.2.4 /Users/cloud/Documents/Work/thefactory-db\n\n\nNo test files found, exiting with code 1\n\nfilter: tests/validation.test.ts\ninclude: tests/e2e/**/*.test.ts\nexclude:  **/node_modules/**, **/dist/**, **/cypress/**, **/.{idea,git,cache,output,temp}/**, **/{karma,rollup,webpack,vite,vitest,jest,ava,babel,nyc,cypress,tsup,build,eslint,prettier}.config.*\n\n",
+      "summary": {
+        "total": 0,
+        "passed": 0,
+        "failed": 0,
+        "skipped": 0,
+        "durationMs": 641
+      }
+    }
+  ],
+  "summary": {
+    "total": 118,
+    "passed": 66,
+    "failed": 7,
+    "skipped": 45,
+    "durationMs": 88277
+  }
+}

@@ -111,8 +111,8 @@ describe('Migrations', () => {
   })
 
   it('is idempotent (does nothing if already at latest schema)', async () => {
-    // Current latest version is 1 (001-init)
-    const mockDb = createDbMock(1)
+    // Latest version tracks the migrations list; bump this when adding one.
+    const mockDb = createDbMock(2)
     vi.mocked(openPostgres).mockResolvedValue(mockDb as any)
 
     await openDatabase({ connectionString: 'postgres://x' })
