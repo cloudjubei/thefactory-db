@@ -13,6 +13,7 @@ import { SQL } from '../src/sql'
  */
 const ENTITY_PROJECTIONS: { name: string; sql: string }[] = [
   { name: 'getEntityById', sql: SQL.getEntityById },
+  { name: 'getEntityByExternalKey', sql: SQL.getEntityByExternalKey },
   { name: 'insertEntity', sql: SQL.insertEntity },
   { name: 'upsertEntity', sql: SQL.upsertEntity },
   { name: 'updateEntity', sql: SQL.updateEntity },

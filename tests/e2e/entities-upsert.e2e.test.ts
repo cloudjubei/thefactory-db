@@ -49,6 +49,24 @@ const DATABASE_URL = process.env.DATABASE_URL || ''
     expect(rows[0].externalKey).toBe('AAPL')
   })
 
+  it('fetches a keyed row by (projectId, type, externalKey)', async () => {
+    await db.upsertEntity({
+      projectId,
+      type: 'fx-rate',
+      externalKey: 'GBPUSD',
+      shouldEmbed: false,
+      content: { pair: 'GBPUSD', latest: { t: '2026-05-31', v: 1.27 } },
+    })
+
+    const found = await db.getEntityByExternalKey(projectId, 'fx-rate', 'GBPUSD')
+    expect(found).toBeDefined()
+    expect(found?.externalKey).toBe('GBPUSD')
+    expect((found?.content as any).pair).toBe('GBPUSD')
+
+    const missing = await db.getEntityByExternalKey(projectId, 'fx-rate', 'NOPE')
+    expect(missing).toBeUndefined()
+  })
+
   it('does not dedupe across different keys or keyless rows', async () => {
     await db.upsertEntity({
       projectId,

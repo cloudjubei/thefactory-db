@@ -15,6 +15,22 @@ FROM entities
 WHERE id = $1;
 `
 
+const getEntityByExternalKey = `
+SELECT
+  id,
+  project_id AS "projectId",
+  type,
+  should_embed AS "shouldEmbed",
+  external_key AS "externalKey",
+  content,
+  to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS "createdAt",
+  to_char(updated_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS "updatedAt",
+  to_jsonb(metadata) AS metadata
+FROM entities
+WHERE project_id = $1 AND type = $2 AND external_key = $3
+LIMIT 1;
+`
+
 const insertEntity = `
 INSERT INTO entities (project_id, type, content, should_embed, content_string, embedding, metadata, external_key)
 VALUES ($1, $2, $3::jsonb, $4::boolean, $5, $6::vector, $7::jsonb, $8)
@@ -1145,6 +1161,7 @@ export const SQL = {
 
   deleteEntity,
   getEntityById,
+  getEntityByExternalKey,
   insertEntity,
   upsertEntity,
   updateEntity,

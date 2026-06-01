@@ -84,10 +84,10 @@ function collectProjectFiles(root: string): string[] {
       'src/validation.ts',
       'src/client/entities.ts',
       'docs/FILE_ORGANISATION.md',
-      'src/migrations/003-entities-external-key.ts',
       'src/migrations/001-init.ts',
       'src/types.ts',
       'README.md',
+      'src/migrations/003-entities-external-key.ts',
     ])
   })
 
@@ -102,9 +102,9 @@ function collectProjectFiles(root: string): string[] {
       'scripts/test.ts',
       'src/validation.ts',
       'src/utils/json.ts',
+      'src/client/types.ts',
       'docs/CODE_STANDARD.md',
       'scripts/count.ts',
-      'src/types.ts',
     ])
   })
 
@@ -113,15 +113,15 @@ function collectProjectFiles(root: string): string[] {
     const srcs = res.map((r) => r.src)
     expect(srcs).toEqual([
       'docs/SEARCH_IMPROVED.md',
-      'src/migrations/003-entities-external-key.ts',
       'src/migrations/001-init.ts',
       'src/validation.ts',
+      'src/migrations/003-entities-external-key.ts',
       'scripts/example.ts',
       'src/types.ts',
-      'docs/FILE_ORGANISATION.md',
-      'scripts/test.ts',
+      'src/sql.ts',
       'src/client/types.ts',
-      'docs/TESTING_E2E.md',
+      'scripts/test.ts',
+      'docs/FILE_ORGANISATION.md',
     ])
   })
 
@@ -150,11 +150,11 @@ function collectProjectFiles(root: string): string[] {
       'src/migrations/001-init.ts',
       'docker-compose.e2e.yml',
       'src/connection.ts',
-      'src/migrations/003-entities-external-key.ts',
       '.prettierignore',
       'scripts/example.ts',
       'docs/TESTING_E2E.md',
       'docs/CODE_STANDARD.md',
+      'docs/FILE_ORGANISATION.md',
     ])
   })
 })

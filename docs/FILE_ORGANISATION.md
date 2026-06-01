@@ -17,9 +17,10 @@
       - `addDocument`, `getDocumentById`, `getDocumentBySrc`, `updateDocument`, `deleteDocument`
       - `searchDocuments`, `matchDocuments`, `clearDocuments`
     - Entities API (json content)
-      - `addEntity`, `upsertEntity`, `getEntityById`, `updateEntity`, `deleteEntity`
+      - `addEntity`, `upsertEntity`, `getEntityById`, `getEntityByExternalKey`, `updateEntity`, `deleteEntity`
       - `searchEntities`, `matchEntities`, `clearEntities`
       - `upsertEntity` inserts, or — when `externalKey` is set — updates in place the row uniquely identified by `(projectId, type, externalKey)`. Keyless input always inserts (NULL keys are distinct).
+      - `getEntityByExternalKey(projectId, type, externalKey)` — indexed lookup of the single keyed row via the `(project_id, type, external_key)` unique index; returns `undefined` when absent.
     - `raw(): DB` — Gives low-level access for advanced SQL.
   - `src/connection.ts`: Connection factory and schema init. Applies embedded SQL statements (schema + hybrid functions) defined in `src/utils.ts`.
   - `src/types.ts`: Shared TypeScript types for Documents and Entities, Search options and result row types, and `OpenDbOptions`.

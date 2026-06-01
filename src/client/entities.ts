@@ -82,6 +82,18 @@ export function createEntityApi({
     return row
   }
 
+  async function getEntityByExternalKey(
+    projectId: string,
+    type: string,
+    externalKey: string,
+  ): Promise<Entity | undefined> {
+    logger.info('getEntityByExternalKey', { projectId, type })
+    const r = await db.query(SQL.getEntityByExternalKey, [projectId, type, externalKey])
+    const row = r.rows[0]
+    if (!row) return undefined
+    return row
+  }
+
   async function updateEntity(id: string, patch: EntityPatch): Promise<Entity | undefined> {
     assertEntityPatch(patch)
     logger.info('updateEntity', { id, keys: Object.keys(patch) })
@@ -267,6 +279,7 @@ export function createEntityApi({
     addEntity,
     upsertEntity,
     getEntityById,
+    getEntityByExternalKey,
     updateEntity,
     deleteEntity,
     searchEntities,
