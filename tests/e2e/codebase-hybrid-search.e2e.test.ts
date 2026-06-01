@@ -84,10 +84,10 @@ function collectProjectFiles(root: string): string[] {
       'src/validation.ts',
       'src/client/entities.ts',
       'docs/FILE_ORGANISATION.md',
+      'src/migrations/003-entities-external-key.ts',
       'src/migrations/001-init.ts',
       'src/types.ts',
       'README.md',
-      'scripts/example.ts',
     ])
   })
 
@@ -96,11 +96,11 @@ function collectProjectFiles(root: string): string[] {
     const srcs = res.map((r) => r.src)
     expect(srcs).toEqual([
       'docs/SEARCH_IMPROVED.md',
+      'src/migrations/003-entities-external-key.ts',
       'src/migrations/001-init.ts',
       'scripts/example.ts',
-      'src/validation.ts',
       'scripts/test.ts',
-      'src/client/types.ts',
+      'src/validation.ts',
       'src/utils/json.ts',
       'docs/CODE_STANDARD.md',
       'scripts/count.ts',
@@ -113,15 +113,15 @@ function collectProjectFiles(root: string): string[] {
     const srcs = res.map((r) => r.src)
     expect(srcs).toEqual([
       'docs/SEARCH_IMPROVED.md',
-      'src/validation.ts',
+      'src/migrations/003-entities-external-key.ts',
       'src/migrations/001-init.ts',
+      'src/validation.ts',
       'scripts/example.ts',
       'src/types.ts',
-      'src/sql.ts',
-      'src/client/types.ts',
-      'scripts/test.ts',
       'docs/FILE_ORGANISATION.md',
-      'src/client/entities.ts',
+      'scripts/test.ts',
+      'src/client/types.ts',
+      'docs/TESTING_E2E.md',
     ])
   })
 
@@ -138,7 +138,7 @@ function collectProjectFiles(root: string): string[] {
       'docker-compose.yml',
       'docker-compose.e2e.yml',
       'src/migrations/001-init.ts',
-      '.prettierignore',
+      'src/connection.ts',
     ])
   })
   it('w=0 (semantic-only): "pgvector" should find files related to vector databases', async () => {
@@ -149,12 +149,12 @@ function collectProjectFiles(root: string): string[] {
       'docker-compose.yml',
       'src/migrations/001-init.ts',
       'docker-compose.e2e.yml',
+      'src/connection.ts',
+      'src/migrations/003-entities-external-key.ts',
       '.prettierignore',
       'scripts/example.ts',
       'docs/TESTING_E2E.md',
       'docs/CODE_STANDARD.md',
-      'src/migrations/types.ts',
-      'src/connection.ts',
     ])
   })
 })

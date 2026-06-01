@@ -17,8 +17,9 @@
       - `addDocument`, `getDocumentById`, `getDocumentBySrc`, `updateDocument`, `deleteDocument`
       - `searchDocuments`, `matchDocuments`, `clearDocuments`
     - Entities API (json content)
-      - `addEntity`, `getEntityById`, `updateEntity`, `deleteEntity`
+      - `addEntity`, `upsertEntity`, `getEntityById`, `updateEntity`, `deleteEntity`
       - `searchEntities`, `matchEntities`, `clearEntities`
+      - `upsertEntity` inserts, or — when `externalKey` is set — updates in place the row uniquely identified by `(projectId, type, externalKey)`. Keyless input always inserts (NULL keys are distinct).
     - `raw(): DB` — Gives low-level access for advanced SQL.
   - `src/connection.ts`: Connection factory and schema init. Applies embedded SQL statements (schema + hybrid functions) defined in `src/utils.ts`.
   - `src/types.ts`: Shared TypeScript types for Documents and Entities, Search options and result row types, and `OpenDbOptions`.
@@ -64,11 +65,14 @@ Two tables are maintained:
   - `project_id` (text not null)
   - `type` (text not null)
   - `content` (jsonb not null)
+  - `should_embed` (boolean not null, default true) — when false, the row is stored without an embedding (skips the vector index; used for high-volume data with no semantic value)
+  - `external_key` (text, nullable) — optional dedup key. Unique within `(project_id, type, external_key)`; NULL keys are distinct, so keyless rows duplicate freely while keyed rows upsert in place (see `upsertEntity`)
   - `content_string` (text not null) — tokenized/flattened values used for FTS and embeddings
   - `fts` (tsvector, generated from `content_string`)
   - `embedding` (vector(384))
   - `created_at`, `updated_at` (timestamptz, `updated_at` maintained via trigger)
   - `metadata` (jsonb)
+  - Unique index `(project_id, type, external_key)` is the ON CONFLICT arbiter for `upsertEntity`.
 
 Embedding dimension is 384 and requires the `pgvector` extension.
 

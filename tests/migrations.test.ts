@@ -52,7 +52,8 @@ describe('Migrations', () => {
       if (s.includes('select schema_version'))
         return { rows: [{ schema_version: initialSchemaVersion }], rowCount: 1 }
       // ensureMetadata: meta table row-count check
-      if (s.includes('select schema_version')) return { rows: [{ schema_version: initialSchemaVersion }], rowCount: 1 }
+      if (s.includes('select schema_version'))
+        return { rows: [{ schema_version: initialSchemaVersion }], rowCount: 1 }
       return { rows: [], rowCount: 0 }
     })
 
@@ -112,7 +113,7 @@ describe('Migrations', () => {
 
   it('is idempotent (does nothing if already at latest schema)', async () => {
     // Latest version tracks the migrations list; bump this when adding one.
-    const mockDb = createDbMock(2)
+    const mockDb = createDbMock(3)
     vi.mocked(openPostgres).mockResolvedValue(mockDb as any)
 
     await openDatabase({ connectionString: 'postgres://x' })
@@ -125,6 +126,19 @@ describe('Migrations', () => {
 
     // Logs should say it's up to date
     expect(mockLogger.debug).toHaveBeenCalledWith(expect.stringContaining('Database is up to date'))
+  })
+
+  it('applies the external_key migration (003) on a new database', async () => {
+    const mockDb = createDbMock(0)
+    vi.mocked(openPostgres).mockResolvedValue(mockDb as any)
+
+    await openDatabase({ connectionString: 'postgres://x' })
+
+    const allQueries = queries.join('\n').toLowerCase()
+    expect(allQueries).toContain('add column if not exists external_key')
+    expect(allQueries).toMatch(
+      /create\s+unique\s+index\s+if\s+not\s+exists\s+\w+\s+on\s+entities\s*\(\s*project_id\s*,\s*type\s*,\s*external_key\s*\)/i,
+    )
   })
 
   it('retries lock acquisition on failure, and throws on timeout', async () => {

@@ -20,6 +20,7 @@ import type {
 
 export interface TheFactoryDb {
   addEntity(e: EntityInput): Promise<Entity>
+  upsertEntity(e: EntityInput): Promise<Entity>
   getEntityById(id: string): Promise<Entity | undefined>
   updateEntity(id: string, patch: EntityPatch): Promise<Entity | undefined>
   deleteEntity(id: string): Promise<boolean>

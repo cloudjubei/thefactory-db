@@ -15,7 +15,7 @@ const DATABASE_URL = process.env.DATABASE_URL || ''
 
   afterAll(async () => {
     try {
-      await db.clearEntities([projectId])
+      await db.clearEntities({ projectIds: [projectId] })
     } finally {
       await db.close()
     }
@@ -58,7 +58,7 @@ const DATABASE_URL = process.env.DATABASE_URL || ''
     // create multiple and clear by project
     await db.addEntity({ projectId, type: 'user', content: { name: 'Bob' } })
     await db.addEntity({ projectId, type: 'user', content: { name: 'Carol' } })
-    await db.clearEntities([projectId])
+    await db.clearEntities({ projectIds: [projectId] })
     const afterClear = await db.matchEntities(undefined, { projectIds: [projectId], limit: 10 })
     expect(afterClear.length).toBe(0)
   })

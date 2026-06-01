@@ -14,6 +14,7 @@ import { SQL } from '../src/sql'
 const ENTITY_PROJECTIONS: { name: string; sql: string }[] = [
   { name: 'getEntityById', sql: SQL.getEntityById },
   { name: 'insertEntity', sql: SQL.insertEntity },
+  { name: 'upsertEntity', sql: SQL.upsertEntity },
   { name: 'updateEntity', sql: SQL.updateEntity },
   { name: 'matchEntities', sql: SQL.matchEntities },
   { name: 'searchEntitiesQuery', sql: SQL.searchEntitiesQuery },
@@ -35,6 +36,7 @@ describe('SQL projections — entity-shaped queries match the published Entity t
     // `entities` table but several queries hand-projected columns and
     // dropped it, so Fastify response validation rejected every row.
     expect(sql).toContain('should_embed AS "shouldEmbed"')
+    expect(sql).toContain('external_key AS "externalKey"')
   })
 
   it('hybrid_search_entities RETURNS TABLE declares should_embed so searchEntitiesQuery can project it', () => {
@@ -43,6 +45,22 @@ describe('SQL projections — entity-shaped queries match the published Entity t
     // adding the alias to the outer SELECT silently produces NULL. Both
     // ends have to carry it.
     expect(SQL.hybridSearch).toMatch(/RETURNS TABLE\s*\(([^)]*\bshould_embed\s+boolean\b)/i)
+  })
+
+  it('hybrid_search_entities RETURNS TABLE declares external_key so searchEntitiesQuery can project it', () => {
+    expect(SQL.hybridSearch).toMatch(/RETURNS TABLE\s*\(([^)]*\bexternal_key\s+text\b)/i)
+  })
+
+  it('upsertEntity arbitrates on the (project_id, type, external_key) conflict', () => {
+    expect(SQL.upsertEntity).toMatch(
+      /ON\s+CONFLICT\s*\(\s*project_id\s*,\s*type\s*,\s*external_key\s*\)\s+DO\s+UPDATE/i,
+    )
+  })
+
+  it('schema creates the (project_id, type, external_key) unique index on entities', () => {
+    expect(SQL.schema).toMatch(
+      /CREATE\s+UNIQUE\s+INDEX\s+IF\s+NOT\s+EXISTS\s+\w+\s+ON\s+entities\s*\(\s*project_id\s*,\s*type\s*,\s*external_key\s*\)/i,
+    )
   })
 })
 
@@ -58,17 +76,13 @@ describe('SQL.matchEntities — null-criteria short-circuit', () => {
     // Tolerant of whitespace / parenthesisation; the key is that the
     // `content @> $1::jsonb` predicate sits inside an `$1::jsonb IS NULL OR`
     // alternative so it never runs against every row when criteria is null.
-    expect(SQL.matchEntities).toMatch(
-      /\$1::jsonb\s+IS\s+NULL\s+OR\s+content\s*@>\s*\$1::jsonb/i,
-    )
+    expect(SQL.matchEntities).toMatch(/\$1::jsonb\s+IS\s+NULL\s+OR\s+content\s*@>\s*\$1::jsonb/i)
   })
 
   it('does NOT apply `content @> $1` unconditionally (no bare `WHERE content @> $1`)', () => {
     // Drift guard: catches the original shape `WHERE content @> $1::jsonb`
     // (no surrounding NULL-or alternative) coming back in a future edit.
-    expect(SQL.matchEntities).not.toMatch(
-      /WHERE\s+content\s*@>\s*\$1::jsonb\b\s*AND/i,
-    )
+    expect(SQL.matchEntities).not.toMatch(/WHERE\s+content\s*@>\s*\$1::jsonb\b\s*AND/i)
   })
 })
 

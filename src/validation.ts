@@ -92,6 +92,12 @@ export function assertEntityInput(input: any): void {
   const c = input.content
   const isObjectOrArray = isRecord(c) || Array.isArray(c)
   if (!isObjectOrArray) throw new TypeError('EntityInput.content must be an object or array')
+  if (
+    input.externalKey !== undefined &&
+    input.externalKey !== null &&
+    typeof input.externalKey !== 'string'
+  )
+    throw new TypeError('EntityInput.externalKey must be a string or null if provided')
   if (input.metadata !== undefined && !isPlainObject(input.metadata))
     throw new TypeError('EntityInput.metadata must be an object if provided')
 }

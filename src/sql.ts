@@ -1,11 +1,12 @@
 const deleteEntity = `DELETE FROM entities WHERE id = $1;`
 
 const getEntityById = `
-SELECT 
+SELECT
   id,
   project_id AS "projectId",
   type,
   should_embed AS "shouldEmbed",
+  external_key AS "externalKey",
   content,
   to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS "createdAt",
   to_char(updated_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS "updatedAt",
@@ -15,14 +16,36 @@ WHERE id = $1;
 `
 
 const insertEntity = `
-INSERT INTO entities (project_id, type, content, should_embed, content_string, embedding, metadata)
-VALUES ($1, $2, $3::jsonb, $4::boolean, $5, $6::vector, $7::jsonb)
-RETURNING 
+INSERT INTO entities (project_id, type, content, should_embed, content_string, embedding, metadata, external_key)
+VALUES ($1, $2, $3::jsonb, $4::boolean, $5, $6::vector, $7::jsonb, $8)
+RETURNING
   id,
   project_id AS "projectId",
   type,
   content,
   should_embed AS "shouldEmbed",
+  external_key AS "externalKey",
+  to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS "createdAt",
+  to_char(updated_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS "updatedAt",
+  to_jsonb(metadata) AS metadata;
+`
+
+const upsertEntity = `
+INSERT INTO entities (project_id, type, content, should_embed, content_string, embedding, metadata, external_key)
+VALUES ($1, $2, $3::jsonb, $4::boolean, $5, $6::vector, $7::jsonb, $8)
+ON CONFLICT (project_id, type, external_key) DO UPDATE SET
+  content = EXCLUDED.content,
+  should_embed = EXCLUDED.should_embed,
+  content_string = EXCLUDED.content_string,
+  embedding = EXCLUDED.embedding,
+  metadata = EXCLUDED.metadata
+RETURNING
+  id,
+  project_id AS "projectId",
+  type,
+  content,
+  should_embed AS "shouldEmbed",
+  external_key AS "externalKey",
   to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS "createdAt",
   to_char(updated_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS "updatedAt",
   to_jsonb(metadata) AS metadata;
@@ -34,18 +57,19 @@ UPDATE entities SET
   content = COALESCE($3::jsonb, content),
   content_string = COALESCE($5, content_string),
   should_embed = COALESCE($4::boolean, should_embed),
-  embedding = CASE 
-    WHEN COALESCE($4::boolean, should_embed) = false THEN NULL 
-    ELSE COALESCE($6::vector, embedding) 
+  embedding = CASE
+    WHEN COALESCE($4::boolean, should_embed) = false THEN NULL
+    ELSE COALESCE($6::vector, embedding)
   END,
   metadata = COALESCE($7::jsonb, metadata)
 WHERE id = $1
-RETURNING 
+RETURNING
   id,
   project_id AS "projectId",
   type,
   content,
   should_embed AS "shouldEmbed",
+  external_key AS "externalKey",
   to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS "createdAt",
   to_char(updated_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS "updatedAt",
   to_jsonb(metadata) AS metadata;
@@ -551,6 +575,8 @@ FOR EACH ROW EXECUTE FUNCTION set_document_content_hash();
 -- with 'ALTER TABLE ... ADD COLUMN IF NOT EXISTS' to keep e2e tests and upgrades working.
 ALTER TABLE entities
   ADD COLUMN IF NOT EXISTS should_embed boolean NOT NULL DEFAULT true;
+ALTER TABLE entities
+  ADD COLUMN IF NOT EXISTS external_key text;
 
 CREATE TABLE IF NOT EXISTS entities (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -558,6 +584,7 @@ CREATE TABLE IF NOT EXISTS entities (
   type text NOT NULL,
   content jsonb NOT NULL,
   should_embed boolean NOT NULL DEFAULT true,
+  external_key text,
   content_string text NOT NULL,
   fts tsvector GENERATED ALWAYS AS (
     CASE WHEN content_string IS NULL OR content_string = '' THEN NULL ELSE to_tsvector('english', content_string) END
@@ -583,6 +610,8 @@ CREATE INDEX IF NOT EXISTS entities_project_id_idx ON entities USING btree(proje
 CREATE INDEX IF NOT EXISTS entities_project_id_updated_at_idx
   ON entities (project_id, updated_at DESC);
 CREATE INDEX IF NOT EXISTS entities_type_idx ON entities USING btree(type);
+CREATE UNIQUE INDEX IF NOT EXISTS entities_project_type_external_key_uniq
+  ON entities (project_id, type, external_key);
 CREATE INDEX IF NOT EXISTS entities_fts_idx ON entities USING GIN(fts);
 DO $$
 BEGIN
@@ -767,6 +796,7 @@ RETURNS TABLE (
   type text,
   content jsonb,
   should_embed boolean,
+  external_key text,
   created_at timestamptz,
   updated_at timestamptz,
   metadata jsonb,
@@ -868,6 +898,7 @@ SELECT e.id,
        e.type,
        e.content,
        e.should_embed,
+       e.external_key,
        e.created_at,
        e.updated_at,
        e.metadata,
@@ -899,6 +930,7 @@ SELECT
   type,
   content,
   should_embed AS "shouldEmbed",
+  external_key AS "externalKey",
   to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS "createdAt",
   to_char(updated_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS "updatedAt",
   to_jsonb(metadata) AS metadata,
@@ -1054,6 +1086,7 @@ SELECT
   type,
   content,
   should_embed AS "shouldEmbed",
+  external_key AS "externalKey",
   to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS "createdAt",
   to_char(updated_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS "updatedAt",
   to_jsonb(metadata) AS metadata
@@ -1113,6 +1146,7 @@ export const SQL = {
   deleteEntity,
   getEntityById,
   insertEntity,
+  upsertEntity,
   updateEntity,
   searchEntitiesQuery,
   matchEntities,

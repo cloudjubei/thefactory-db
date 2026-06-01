@@ -23,6 +23,7 @@ describe('Entities.addEntity', () => {
       JSON.stringify({ a: 1 }),
       '[0.1,0.2,0.3]',
       null,
+      null,
     ])
     expect(result).toEqual(expected)
   })
@@ -49,7 +50,19 @@ describe('Entities.addEntity', () => {
       JSON.stringify({ a: 1 }),
       null,
       null,
+      null,
     ])
     expect(result).toEqual(expected)
+  })
+
+  it('passes externalKey through as the 8th positional param', async () => {
+    const db = await openDatabase({ connectionString: 'test' })
+    const entityInput = { projectId: 'p1', type: 't1', content: { a: 1 }, externalKey: 'AAPL' }
+    mockDbClient.query.mockResolvedValue({ rows: [{ ...entityInput, id: '123' }] })
+
+    await db.addEntity(entityInput as any)
+
+    const params = mockDbClient.query.mock.calls.at(-1)![1]
+    expect(params[7]).toBe('AAPL')
   })
 })

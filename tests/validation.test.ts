@@ -73,6 +73,14 @@ describe('validation', () => {
         assertEntityInput({ projectId: 'p', type: 't', content: [1, 2, 3] }),
       ).not.toThrow()
     })
+    it('accepts a string or null externalKey', () => {
+      expect(() =>
+        assertEntityInput({ projectId: 'p', type: 't', content: {}, externalKey: 'AAPL' }),
+      ).not.toThrow()
+      expect(() =>
+        assertEntityInput({ projectId: 'p', type: 't', content: {}, externalKey: null }),
+      ).not.toThrow()
+    })
     it('rejects invalid entity input', () => {
       expect(() => assertEntityInput(null as any)).toThrow()
       expect(() => assertEntityInput({} as any)).toThrow()
@@ -83,6 +91,9 @@ describe('validation', () => {
       ).toThrow()
       expect(() =>
         assertEntityInput({ projectId: 'p', type: 't', content: {}, metadata: 'x' as any }),
+      ).toThrow()
+      expect(() =>
+        assertEntityInput({ projectId: 'p', type: 't', content: {}, externalKey: 42 as any }),
       ).toThrow()
     })
   })

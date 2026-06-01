@@ -18,7 +18,7 @@ const DATABASE_URL = process.env.DATABASE_URL || ''
 
     beforeAll(async () => {
       db = await openDatabase({ connectionString: DATABASE_URL, logLevel: 'warn' })
-      await db.clearEntities([projectId])
+      await db.clearEntities({ projectIds: [projectId] })
 
       // Seed ~20 entities
       // 1) Keyword group (literal 'car' and 'engine' in fields)
@@ -66,7 +66,7 @@ const DATABASE_URL = process.env.DATABASE_URL || ''
 
     afterAll(async () => {
       try {
-        await db.clearEntities([projectId])
+        await db.clearEntities({ projectIds: [projectId] })
       } finally {
         await db.close()
       }
@@ -198,7 +198,7 @@ const DATABASE_URL = process.env.DATABASE_URL || ''
 
   beforeAll(async () => {
     db = await openDatabase({ connectionString: DATABASE_URL, logLevel: 'warn' })
-    await db.clearEntities([projectId])
+    await db.clearEntities({ projectIds: [projectId] })
 
     ids.matchAtStart = (
       await db.addEntity({
@@ -269,7 +269,7 @@ const DATABASE_URL = process.env.DATABASE_URL || ''
 
   afterAll(async () => {
     try {
-      await db.clearEntities([projectId])
+      await db.clearEntities({ projectIds: [projectId] })
     } finally {
       await db.close()
     }

@@ -71,6 +71,7 @@ export type Entity = {
   type: string
   shouldEmbed: boolean
   content: unknown
+  externalKey?: string | null
   createdAt: string
   updatedAt: string
   metadata?: Record<string, any>
@@ -84,6 +85,7 @@ export type EntityInput = {
   type: string
   content: Record<string, any> | any[]
   shouldEmbed?: boolean
+  externalKey?: string | null
   metadata?: Record<string, any>
 }
 

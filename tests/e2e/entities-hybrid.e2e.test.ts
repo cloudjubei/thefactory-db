@@ -15,7 +15,7 @@ const DATABASE_URL = process.env.DATABASE_URL || ''
 
   afterAll(async () => {
     try {
-      await db.clearEntities([projectId])
+      await db.clearEntities({ projectIds: [projectId] })
     } finally {
       await db.close()
     }

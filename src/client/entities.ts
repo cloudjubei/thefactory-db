@@ -48,6 +48,28 @@ export function createEntityApi({
       stringContent,
       embeddingLiteral,
       e.metadata ?? null,
+      e.externalKey ?? null,
+    ])
+    return out.rows[0]
+  }
+
+  async function upsertEntity(e: EntityInput): Promise<Entity> {
+    assertEntityInput(e)
+    logger.info('upsertEntity', { projectId: e.projectId, type: e.type })
+    const stringContent = stringifyJsonValues(e.content)
+    const shouldEmbed = e.shouldEmbed ?? true
+    const embedding = shouldEmbed ? await embeddingProvider.embed(stringContent) : null
+    const embeddingLiteral = embedding ? toVectorLiteral(embedding) : null
+
+    const out = await db.query(SQL.upsertEntity, [
+      e.projectId,
+      e.type,
+      e.content,
+      shouldEmbed,
+      stringContent,
+      embeddingLiteral,
+      e.metadata ?? null,
+      e.externalKey ?? null,
     ])
     return out.rows[0]
   }
@@ -243,6 +265,7 @@ export function createEntityApi({
 
   return {
     addEntity,
+    upsertEntity,
     getEntityById,
     updateEntity,
     deleteEntity,
