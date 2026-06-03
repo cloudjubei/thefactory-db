@@ -34,7 +34,7 @@ export function createEntityApi({
 }) {
   async function addEntity(e: EntityInput): Promise<Entity> {
     assertEntityInput(e)
-    logger.info('addEntity', { projectId: e.projectId, type: e.type })
+    logger.debug('addEntity', { projectId: e.projectId, type: e.type })
     const stringContent = stringifyJsonValues(e.content)
     const shouldEmbed = e.shouldEmbed ?? true
     const embedding = shouldEmbed ? await embeddingProvider.embed(stringContent) : null
@@ -55,7 +55,7 @@ export function createEntityApi({
 
   async function upsertEntity(e: EntityInput): Promise<Entity> {
     assertEntityInput(e)
-    logger.info('upsertEntity', { projectId: e.projectId, type: e.type })
+    logger.debug('upsertEntity', { projectId: e.projectId, type: e.type })
     const stringContent = stringifyJsonValues(e.content)
     const shouldEmbed = e.shouldEmbed ?? true
     const embedding = shouldEmbed ? await embeddingProvider.embed(stringContent) : null
@@ -75,7 +75,7 @@ export function createEntityApi({
   }
 
   async function getEntityById(id: string): Promise<Entity | undefined> {
-    logger.info('getEntityById', { id })
+    logger.debug('getEntityById', { id })
     const r = await db.query(SQL.getEntityById, [id])
     const row = r.rows[0]
     if (!row) return undefined
@@ -87,7 +87,7 @@ export function createEntityApi({
     type: string,
     externalKey: string,
   ): Promise<Entity | undefined> {
-    logger.info('getEntityByExternalKey', { projectId, type })
+    logger.debug('getEntityByExternalKey', { projectId, type })
     const r = await db.query(SQL.getEntityByExternalKey, [projectId, type, externalKey])
     const row = r.rows[0]
     if (!row) return undefined
@@ -96,7 +96,7 @@ export function createEntityApi({
 
   async function updateEntity(id: string, patch: EntityPatch): Promise<Entity | undefined> {
     assertEntityPatch(patch)
-    logger.info('updateEntity', { id, keys: Object.keys(patch) })
+    logger.debug('updateEntity', { id, keys: Object.keys(patch) })
     const exists = await getEntityById(id)
     if (!exists) return
 
@@ -141,14 +141,14 @@ export function createEntityApi({
   }
 
   async function deleteEntity(id: string): Promise<boolean> {
-    logger.info('deleteEntity', { id })
+    logger.debug('deleteEntity', { id })
     const r = await db.query(SQL.deleteEntity, [id])
     return (r.rowCount ?? 0) > 0
   }
 
   async function searchEntities(params: SearchParams): Promise<EntityWithScore[]> {
     assertSearchParams(params)
-    logger.info('searchEntities', params)
+    logger.debug('searchEntities', params)
     const rawQuery = params.query.trim()
     if (rawQuery.length === 0) return []
 
@@ -183,7 +183,7 @@ export function createEntityApi({
     options?: MatchParams,
   ): Promise<Entity[]> {
     assertMatchParams(options)
-    logger.info('matchEntities', {
+    logger.debug('matchEntities', {
       criteria,
       options,
     })
@@ -218,7 +218,7 @@ export function createEntityApi({
     }
     const projectIds = filter.projectIds
     const types = filter.types && filter.types.length > 0 ? filter.types : undefined
-    logger.info('clearEntities', { projectIds: projectIds.length, types: types?.length || 0 })
+    logger.debug('clearEntities', { projectIds: projectIds.length, types: types?.length || 0 })
     if (types) {
       await db.query(SQL.clearEntitiesByProjectAndType, [projectIds, types])
     } else {
@@ -228,7 +228,7 @@ export function createEntityApi({
 
   async function searchEntitiesForKeywords(args: SearchEntitiesForKeywordsArgs): Promise<string[]> {
     assertSearchEntitiesForKeywordsArgs(args)
-    logger.info('searchEntitiesForKeywords', {
+    logger.debug('searchEntitiesForKeywords', {
       projectIdsCount: args.projectIds.length,
       matchMode: args.matchMode,
       typesCount: args.types?.length ?? 0,
@@ -251,7 +251,7 @@ export function createEntityApi({
 
   async function searchEntitiesForExact(args: SearchEntitiesForExactArgs): Promise<string[]> {
     assertSearchEntitiesForExactArgs(args)
-    logger.info('searchEntitiesForExact', {
+    logger.debug('searchEntitiesForExact', {
       projectIdsCount: args.projectIds.length,
       matchMode: args.matchMode,
       caseSensitive: args.caseSensitive,
