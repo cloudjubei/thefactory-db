@@ -113,7 +113,7 @@ describe('Migrations', () => {
 
   it('is idempotent (does nothing if already at latest schema)', async () => {
     // Latest version tracks the migrations list; bump this when adding one.
-    const mockDb = createDbMock(3)
+    const mockDb = createDbMock(4)
     vi.mocked(openPostgres).mockResolvedValue(mockDb as any)
 
     await openDatabase({ connectionString: 'postgres://x' })
@@ -139,6 +139,30 @@ describe('Migrations', () => {
     expect(allQueries).toMatch(
       /create\s+unique\s+index\s+if\s+not\s+exists\s+\w+\s+on\s+entities\s*\(\s*project_id\s*,\s*type\s*,\s*external_key\s*\)/i,
     )
+  })
+
+  it('repairs the should_embed column + search function (004) on a new database', async () => {
+    const mockDb = createDbMock(0)
+    vi.mocked(openPostgres).mockResolvedValue(mockDb as any)
+
+    await openDatabase({ connectionString: 'postgres://x' })
+
+    const allQueries = queries.join('\n').toLowerCase()
+    expect(allQueries).toContain('add column if not exists should_embed')
+    expect(allQueries).toContain('create or replace function hybrid_search_entities')
+    expect(allQueries).toMatch(/insert into thefactory\.migration_log \(version, id\) values \(\$1, \$2\)/i)
+  })
+
+  it('applies only the 004 repair on a database already at version 3', async () => {
+    const mockDb = createDbMock(3)
+    vi.mocked(openPostgres).mockResolvedValue(mockDb as any)
+
+    await openDatabase({ connectionString: 'postgres://x' })
+
+    const allQueries = queries.join('\n').toLowerCase()
+    expect(allQueries).toContain('add column if not exists should_embed')
+    // The already-applied 003 must NOT re-run.
+    expect(allQueries).not.toContain('add column if not exists external_key')
   })
 
   it('retries lock acquisition on failure, and throws on timeout', async () => {

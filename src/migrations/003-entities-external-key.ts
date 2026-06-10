@@ -22,7 +22,7 @@ export const migration003: Migration = {
   },
 }
 
-const ENTITIES_SEARCH_FUNCTION = `
+export const ENTITIES_SEARCH_FUNCTION = `
 DROP FUNCTION IF EXISTS hybrid_search_entities(text, vector, integer, jsonb, float, float, float, integer);
 
 CREATE OR REPLACE FUNCTION hybrid_search_entities(
