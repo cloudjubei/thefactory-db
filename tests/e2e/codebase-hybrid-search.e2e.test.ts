@@ -118,10 +118,10 @@ function collectProjectFiles(root: string): string[] {
       'src/migrations/003-entities-external-key.ts',
       'scripts/example.ts',
       'src/types.ts',
-      'src/sql.ts',
       'src/client/types.ts',
       'scripts/test.ts',
       'docs/FILE_ORGANISATION.md',
+      'docs/TESTING_E2E.md',
     ])
   })
 
