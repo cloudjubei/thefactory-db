@@ -1,5 +1,29 @@
 import { describe, it, expect } from 'vitest'
-import { stringifyJsonValues } from '../../src/utils/json'
+import { stringifyJsonValues, stripNullChars } from '../../src/utils/json'
+
+const NUL = String.fromCharCode(0)
+
+describe('stripNullChars', () => {
+  it('strips U+0000 from nested string values and keys', () => {
+    const dirty = { ['a' + NUL]: 'he' + NUL + 'llo', arr: [NUL + 'x', 'y'], n: 3 }
+    const clean = stripNullChars(dirty)
+    expect(JSON.stringify(clean)).not.toContain('\\u0000')
+    expect(clean).toEqual({ a: 'hello', arr: ['x', 'y'], n: 3 })
+  })
+
+  it('returns the SAME reference when there is no null char (no needless clone)', () => {
+    const obj = { a: { b: ['x', 1, true, null] } }
+    expect(stripNullChars(obj)).toBe(obj)
+    const s = 'clean'
+    expect(stripNullChars(s)).toBe(s)
+  })
+
+  it('passes primitives through', () => {
+    expect(stripNullChars(5)).toBe(5)
+    expect(stripNullChars(null)).toBe(null)
+    expect(stripNullChars('a' + NUL + 'b')).toBe('ab')
+  })
+})
 
 describe('stringifyJsonValues', () => {
   it('flattens nested objects and arrays into value-only string', () => {

@@ -65,4 +65,22 @@ describe('Entities.addEntity', () => {
     const params = mockDbClient.query.mock.calls.at(-1)![1]
     expect(params[7]).toBe('AAPL')
   })
+
+  it('strips U+0000 from content + metadata before the DB write (Postgres rejects null bytes)', async () => {
+    const NUL = String.fromCharCode(0)
+    const db = await openDatabase({ connectionString: 'test' })
+    mockDbClient.query.mockResolvedValue({ rows: [{ id: '1' }] })
+
+    await db.addEntity({
+      projectId: 'p1',
+      type: 't1',
+      content: { a: 'he' + NUL + 'llo', arr: [NUL + 'x'] },
+      metadata: { ['m' + NUL]: 'no' + NUL + 'pe' },
+    } as any)
+
+    const params = mockDbClient.query.mock.calls.at(-1)![1]
+    expect(params[2]).toEqual({ a: 'hello', arr: ['x'] }) // jsonb content ($3)
+    expect(params[6]).toEqual({ m: 'nope' }) // metadata ($7), key + value stripped
+    expect(JSON.stringify([params[2], params[4], params[6]])).not.toContain('\\u0000')
+  })
 })

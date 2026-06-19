@@ -2,7 +2,7 @@ import type { DB } from '../connection.js'
 import type { Logger } from '../types.js'
 import type { EmbeddingProvider } from '../utils/embeddings.js'
 import { SQL } from '../sql.js'
-import { stringifyJsonValues } from '../utils/json.js'
+import { stringifyJsonValues, stripNullChars } from '../utils/json.js'
 import {
   assertEntityInput,
   assertEntityPatch,
@@ -35,7 +35,10 @@ export function createEntityApi({
   async function addEntity(e: EntityInput): Promise<Entity> {
     assertEntityInput(e)
     logger.debug('addEntity', { projectId: e.projectId, type: e.type })
-    const stringContent = stringifyJsonValues(e.content)
+    // Postgres jsonb/text reject U+0000; strip it from content + metadata before they hit the columns.
+    const content = stripNullChars(e.content)
+    const metadata = e.metadata != null ? stripNullChars(e.metadata) : null
+    const stringContent = stringifyJsonValues(content)
     const shouldEmbed = e.shouldEmbed ?? true
     const embedding = shouldEmbed ? await embeddingProvider.embed(stringContent) : null
     const embeddingLiteral = embedding ? toVectorLiteral(embedding) : null
@@ -43,11 +46,11 @@ export function createEntityApi({
     const out = await db.query(SQL.insertEntity, [
       e.projectId,
       e.type,
-      e.content,
+      content,
       shouldEmbed,
       stringContent,
       embeddingLiteral,
-      e.metadata ?? null,
+      metadata,
       e.externalKey ?? null,
     ])
     return out.rows[0]
@@ -56,7 +59,10 @@ export function createEntityApi({
   async function upsertEntity(e: EntityInput): Promise<Entity> {
     assertEntityInput(e)
     logger.debug('upsertEntity', { projectId: e.projectId, type: e.type })
-    const stringContent = stringifyJsonValues(e.content)
+    // Postgres jsonb/text reject U+0000; strip it from content + metadata before they hit the columns.
+    const content = stripNullChars(e.content)
+    const metadata = e.metadata != null ? stripNullChars(e.metadata) : null
+    const stringContent = stringifyJsonValues(content)
     const shouldEmbed = e.shouldEmbed ?? true
     const embedding = shouldEmbed ? await embeddingProvider.embed(stringContent) : null
     const embeddingLiteral = embedding ? toVectorLiteral(embedding) : null
@@ -64,11 +70,11 @@ export function createEntityApi({
     const out = await db.query(SQL.upsertEntity, [
       e.projectId,
       e.type,
-      e.content,
+      content,
       shouldEmbed,
       stringContent,
       embeddingLiteral,
-      e.metadata ?? null,
+      metadata,
       e.externalKey ?? null,
     ])
     return out.rows[0]
@@ -106,8 +112,9 @@ export function createEntityApi({
     let shouldEmbed = patch.shouldEmbed
 
     if (patch.content !== undefined) {
-      newContent = patch.content
-      newContentString = stringifyJsonValues(patch.content)
+      // Postgres jsonb/text reject U+0000; strip it before the content hits the columns.
+      newContent = stripNullChars(patch.content)
+      newContentString = stringifyJsonValues(newContent)
 
       const effectiveShouldEmbed = shouldEmbed ?? exists.shouldEmbed
       if (effectiveShouldEmbed) {
@@ -133,7 +140,7 @@ export function createEntityApi({
       shouldEmbed ?? null,
       newContentString,
       embeddingLiteral,
-      patch.metadata ?? null,
+      patch.metadata != null ? stripNullChars(patch.metadata) : null,
     ])
     const row = r.rows[0]
     if (!row) return undefined

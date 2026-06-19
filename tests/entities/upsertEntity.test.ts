@@ -40,4 +40,23 @@ describe('Entities.upsertEntity', () => {
     expect(params[5]).toBeNull() // embedding literal
     expect(params[7]).toBeNull() // externalKey
   })
+
+  it('strips U+0000 from content + metadata before the DB write (Postgres rejects null bytes)', async () => {
+    const NUL = String.fromCharCode(0)
+    const db = await openDatabase({ connectionString: 'test' })
+    mockDbClient.query.mockResolvedValue({ rows: [{ id: '1' }] })
+
+    await db.upsertEntity({
+      projectId: 'p1',
+      type: 'knowledge-analysis',
+      externalKey: 'thefactory-tools',
+      content: { label: 'tf' + NUL + 'tools', levels: [{ name: 'a' + NUL }] },
+      metadata: { note: 'x' + NUL + 'y' },
+    } as any)
+
+    const params = mockDbClient.query.mock.calls.at(-1)![1]
+    expect(params[2]).toEqual({ label: 'tftools', levels: [{ name: 'a' }] }) // jsonb content
+    expect(params[6]).toEqual({ note: 'xy' }) // metadata
+    expect(JSON.stringify([params[2], params[4], params[6]])).not.toContain('\\u0000')
+  })
 })

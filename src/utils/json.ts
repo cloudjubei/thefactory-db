@@ -8,6 +8,42 @@
  - Deterministic ordering: object keys are sorted to ensure stable output.
 */
 
+const NULL_CHAR = String.fromCharCode(0)
+const NULL_CHAR_RE = new RegExp(NULL_CHAR, 'g')
+
+/**
+ * Strip the U+0000 null character from every string — keys and values — in a JSON value. Postgres `jsonb`
+ * and `text` columns cannot store a null character; an insert containing one fails with "unsupported
+ * Unicode escape sequence". Entity content/metadata is sanitised here at the write boundary. Returns the
+ * input reference unchanged when it contains no null character, so large content is not needlessly cloned.
+ */
+export function stripNullChars<T>(value: T): T {
+  if (typeof value === 'string') {
+    return (value.includes(NULL_CHAR) ? value.replace(NULL_CHAR_RE, '') : value) as T
+  }
+  if (Array.isArray(value)) {
+    let changed = false
+    const out = value.map((v) => {
+      const s = stripNullChars(v)
+      if (s !== v) changed = true
+      return s
+    })
+    return (changed ? out : value) as unknown as T
+  }
+  if (value !== null && typeof value === 'object') {
+    let changed = false
+    const out: Record<string, unknown> = {}
+    for (const [k, v] of Object.entries(value as Record<string, unknown>)) {
+      const sk = k.includes(NULL_CHAR) ? k.replace(NULL_CHAR_RE, '') : k
+      const sv = stripNullChars(v)
+      if (sk !== k || sv !== v) changed = true
+      out[sk] = sv
+    }
+    return (changed ? (out as T) : value)
+  }
+  return value
+}
+
 export function stringifyJsonValues(value: unknown): string {
   const seen = new WeakSet<object>()
   const tokens: string[] = []

@@ -16,7 +16,12 @@ vi.mock('../../src/sql', () => ({
 vi.mock('../../src/connection')
 vi.mock('../../src/logger')
 vi.mock('../../src/utils/embeddings')
-vi.mock('../../src/utils/json')
+// Keep the REAL stripNullChars (so write-path null-byte stripping is exercised); only stub the
+// value-flattening used for embeddings.
+vi.mock('../../src/utils/json', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('../../src/utils/json')>()
+  return { ...actual, stringifyJsonValues: vi.fn() }
+})
 
 export type UnitTestMocks = {
   mockDbClient: any

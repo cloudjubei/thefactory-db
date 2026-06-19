@@ -32,6 +32,25 @@ describe('Entities.updateEntity', () => {
     expect(result).toEqual(updated)
   })
 
+  it('strips U+0000 from patched content + metadata before the DB write (Postgres rejects null bytes)', async () => {
+    const NUL = String.fromCharCode(0)
+    const db = await openDatabase({ connectionString: 'test' })
+    const existing = { id: '123', content: { a: 1 }, shouldEmbed: true }
+    mockDbClient.query
+      .mockResolvedValueOnce({ rows: [existing] }) // get by id
+      .mockResolvedValueOnce({ rows: [existing] }) // update
+
+    await db.updateEntity('123', {
+      content: { a: 'he' + NUL + 'llo' },
+      metadata: { m: 'x' + NUL },
+    } as any)
+
+    const params = mockDbClient.query.mock.calls.at(-1)![1]
+    expect(params[2]).toEqual({ a: 'hello' }) // newContent
+    expect(params[6]).toEqual({ m: 'x' }) // metadata
+    expect(JSON.stringify([params[2], params[4], params[6]])).not.toContain('\\u0000')
+  })
+
   it('should return undefined if entity does not exist', async () => {
     const db = await openDatabase({ connectionString: 'test' })
     mockDbClient.query.mockResolvedValue({ rows: [] })
