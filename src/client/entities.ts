@@ -2,6 +2,7 @@ import type { DB } from '../connection.js'
 import type { Logger } from '../types.js'
 import type { EmbeddingProvider } from '../utils/embeddings.js'
 import { SQL } from '../sql.js'
+import { buildEntityCountQuery, buildEntityMatchQuery } from './entityQuery.js'
 import { stringifyJsonValues, stripNullChars } from '../utils/json.js'
 import {
   assertEntityInput,
@@ -195,6 +196,14 @@ export function createEntityApi({
       options,
     })
 
+    // The composable filter / content-field ordering / offset path compiles dynamic SQL; the plain
+    // type/id/projectId path keeps the static query (and its null-criteria index optimisation).
+    if (options && (options.where || options.orderBy || options.offset)) {
+      const built = buildEntityMatchQuery(criteria, options)
+      const r = await db.query(built.text, built.params)
+      return r.rows
+    }
+
     const filter: { types?: string[]; ids?: string[]; projectIds?: string[] } = {}
     if (options?.types && options.types.length > 0) filter.types = options.types
     if (options?.ids && options.ids.length > 0) filter.ids = options.ids
@@ -217,6 +226,14 @@ export function createEntityApi({
       limit,
     ])
     return r.rows
+  }
+
+  async function countEntities(criteria: any | undefined, options?: MatchParams): Promise<number> {
+    assertMatchParams(options)
+    logger.debug('countEntities', { criteria, options })
+    const built = buildEntityCountQuery(criteria, options)
+    const r = await db.query(built.text, built.params)
+    return Number(r.rows?.[0]?.count ?? 0)
   }
 
   async function clearEntities(filter: { projectIds: string[]; types?: string[] }): Promise<void> {
@@ -291,6 +308,7 @@ export function createEntityApi({
     deleteEntity,
     searchEntities,
     matchEntities,
+    countEntities,
     clearEntities,
     searchEntitiesForKeywords,
     searchEntitiesForExact,

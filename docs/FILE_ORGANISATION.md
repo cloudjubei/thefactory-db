@@ -18,9 +18,15 @@
       - `searchDocuments`, `matchDocuments`, `clearDocuments`
     - Entities API (json content)
       - `addEntity`, `upsertEntity`, `getEntityById`, `getEntityByExternalKey`, `updateEntity`, `deleteEntity`
-      - `searchEntities`, `matchEntities`, `clearEntities`
+      - `searchEntities`, `matchEntities`, `countEntities`, `clearEntities`
       - `upsertEntity` inserts, or — when `externalKey` is set — updates in place the row uniquely identified by `(projectId, type, externalKey)`. Keyless input always inserts (NULL keys are distinct).
       - `getEntityByExternalKey(projectId, type, externalKey)` — indexed lookup of the single keyed row via the `(project_id, type, external_key)` unique index; returns `undefined` when absent.
+      - `matchEntities(criteria, options?)` — beyond the `ids`/`types`/`projectIds`/`limit` filters and the optional `criteria` jsonb-containment, `options` (a `MatchParams`) also accepts a composable content-field filter, content-field ordering, and offset pagination:
+        - `where`: an `EntityFilter` — a leaf `{ field, op, value? }` predicate (dot-path `field` into `content`; `op` ∈ `< <= = != >= > contains exists`) or an `and`/`or`/`not` composition of them. Numeric operators (and `=`/`!=` with a numeric `value`) match only rows whose field is a JSON number; a missing/non-numeric field never matches. Both the JSON path and the value are bound parameters — never interpolated.
+        - `orderBy`: an `EntitySort[]` — order by content-field dot-paths (`numeric` to cast to numeric, non-numbers sort last); a stable `updated_at`/`id` tiebreak is always appended so pagination never drops or repeats a row.
+        - `offset` (+ `limit`): stable, sorted pagination.
+        - The plain identity-tuple path keeps the static query (and its null-criteria index optimisation); the advanced path compiles parameterised SQL via `src/client/entityQuery.ts`.
+      - `countEntities(criteria, options?)` — total rows matching the same `where`/`types`/`projectIds`/`criteria` filter as `matchEntities`, ignoring `limit`/`offset`. Pairs with `matchEntities` to report a total for pagination.
     - `raw(): DB` — Gives low-level access for advanced SQL.
   - `src/connection.ts`: Connection factory and schema init. Applies embedded SQL statements (schema + hybrid functions) defined in `src/utils.ts`.
   - `src/types.ts`: Shared TypeScript types for Documents and Entities, Search options and result row types, and `OpenDbOptions`.

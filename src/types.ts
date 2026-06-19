@@ -108,18 +108,59 @@ export type EntityWithScore = Entity & {
   totalScore: number
 }
 
+/** A comparison operator usable in an {@link EntityFieldPredicate}. */
+export type EntityFilterOp = '<' | '<=' | '=' | '!=' | '>=' | '>' | 'contains' | 'exists'
+
+/**
+ * A predicate over a single field inside an entity's JSON `content`.
+ *
+ * `field` is a dot-path (e.g. `"metrics.total_return_pct"`); both the path and the value are sent
+ * as bound parameters, never interpolated. Numeric operators (`<`,`<=`,`>=`,`>`) — and `=`/`!=`
+ * when `value` is a number — only match rows where the field is a JSON number; a missing or
+ * non-numeric field never matches. `exists` takes no `value`.
+ */
+export type EntityFieldPredicate = {
+  field: string
+  op: EntityFilterOp
+  value?: string | number | boolean
+}
+
+/**
+ * A composable boolean filter over entity content fields: a leaf {@link EntityFieldPredicate} or an
+ * `and`/`or`/`not` composition of nested filters. Compiled to a parameterised SQL `WHERE` fragment.
+ */
+export type EntityFilter =
+  | { and: EntityFilter[] }
+  | { or: EntityFilter[] }
+  | { not: EntityFilter }
+  | EntityFieldPredicate
+
+/** One ordering term over an entity content field (dot-path). */
+export type EntitySort = {
+  field: string
+  direction?: 'asc' | 'desc'
+  /** Compare numerically (cast to numeric, non-numbers sort last) rather than as text. */
+  numeric?: boolean
+}
+
 /**
  * Parameters for filtering results in match and search operations.
  */
 export type MatchParams = {
   /** The maximum number of results to return. */
   limit?: number
+  /** Number of leading rows to skip — for stable, sorted pagination. */
+  offset?: number
   /** An array of types to filter by. */
   types?: string[]
   /** An array of IDs to filter by. */
   ids?: string[]
   /** An array of project IDs to filter by. */
   projectIds?: string[]
+  /** A composable predicate over entity content fields (numeric/text comparisons, and/or/not). */
+  where?: EntityFilter
+  /** Ordering terms over content fields; a stable `updated_at`/`id` tiebreak is always appended. */
+  orderBy?: EntitySort[]
 }
 
 /**

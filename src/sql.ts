@@ -1155,6 +1155,20 @@ const clearDocumentsByProject = `DELETE FROM documents WHERE project_id = ANY($1
 const clearEntitiesByProject = `DELETE FROM entities WHERE project_id = ANY($1::text[]);`
 const clearEntitiesByProjectAndType = `DELETE FROM entities WHERE project_id = ANY($1::text[]) AND type = ANY($2::text[]);`
 
+// The full entity-shaped projection (every field on the published `Entity` type), shared by the
+// dynamic entity-query builder so its rows match the static SELECTs. Keep in sync with the column
+// list the static entity queries project (asserted by tests/sql-projections.test.ts).
+export const ENTITY_SELECT_COLUMNS = `
+  id,
+  project_id AS "projectId",
+  type,
+  content,
+  should_embed AS "shouldEmbed",
+  external_key AS "externalKey",
+  to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS "createdAt",
+  to_char(updated_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS "updatedAt",
+  to_jsonb(metadata) AS metadata`
+
 export const SQL = {
   schema,
   hybridSearch,

@@ -8,9 +8,12 @@ import { stringifyJsonValues } from '../../src/utils/json'
 // These mocks must be registered before importing the SUT (e.g. '../../src/index').
 // So test files should import from this module before importing openDatabase.
 
-// Keep SQL stable in tests
+// Keep SQL stable in tests. ENTITY_SELECT_COLUMNS is a real named export consumed by the dynamic
+// entity-query builder, so the mock must provide it too (a stand-in column list is enough — the
+// builder's behaviour is asserted against the REAL sql module in entityQuery.test.ts).
 vi.mock('../../src/sql', () => ({
   SQL: new Proxy({}, { get: () => 'FAKE_SQL' }),
+  ENTITY_SELECT_COLUMNS: ' id, project_id AS "projectId", content ',
 }))
 
 vi.mock('../../src/connection')
@@ -41,7 +44,8 @@ export function attachMigrationSupport(mockDb: any, options: { schemaVersion?: n
     query: vi.fn(async (sql: string) => {
       const s = (sql || '').toLowerCase()
       if (s.includes('pg_try_advisory_lock')) return { rows: [{ acquired: true }], rowCount: 1 }
-      if (s.includes('select schema_version')) return { rows: [{ schema_version: version }], rowCount: 1 }
+      if (s.includes('select schema_version'))
+        return { rows: [{ schema_version: version }], rowCount: 1 }
       return { rows: [], rowCount: 0 }
     }),
     release: vi.fn(),
@@ -64,7 +68,7 @@ export function setupUnitTestMocks(): UnitTestMocks {
     query: vi.fn(),
     end: vi.fn(),
   }
-  
+
   attachMigrationSupport(mockDbClient)
 
   const mockLogger: any = {
@@ -96,7 +100,7 @@ export function setupUnitTestMocks(): UnitTestMocks {
 
     // Restore default embedding return value
     mockEmbeddingProvider.embed.mockResolvedValue([0.1, 0.2, 0.3])
-    
+
     // Restore lock client mock
     attachMigrationSupport(mockDbClient)
   })

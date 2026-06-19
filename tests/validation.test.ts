@@ -126,6 +126,26 @@ describe('validation', () => {
       expect(() => assertMatchParams({ ids: [1] as any })).toThrow()
       expect(() => assertMatchParams({ projectIds: [1] as any })).toThrow()
     })
+    it('accepts offset, where, and orderBy', () => {
+      expect(() =>
+        assertMatchParams({
+          offset: 100,
+          where: { field: 'objective', op: '>', value: 0 },
+          orderBy: [{ field: 'objective', direction: 'desc', numeric: true }],
+        }),
+      ).not.toThrow()
+    })
+    it('rejects a negative or fractional offset', () => {
+      expect(() => assertMatchParams({ offset: -1 } as any)).toThrow()
+      expect(() => assertMatchParams({ offset: 1.5 } as any)).toThrow()
+    })
+    it('rejects a non-object where and a malformed orderBy', () => {
+      expect(() => assertMatchParams({ where: 'x' } as any)).toThrow()
+      expect(() => assertMatchParams({ orderBy: [{ direction: 'desc' }] } as any)).toThrow()
+      expect(() =>
+        assertMatchParams({ orderBy: [{ field: 'x', direction: 'up' }] } as any),
+      ).toThrow()
+    })
   })
 
   describe('assertSearchParams', () => {

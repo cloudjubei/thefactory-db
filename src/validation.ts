@@ -121,12 +121,26 @@ export function assertMatchParams(opts?: MatchParams): void {
   if (!isRecord(opts)) throw new TypeError('Match options must be an object')
   if (opts.limit !== undefined && !Number.isInteger(opts.limit))
     throw new TypeError('Match options.limit must be an integer if provided')
+  if (opts.offset !== undefined && (!Number.isInteger(opts.offset) || opts.offset < 0))
+    throw new TypeError('Match options.offset must be a non-negative integer if provided')
   if (opts.types !== undefined && !isStringArray(opts.types))
     throw new TypeError('Match options.types must be an array of strings if provided')
   if (opts.ids !== undefined && !isStringArray(opts.ids))
     throw new TypeError('Match options.ids must be an array of strings if provided')
   if (opts.projectIds !== undefined && !isStringArray(opts.projectIds))
     throw new TypeError('Match options.projectIds must be an array of strings if provided')
+  if (opts.where !== undefined && !isRecord(opts.where))
+    throw new TypeError('Match options.where must be a filter object if provided')
+  if (opts.orderBy !== undefined) {
+    if (!Array.isArray(opts.orderBy))
+      throw new TypeError('Match options.orderBy must be an array if provided')
+    for (const sort of opts.orderBy) {
+      if (!isRecord(sort) || typeof sort.field !== 'string')
+        throw new TypeError('Match options.orderBy entries must be { field, direction?, numeric? }')
+      if (sort.direction !== undefined && sort.direction !== 'asc' && sort.direction !== 'desc')
+        throw new TypeError("Match options.orderBy.direction must be 'asc' or 'desc'")
+    }
+  }
 }
 
 export function assertSearchParams(params: SearchParams): void {

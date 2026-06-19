@@ -109,4 +109,78 @@ describe('Entities.matchEntities', () => {
       expect(call[1][0]).toBe(JSON.stringify({ tag: 'x' }))
     })
   })
+
+  describe('dynamic filter/sort/offset path', () => {
+    it('routes to the compiled query when a `where` predicate is given', async () => {
+      const db = await openDatabase({ connectionString: 'test' })
+      mockDbClient.query.mockResolvedValue({ rows: [{ id: '1' }] })
+
+      const result = await db.matchEntities(undefined, {
+        projectIds: ['p1'],
+        where: { field: 'metrics.total_return_pct', op: '>', value: 0 },
+        limit: 50,
+      })
+
+      const [sql, params] = mockDbClient.query.mock.calls.at(-1)
+      // Real compiled SQL (not the mocked 'FAKE_SQL') with the numeric predicate.
+      expect(sql).toContain('FROM entities')
+      expect(sql).toContain('(content #>> $2::text[])::numeric > $3::numeric')
+      expect(params).toEqual([['p1'], ['metrics', 'total_return_pct'], 0, 50])
+      expect(result).toEqual([{ id: '1' }])
+    })
+
+    it('routes to the compiled query when `orderBy` is given', async () => {
+      const db = await openDatabase({ connectionString: 'test' })
+      mockDbClient.query.mockResolvedValue({ rows: [] })
+
+      await db.matchEntities(undefined, {
+        orderBy: [{ field: 'objective', direction: 'desc', numeric: true }],
+        limit: 25,
+      })
+      const [sql] = mockDbClient.query.mock.calls.at(-1)
+      expect(sql).toMatch(/ORDER BY .*DESC NULLS LAST, updated_at DESC, id ASC/)
+    })
+
+    it('routes to the compiled query when `offset` is given (pagination)', async () => {
+      const db = await openDatabase({ connectionString: 'test' })
+      mockDbClient.query.mockResolvedValue({ rows: [] })
+
+      await db.matchEntities(undefined, { projectIds: ['p1'], limit: 50, offset: 100 })
+      const [sql, params] = mockDbClient.query.mock.calls.at(-1)
+      expect(sql).toMatch(/LIMIT \$2 OFFSET \$3/)
+      expect(params).toEqual([['p1'], 50, 100])
+    })
+
+    it('stays on the static path (FAKE_SQL) when no dynamic params are present', async () => {
+      const db = await openDatabase({ connectionString: 'test' })
+      mockDbClient.query.mockResolvedValue({ rows: [] })
+
+      await db.matchEntities(undefined, { projectIds: ['p1'], limit: 5 })
+      const [sql] = mockDbClient.query.mock.calls.at(-1)
+      expect(sql).toBe('FAKE_SQL')
+    })
+  })
+
+  describe('countEntities', () => {
+    it('runs a COUNT over the same conditions and returns the number', async () => {
+      const db = await openDatabase({ connectionString: 'test' })
+      mockDbClient.query.mockResolvedValue({ rows: [{ count: 42 }] })
+
+      const total = await db.countEntities(undefined, {
+        projectIds: ['p1'],
+        where: { field: 'objective', op: '>', value: 0 },
+      })
+      const [sql, params] = mockDbClient.query.mock.calls.at(-1)
+      expect(sql).toMatch(/SELECT count\(\*\)::int AS count FROM entities/i)
+      expect(sql).not.toMatch(/LIMIT|OFFSET/)
+      expect(params).toEqual([['p1'], ['objective'], 0])
+      expect(total).toBe(42)
+    })
+
+    it('returns 0 when the result set is empty', async () => {
+      const db = await openDatabase({ connectionString: 'test' })
+      mockDbClient.query.mockResolvedValue({ rows: [] })
+      expect(await db.countEntities(undefined, { projectIds: ['p1'] })).toBe(0)
+    })
+  })
 })

@@ -99,10 +99,10 @@ function collectProjectFiles(root: string): string[] {
       'src/migrations/003-entities-external-key.ts',
       'src/migrations/001-init.ts',
       'scripts/example.ts',
+      'src/client/types.ts',
       'scripts/test.ts',
       'src/validation.ts',
       'src/utils/json.ts',
-      'src/client/types.ts',
       'docs/CODE_STANDARD.md',
       'scripts/count.ts',
     ])
@@ -117,11 +117,11 @@ function collectProjectFiles(root: string): string[] {
       'src/validation.ts',
       'src/migrations/003-entities-external-key.ts',
       'scripts/example.ts',
-      'src/types.ts',
       'src/client/types.ts',
-      'scripts/test.ts',
+      'src/types.ts',
       'docs/FILE_ORGANISATION.md',
-      'docs/TESTING_E2E.md',
+      'scripts/test.ts',
+      'src/migrations/004-entities-should-embed-repair.ts',
     ])
   })
 
@@ -152,9 +152,9 @@ function collectProjectFiles(root: string): string[] {
       'src/connection.ts',
       '.prettierignore',
       'scripts/example.ts',
+      'docs/FILE_ORGANISATION.md',
       'docs/TESTING_E2E.md',
       'docs/CODE_STANDARD.md',
-      'docs/FILE_ORGANISATION.md',
     ])
   })
 })
