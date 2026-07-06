@@ -196,9 +196,11 @@ export function createEntityApi({
       options,
     })
 
-    // The composable filter / content-field ordering / offset path compiles dynamic SQL; the plain
-    // type/id/projectId path keeps the static query (and its null-criteria index optimisation).
-    if (options && (options.where || options.orderBy || options.offset)) {
+    // The composable filter / content-field ordering / offset / projection path compiles dynamic SQL;
+    // the plain type/id/projectId path keeps the static query (and its null-criteria index optimisation).
+    // `omit` must force the dynamic path too — otherwise the static SELECT reads full content off the
+    // socket and the omit is silently lost (the heavy-jsonb OOM).
+    if (options && (options.where || options.orderBy || options.offset || options.omit?.length)) {
       const built = buildEntityMatchQuery(criteria, options)
       const r = await db.query(built.text, built.params)
       return r.rows

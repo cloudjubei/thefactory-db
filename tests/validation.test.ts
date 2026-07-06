@@ -146,6 +146,11 @@ describe('validation', () => {
         assertMatchParams({ orderBy: [{ field: 'x', direction: 'up' }] } as any),
       ).toThrow()
     })
+    it('accepts omit as a string array and rejects non-string-array omit', () => {
+      expect(() => assertMatchParams({ omit: ['series', 'artifacts.runChart'] })).not.toThrow()
+      expect(() => assertMatchParams({ omit: 'series' } as any)).toThrow()
+      expect(() => assertMatchParams({ omit: [1] as any })).toThrow()
+    })
   })
 
   describe('assertSearchParams', () => {

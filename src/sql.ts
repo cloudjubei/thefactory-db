@@ -1158,16 +1158,24 @@ const clearEntitiesByProjectAndType = `DELETE FROM entities WHERE project_id = A
 // The full entity-shaped projection (every field on the published `Entity` type), shared by the
 // dynamic entity-query builder so its rows match the static SELECTs. Keep in sync with the column
 // list the static entity queries project (asserted by tests/sql-projections.test.ts).
-export const ENTITY_SELECT_COLUMNS = `
+// `contentExpr` lets the dynamic builder swap the `content` column for a projected jsonb expression
+// (e.g. `content #- '{series}'`) so an omit is applied in SQL — the heavy jsonb is never read off
+// the socket — instead of being dropped in JS after every row is fully materialised.
+export function entitySelectColumns(contentExpr: string = 'content'): string {
+  const contentCol = contentExpr === 'content' ? 'content' : `${contentExpr} AS content`
+  return `
   id,
   project_id AS "projectId",
   type,
-  content,
+  ${contentCol},
   should_embed AS "shouldEmbed",
   external_key AS "externalKey",
   to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS "createdAt",
   to_char(updated_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS "updatedAt",
   to_jsonb(metadata) AS metadata`
+}
+
+export const ENTITY_SELECT_COLUMNS = entitySelectColumns()
 
 export const SQL = {
   schema,

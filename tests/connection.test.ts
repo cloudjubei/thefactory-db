@@ -9,6 +9,7 @@ const hoisted = vi.hoisted(() => {
   const poolMock = {
     connect: vi.fn().mockResolvedValue(clientMock),
     end: vi.fn(),
+    on: vi.fn(),
   }
   const PoolCtor = vi.fn(() => poolMock)
   return { clientMock, poolMock, PoolCtor }
@@ -26,6 +27,7 @@ describe('openPostgres (connection)', () => {
     hoisted.clientMock.release.mockReset()
     hoisted.poolMock.connect.mockReset().mockResolvedValue(hoisted.clientMock)
     hoisted.poolMock.end.mockReset()
+    hoisted.poolMock.on.mockReset()
   })
 
   it('connects, verifies connection, releases client, and returns pool', async () => {
@@ -71,6 +73,57 @@ describe('openPostgres (connection)', () => {
     expect(hoisted.poolMock.end).toHaveBeenCalledTimes(1)
     // Client released in finally regardless of error
     expect(hoisted.clientMock.release).toHaveBeenCalledTimes(1)
+  })
+
+  // Regression: a machine that sleeps kills every pooled socket. Without TCP
+  // keep-alive the kernel only notices minutes later (retransmission timeout),
+  // so wedged clients keep absorbing queries and requests pile up until the
+  // heap OOMs. Keep-alive with a finite initial delay surfaces the dead peer
+  // early — near-immediately when the peer resets the stale connection — so the
+  // pool discards and replaces the client.
+  it('enables TCP keep-alive with a finite initial delay so a peer killed during OS sleep is detected, not left wedged', async () => {
+    hoisted.clientMock.query.mockResolvedValue({})
+
+    await openPostgres('postgres://u:p@h/db')
+
+    const cfg = hoisted.PoolCtor.mock.calls.at(-1)?.[0] ?? {}
+    expect(cfg.keepAlive).toBe(true)
+    expect(cfg.keepAliveInitialDelayMillis).toEqual(expect.any(Number))
+    expect(cfg.keepAliveInitialDelayMillis).toBeGreaterThan(0)
+  })
+
+  // Regression: pg emits 'error' on the Pool when an *idle* client's socket
+  // dies. With no listener Node treats it as an unhandled 'error' event and
+  // terminates the process. A registered handler makes an idle socket death
+  // non-fatal.
+  it('registers a pool "error" handler so an error on an idle client cannot crash the process', async () => {
+    hoisted.clientMock.query.mockResolvedValue({})
+
+    await openPostgres('postgres://u:p@h/db')
+
+    expect(hoisted.poolMock.on).toHaveBeenCalledWith('error', expect.any(Function))
+  })
+
+  it('the pool error handler swallows the error (does not rethrow) so an idle socket death is non-fatal', async () => {
+    hoisted.clientMock.query.mockResolvedValue({})
+
+    await openPostgres('postgres://u:p@h/db', 'silent')
+
+    const onError = hoisted.poolMock.on.mock.calls.find((c: any[]) => c[0] === 'error')?.[1]
+    expect(onError).toBeTypeOf('function')
+    expect(() => onError(new Error('Connection terminated unexpectedly'))).not.toThrow()
+  })
+
+  // The handler must be attached synchronously at construction, before the
+  // first `await pool.connect()` — otherwise an idle-client error during that
+  // window is still unhandled. Proven by asserting it is registered even on the
+  // path where the very first connect rejects.
+  it('attaches the error handler before the first connect, so a failure during connect is still handled', async () => {
+    hoisted.poolMock.connect.mockReset().mockRejectedValueOnce(new Error('boom'))
+
+    await expect(openPostgres('postgres://u:p@h/db')).rejects.toThrow('boom')
+
+    expect(hoisted.poolMock.on).toHaveBeenCalledWith('error', expect.any(Function))
   })
 })
 

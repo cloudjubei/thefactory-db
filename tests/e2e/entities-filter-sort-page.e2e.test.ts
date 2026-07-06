@@ -142,4 +142,57 @@ const DATABASE_URL = process.env.DATABASE_URL || ''
     expect(rows.length).toBe(4)
     expect(new Set(rows.map((r) => (r.content as any).status))).toEqual(new Set(['ok']))
   })
+
+  // The heavy-jsonb OOM fix: `omit` must drop the subtree IN SQL (proven here against real Postgres,
+  // since unit tests only assert the generated text), keep siblings, and never throw on content shapes
+  // where a path can't be followed (array/scalar node) — the guarded `#-` must degrade to a no-op.
+  describe('omit projection (heavy-field push-down)', () => {
+    const omitProject = `e2e-omit-${Date.now()}`
+    beforeAll(async () => {
+      await db.clearEntities({ projectIds: [omitProject] })
+      // r1: full object with a top-level heavy field + a nested heavy field under an object.
+      await db.addEntity({
+        projectId: omitProject,
+        type: 'run',
+        shouldEmbed: false,
+        content: {
+          objective: 5,
+          series: { equity: [1, 2, 3] },
+          artifacts: { checkpoint: 'c.pt', runChart: { price: [9, 9, 9] } },
+        },
+      })
+      // r2: `artifacts` is an ARRAY — a nested omit path `artifacts.runChart` must NOT throw.
+      await db.addEntity({
+        projectId: omitProject,
+        type: 'run',
+        shouldEmbed: false,
+        content: { objective: 1, series: 'scalar-not-object', artifacts: ['a', 'b'] },
+      })
+    })
+    afterAll(async () => {
+      await db.clearEntities({ projectIds: [omitProject] })
+    })
+
+    it('drops top-level and nested omit paths in SQL while keeping siblings', async () => {
+      const [row] = await db.matchEntities(undefined, {
+        projectIds: [omitProject],
+        where: { field: 'objective', op: '=', value: 5 },
+        omit: ['series', 'artifacts.runChart'],
+        limit: 10,
+      })
+      expect(row.content).toEqual({ objective: 5, artifacts: { checkpoint: 'c.pt' } })
+    })
+
+    it('is a no-op (never throws) when an omit path leads through an array or scalar node', async () => {
+      const [row] = await db.matchEntities(undefined, {
+        projectIds: [omitProject],
+        where: { field: 'objective', op: '=', value: 1 },
+        omit: ['series', 'artifacts.runChart'],
+        limit: 10,
+      })
+      // `series` is a top-level scalar → dropped; `artifacts` is an array so `artifacts.runChart` can't
+      // be followed → left intact (guard degraded to no-op), matching the JS omit semantics.
+      expect(row.content).toEqual({ objective: 1, artifacts: ['a', 'b'] })
+    })
+  })
 })

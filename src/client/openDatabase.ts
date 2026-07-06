@@ -11,7 +11,7 @@ export async function openDatabase(options: OpenDbOptions): Promise<TheFactoryDb
   const { connectionString, logLevel, migrations } = options
   const logger = createLogger(logLevel)
 
-  const db = await openPostgres(connectionString)
+  const db = await openPostgres(connectionString, logLevel)
 
   // 1. Run migrations if auto (default)
   const isAuto = migrations === undefined || migrations === 'auto' || (typeof migrations === 'object' && migrations !== null)

@@ -1,4 +1,4 @@
-import { ENTITY_SELECT_COLUMNS } from '../sql.js'
+import { entitySelectColumns } from '../sql.js'
 import type { EntityFieldPredicate, EntityFilter, EntitySort, MatchParams } from '../types.js'
 
 /** A compiled SQL statement: parameterised text plus its positional bind values. */
@@ -89,6 +89,30 @@ function buildConditions(
   return conds
 }
 
+// Build the `content` SELECT expression that drops each `omit` dot-path via jsonb `#-`, so the heavy
+// subtrees are never read off the socket. Mirrors the JS `omitPaths` semantics exactly: only object
+// content is touched (the outer CASE), and a nested path is removed only when EVERY ancestor node is an
+// object (JS refuses to descend into an array/scalar at any level) — so a path leading through a
+// non-object is a no-op, not a jsonb path error. Every path is a bound `text[]` param (never
+// interpolated); returns bare `content` when nothing is omitted.
+function buildContentProjection(omit: string[] | undefined, params: Params): string {
+  if (!omit || omit.length === 0) return 'content'
+  let expr = 'content'
+  for (const path of omit) {
+    const segs = fieldPath(path)
+    if (segs.length === 1) {
+      expr = `(${expr} #- ${params.add(segs)}::text[])`
+    } else {
+      const guards = segs
+        .slice(0, -1)
+        .map((_, i) => `jsonb_typeof(content #> ${params.add(segs.slice(0, i + 1))}::text[]) = 'object'`)
+      const full = params.add(segs)
+      expr = `(CASE WHEN ${guards.join(' AND ')} THEN ${expr} #- ${full}::text[] ELSE ${expr} END)`
+    }
+  }
+  return `(CASE WHEN jsonb_typeof(content) = 'object' THEN ${expr} ELSE content END)`
+}
+
 function orderByClause(orderBy: EntitySort[] | undefined, params: Params): string {
   const terms: string[] = []
   for (const sort of orderBy ?? []) {
@@ -110,6 +134,8 @@ function orderByClause(orderBy: EntitySort[] | undefined, params: Params): strin
  */
 export function buildEntityMatchQuery(criteria: unknown, options?: MatchParams): BuiltQuery {
   const params = new Params()
+  // Compile the content projection first so its omit params take the leading `$n` positions.
+  const contentExpr = buildContentProjection(options?.omit, params)
   const conds = buildConditions(criteria, options, params)
   const where = conds.length ? `\nWHERE ${conds.join('\n  AND ')}` : ''
   const orderBy = orderByClause(options?.orderBy, params)
@@ -117,7 +143,7 @@ export function buildEntityMatchQuery(criteria: unknown, options?: MatchParams):
   let tail = `\nLIMIT ${params.add(limit)}`
   if (options?.offset && options.offset > 0)
     tail += ` OFFSET ${params.add(Math.floor(options.offset))}`
-  const text = `SELECT${ENTITY_SELECT_COLUMNS}\nFROM entities${where}\nORDER BY ${orderBy}${tail};`
+  const text = `SELECT${entitySelectColumns(contentExpr)}\nFROM entities${where}\nORDER BY ${orderBy}${tail};`
   return { text, params: params.values }
 }
 

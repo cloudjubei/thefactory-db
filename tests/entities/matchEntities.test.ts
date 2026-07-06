@@ -151,6 +151,19 @@ describe('Entities.matchEntities', () => {
       expect(params).toEqual([['p1'], 50, 100])
     })
 
+    it('routes to the compiled query (with the #- projection) when only `omit` is given', async () => {
+      const db = await openDatabase({ connectionString: 'test' })
+      mockDbClient.query.mockResolvedValue({ rows: [] })
+
+      await db.matchEntities(undefined, { types: ['run'], omit: ['series'], limit: 5 })
+      const [sql, params] = mockDbClient.query.mock.calls.at(-1)
+      // Without omit forcing the dynamic path this would fall to the static FAKE_SQL that selects
+      // full content — the exact OOM: heavy jsonb read off the socket then dropped in JS.
+      expect(sql).not.toBe('FAKE_SQL')
+      expect(sql).toContain('#- $1::text[]')
+      expect(params[0]).toEqual(['series'])
+    })
+
     it('stays on the static path (FAKE_SQL) when no dynamic params are present', async () => {
       const db = await openDatabase({ connectionString: 'test' })
       mockDbClient.query.mockResolvedValue({ rows: [] })

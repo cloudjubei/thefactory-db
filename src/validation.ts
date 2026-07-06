@@ -141,6 +141,8 @@ export function assertMatchParams(opts?: MatchParams): void {
         throw new TypeError("Match options.orderBy.direction must be 'asc' or 'desc'")
     }
   }
+  if (opts.omit !== undefined && !isStringArray(opts.omit))
+    throw new TypeError('Match options.omit must be an array of strings if provided')
 }
 
 export function assertSearchParams(params: SearchParams): void {

@@ -161,6 +161,13 @@ export type MatchParams = {
   where?: EntityFilter
   /** Ordering terms over content fields; a stable `updated_at`/`id` tiebreak is always appended. */
   orderBy?: EntitySort[]
+  /**
+   * Content dot-paths to DROP from each returned row's `content`, applied in SQL via jsonb `#-` so the
+   * (potentially huge) dropped subtrees are never read off the socket. Each path is a bound `text[]`
+   * param — never interpolated. A list view can shed heavy per-row arrays (e.g. `"series"`,
+   * `"artifacts.runChart"`) it never reads; siblings are kept. Non-object content passes through.
+   */
+  omit?: string[]
 }
 
 /**

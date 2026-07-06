@@ -197,6 +197,68 @@ describe('entityQuery — buildEntityMatchQuery', () => {
   })
 })
 
+describe('entityQuery — content projection (omit push-down)', () => {
+  it('drops a top-level content path via jsonb #- as a bound text[] param, guarded to object content', () => {
+    const q = buildEntityMatchQuery(undefined, { omit: ['series'], limit: 10 })
+    expect(q.text).toContain("CASE WHEN jsonb_typeof(content) = 'object'")
+    expect(q.text).toContain('#- $1::text[]')
+    expect(q.text).toContain('AS content')
+    expect(q.text).toContain('LIMIT $2')
+    expect(q.params).toEqual([['series'], 10])
+  })
+
+  it('drops a nested content path, guarding on the PARENT node being an object (matches JS omit)', () => {
+    const q = buildEntityMatchQuery(undefined, { omit: ['artifacts.runChart'], limit: 10 })
+    expect(q.text).toContain("jsonb_typeof(content #> $1::text[]) = 'object'")
+    expect(q.text).toContain('#- $2::text[]')
+    expect(q.params).toEqual([['artifacts'], ['artifacts', 'runChart'], 10])
+  })
+
+  it('chains multiple omit paths (top-level + nested) in one projected content column', () => {
+    const q = buildEntityMatchQuery(undefined, { omit: ['series', 'artifacts.runChart'], limit: 10 })
+    expect(q.text).toContain('#- $1::text[]')
+    expect(q.text).toContain('jsonb_typeof(content #> $2::text[])')
+    expect(q.text).toContain('#- $3::text[]')
+    expect(q.text).toContain('LIMIT $4')
+    expect(q.params).toEqual([['series'], ['artifacts'], ['artifacts', 'runChart'], 10])
+  })
+
+  it('selects the bare content column (no #-) and does not shift params when no omit is given', () => {
+    const q = buildEntityMatchQuery(undefined, { projectIds: ['p1'], limit: 10 })
+    expect(q.text).not.toContain('#-')
+    expect(q.text).toContain('\n  content,')
+    expect(q.text).toContain('project_id = ANY($1::text[])')
+    expect(q.params).toEqual([['p1'], 10])
+  })
+
+  it('compiles the omit projection BEFORE the filter, so omit params precede where params', () => {
+    const q = buildEntityMatchQuery(undefined, {
+      omit: ['series'],
+      projectIds: ['p1'],
+      where: { field: 'status', op: '=', value: 'ok' },
+      limit: 10,
+    })
+    expect(q.text).toContain('#- $1::text[]')
+    expect(q.text).toContain('project_id = ANY($2::text[])')
+    expect(q.text).toContain('(content #>> $3::text[]) = $4')
+    expect(q.params).toEqual([['series'], ['p1'], ['status'], 'ok', 10])
+  })
+
+  it('rejects an unsafe omit path segment (never interpolates the path)', () => {
+    expect(() => buildEntityMatchQuery(undefined, { omit: ["a'); drop"], limit: 10 })).toThrow()
+  })
+
+  it('guards EVERY ancestor (not just the parent) for a 3+ segment path, matching JS refuse-to-descend', () => {
+    // JS omitPaths refuses to descend an array/scalar at ANY level, so removing a.b.c requires both a and
+    // a.b to be objects — guarding only the immediate parent a.b would wrongly descend an array `a`.
+    const q = buildEntityMatchQuery(undefined, { omit: ['a.b.c'], limit: 10 })
+    expect(q.text).toContain("jsonb_typeof(content #> $1::text[]) = 'object'")
+    expect(q.text).toContain("jsonb_typeof(content #> $2::text[]) = 'object'")
+    expect(q.text).toContain('#- $3::text[]')
+    expect(q.params).toEqual([['a'], ['a', 'b'], ['a', 'b', 'c'], 10])
+  })
+})
+
 describe('entityQuery — buildEntityCountQuery', () => {
   it('counts with the same WHERE but no order/limit/offset', () => {
     const q = buildEntityCountQuery(undefined, {

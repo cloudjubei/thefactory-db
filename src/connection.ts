@@ -1,4 +1,6 @@
 import { Pool, PoolClient } from 'pg'
+import { createLogger } from './logger.js'
+import type { LogLevel } from './types.js'
 
 /**
  * Represents the raw database client from the `pg` library.
@@ -15,15 +17,42 @@ export type DB = Pool
 const DEFAULT_CONNECTION_TIMEOUT_MS = 15_000
 
 /**
+ * Idle interval before TCP keep-alive probes start on each pooled socket.
+ * pg leaves keep-alive off by default, so a peer that vanished when the machine
+ * slept is only noticed on the next query — via the kernel's retransmission
+ * timeout (minutes). Probing after 10 s idle lets the pool detect and discard a
+ * dead client early: when the peer resets the stale connection (the common
+ * post-sleep / DB-restart case) that is near-immediate; a silently-unreachable
+ * peer still falls back to the OS keep-alive interval. Deliberately a
+ * socket-level guard, not a `statement_timeout`/`query_timeout`: this same pool
+ * runs migrations, including multi-minute HNSW index builds a query cap would
+ * cancel mid-build.
+ */
+const DEFAULT_KEEPALIVE_INITIAL_DELAY_MS = 10_000
+
+/**
  * Opens a new PostgreSQL connection pool and verifies connectivity.
  * @param connectionString - The PostgreSQL connection string.
+ * @param logLevel - Level for the pool's internal logging (e.g. the idle-client
+ *   error handler). Defaults to 'info'.
  * @returns A promise that resolves to the connected pool.
  * @throws Will throw an error if the connection fails (including timeout).
  */
-export async function openPostgres(connectionString: string): Promise<DB> {
+export async function openPostgres(connectionString: string, logLevel?: LogLevel): Promise<DB> {
+  const logger = createLogger(logLevel)
   const pool = new Pool({
     connectionString,
     connectionTimeoutMillis: DEFAULT_CONNECTION_TIMEOUT_MS,
+    keepAlive: true,
+    keepAliveInitialDelayMillis: DEFAULT_KEEPALIVE_INITIAL_DELAY_MS,
+  })
+
+  // Attach synchronously, before the first `await`: pg emits 'error' on the
+  // Pool when an *idle* client's socket dies (e.g. the DB vanished during OS
+  // sleep). With no listener that is an unhandled 'error' event that takes the
+  // whole process down. Log it and let the pool discard the dead client.
+  pool.on('error', (err) => {
+    logger.warn('idle postgres client errored; pool will discard it', err)
   })
 
   const client = await pool.connect()

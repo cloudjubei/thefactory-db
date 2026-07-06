@@ -8,13 +8,20 @@ import { stringifyJsonValues } from '../../src/utils/json'
 // These mocks must be registered before importing the SUT (e.g. '../../src/index').
 // So test files should import from this module before importing openDatabase.
 
-// Keep SQL stable in tests. ENTITY_SELECT_COLUMNS is a real named export consumed by the dynamic
-// entity-query builder, so the mock must provide it too (a stand-in column list is enough — the
-// builder's behaviour is asserted against the REAL sql module in entityQuery.test.ts).
-vi.mock('../../src/sql', () => ({
-  SQL: new Proxy({}, { get: () => 'FAKE_SQL' }),
-  ENTITY_SELECT_COLUMNS: ' id, project_id AS "projectId", content ',
-}))
+// Keep SQL stable in tests. `entitySelectColumns` / `ENTITY_SELECT_COLUMNS` are real named exports
+// consumed by the dynamic entity-query builder, so the mock must provide them too (a stand-in column
+// list is enough — the builder's behaviour is asserted against the REAL sql module in entityQuery.test.ts).
+vi.mock('../../src/sql', () => {
+  const entitySelectColumns = (contentExpr = 'content') =>
+    contentExpr === 'content'
+      ? ' id, project_id AS "projectId", content '
+      : ` id, project_id AS "projectId", ${contentExpr} AS content `
+  return {
+    SQL: new Proxy({}, { get: () => 'FAKE_SQL' }),
+    entitySelectColumns,
+    ENTITY_SELECT_COLUMNS: entitySelectColumns(),
+  }
+})
 
 vi.mock('../../src/connection')
 vi.mock('../../src/logger')
