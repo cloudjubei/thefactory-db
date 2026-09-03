@@ -24,7 +24,10 @@ const tcHoisted = vi.hoisted(() => {
 })
 
 const pgHoisted = vi.hoisted(() => {
-  const managedClient = { query: vi.fn().mockResolvedValue({ rows: [{ one: 1 }] }), release: vi.fn() }
+  const managedClient = {
+    query: vi.fn().mockResolvedValue({ rows: [{ one: 1 }] }),
+    release: vi.fn(),
+  }
   const managedPool = {
     connect: vi.fn().mockResolvedValue(managedClient),
     end: vi.fn(async () => {}),
@@ -44,7 +47,10 @@ const pgHoisted = vi.hoisted(() => {
   }
 
   // Reusable-db specific pool for readiness
-  const reusableClient = { query: vi.fn().mockResolvedValue({ rows: [{ one: 1 }] }), release: vi.fn() }
+  const reusableClient = {
+    query: vi.fn().mockResolvedValue({ rows: [{ one: 1 }] }),
+    release: vi.fn(),
+  }
   const reusablePool = { connect: vi.fn().mockResolvedValue(reusableClient), end: vi.fn() }
 
   const PoolCtor = vi
@@ -189,12 +195,12 @@ describe('runtime.ts public API', () => {
 
     expect(handle.isManaged).toBe(false)
     expect(handle.dbName).toBe('tfdb_aaaaaaaaaaaa')
-    expect(handle.connectionString).toBe(
-      'postgresql://user:pass@localhost:5432/tfdb_aaaaaaaaaaaa',
-    )
+    expect(handle.connectionString).toBe('postgresql://user:pass@localhost:5432/tfdb_aaaaaaaaaaaa')
 
     // admin CREATE DATABASE executed
-    expect(pgHoisted.externalAdminPool.query).toHaveBeenCalledWith('CREATE DATABASE "tfdb_aaaaaaaaaaaa"')
+    expect(pgHoisted.externalAdminPool.query).toHaveBeenCalledWith(
+      'CREATE DATABASE "tfdb_aaaaaaaaaaaa"',
+    )
 
     // readiness on new DB
     expect(pgHoisted.managedClient.query).toHaveBeenCalledWith('SELECT 1')
@@ -242,7 +248,9 @@ describe('runtime.ts public API', () => {
     expect(dockerHoisted.dockerInstance.createContainer).toHaveBeenCalled()
     expect(start).toHaveBeenCalled()
     expect(res.created).toBe(true)
-    expect(res.connectionString).toBe('postgresql://thefactory:thefactory@localhost:5435/thefactorydb')
+    expect(res.connectionString).toBe(
+      'postgresql://thefactory:thefactory@localhost:5435/thefactorydb',
+    )
 
     // readiness
     expect(pgHoisted.reusablePool.connect).toHaveBeenCalled()
@@ -269,7 +277,9 @@ describe('runtime.ts public API', () => {
     expect(getContainer).toHaveBeenCalledWith('abc')
     expect(dockerHoisted.dockerInstance.createContainer).not.toHaveBeenCalled()
     expect(res.created).toBe(false)
-    expect(res.connectionString).toBe('postgresql://thefactory:thefactory@localhost:5435/thefactorydb')
+    expect(res.connectionString).toBe(
+      'postgresql://thefactory:thefactory@localhost:5435/thefactorydb',
+    )
   })
 
   it('createReusableDatabase(): starts an existing stopped container and returns same mapping (created=false)', async () => {
@@ -292,7 +302,9 @@ describe('runtime.ts public API', () => {
     expect(getContainer).toHaveBeenCalledWith('abc')
     expect(start).toHaveBeenCalled()
     expect(res.created).toBe(false)
-    expect(res.connectionString).toBe('postgresql://thefactory:thefactory@localhost:5435/thefactorydb')
+    expect(res.connectionString).toBe(
+      'postgresql://thefactory:thefactory@localhost:5435/thefactorydb',
+    )
 
     // readiness
     expect(pgHoisted.reusableClient.query).toHaveBeenCalledWith('SELECT 1')
@@ -408,7 +420,9 @@ describe('runtime.ts public API', () => {
     const res = await createReusableDatabase()
 
     expect(dockerHoisted.dockerInstance.createContainer).toHaveBeenCalled()
-    expect(res.connectionString).toBe('postgresql://thefactory:thefactory@localhost:55555/thefactorydb')
+    expect(res.connectionString).toBe(
+      'postgresql://thefactory:thefactory@localhost:55555/thefactorydb',
+    )
     expect(res.created).toBe(true)
   })
 })

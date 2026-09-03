@@ -79,6 +79,20 @@ describe('db.searchDocumentsForPaths', () => {
     expect(call[1][1]).toBe('abc')
   })
 
+  // Migrations legitimately log at info during openDatabase, so this is scoped to the message.
+  it('logs its entry line at debug, not info', async () => {
+    mockDb.query.mockResolvedValue({ rows: [] })
+    const db = await openDatabase({ connectionString: 'x' })
+
+    const args = { projectIds: ['p1'], query: 'abc' }
+    await db.searchDocumentsForPaths(args)
+
+    expect(mockLogger.debug).toHaveBeenCalledWith('searchDocumentsForPaths', args)
+    expect(
+      mockLogger.info.mock.calls.filter((c: any[]) => c[0] === 'searchDocumentsForPaths'),
+    ).toEqual([])
+  })
+
   it('clamps limit to [1..]', async () => {
     mockDb.query.mockResolvedValue({ rows: [] })
     const db = await openDatabase({ connectionString: 'x' })

@@ -171,9 +171,9 @@ const db = await openDatabase({ connectionString }) // auto-migrates
 In controlled environments where you prefer to apply migrations out-of-band or manually, you can opt-out by setting `migrations: 'none'`:
 
 ```typescript
-const db = await openDatabase({ 
-  connectionString, 
-  migrations: 'none' 
+const db = await openDatabase({
+  connectionString,
+  migrations: 'none',
 })
 ```
 

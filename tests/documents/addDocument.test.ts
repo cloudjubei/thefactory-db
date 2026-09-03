@@ -4,7 +4,7 @@ import { setupUnitTestMocks } from '../utils/unitTestMocks'
 import { openDatabase } from '../../src/index'
 
 describe('Documents.addDocument', () => {
-  const { mockDbClient, mockEmbeddingProvider } = setupUnitTestMocks()
+  const { mockDbClient, mockLogger, mockEmbeddingProvider } = setupUnitTestMocks()
 
   it('should insert a new document', async () => {
     const db = await openDatabase({ connectionString: 'test' })
@@ -26,6 +26,23 @@ describe('Documents.addDocument', () => {
       null,
     ])
     expect(result).toEqual(expectedDoc)
+  })
+
+  // Migrations legitimately log at info during openDatabase, so this is scoped to the message.
+  it('logs its entry line at debug, not info', async () => {
+    const db = await openDatabase({ connectionString: 'test' })
+    const docInput = { projectId: 'p1', type: 't1', src: 's1', name: 'Title', content: 'Hello' }
+    mockDbClient.query.mockResolvedValue({ rows: [{ ...docInput, id: '123' }] })
+
+    await db.addDocument(docInput)
+
+    expect(mockLogger.debug).toHaveBeenCalledWith('addDocument', {
+      projectId: 'p1',
+      type: 't1',
+      name: 'Title',
+      src: 's1',
+    })
+    expect(mockLogger.info.mock.calls.filter((c: any[]) => c[0] === 'addDocument')).toEqual([])
   })
 
   it('falls back to empty content when input.content is undefined', async () => {

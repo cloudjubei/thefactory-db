@@ -32,6 +32,22 @@ describe('Documents.updateDocument', () => {
     expect(result).toEqual(updatedDoc)
   })
 
+  // Migrations legitimately log at info during openDatabase, so this is scoped to the message.
+  it('logs its entry line at debug, not info', async () => {
+    const db = await openDatabase({ connectionString: 'test' })
+    mockDbClient.query
+      .mockResolvedValueOnce({ rows: [{ id: '123', name: 'Title' }] })
+      .mockResolvedValueOnce({ rows: [{ id: '123', name: 'New Title' }] })
+
+    await db.updateDocument('123', { name: 'New Title' })
+
+    expect(mockLogger.debug).toHaveBeenCalledWith('updateDocument', {
+      id: '123',
+      name: 'New Title',
+    })
+    expect(mockLogger.info.mock.calls.filter((c: any[]) => c[0] === 'updateDocument')).toEqual([])
+  })
+
   it('should return undefined if document does not exist', async () => {
     const db = await openDatabase({ connectionString: 'test' })
     mockDbClient.query.mockResolvedValue({ rows: [] })

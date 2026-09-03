@@ -28,7 +28,7 @@ describe('TheFactoryDb validation and edges', () => {
       end: vi.fn(),
     }
     attachMigrationSupport(mockDbClient)
-    
+
     mockLogger = { debug: vi.fn(), info: vi.fn(), warn: vi.fn(), error: vi.fn() }
     mockEmbeddingProvider = { embed: vi.fn() }
 

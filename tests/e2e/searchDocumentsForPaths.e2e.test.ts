@@ -12,36 +12,78 @@ const DATABASE_URL = process.env.DATABASE_URL || ''
     db = await openDatabase({ connectionString: DATABASE_URL, logLevel: 'warn' })
     await db.clearDocuments([projectId])
 
-    await db.addDocument({ projectId, type: 'ts', name: 'FileTools.ts', src: 'src/utils/FileTools.ts', content: 'file tools impl' })
-    await db.addDocument({ projectId, type: 'ts', name: 'FileTools.test.ts', src: 'src/utils/FileTools.test.ts', content: 'file tools test' })
-    await db.addDocument({ projectId, type: 'txt', name: 'Readme', src: 'docs/Readme.txt', content: 'Unrelated content' })
-    await db.addDocument({ projectId, type: 'ts', name: 'helpers.ts', src: 'lib/helpers.ts', content: '100%_done helper' })
-    await db.addDocument({ projectId, type: 'ts', name: 'scoped.ts', src: 'scoped/dir/scoped.ts', content: 'scoped content' })
+    await db.addDocument({
+      projectId,
+      type: 'ts',
+      name: 'FileTools.ts',
+      src: 'src/utils/FileTools.ts',
+      content: 'file tools impl',
+    })
+    await db.addDocument({
+      projectId,
+      type: 'ts',
+      name: 'FileTools.test.ts',
+      src: 'src/utils/FileTools.test.ts',
+      content: 'file tools test',
+    })
+    await db.addDocument({
+      projectId,
+      type: 'txt',
+      name: 'Readme',
+      src: 'docs/Readme.txt',
+      content: 'Unrelated content',
+    })
+    await db.addDocument({
+      projectId,
+      type: 'ts',
+      name: 'helpers.ts',
+      src: 'lib/helpers.ts',
+      content: '100%_done helper',
+    })
+    await db.addDocument({
+      projectId,
+      type: 'ts',
+      name: 'scoped.ts',
+      src: 'scoped/dir/scoped.ts',
+      content: 'scoped content',
+    })
   })
 
   afterAll(async () => {
-    try { await db.clearDocuments([projectId]) } finally { await db.close() }
+    try {
+      await db.clearDocuments([projectId])
+    } finally {
+      await db.close()
+    }
   })
 
   it('throws if args.projectIds is missing/empty', async () => {
     // @ts-expect-error
     await expect(db.searchDocumentsForPaths({ query: 'a' })).rejects.toThrow(/projectIds/i)
-    await expect(db.searchDocumentsForPaths({ projectIds: [], query: 'a' })).rejects.toThrow(/projectIds/i)
+    await expect(db.searchDocumentsForPaths({ projectIds: [], query: 'a' })).rejects.toThrow(
+      /projectIds/i,
+    )
   })
 
   it('throws if args.query is not a string', async () => {
     // @ts-expect-error
-    await expect(db.searchDocumentsForPaths({ projectIds: [projectId], query: 123 })).rejects.toThrow(/query/i)
+    await expect(
+      db.searchDocumentsForPaths({ projectIds: [projectId], query: 123 }),
+    ).rejects.toThrow(/query/i)
   })
 
   it('throws if args.limit is not an integer', async () => {
     // @ts-expect-error
-    await expect(db.searchDocumentsForPaths({ projectIds: [projectId], query: 'a', limit: 1.2 })).rejects.toThrow(/limit/i)
+    await expect(
+      db.searchDocumentsForPaths({ projectIds: [projectId], query: 'a', limit: 1.2 }),
+    ).rejects.toThrow(/limit/i)
   })
 
   it('throws if args.pathPrefix is not a string', async () => {
     // @ts-expect-error
-    await expect(db.searchDocumentsForPaths({ projectIds: [projectId], query: 'a', pathPrefix: 5 })).rejects.toThrow(/pathPrefix/i)
+    await expect(
+      db.searchDocumentsForPaths({ projectIds: [projectId], query: 'a', pathPrefix: 5 }),
+    ).rejects.toThrow(/pathPrefix/i)
   })
 
   it('returns [] and does not hit DB for empty/whitespace query', async () => {
@@ -50,18 +92,29 @@ const DATABASE_URL = process.env.DATABASE_URL || ''
   })
 
   it('trims query before using it (whitespace around query)', async () => {
-    const res = await db.searchDocumentsForPaths({ projectIds: [projectId], query: '  FileTools  ' })
+    const res = await db.searchDocumentsForPaths({
+      projectIds: [projectId],
+      query: '  FileTools  ',
+    })
     expect(res.length).toBeGreaterThan(0)
     expect(res.every((p) => p.toLowerCase().includes('filetools'))).toBe(true)
   })
 
   it('clamps limit to [1..1000]', async () => {
     // limit=1 should return at most 1 result
-    const res1 = await db.searchDocumentsForPaths({ projectIds: [projectId], query: 'FileTools', limit: 1 })
+    const res1 = await db.searchDocumentsForPaths({
+      projectIds: [projectId],
+      query: 'FileTools',
+      limit: 1,
+    })
     expect(res1.length).toBeLessThanOrEqual(1)
 
     // limit=0 is clamped to 1
-    const res0 = await db.searchDocumentsForPaths({ projectIds: [projectId], query: 'FileTools', limit: 0 })
+    const res0 = await db.searchDocumentsForPaths({
+      projectIds: [projectId],
+      query: 'FileTools',
+      limit: 0,
+    })
     expect(res0.length).toBeLessThanOrEqual(1)
   })
 
@@ -75,12 +128,20 @@ const DATABASE_URL = process.env.DATABASE_URL || ''
 
   it('uses null escapedPrefix when pathPrefix is empty/whitespace', async () => {
     // Should return results from all prefixes
-    const res = await db.searchDocumentsForPaths({ projectIds: [projectId], query: 'FileTools', pathPrefix: '   ' })
+    const res = await db.searchDocumentsForPaths({
+      projectIds: [projectId],
+      query: 'FileTools',
+      pathPrefix: '   ',
+    })
     expect(res.length).toBeGreaterThan(0)
   })
 
   it('pathPrefix is normalized and passed as escapedPrefix (no leading slash, unix separators, ends with /)', async () => {
-    const res = await db.searchDocumentsForPaths({ projectIds: [projectId], query: 'scoped', pathPrefix: '/scoped/dir/' })
+    const res = await db.searchDocumentsForPaths({
+      projectIds: [projectId],
+      query: 'scoped',
+      pathPrefix: '/scoped/dir/',
+    })
     expect(res.length).toBeGreaterThan(0)
     expect(res.every((p) => p.startsWith('scoped/dir/'))).toBe(true)
   })
@@ -95,7 +156,10 @@ const DATABASE_URL = process.env.DATABASE_URL || ''
   })
 
   it('handles empty result set gracefully', async () => {
-    const res = await db.searchDocumentsForPaths({ projectIds: [projectId], query: 'nonexistentzzzz' })
+    const res = await db.searchDocumentsForPaths({
+      projectIds: [projectId],
+      query: 'nonexistentzzzz',
+    })
     expect(res).toEqual([])
   })
 })

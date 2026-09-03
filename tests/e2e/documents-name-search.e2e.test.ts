@@ -45,7 +45,11 @@ const DATABASE_URL = process.env.DATABASE_URL || ''
   })
 
   it('query with extension returns expected docs in shorter-name-first order', async () => {
-    const res = await db.searchDocuments({ query: 'FileTools.ts', projectIds: [projectId], limit: 5 })
+    const res = await db.searchDocuments({
+      query: 'FileTools.ts',
+      projectIds: [projectId],
+      limit: 5,
+    })
     const names = res.map((r) => r.name)
 
     // First two should be the two FileTools docs in the correct order
@@ -63,7 +67,11 @@ const DATABASE_URL = process.env.DATABASE_URL || ''
   })
 
   it('full path query prefers exact src equality (full_raw on src)', async () => {
-    const res = await db.searchDocuments({ query: 'src/utils/FileTools.ts', projectIds: [projectId], limit: 5 })
+    const res = await db.searchDocuments({
+      query: 'src/utils/FileTools.ts',
+      projectIds: [projectId],
+      limit: 5,
+    })
     // The doc whose src exactly equals the full path should come first
     expect(res[0]?.name).toBe('FileTools.ts')
   })
@@ -75,11 +83,25 @@ const DATABASE_URL = process.env.DATABASE_URL || ''
 
   it('multi-dot filenames: exact and base queries (E2E)', async () => {
     const p = projectId
-    await db.addDocument({ projectId: p, type: 'ts', name: 'something.service.test.ts', src: 'src/something.service.test.ts', content: '' })
-    const exact = await db.searchDocuments({ query: 'something.service.test.ts', projectIds: [p], limit: 5 })
+    await db.addDocument({
+      projectId: p,
+      type: 'ts',
+      name: 'something.service.test.ts',
+      src: 'src/something.service.test.ts',
+      content: '',
+    })
+    const exact = await db.searchDocuments({
+      query: 'something.service.test.ts',
+      projectIds: [p],
+      limit: 5,
+    })
     expect(exact[0]?.name).toBe('something.service.test.ts')
 
-    const base = await db.searchDocuments({ query: 'something.service.test', projectIds: [p], limit: 5 })
+    const base = await db.searchDocuments({
+      query: 'something.service.test',
+      projectIds: [p],
+      limit: 5,
+    })
     expect(base[0]?.name).toBe('something.service.test.ts')
   })
 })

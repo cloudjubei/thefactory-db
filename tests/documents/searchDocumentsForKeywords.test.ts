@@ -80,6 +80,20 @@ describe('db.searchDocumentsForKeywords', () => {
     expect(mockDb.query).not.toHaveBeenCalled()
   })
 
+  // Migrations legitimately log at info during openDatabase, so this is scoped to the message.
+  it('logs its entry line at debug, not info', async () => {
+    mockDb.query.mockResolvedValue({ rows: [] })
+    const db = await openDatabase({ connectionString: 'x' })
+
+    const args = { projectIds: ['p1'], keywords: 'one' }
+    await db.searchDocumentsForKeywords(args)
+
+    expect(mockLogger.debug).toHaveBeenCalledWith('searchDocumentsForKeywords', args)
+    expect(
+      mockLogger.info.mock.calls.filter((c: any[]) => c[0] === 'searchDocumentsForKeywords'),
+    ).toEqual([])
+  })
+
   it('tokenizes comma/semicolon separated input strings (trimming + dropping empties)', async () => {
     mockDb.query.mockResolvedValue({ rows: [] })
     const db = await openDatabase({ connectionString: 'x' })

@@ -215,7 +215,10 @@ describe('entityQuery — content projection (omit push-down)', () => {
   })
 
   it('chains multiple omit paths (top-level + nested) in one projected content column', () => {
-    const q = buildEntityMatchQuery(undefined, { omit: ['series', 'artifacts.runChart'], limit: 10 })
+    const q = buildEntityMatchQuery(undefined, {
+      omit: ['series', 'artifacts.runChart'],
+      limit: 10,
+    })
     expect(q.text).toContain('#- $1::text[]')
     expect(q.text).toContain('jsonb_typeof(content #> $2::text[])')
     expect(q.text).toContain('#- $3::text[]')

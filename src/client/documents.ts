@@ -44,7 +44,7 @@ export function createDocumentApi({
 }) {
   async function addDocument(d: DocumentInput): Promise<Document> {
     assertDocumentInput(d)
-    logger.info('addDocument', { projectId: d.projectId, type: d.type, name: d.name, src: d.src })
+    logger.debug('addDocument', { projectId: d.projectId, type: d.type, name: d.name, src: d.src })
     const content = d.content ?? ''
     const embInput = buildEmbeddingTextForDoc(d.type, content, d.name, d.src)
     const embedding = await embeddingProvider.embed(embInput)
@@ -86,16 +86,16 @@ export function createDocumentApi({
       return []
     }
 
-    logger.info(`upsertDocuments: received a batch of ${inputs.length} documents`)
+    logger.debug(`upsertDocuments: received a batch of ${inputs.length} documents`)
     const projectId = inputs[0].projectId
     const changingSrcs = await getChangingDocuments(projectId, inputs)
     if (changingSrcs.size === 0) {
-      logger.info('upsertDocuments: no documents needed updating.')
+      logger.debug('upsertDocuments: no documents needed updating.')
       return []
     }
 
     const docsToUpsert = inputs.filter((doc) => changingSrcs.has(doc.src))
-    logger.info(`upsertDocuments: ${docsToUpsert.length} of ${inputs.length} need updating.`)
+    logger.debug(`upsertDocuments: ${docsToUpsert.length} of ${inputs.length} need updating.`)
     const embInputs = docsToUpsert.map((d) =>
       buildEmbeddingTextForDoc(d.type, d.content ?? '', d.name, d.src),
     )
@@ -125,10 +125,9 @@ export function createDocumentApi({
       }
 
       await db.query('COMMIT')
-      logger.info(
-        `Successfully upserted ${upsertedDocs.length} documents.`,
-        upsertedDocs.map((d) => d.src),
-      )
+      // Count only: dumping every `src` printed 100 file paths per batch, which
+      // buried the rest of the log during a large project's initial ingestion.
+      logger.debug(`upsertDocuments: upserted ${upsertedDocs.length} documents.`)
       return upsertedDocs
     } catch (e) {
       logger.error('Error in batch upsert, rolling back transaction', e)
@@ -138,14 +137,14 @@ export function createDocumentApi({
   }
 
   async function upsertDocument(input: DocumentUpsertInput): Promise<Document | undefined> {
-    logger.info('upsertDocument', { src: input.src })
+    logger.debug('upsertDocument', { src: input.src })
     const results = await upsertDocuments([input])
     return results[0]
   }
 
   async function updateDocument(id: string, patch: DocumentPatch): Promise<Document | undefined> {
     assertDocumentPatch(patch)
-    logger.info('updateDocument', { id, name: patch.name })
+    logger.debug('updateDocument', { id, name: patch.name })
     const exists = await getDocumentById(id)
     if (!exists) return
 
@@ -262,7 +261,7 @@ export function createDocumentApi({
 
   async function searchDocumentsForPaths(args: SearchDocumentsForPathsArgs): Promise<string[]> {
     assertSearchDocumentsForPathsArgs(args)
-    logger.info('searchDocumentsForPaths', args)
+    logger.debug('searchDocumentsForPaths', args)
 
     const query = args.query.trim()
     if (!query) return []
@@ -286,7 +285,7 @@ export function createDocumentApi({
     args: SearchDocumentsForKeywordsArgs,
   ): Promise<string[]> {
     assertSearchDocumentsForKeywordsArgs(args)
-    logger.info('searchDocumentsForKeywords', args)
+    logger.debug('searchDocumentsForKeywords', args)
 
     const tokens = toTokens(args.keywords)
     if (tokens.length === 0) return []
@@ -309,7 +308,7 @@ export function createDocumentApi({
 
   async function searchDocumentsForExact(args: SearchDocumentsForExactArgs): Promise<string[]> {
     assertSearchDocumentsForExactArgs(args)
-    logger.info('searchDocumentsForExact', args)
+    logger.debug('searchDocumentsForExact', args)
 
     const tokens = toTokens(args.needles)
     if (tokens.length === 0) return []
@@ -332,7 +331,7 @@ export function createDocumentApi({
   }
 
   async function clearDocuments(projectIds?: string[]): Promise<void> {
-    logger.info('clearDocuments', { count: projectIds?.length || 0 })
+    logger.debug('clearDocuments', { count: projectIds?.length || 0 })
     if (projectIds && projectIds.length > 0) {
       await db.query(SQL.clearDocumentsByProject, [projectIds])
     } else {

@@ -197,9 +197,11 @@ describe('probeDatabase (fresh, timeout-bounded health probe)', () => {
   it('returns { ok: false, error } when the probe itself exceeds the timeout', async () => {
     // Connect resolves only after a delay longer than the probe timeout —
     // the probe must give up and report the timeout rather than hang.
-    hoisted.poolMock.connect.mockReset().mockImplementation(
-      () => new Promise((resolve) => setTimeout(() => resolve(hoisted.clientMock), 200)),
-    )
+    hoisted.poolMock.connect
+      .mockReset()
+      .mockImplementation(
+        () => new Promise((resolve) => setTimeout(() => resolve(hoisted.clientMock), 200)),
+      )
 
     const result = await probeDatabase('postgres://u:p@h/db', 30)
 

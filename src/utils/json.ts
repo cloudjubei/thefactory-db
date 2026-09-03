@@ -39,7 +39,7 @@ export function stripNullChars<T>(value: T): T {
       if (sk !== k || sv !== v) changed = true
       out[sk] = sv
     }
-    return (changed ? (out as T) : value)
+    return changed ? (out as T) : value
   }
   return value
 }

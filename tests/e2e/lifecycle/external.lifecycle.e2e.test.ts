@@ -19,46 +19,39 @@ vi.mock('../../../src/utils/embeddings', () => {
 const RUN = process.env.RUN_E2E === '1'
 const DATABASE_SERVER_URL = process.env.DATABASE_SERVER_URL || ''
 
-;(RUN && DATABASE_SERVER_URL ? describe : describe.skip)(
-  'E2E: Lifecycle (external server)',
-  () => {
-    it(
-      'creates a temporary database, initializes schema, and drops it on destroy',
-      async () => {
-        const { client, dbName, connectionString, destroy } = await createDatabase({
-          connectionString: DATABASE_SERVER_URL,
-          logLevel: 'error',
-        })
+;(RUN && DATABASE_SERVER_URL ? describe : describe.skip)('E2E: Lifecycle (external server)', () => {
+  it('creates a temporary database, initializes schema, and drops it on destroy', async () => {
+    const { client, dbName, connectionString, destroy } = await createDatabase({
+      connectionString: DATABASE_SERVER_URL,
+      logLevel: 'error',
+    })
 
-        expect(dbName).toMatch(/^tfdb_/)
-        expect(connectionString).toContain(dbName)
+    expect(dbName).toMatch(/^tfdb_/)
+    expect(connectionString).toContain(dbName)
 
-        const d = await client.addDocument({
-          projectId: 'ext',
-          type: 'md',
-          src: 'note.md',
-          name: 'Note',
-          content: 'hello external e2e',
-        })
-        expect(d.id).toBeDefined()
+    const d = await client.addDocument({
+      projectId: 'ext',
+      type: 'md',
+      src: 'note.md',
+      name: 'Note',
+      content: 'hello external e2e',
+    })
+    expect(d.id).toBeDefined()
 
-        const res = await client.searchDocuments({ query: 'hello', limit: 5 })
-        expect(Array.isArray(res)).toBe(true)
+    const res = await client.searchDocuments({ query: 'hello', limit: 5 })
+    expect(Array.isArray(res)).toBe(true)
 
-        await destroy()
+    await destroy()
 
-        // Verify the database no longer exists by checking pg_database
-        const adminUrl = new URL(DATABASE_SERVER_URL)
-        adminUrl.pathname = '/postgres'
-        const pool = new Pool({ connectionString: adminUrl.toString() })
-        try {
-          const r = await pool.query('SELECT 1 FROM pg_database WHERE datname = $1', [dbName])
-          expect(r.rowCount).toBe(0)
-        } finally {
-          await pool.end()
-        }
-      },
-      120_000,
-    )
-  },
-)
+    // Verify the database no longer exists by checking pg_database
+    const adminUrl = new URL(DATABASE_SERVER_URL)
+    adminUrl.pathname = '/postgres'
+    const pool = new Pool({ connectionString: adminUrl.toString() })
+    try {
+      const r = await pool.query('SELECT 1 FROM pg_database WHERE datname = $1', [dbName])
+      expect(r.rowCount).toBe(0)
+    } finally {
+      await pool.end()
+    }
+  }, 120_000)
+})

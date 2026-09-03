@@ -398,9 +398,7 @@ export async function destroyReusableDatabase(): Promise<{ removed: boolean }> {
  * Stops the container if it's running, then removes it. Already-stopped
  * containers are removed without an extra stop call.
  */
-export async function destroyDatabaseByContainerName(
-  name: string,
-): Promise<{ removed: boolean }> {
+export async function destroyDatabaseByContainerName(name: string): Promise<{ removed: boolean }> {
   const docker = new Docker()
   const list = await docker.listContainers({ all: true, filters: { name: [name] } as any })
   const info = list.find((c) => (c.Names || []).some((n) => n === `/${name}`))

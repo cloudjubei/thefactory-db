@@ -10,3 +10,4 @@ coverage
 .turbo
 .vite
 docs
+.pytest_cache

@@ -20,7 +20,12 @@ export type DatabaseInfo = {
 }
 
 function isPool(obj: any): obj is Pool {
-  return obj && typeof obj.connect === 'function' && typeof obj.query === 'function' && typeof obj.end === 'function'
+  return (
+    obj &&
+    typeof obj.connect === 'function' &&
+    typeof obj.query === 'function' &&
+    typeof obj.end === 'function'
+  )
 }
 
 async function ensureMetadata(client: PoolClient) {
@@ -46,7 +51,9 @@ async function ensureMetadata(client: PoolClient) {
 }
 
 export async function getDatabaseInfo(dbOrConfig: Pool | OpenDbOptions): Promise<DatabaseInfo> {
-  const pool = isPool(dbOrConfig) ? dbOrConfig : new Pool({ connectionString: (dbOrConfig as OpenDbOptions).connectionString })
+  const pool = isPool(dbOrConfig)
+    ? dbOrConfig
+    : new Pool({ connectionString: (dbOrConfig as OpenDbOptions).connectionString })
 
   try {
     const client = await pool.connect()
@@ -88,9 +95,14 @@ async function acquireLock(client: PoolClient): Promise<boolean> {
   return false
 }
 
-export async function migrateDatabase(dbOrConfig: Pool | OpenDbOptions, options?: MigrateOptions): Promise<void> {
+export async function migrateDatabase(
+  dbOrConfig: Pool | OpenDbOptions,
+  options?: MigrateOptions,
+): Promise<void> {
   const logger = createLogger(options?.logLevel)
-  const pool = isPool(dbOrConfig) ? dbOrConfig : new Pool({ connectionString: (dbOrConfig as OpenDbOptions).connectionString })
+  const pool = isPool(dbOrConfig)
+    ? dbOrConfig
+    : new Pool({ connectionString: (dbOrConfig as OpenDbOptions).connectionString })
 
   try {
     const lockClient = await pool.connect()
@@ -106,9 +118,13 @@ export async function migrateDatabase(dbOrConfig: Pool | OpenDbOptions, options?
         const res = await lockClient.query(`SELECT schema_version FROM thefactory.meta LIMIT 1;`)
         const currentVersion = res.rows[0]?.schema_version ?? 0
 
-        const targetVersion = options?.toVersion ?? (migrations.length > 0 ? migrations[migrations.length - 1].version : 0)
+        const targetVersion =
+          options?.toVersion ??
+          (migrations.length > 0 ? migrations[migrations.length - 1].version : 0)
 
-        const pending = migrations.filter((m) => m.version > currentVersion && m.version <= targetVersion)
+        const pending = migrations.filter(
+          (m) => m.version > currentVersion && m.version <= targetVersion,
+        )
 
         if (pending.length === 0) {
           logger.debug(`Database is up to date (version ${currentVersion})`)
@@ -128,8 +144,14 @@ export async function migrateDatabase(dbOrConfig: Pool | OpenDbOptions, options?
           await lockClient.query('BEGIN')
           try {
             await m.up({ db: pool, client: lockClient })
-            await lockClient.query(`INSERT INTO thefactory.migration_log (version, id) VALUES ($1, $2)`, [m.version, m.id])
-            await lockClient.query(`UPDATE thefactory.meta SET schema_version = $1, updated_at = now()`, [m.version])
+            await lockClient.query(
+              `INSERT INTO thefactory.migration_log (version, id) VALUES ($1, $2)`,
+              [m.version, m.id],
+            )
+            await lockClient.query(
+              `UPDATE thefactory.meta SET schema_version = $1, updated_at = now()`,
+              [m.version],
+            )
             await lockClient.query('COMMIT')
             logger.info(`Migration ${m.version} applied successfully.`)
           } catch (e) {

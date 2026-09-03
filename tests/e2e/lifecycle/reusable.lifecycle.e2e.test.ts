@@ -31,33 +31,29 @@ async function dockerAvailable(): Promise<boolean> {
 const DOCKER = RUN ? await dockerAvailable() : false
 
 ;(DOCKER ? describe : describe.skip)('E2E: Lifecycle (reusable provisioning)', () => {
-  it(
-    'is idempotent and schema is initialized for connections',
-    async () => {
-      const r1 = await createReusableDatabase({ logLevel: 'error' })
-      expect(typeof r1.created).toBe('boolean')
+  it('is idempotent and schema is initialized for connections', async () => {
+    const r1 = await createReusableDatabase({ logLevel: 'error' })
+    expect(typeof r1.created).toBe('boolean')
 
-      const r2 = await createReusableDatabase({ logLevel: 'error' })
-      expect(r2.connectionString).toEqual(r1.connectionString)
-      expect(r2.created).toBe(false)
+    const r2 = await createReusableDatabase({ logLevel: 'error' })
+    expect(r2.connectionString).toEqual(r1.connectionString)
+    expect(r2.created).toBe(false)
 
-      const db = await openDatabase({ connectionString: r1.connectionString, logLevel: 'error' })
+    const db = await openDatabase({ connectionString: r1.connectionString, logLevel: 'error' })
 
-      const doc = await db.upsertDocument({
-        projectId: 'reusable',
-        type: 'md',
-        src: 'file.md',
-        name: 'File',
-        content: 'hello reusable',
-      })
-      expect(doc).toBeUndefined()
+    const doc = await db.upsertDocument({
+      projectId: 'reusable',
+      type: 'md',
+      src: 'file.md',
+      name: 'File',
+      content: 'hello reusable',
+    })
+    expect(doc).toBeUndefined()
 
-      const fetched = await db.getDocumentBySrc('reusable', 'file.md')
-      expect(fetched && fetched.id).toBeDefined()
+    const fetched = await db.getDocumentBySrc('reusable', 'file.md')
+    expect(fetched && fetched.id).toBeDefined()
 
-      await db.close()
-      // Do not destroy the reusable container here; it is intended to persist across runs
-    },
-    120_000,
-  )
+    await db.close()
+    // Do not destroy the reusable container here; it is intended to persist across runs
+  }, 120_000)
 })

@@ -105,7 +105,10 @@ function buildContentProjection(omit: string[] | undefined, params: Params): str
     } else {
       const guards = segs
         .slice(0, -1)
-        .map((_, i) => `jsonb_typeof(content #> ${params.add(segs.slice(0, i + 1))}::text[]) = 'object'`)
+        .map(
+          (_, i) =>
+            `jsonb_typeof(content #> ${params.add(segs.slice(0, i + 1))}::text[]) = 'object'`,
+        )
       const full = params.add(segs)
       expr = `(CASE WHEN ${guards.join(' AND ')} THEN ${expr} #- ${full}::text[] ELSE ${expr} END)`
     }

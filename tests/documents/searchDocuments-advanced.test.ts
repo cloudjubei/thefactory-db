@@ -136,16 +136,8 @@ function createMockDb() {
         case 'searchDocumentsQuery': {
           // Signature in src/client/documents.ts: db.query(SQL.searchDocumentsQuery, [...])
           // [query, qvec, limit, filterJson, nameWeight, textWeight, keywordWeight, semWeight, rrfK]
-          const [queryText, qvecLit, limitRaw, _filterJson, _nameW, textW, keywordW, semW] = args as [
-            string,
-            string,
-            number,
-            string,
-            number,
-            number,
-            number,
-            number,
-          ]
+          const [queryText, qvecLit, limitRaw, _filterJson, _nameW, textW, keywordW, semW] =
+            args as [string, string, number, string, number, number, number, number]
           const limit = typeof limitRaw === 'number' ? limitRaw : 10
           const qvec = parseVectorLiteral(qvecLit)
 
@@ -309,7 +301,11 @@ describe('Documents.searchDocuments (advanced)', () => {
       { id: 'h2', ...baseDoc, textScore: 0.1, keywordScore: 0.2, vecScore: 0.3, totalScore: 0.6 },
       { id: 'h3', ...baseDoc, textScore: 0.1, keywordScore: 0.2, vecScore: 0.3, totalScore: 0.6 },
     ]
-    const name = [{ id: 'n1', ...baseDoc }, { id: 'n2', ...baseDoc }, { id: 'n3', ...baseDoc }]
+    const name = [
+      { id: 'n1', ...baseDoc },
+      { id: 'n2', ...baseDoc },
+      { id: 'n3', ...baseDoc },
+    ]
 
     mockDbClient.query.mockImplementation(async (_sql: string, args?: any[]) => {
       if (typeof args?.[1] === 'number' && typeof args?.[2] === 'string') return { rows: name }

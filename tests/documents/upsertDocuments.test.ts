@@ -3,6 +3,14 @@ import { describe, it, expect } from 'vitest'
 import { setupUnitTestMocks } from '../utils/unitTestMocks'
 import { openDatabase } from '../../src/index'
 
+// Migrations legitimately log at info during openDatabase, so the level guards below are scoped to
+// this module's own messages rather than asserting info was never called at all.
+function messagesStartingWith(spy: any, prefix: string): string[] {
+  return spy.mock.calls
+    .map((c: any[]) => c[0])
+    .filter((m: unknown): m is string => typeof m === 'string' && m.startsWith(prefix))
+}
+
 describe('Documents.upsertDocuments', () => {
   const { mockDbClient, mockLogger, mockEmbeddingProvider } = setupUnitTestMocks()
 
@@ -60,7 +68,12 @@ describe('Documents.upsertDocuments', () => {
 
     expect(result).toEqual([])
     expect(mockEmbeddingProvider.embed).not.toHaveBeenCalled()
-    expect(mockLogger.info).toHaveBeenCalledWith('upsertDocuments: no documents needed updating.')
+    // Per-operation chatter is DEBUG, not info: at info this printed a line per batch
+    // (plus every upserted path) and buried the log during a large project's ingestion.
+    expect(mockLogger.debug).toHaveBeenCalledWith('upsertDocuments: no documents needed updating.')
+    expect(mockLogger.info).not.toHaveBeenCalledWith(
+      'upsertDocuments: no documents needed updating.',
+    )
   })
 
   it('embeds, BEGINs, upserts each changed doc, and COMMITs', async () => {
@@ -88,6 +101,62 @@ describe('Documents.upsertDocuments', () => {
     expect(calls).toContain('BEGIN')
     expect(calls).toContain('COMMIT')
     expect(calls).not.toContain('ROLLBACK')
+  })
+
+  it('logs every per-batch progress line at debug and none at info', async () => {
+    const db = await openDatabase({ connectionString: 'test' })
+    const inputs = [
+      { projectId: 'p1', type: 't', src: 's1', name: 'n1', content: 'a' },
+      { projectId: 'p1', type: 't', src: 's2', name: 'n2', content: 'b' },
+    ]
+
+    mockDbClient.query
+      .mockResolvedValueOnce({ rows: [{ src: 's1' }] }) // getChangingDocuments → only s1
+      .mockResolvedValueOnce({ rows: [] }) // BEGIN
+      .mockResolvedValueOnce({ rows: [{ id: '1', src: 's1' }] }) // upsert s1
+      .mockResolvedValueOnce({ rows: [] }) // COMMIT
+
+    await db.upsertDocuments(inputs)
+
+    expect(messagesStartingWith(mockLogger.debug, 'upsertDocuments:')).toEqual([
+      'upsertDocuments: received a batch of 2 documents',
+      'upsertDocuments: 1 of 2 need updating.',
+      'upsertDocuments: upserted 1 documents.',
+    ])
+    expect(messagesStartingWith(mockLogger.info, 'upsertDocuments:')).toEqual([])
+  })
+
+  it('logs a bare count on the success line, never the upserted src paths', async () => {
+    const db = await openDatabase({ connectionString: 'test' })
+    const inputs = [
+      { projectId: 'p1', type: 't', src: 'src/deep/nested/one.ts', name: 'n1', content: 'a' },
+      { projectId: 'p1', type: 't', src: 'src/deep/nested/two.ts', name: 'n2', content: 'b' },
+    ]
+
+    mockDbClient.query
+      .mockResolvedValueOnce({ rows: [{ src: inputs[0].src }, { src: inputs[1].src }] })
+      .mockResolvedValueOnce({ rows: [] }) // BEGIN
+      .mockResolvedValueOnce({ rows: [{ id: '1', src: inputs[0].src }] })
+      .mockResolvedValueOnce({ rows: [{ id: '2', src: inputs[1].src }] })
+      .mockResolvedValueOnce({ rows: [] }) // COMMIT
+
+    await db.upsertDocuments(inputs)
+
+    // Exactly one argument: re-attaching an `upsertedDocs.map(d => d.src)` payload flooded the log
+    // with one file path per document on every ingestion batch.
+    const successCall = mockLogger.debug.mock.calls.find(
+      (c: any[]) => typeof c[0] === 'string' && c[0].startsWith('upsertDocuments: upserted'),
+    )
+    expect(successCall).toEqual(['upsertDocuments: upserted 2 documents.'])
+
+    const everythingLogged = JSON.stringify([
+      ...mockLogger.debug.mock.calls,
+      ...mockLogger.info.mock.calls,
+      ...mockLogger.warn.mock.calls,
+      ...mockLogger.error.mock.calls,
+    ])
+    expect(everythingLogged).not.toContain('src/deep/nested/one.ts')
+    expect(everythingLogged).not.toContain('src/deep/nested/two.ts')
   })
 
   it('skips documents not flagged as changing while still upserting the changed ones', async () => {
@@ -175,7 +244,7 @@ describe('Documents.upsertDocuments', () => {
 })
 
 describe('Documents.upsertDocument', () => {
-  const { mockDbClient } = setupUnitTestMocks()
+  const { mockDbClient, mockLogger } = setupUnitTestMocks()
 
   it('delegates to upsertDocuments and returns the first row', async () => {
     const db = await openDatabase({ connectionString: 'test' })
@@ -190,6 +259,16 @@ describe('Documents.upsertDocument', () => {
 
     const result = await db.upsertDocument(input)
     expect(result).toEqual(upserted)
+  })
+
+  it('logs its entry line at debug, not info', async () => {
+    const db = await openDatabase({ connectionString: 'test' })
+    mockDbClient.query.mockResolvedValueOnce({ rows: [] }) // nothing changed
+
+    await db.upsertDocument({ projectId: 'p1', type: 't', src: 's1', name: 'n1', content: 'a' })
+
+    expect(mockLogger.debug).toHaveBeenCalledWith('upsertDocument', { src: 's1' })
+    expect(mockLogger.info.mock.calls.filter((c: any[]) => c[0] === 'upsertDocument')).toEqual([])
   })
 
   it('returns undefined when nothing was upserted', async () => {

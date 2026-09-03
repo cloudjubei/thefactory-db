@@ -20,17 +20,7 @@
       "pct_branch": 96.25,
       "pct_functions": 88.23529411764706,
       "pct_lines": 96.69117647058823,
-      "uncovered_lines": [
-        40,
-        41,
-        42,
-        43,
-        44,
-        45,
-        46,
-        48,
-        49
-      ]
+      "uncovered_lines": [40, 41, 42, 43, 44, 45, 46, 48, 49]
     },
     "src/utils.ts": {
       "pct_statements": 100,
@@ -86,10 +76,7 @@
       "pct_branch": 90.9090909090909,
       "pct_functions": 100,
       "pct_lines": 98.71794871794873,
-      "uncovered_lines": [
-        40,
-        109
-      ]
+      "uncovered_lines": [40, 109]
     },
     "src/utils/json.ts": {
       "pct_statements": 100,

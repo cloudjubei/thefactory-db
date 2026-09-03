@@ -150,7 +150,9 @@ describe('Migrations', () => {
     const allQueries = queries.join('\n').toLowerCase()
     expect(allQueries).toContain('add column if not exists should_embed')
     expect(allQueries).toContain('create or replace function hybrid_search_entities')
-    expect(allQueries).toMatch(/insert into thefactory\.migration_log \(version, id\) values \(\$1, \$2\)/i)
+    expect(allQueries).toMatch(
+      /insert into thefactory\.migration_log \(version, id\) values \(\$1, \$2\)/i,
+    )
   })
 
   it('applies only the 004 repair on a database already at version 3', async () => {
