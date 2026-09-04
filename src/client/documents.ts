@@ -1,7 +1,7 @@
 import type { DB } from '../connection.js'
 import type { Logger } from '../types.js'
 import type { EmbeddingProvider } from '../utils/embeddings.js'
-import { SQL } from '../sql.js'
+import { resolveCandidateLimit, SQL } from '../sql.js'
 import {
   buildEmbeddingTextForDoc,
   escapeLikePattern,
@@ -225,6 +225,7 @@ export function createDocumentApi({
       keywordWeight,
       semWeight,
       50,
+      resolveCandidateLimit(params.candidateLimit),
     ])
     const namePromise = db.query(SQL.searchDocumentsByName, [
       query,

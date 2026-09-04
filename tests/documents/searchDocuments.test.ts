@@ -150,4 +150,18 @@ describe('Documents.searchDocuments', () => {
     const res = await db.searchDocuments({ query: 'q', limit: 3 })
     expect(res.length).toBe(3)
   })
+
+  it('defaults the per-lane candidate limit to 100 and clamps an over-large one', async () => {
+    // Documents carried the identical 60-row lane cap as entities.
+    const db = await openDatabase({ connectionString: 'test' })
+    mockDbClient.query.mockResolvedValue({ rows: [] })
+    // searchDocuments fires the hybrid query AND a name query concurrently, so select the hybrid one by
+    // its parameter count rather than assuming which resolved last.
+    const hybridArgs = () =>
+      mockDbClient.query.mock.calls.filter((c: any[]) => c[1]?.length === 10).at(-1)[1]
+    await db.searchDocuments({ query: 'q' })
+    expect(hybridArgs()[9]).toBe(100)
+    await db.searchDocuments({ query: 'q', candidateLimit: 5000 })
+    expect(hybridArgs()[9]).toBe(1000)
+  })
 })

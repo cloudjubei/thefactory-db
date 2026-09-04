@@ -11,12 +11,17 @@ import { stringifyJsonValues } from '../../src/utils/json'
 // Keep SQL stable in tests. `entitySelectColumns` / `ENTITY_SELECT_COLUMNS` are real named exports
 // consumed by the dynamic entity-query builder, so the mock must provide them too (a stand-in column
 // list is enough — the builder's behaviour is asserted against the REAL sql module in entityQuery.test.ts).
-vi.mock('../../src/sql', () => {
+// Keep the REAL module and override only `SQL`: the other named exports are load-bearing — migrations
+// install the hybrid-search functions from `HYBRID_SEARCH_*_FUNCTION`, and `resolveCandidateLimit` is the
+// clamp the clients apply, which tests assert on directly.
+vi.mock('../../src/sql', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('../../src/sql')>()
   const entitySelectColumns = (contentExpr = 'content') =>
     contentExpr === 'content'
       ? ' id, project_id AS "projectId", content '
       : ` id, project_id AS "projectId", ${contentExpr} AS content `
   return {
+    ...actual,
     SQL: new Proxy({}, { get: () => 'FAKE_SQL' }),
     entitySelectColumns,
     ENTITY_SELECT_COLUMNS: entitySelectColumns(),

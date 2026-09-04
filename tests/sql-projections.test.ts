@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { SQL } from '../src/sql'
+import { resolveCandidateLimit, SQL } from '../src/sql'
 
 /**
  * Pure-string assertions on the SQL constants. These don't need a DB —
@@ -98,5 +98,48 @@ describe('SQL.schema — entities composite index for project_id + updated_at DE
     expect(SQL.schema).toMatch(
       /CREATE\s+INDEX\s+IF\s+NOT\s+EXISTS\s+\w*project_id_updated_at\w*\s+ON\s+entities\s*\(\s*project_id\s*,\s*updated_at\s+DESC\s*\)/i,
     )
+  })
+
+  it('exposes the per-lane candidate ceiling as a clamped PARAMETER on both functions', () => {
+    // Previously both ranked lanes were hardcoded to 60 rows while the literal lane was uncapped, so past
+    // 60 rows per signal the ordering came from substring count alone.
+    for (const fn of [SQL.hybridSearch]) {
+      expect(fn).toMatch(/candidate_limit\s+integer\s+DEFAULT\s+100/i)
+      expect(fn).not.toMatch(/match_count,\s*30\)\s*\*\s*2/i)
+    }
+    // The clamp lives in SQL too, so a raw() caller cannot exceed the ceiling either.
+    expect(SQL.hybridSearch).toMatch(
+      /LEAST\(GREATEST\(COALESCE\(candidate_limit, 100\), 1\), 1000\)/,
+    )
+  })
+
+  it('drops the OLD signatures, since CREATE OR REPLACE cannot change an argument list', () => {
+    // Without the drop the new parameter would add a second overload and an 8-arg call would become
+    // ambiguous rather than resolving.
+    expect(SQL.hybridSearch).toMatch(
+      /DROP FUNCTION IF EXISTS hybrid_search_entities\(text, vector, integer, jsonb, float, float, float, integer\)/,
+    )
+    expect(SQL.hybridSearch).toMatch(
+      /DROP FUNCTION IF EXISTS hybrid_search_documents\(text, vector, integer, jsonb, float, float, float, float, integer\)/,
+    )
+  })
+})
+
+describe('resolveCandidateLimit', () => {
+  it('defaults, floors, and clamps to the ceiling', () => {
+    expect(resolveCandidateLimit(undefined)).toBe(100)
+    expect(resolveCandidateLimit(250)).toBe(250)
+    expect(resolveCandidateLimit(1000)).toBe(1000)
+    expect(resolveCandidateLimit(999999)).toBe(1000)
+    expect(resolveCandidateLimit(0)).toBe(1)
+    expect(resolveCandidateLimit(-5)).toBe(1)
+  })
+  it('rejects a non-finite value rather than binding NaN into the query', () => {
+    expect(resolveCandidateLimit(Number.NaN)).toBe(100)
+    expect(resolveCandidateLimit(Number.POSITIVE_INFINITY)).toBe(100)
+    expect(resolveCandidateLimit('50' as unknown as number)).toBe(100)
+  })
+  it('truncates a fractional value to an integer', () => {
+    expect(resolveCandidateLimit(120.9)).toBe(120)
   })
 })

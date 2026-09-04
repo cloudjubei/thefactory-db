@@ -645,8 +645,39 @@ END$$;
 // Hybrid search functions for documents and entities
 // - Filters with jsonb: { ids: [uuid], types: [text], projectIds: [text] }
 // ----------------------------------------------------------
-const hybridSearch = `
+/**
+ * Per-LANE candidate ceiling for hybrid search. Each ranked lane (full-text, semantic) materialises at most
+ * this many rows before the reciprocal-rank join, so it bounds the work a single query can ask of the
+ * database.
+ *
+ * It was previously hardcoded to 60 rows whatever the caller asked for, while the literal-substring lane
+ * stayed uncapped — so past 60 rows per signal, ordering was carried by raw substring count alone, with no
+ * semantic or full-text contribution. It is now a parameter, so a caller that genuinely needs deep recall
+ * can ask for it, with a hard ceiling so it can never be unbounded.
+ */
+export const HYBRID_CANDIDATE_LIMIT_DEFAULT = 100
+export const HYBRID_CANDIDATE_LIMIT_MAX = 1000
+
+/**
+ * Clamp a caller's per-lane candidate limit into the same bound the SQL enforces. Mirrored in TS so the
+ * value bound into the query is the value that will be used — a caller reading the parameter back gets the
+ * truth, rather than a number the database silently overrode.
+ */
+export function resolveCandidateLimit(value: number | undefined): number {
+  if (typeof value !== 'number' || !Number.isFinite(value)) return HYBRID_CANDIDATE_LIMIT_DEFAULT
+  return Math.min(HYBRID_CANDIDATE_LIMIT_MAX, Math.max(1, Math.floor(value)))
+}
+
+/** Clamp applied INSIDE the SQL, so a direct `raw()` caller is bounded exactly like the typed API. */
+const CANDIDATE_LIMIT_SQL = `LEAST(GREATEST(COALESCE(candidate_limit, ${HYBRID_CANDIDATE_LIMIT_DEFAULT}), 1), ${HYBRID_CANDIDATE_LIMIT_MAX})`
+
+export const HYBRID_SEARCH_DOCUMENTS_FUNCTION = `
 -- Documents
+-- The OLD signature must be dropped: CREATE OR REPLACE cannot change an argument list, so adding
+-- candidate_limit would create a SECOND overload and, both having defaults, an 8-arg call would then
+-- fail as ambiguous rather than resolving.
+DROP FUNCTION IF EXISTS hybrid_search_documents(text, vector, integer, jsonb, float, float, float, float, integer);
+
 CREATE OR REPLACE FUNCTION hybrid_search_documents(
   query_text        text,
   query_embedding   vector,
@@ -656,7 +687,8 @@ CREATE OR REPLACE FUNCTION hybrid_search_documents(
   literal_weight    float  DEFAULT 0.3,
   full_text_weight  float  DEFAULT 0.3,
   semantic_weight   float  DEFAULT 0.4,
-  rrf_k             integer DEFAULT 50
+  rrf_k             integer DEFAULT 50,
+  candidate_limit   integer DEFAULT 100
 )
 RETURNS TABLE (
   id uuid,
@@ -741,7 +773,7 @@ full_text as (
       ORDER BY ts.token_score DESC, ts.name ASC, ts.updated_at ASC
     ) as rank_ix
   FROM token_scores ts
-  limit least(match_count, 30) * 2
+  limit ${CANDIDATE_LIMIT_SQL}
 ),
 -- Rank documents based on semantic similarity
 semantic AS (
@@ -751,7 +783,7 @@ semantic AS (
          ) AS rank_ix
   FROM base_documents
   WHERE embedding IS NOT NULL
-  LIMIT LEAST(match_count, 30) * 2
+  LIMIT ${CANDIDATE_LIMIT_SQL}
 ),
 -- Combine ranks using RRF
 scored AS (
@@ -796,6 +828,11 @@ $$;
 
 
 -- Entities content
+`
+
+export const HYBRID_SEARCH_ENTITIES_FUNCTION = `
+DROP FUNCTION IF EXISTS hybrid_search_entities(text, vector, integer, jsonb, float, float, float, integer);
+
 CREATE OR REPLACE FUNCTION hybrid_search_entities(
   query_text        text,
   query_embedding   vector,
@@ -804,7 +841,8 @@ CREATE OR REPLACE FUNCTION hybrid_search_entities(
   literal_weight    float  DEFAULT 0.3,
   full_text_weight  float  DEFAULT 0.3,
   semantic_weight   float  DEFAULT 0.4,
-  rrf_k             integer DEFAULT 50
+  rrf_k             integer DEFAULT 50,
+  candidate_limit   integer DEFAULT 100
 )
 RETURNS TABLE (
   id uuid,
@@ -889,7 +927,7 @@ full_text as (
       ORDER BY ts.token_score DESC, ts.type ASC, ts.updated_at DESC
     ) as rank_ix
   FROM token_scores ts
-  limit least(match_count, 30) * 2
+  limit ${CANDIDATE_LIMIT_SQL}
 ),
 semantic AS (
   SELECT id,
@@ -898,7 +936,7 @@ semantic AS (
          ) AS rank_ix
   FROM base_entities
   WHERE embedding IS NOT NULL
-  LIMIT LEAST(match_count, 30) * 2
+  LIMIT ${CANDIDATE_LIMIT_SQL}
 ),
 scored AS (
   SELECT COALESCE(ft.id, s.id, ls.id) AS id,
@@ -936,6 +974,9 @@ LIMIT match_count;
 $$;
 `
 
+/** Both hybrid-search functions, for the reference export and for migration 005. */
+export const hybridSearch = `${HYBRID_SEARCH_DOCUMENTS_FUNCTION}\n${HYBRID_SEARCH_ENTITIES_FUNCTION}`
+
 // ----------------------------------------------------------
 // Search query wrappers calling hybrid_search_* functions
 // ----------------------------------------------------------
@@ -954,7 +995,7 @@ SELECT
   keyword_score as "keywordScore",
   cosine_similarity as "vecScore",
   similarity as "totalScore"
-FROM hybrid_search_entities($1, $2::vector, $3::int, $4::jsonb, $5::float, $6::float, $7::float, $8::int);
+FROM hybrid_search_entities($1, $2::vector, $3::int, $4::jsonb, $5::float, $6::float, $7::float, $8::int, $9::int);
 `
 
 const searchDocumentsQuery = `
@@ -972,7 +1013,7 @@ SELECT
   keyword_score as "keywordScore",
   cosine_similarity as "vecScore",
   similarity as "totalScore"
-FROM hybrid_search_documents($1, $2::vector, $3::int, $4::jsonb, $5::float, $6::float, $7::float, $8::float, $9::int);
+FROM hybrid_search_documents($1, $2::vector, $3::int, $4::jsonb, $5::float, $6::float, $7::float, $8::float, $9::int, $10::int);
 `
 
 // ----------------------------------------------------------

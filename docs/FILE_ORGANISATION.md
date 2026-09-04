@@ -38,6 +38,7 @@
   - `src/utils/json.ts`: JSON value stringifier used for entity embeddings/FTS.
   - `src/utils/tokenizer.ts`: Tokenizer helpers and FTS normalization utilities.
   - `src/utils/hash.ts`: Hashing utility for content checks.
+  - `src/migrations/`: Version-keyed schema migrations, applied on connect. `index.ts` is the ordered registry; the runtime path is these migrations (not `SQL.schema`/`SQL.hybridSearch`, which are reference copies). Migration `005` makes the hybrid-search per-lane candidate ceiling a parameter and installs both functions from the single definitions in `src/sql.ts` (`HYBRID_SEARCH_DOCUMENTS_FUNCTION` / `HYBRID_SEARCH_ENTITIES_FUNCTION`) so a migration copy can never drift from the runtime one — the failure `004` exists to repair.
   - `src/runtime.ts`: Runtime database lifecycle helpers for on-demand Postgres with pgvector.
     - `createDatabase(options?: { connectionString?: string; logLevel?: LogLevel })`: Provision an on-demand PostgreSQL with pgvector.
       - Managed mode (default): starts a fresh `pgvector/pgvector:pg16` container via Testcontainers, waits for readiness (port + `SELECT 1`), initializes schema via `openDatabase()`, and returns a client plus a `destroy()` function to tear it down.
@@ -87,6 +88,7 @@ Embedding dimension is 384 and requires the `pgvector` extension.
 ## Hybrid Search
 
 - `searchDocuments` and `searchEntities` combine text rank (`ts_rank_cd` over `tsvector` using `websearch_to_tsquery`) and vector similarity (cosine similarity) with a weight factor (`textWeight` in [0,1]). Filters (`ids`/`types`/`projectIds`) are passed through as JSON parameters.
+- `candidateLimit` (default `HYBRID_CANDIDATE_LIMIT_DEFAULT` = 100, clamped to `[1, HYBRID_CANDIDATE_LIMIT_MAX]` = 1000) bounds how many rows EACH ranked lane (full-text, semantic) contributes before the reciprocal-rank join. It was previously hardcoded at 60 while the literal-substring lane stayed uncapped, so past 60 rows per signal the ordering came from raw substring count alone. The clamp is applied both in TypeScript (`resolveCandidateLimit`) and inside the SQL, so a `raw()` caller is bounded identically. Raise it for large collections at the cost of more work per query.
 - Documents keyword ranking considers token matches in content, the document name, and the `src` basename with higher weight given to name/src.
 - Reference SQL shapes are available under `docs/sql/` and `docs/hybrid_search.sql`. The actual SQL executed is embedded in `src/utils.ts`.
 

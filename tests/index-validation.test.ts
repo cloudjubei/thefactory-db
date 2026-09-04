@@ -8,7 +8,10 @@ import { attachMigrationSupport } from './utils/unitTestMocks'
 vi.mock('../src/connection')
 vi.mock('../src/logger')
 vi.mock('../src/utils/embeddings')
-vi.mock('../src/sql', () => ({
+// Keep the REAL module and override only `SQL`: migrations install the hybrid-search functions from
+// `HYBRID_SEARCH_*_FUNCTION`, so stubbing the whole module leaves migration 005 with nothing to run.
+vi.mock('../src/sql', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('../src/sql')>()),
   SQL: new Proxy({}, { get: () => 'FAKE_SQL' }),
 }))
 

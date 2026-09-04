@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { openDatabase } from '../src/client/openDatabase.js'
 import { openPostgres } from '../src/connection.js'
+import { migrations } from '../src/migrations/index.js'
 
 // Mock Postgres client setup
 vi.mock('../src/connection.js', () => ({
@@ -113,7 +114,7 @@ describe('Migrations', () => {
 
   it('is idempotent (does nothing if already at latest schema)', async () => {
     // Latest version tracks the migrations list; bump this when adding one.
-    const mockDb = createDbMock(4)
+    const mockDb = createDbMock(5)
     vi.mocked(openPostgres).mockResolvedValue(mockDb as any)
 
     await openDatabase({ connectionString: 'postgres://x' })
@@ -236,5 +237,14 @@ describe('Migrations', () => {
     expect(allQueries).toContain('rollback')
     expect(allQueries).toContain('pg_advisory_unlock')
     expect(allQueries).not.toContain('commit')
+  })
+
+  it('registers 005 so an EXISTING database gets the candidate-limit parameter', () => {
+    // Migrations are the live path — a fresh install and an upgrade must reach the same function. 003 was
+    // once edited in place and drifted from its runtime copy, which is why 004 exists; 005 therefore
+    // installs from the single definition in src/sql.ts rather than another copy.
+    const m = migrations.find((x) => x.version === 5)
+    expect(m?.id).toBe('005-hybrid-search-candidate-limit')
+    expect(migrations.map((x) => x.version)).toEqual([1, 2, 3, 4, 5])
   })
 })

@@ -1,7 +1,7 @@
 import type { DB } from '../connection.js'
 import type { Logger } from '../types.js'
 import type { EmbeddingProvider } from '../utils/embeddings.js'
-import { SQL } from '../sql.js'
+import { resolveCandidateLimit, SQL } from '../sql.js'
 import { buildEntityCountQuery, buildEntityMatchQuery } from './entityQuery.js'
 import { stringifyJsonValues, stripNullChars } from '../utils/json.js'
 import {
@@ -182,6 +182,7 @@ export function createEntityApi({
       keywordWeight,
       semWeight,
       50,
+      resolveCandidateLimit(params.candidateLimit),
     ])
     return r.rows
   }

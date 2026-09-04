@@ -54,4 +54,32 @@ describe('Entities.searchEntities', () => {
     const filterJson = mockDbClient.query.mock.calls.at(-1)[1][3]
     expect(filterJson).toBe(JSON.stringify({}))
   })
+
+  it('defaults the per-lane candidate limit to 100', async () => {
+    // Both ranked lanes (full-text and semantic) were hard-capped at LEAST(match_count, 30) * 2 = 60 rows,
+    // while the literal-substring lane was uncapped — so past 60 rows per signal the ordering was carried by
+    // substring count alone, with no semantic or full-text contribution.
+    const db = await openDatabase({ connectionString: 'test' })
+    mockDbClient.query.mockResolvedValue({ rows: [] })
+    await db.searchEntities({ query: 'q' })
+    expect(mockDbClient.query.mock.calls.at(-1)[1][8]).toBe(100)
+  })
+
+  it('passes an explicit candidateLimit through', async () => {
+    const db = await openDatabase({ connectionString: 'test' })
+    mockDbClient.query.mockResolvedValue({ rows: [] })
+    await db.searchEntities({ query: 'q', candidateLimit: 1000 })
+    expect(mockDbClient.query.mock.calls.at(-1)[1][8]).toBe(1000)
+  })
+
+  it('clamps a candidateLimit above the ceiling, and below 1', async () => {
+    // The ceiling protects the database: each lane materialises this many rows before the RRF join, so an
+    // unbounded value is a way to ask one query to sort the whole table.
+    const db = await openDatabase({ connectionString: 'test' })
+    mockDbClient.query.mockResolvedValue({ rows: [] })
+    await db.searchEntities({ query: 'q', candidateLimit: 999999 })
+    expect(mockDbClient.query.mock.calls.at(-1)[1][8]).toBe(1000)
+    await db.searchEntities({ query: 'q', candidateLimit: 0 })
+    expect(mockDbClient.query.mock.calls.at(-1)[1][8]).toBe(1)
+  })
 })

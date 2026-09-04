@@ -152,6 +152,8 @@ export function assertSearchParams(params: SearchParams): void {
     throw new TypeError('Search params.query must be a string')
   if (params.textWeight !== undefined && typeof params.textWeight !== 'number')
     throw new TypeError('Search params.textWeight must be a number if provided')
+  if (params.candidateLimit !== undefined && typeof params.candidateLimit !== 'number')
+    throw new TypeError('Search params.candidateLimit must be a number if provided')
   assertMatchParams(params)
 }
 

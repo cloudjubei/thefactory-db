@@ -178,6 +178,13 @@ export type SearchParams = MatchParams & {
   query: string
   /** The weight to give to full-text search score vs. vector search score (0.0 to 1.0). */
   textWeight?: number
+  /**
+   * How many candidate rows EACH ranked lane (full-text, semantic) may contribute before the
+   * reciprocal-rank join. Defaults to 100 and is clamped to [1, 1000]; raise it when a collection is large
+   * enough that the top 100 per signal no longer contains the right answer, at the cost of more work per
+   * query. Below this ceiling the ranking degrades to raw substring count, which is why it is tunable.
+   */
+  candidateLimit?: number
 }
 
 // ------------------------------

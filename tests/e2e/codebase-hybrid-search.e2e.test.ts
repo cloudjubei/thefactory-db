@@ -8,7 +8,15 @@ const DATABASE_URL = process.env.DATABASE_URL || ''
 
 // Recursive file collector for project files, ignoring heavy dirs
 function collectProjectFiles(root: string): string[] {
-  const ignore = new Set(['node_modules', '.git', 'dist', 'coverage', '.stories', 'tests'])
+  const ignore = new Set([
+    'node_modules',
+    '.git',
+    'dist',
+    'coverage',
+    '.stories',
+    'tests',
+    '.DS_Store',
+  ])
   const out: string[] = []
   function walk(p: string) {
     const entries = fs.readdirSync(p, { withFileTypes: true })
@@ -17,10 +25,15 @@ function collectProjectFiles(root: string): string[] {
       const full = path.join(p, e.name)
       const rel = path.relative(root, full)
       if (e.isDirectory()) {
+        // Skip ALL dot-directories, not just an enumerated few: `.git`, `.factory` (overseer's knowledge
+        // palace) and `.pytest_cache` are tooling artifacts, never project source, and their transient
+        // contents (lancedb `.txn` files, cache node-ids) otherwise leak into the corpus and reorder the
+        // rankings below non-deterministically. Dot-FILES stay in scope — the goldens include `.prettierignore`.
+        if (e.name.startsWith('.')) continue
         walk(full)
       } else {
         // Skip binary likely files by extension and other non-source files
-        if (/\.(png|jpg|jpeg|gif|webp|ico|lock|json|svg)$/.test(e.name)) continue
+        if (/\.(png|jpg|jpeg|gif|webp|ico|lock|json|svg|tgz|tar|gz|zip)$/.test(e.name)) continue
         if (e.name === 'package-lock.json') continue
         out.push(rel)
       }
@@ -30,6 +43,11 @@ function collectProjectFiles(root: string): string[] {
   return out
 }
 
+// NOTE: the expected arrays below are ORDER-EXACT snapshots of the ranking over THIS repo's own source
+// tree, so they legitimately change whenever a file that matches the query is added, removed or edited — not
+// only when ranking logic changes. Regenerate by logging `srcs` and pasting, after confirming the new order
+// is sensible (relevant files, stable top result). The `collectProjectFiles` walker skips dot-DIRECTORIES so
+// tooling artifacts (`.factory`, `.pytest_cache`, …) cannot leak in and make the order non-deterministic.
 ;(RUN && DATABASE_URL ? describe : describe.skip)('E2E: Codebase Hybrid Search (real DB)', () => {
   const projectId = `e2e-codebase-${Date.now()}`
   let db: Awaited<ReturnType<typeof openDatabase>>
@@ -79,15 +97,15 @@ function collectProjectFiles(root: string): string[] {
     const srcs = res.map((r) => r.src)
     expect(srcs).toEqual([
       'docs/SEARCH_IMPROVED.md',
+      'src/migrations/005-hybrid-search-candidate-limit.ts',
       'src/sql.ts',
       'src/client/documents.ts',
       'src/validation.ts',
       'src/client/entities.ts',
       'docs/FILE_ORGANISATION.md',
-      'src/migrations/001-init.ts',
       'src/types.ts',
+      'src/migrations/001-init.ts',
       'README.md',
-      'src/migrations/003-entities-external-key.ts',
     ])
   })
 
@@ -96,15 +114,15 @@ function collectProjectFiles(root: string): string[] {
     const srcs = res.map((r) => r.src)
     expect(srcs).toEqual([
       'docs/SEARCH_IMPROVED.md',
+      'src/migrations/005-hybrid-search-candidate-limit.ts',
       'src/migrations/003-entities-external-key.ts',
       'src/migrations/001-init.ts',
       'scripts/example.ts',
       'scripts/test.ts',
       'src/validation.ts',
-      'src/utils/json.ts',
       'src/client/types.ts',
       'docs/CODE_STANDARD.md',
-      'scripts/count.ts',
+      'src/migrations/index.ts',
     ])
   })
 
@@ -113,15 +131,15 @@ function collectProjectFiles(root: string): string[] {
     const srcs = res.map((r) => r.src)
     expect(srcs).toEqual([
       'docs/SEARCH_IMPROVED.md',
-      'src/migrations/001-init.ts',
+      'src/migrations/005-hybrid-search-candidate-limit.ts',
       'src/validation.ts',
+      'src/migrations/001-init.ts',
       'src/migrations/003-entities-external-key.ts',
       'scripts/example.ts',
       'src/types.ts',
       'src/client/types.ts',
-      'scripts/test.ts',
       'docs/FILE_ORGANISATION.md',
-      'src/client/entityQuery.ts',
+      'src/sql.ts',
     ])
   })
 
@@ -150,8 +168,8 @@ function collectProjectFiles(root: string): string[] {
       'src/migrations/001-init.ts',
       'docker-compose.e2e.yml',
       'src/connection.ts',
-      '.prettierignore',
       'scripts/example.ts',
+      '.prettierignore',
       'docs/FILE_ORGANISATION.md',
       'docs/TESTING_E2E.md',
       'docs/CODE_STANDARD.md',

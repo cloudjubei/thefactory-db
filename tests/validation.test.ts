@@ -377,4 +377,13 @@ describe('validation', () => {
       ).toThrow()
     })
   })
+
+  it('rejects a non-numeric candidateLimit', () => {
+    expect(() => assertSearchParams({ query: 'q', candidateLimit: '100' as never })).toThrow(
+      /candidateLimit must be a number/,
+    )
+    // …and accepts a valid one, plus its absence.
+    expect(() => assertSearchParams({ query: 'q', candidateLimit: 500 })).not.toThrow()
+    expect(() => assertSearchParams({ query: 'q' })).not.toThrow()
+  })
 })

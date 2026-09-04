@@ -208,7 +208,10 @@ let mockDbClient: ReturnType<typeof createMockDb>
 let mockEmbeddingProvider: { embed: any; close: any }
 let mockLogger: { debug: any; info: any; warn: any; error: any }
 
-vi.mock('../../src/sql', () => ({
+// Keep the REAL module and override only `SQL`: `resolveCandidateLimit` and the `HYBRID_SEARCH_*_FUNCTION`
+// constants are load-bearing (the clients clamp with the former, migration 005 installs the latter).
+vi.mock('../../src/sql', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('../../src/sql')>()),
   SQL: {
     insertDocument: 'insertDocument',
     searchDocumentsQuery: 'searchDocumentsQuery',
