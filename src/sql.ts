@@ -96,6 +96,10 @@ RETURNING
 // -------------------------------
 const deleteDocument = `DELETE FROM documents WHERE id = $1;`
 
+const listDocumentSrcs = `SELECT src FROM documents WHERE project_id = $1;`
+
+const deleteDocumentsBySrc = `DELETE FROM documents WHERE project_id = $1 AND src = ANY($2::text[]);`
+
 const getDocumentById = `
 SELECT 
   id,
@@ -1238,6 +1242,8 @@ export const SQL = {
 
   // Documents
   deleteDocument,
+  listDocumentSrcs,
+  deleteDocumentsBySrc,
   getDocumentById,
   getDocumentBySrc,
   getChangingDocuments,

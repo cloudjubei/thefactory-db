@@ -44,6 +44,10 @@ export interface TheFactoryDb {
   upsertDocument(input: DocumentUpsertInput): Promise<Document | undefined>
   updateDocument(id: string, patch: DocumentPatch): Promise<Document | undefined>
   deleteDocument(id: string): Promise<boolean>
+  /** Every `src` stored for the project — the cheap listing a re-sync diffs against the tree on disk. */
+  listDocumentSrcs(projectId: string): Promise<string[]>
+  /** Delete the project's documents at these `src`s; returns the number removed. */
+  deleteDocumentsBySrc(projectId: string, srcs: string[]): Promise<number>
   matchDocuments(options: MatchParams): Promise<Document[]>
   clearDocuments(projectIds?: string[]): Promise<void>
 

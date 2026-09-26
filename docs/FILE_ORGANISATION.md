@@ -14,7 +14,7 @@
 - `src/`: Source code for the database wrapper and types.
   - `src/index.ts`: Public entry point. Exports `openDatabase(options)` which returns a `Database` API instance. Also re-exports runtime lifecycle helpers: `createDatabase`, `destroyDatabase`, and `createReusableDatabase`.
     - Documents API (text content)
-      - `addDocument`, `getDocumentById`, `getDocumentBySrc`, `updateDocument`, `deleteDocument`
+      - `addDocument`, `getDocumentById`, `getDocumentBySrc`, `updateDocument`, `deleteDocument`, `listDocumentSrcs`, `deleteDocumentsBySrc`
       - `searchDocuments`, `matchDocuments`, `clearDocuments`
     - Entities API (json content)
       - `addEntity`, `upsertEntity`, `getEntityById`, `getEntityByExternalKey`, `updateEntity`, `deleteEntity`

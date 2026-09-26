@@ -178,6 +178,17 @@ export function createDocumentApi({
     return (r.rowCount ?? 0) > 0
   }
 
+  async function listDocumentSrcs(projectId: string): Promise<string[]> {
+    const r = await db.query(SQL.listDocumentSrcs, [projectId])
+    return r.rows.map((row: { src: string }) => row.src)
+  }
+
+  async function deleteDocumentsBySrc(projectId: string, srcs: string[]): Promise<number> {
+    if (srcs.length === 0) return 0
+    const r = await db.query(SQL.deleteDocumentsBySrc, [projectId, srcs])
+    return r.rowCount ?? 0
+  }
+
   async function matchDocuments(options: MatchParams): Promise<Document[]> {
     assertMatchParams(options)
 
@@ -348,6 +359,8 @@ export function createDocumentApi({
     upsertDocument,
     updateDocument,
     deleteDocument,
+    listDocumentSrcs,
+    deleteDocumentsBySrc,
     searchDocuments,
     matchDocuments,
     clearDocuments,
