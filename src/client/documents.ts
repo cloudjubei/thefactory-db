@@ -1,10 +1,13 @@
+import type { PoolClient } from 'pg'
 import type { DB } from '../connection.js'
 import type { Logger } from '../types.js'
 import type { EmbeddingProvider } from '../utils/embeddings.js'
 import { resolveCandidateLimit, SQL } from '../sql.js'
+import { stripNullChars } from '../utils/json.js'
 import {
   buildEmbeddingTextForDoc,
   escapeLikePattern,
+  nonIndexableReasonFor,
   normalizeDocPath,
   normalizePathPrefix,
   prepareQuery,
@@ -32,6 +35,9 @@ import type {
   SearchDocumentsForPathsArgs,
   SearchParams,
 } from '../types.js'
+
+/** One per batch connection, re-used for each document: a failed write rolls back to it and is undone alone. */
+const DOCUMENT_UPSERT_SAVEPOINT = 'document_upsert'
 
 export function createDocumentApi({
   db,
@@ -81,58 +87,122 @@ export function createDocumentApi({
     return new Set(result.rows.map((row) => row.src))
   }
 
+  async function inSavepoint(client: PoolClient, sql: string, params: unknown[]) {
+    await client.query(`SAVEPOINT ${DOCUMENT_UPSERT_SAVEPOINT}`)
+    try {
+      const result = await client.query(sql, params)
+      await client.query(`RELEASE SAVEPOINT ${DOCUMENT_UPSERT_SAVEPOINT}`)
+      return result.rows[0] as Document | undefined
+    } catch (e) {
+      await client.query(`ROLLBACK TO SAVEPOINT ${DOCUMENT_UPSERT_SAVEPOINT}`)
+      throw e
+    }
+  }
+
+  /**
+   * Writes one document inside the batch transaction. A document Postgres cannot index is stored
+   * flagged, without its content; any other failure skips just this document.
+   */
+  async function storeDocument(
+    client: PoolClient,
+    doc: DocumentUpsertInput,
+    embedding: ArrayLike<number>,
+  ): Promise<Document | undefined> {
+    const content = doc.content ?? ''
+    try {
+      return await inSavepoint(client, SQL.upsertDocument, [
+        doc.projectId,
+        doc.type,
+        doc.src,
+        doc.name,
+        content,
+        toVectorLiteral(embedding),
+        doc.metadata ?? null,
+      ])
+    } catch (e) {
+      const reason = nonIndexableReasonFor(e)
+      if (!reason) {
+        logger.error(`upsertDocuments: could not store ${doc.src}, skipped it`, e)
+        return undefined
+      }
+      logger.warn(
+        `upsertDocuments: ${doc.src} cannot be indexed (${reason}, ${Buffer.byteLength(content)} bytes); stored as non-indexable without its content`,
+      )
+      try {
+        return await inSavepoint(client, SQL.upsertNonIndexableDocument, [
+          doc.projectId,
+          doc.type,
+          doc.src,
+          doc.name,
+          content,
+          doc.metadata ?? null,
+          reason,
+        ])
+      } catch (flagErr) {
+        logger.error(`upsertDocuments: could not store ${doc.src}, skipped it`, flagErr)
+        return undefined
+      }
+    }
+  }
+
+  /**
+   * Upserts a batch in one transaction on a connection of its own. Each document is written in a
+   * savepoint, so one that fails is skipped (or stored as non-indexable) without its batchmates.
+   */
   async function upsertDocuments(inputs: DocumentUpsertInput[]): Promise<Document[]> {
     if (!inputs || inputs.length === 0) {
       return []
     }
 
     logger.debug(`upsertDocuments: received a batch of ${inputs.length} documents`)
-    const projectId = inputs[0].projectId
-    const changingSrcs = await getChangingDocuments(projectId, inputs)
+    const docs = inputs.map((doc) => ({ ...doc, content: stripNullChars(doc.content ?? '') }))
+    const projectId = docs[0].projectId
+    const changingSrcs = await getChangingDocuments(projectId, docs)
     if (changingSrcs.size === 0) {
       logger.debug('upsertDocuments: no documents needed updating.')
       return []
     }
 
-    const docsToUpsert = inputs.filter((doc) => changingSrcs.has(doc.src))
-    logger.debug(`upsertDocuments: ${docsToUpsert.length} of ${inputs.length} need updating.`)
-    const embInputs = docsToUpsert.map((d) =>
-      buildEmbeddingTextForDoc(d.type, d.content ?? '', d.name, d.src),
-    )
+    const docsToUpsert = docs.filter((doc) => changingSrcs.has(doc.src))
+    logger.debug(`upsertDocuments: ${docsToUpsert.length} of ${docs.length} need updating.`)
 
+    let embeddings: ArrayLike<number>[]
     try {
-      const embeddings = await Promise.all(embInputs.map((e) => embeddingProvider.embed(e)))
+      embeddings = await Promise.all(
+        docsToUpsert.map((d) =>
+          embeddingProvider.embed(buildEmbeddingTextForDoc(d.type, d.content, d.name, d.src)),
+        ),
+      )
+    } catch (e) {
+      logger.error('upsertDocuments: embedding failed', e)
+      throw e
+    }
 
-      const upsertedDocs = []
-      await db.query('BEGIN')
-
+    const client = await db.connect()
+    let releaseError: Error | undefined
+    try {
+      await client.query('BEGIN')
+      const upsertedDocs: Document[] = []
       for (let i = 0; i < docsToUpsert.length; i++) {
-        const doc = docsToUpsert[i]
-        const embedding = embeddings[i]
-        const embeddingLiteral = toVectorLiteral(embedding)
-        const result = await db.query(SQL.upsertDocument, [
-          doc.projectId,
-          doc.type,
-          doc.src,
-          doc.name,
-          doc.content,
-          embeddingLiteral,
-          doc.metadata ?? null,
-        ])
-        if (result.rows[0]) {
-          upsertedDocs.push(result.rows[0])
-        }
+        const stored = await storeDocument(client, docsToUpsert[i], embeddings[i])
+        if (stored) upsertedDocs.push(stored)
       }
-
-      await db.query('COMMIT')
+      await client.query('COMMIT')
       // Count only: dumping every `src` printed 100 file paths per batch, which
       // buried the rest of the log during a large project's initial ingestion.
       logger.debug(`upsertDocuments: upserted ${upsertedDocs.length} documents.`)
       return upsertedDocs
     } catch (e) {
       logger.error('Error in batch upsert, rolling back transaction', e)
-      await db.query('ROLLBACK')
+      try {
+        await client.query('ROLLBACK')
+      } catch (rollbackErr) {
+        logger.error('upsertDocuments: ROLLBACK failed', rollbackErr)
+        releaseError = rollbackErr as Error
+      }
       throw e
+    } finally {
+      client.release(releaseError)
     }
   }
 

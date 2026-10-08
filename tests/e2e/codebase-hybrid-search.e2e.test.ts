@@ -119,10 +119,10 @@ function collectProjectFiles(root: string): string[] {
       'src/migrations/001-init.ts',
       'scripts/example.ts',
       'scripts/test.ts',
+      'src/utils.ts',
       'src/validation.ts',
       'src/client/types.ts',
       'docs/CODE_STANDARD.md',
-      'src/migrations/index.ts',
     ])
   })
 
@@ -138,8 +138,8 @@ function collectProjectFiles(root: string): string[] {
       'scripts/example.ts',
       'src/types.ts',
       'src/client/types.ts',
-      'docs/FILE_ORGANISATION.md',
       'src/sql.ts',
+      'docs/FILE_ORGANISATION.md',
     ])
   })
 
@@ -168,9 +168,9 @@ function collectProjectFiles(root: string): string[] {
       'src/migrations/001-init.ts',
       'docker-compose.e2e.yml',
       'src/connection.ts',
+      'docs/FILE_ORGANISATION.md',
       'scripts/example.ts',
       '.prettierignore',
-      'docs/FILE_ORGANISATION.md',
       'docs/TESTING_E2E.md',
       'docs/CODE_STANDARD.md',
     ])

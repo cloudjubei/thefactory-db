@@ -63,7 +63,8 @@ Two tables are maintained:
   - `name` (text not null) — human-friendly title used for keyword ranking
   - `content` (text)
   - `content_hash` (text) — SHA1 hash of content, used to avoid re-embedding unchanged documents.
-  - `fts` (tsvector, generated from `content`)
+  - `non_indexable_reason` (text, nullable) — set when Postgres cannot index the document (`too-large`: its lexemes exceed the 1 MB tsvector limit). Such a row is stored with empty `content` and no embedding, so it is findable by name and path only; `content_hash` stays the hash of the content it was given, so an unchanged document is not retried. `upsertDocuments` writes each document in its own savepoint: a non-indexable one is stored this way and logged at warn, and one that fails for any other reason is skipped and logged without failing its batch.
+  - `fts` (tsvector, generated from `name` and `content`)
   - `embedding` (vector(384))
   - `src` (text not null)
   - `created_at`, `updated_at` (timestamptz, `updated_at` maintained via trigger)

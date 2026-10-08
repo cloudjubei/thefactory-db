@@ -114,7 +114,7 @@ describe('Migrations', () => {
 
   it('is idempotent (does nothing if already at latest schema)', async () => {
     // Latest version tracks the migrations list; bump this when adding one.
-    const mockDb = createDbMock(5)
+    const mockDb = createDbMock(6)
     vi.mocked(openPostgres).mockResolvedValue(mockDb as any)
 
     await openDatabase({ connectionString: 'postgres://x' })
@@ -245,6 +245,22 @@ describe('Migrations', () => {
     // installs from the single definition in src/sql.ts rather than another copy.
     const m = migrations.find((x) => x.version === 5)
     expect(m?.id).toBe('005-hybrid-search-candidate-limit')
-    expect(migrations.map((x) => x.version)).toEqual([1, 2, 3, 4, 5])
+    expect(migrations.map((x) => x.version)).toEqual([1, 2, 3, 4, 5, 6])
+  })
+
+  it('applies 006 on a database at version 5: the non-indexable column and the hash trigger', async () => {
+    const mockDb = createDbMock(5)
+    vi.mocked(openPostgres).mockResolvedValue(mockDb as any)
+
+    await openDatabase({ connectionString: 'postgres://x' })
+
+    const allQueries = queries.join('\n').toLowerCase()
+    expect(migrations.find((x) => x.version === 6)?.id).toBe('006-documents-non-indexable')
+    expect(allQueries).toContain(
+      'alter table documents add column if not exists non_indexable_reason text',
+    )
+    expect(allQueries).toContain('and new.non_indexable_reason is null then')
+    expect(allQueries).not.toContain('drop index')
+    expect(allQueries).not.toContain('fts')
   })
 })

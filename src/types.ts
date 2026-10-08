@@ -17,6 +17,12 @@ export type OpenDbOptions = {
 
 // Documents (text)
 /**
+ * Why a document is stored without its content: `too-large` means Postgres rejected its
+ * full-text index entry (the lexemes exceed the 1 MB tsvector limit).
+ */
+export type DocumentNonIndexableReason = 'too-large'
+
+/**
  * Represents a text-based document in the database.
  */
 export type Document = {
@@ -30,6 +36,13 @@ export type Document = {
   createdAt: string
   updatedAt: string
   metadata?: Record<string, any>
+  /**
+   * Set when the document could not be indexed: it is then stored with empty `content` and no
+   * embedding, findable by name and path only. `contentHash` is still the hash of the content it
+   * was given, so an unchanged document is not retried. Null for an indexed document; absent from
+   * search results.
+   */
+  nonIndexableReason?: DocumentNonIndexableReason | null
 }
 
 /**

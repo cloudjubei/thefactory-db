@@ -108,6 +108,7 @@ SELECT
   name,
   content,
   src,
+  non_indexable_reason AS "nonIndexableReason",
   to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS "createdAt",
   to_char(updated_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS "updatedAt",
   to_jsonb(metadata) AS metadata
@@ -123,6 +124,7 @@ SELECT
   name,
   content,
   src,
+  non_indexable_reason AS "nonIndexableReason",
   to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS "createdAt",
   to_char(updated_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS "updatedAt",
   to_jsonb(metadata) AS metadata
@@ -150,6 +152,7 @@ DO UPDATE SET
   content = EXCLUDED.content,
   embedding = EXCLUDED.embedding,
   metadata = EXCLUDED.metadata,
+  non_indexable_reason = NULL,
   updated_at = now()
 WHERE documents.content_hash IS DISTINCT FROM encode(digest(EXCLUDED.content, 'sha1'), 'hex')
 RETURNING
@@ -160,6 +163,7 @@ RETURNING
   name,
   content,
   content_hash as "contentHash",
+  non_indexable_reason AS "nonIndexableReason",
   to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS "createdAt",
   to_char(updated_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS "updatedAt",
   to_jsonb(metadata) AS metadata;
@@ -176,6 +180,41 @@ RETURNING
   name,
   content,
   content_hash AS "contentHash",
+  non_indexable_reason AS "nonIndexableReason",
+  to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS "createdAt",
+  to_char(updated_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS "updatedAt",
+  to_jsonb(metadata) AS metadata;
+`
+
+/**
+ * Stores a document Postgres cannot index: no content and no embedding, so its full-text entry holds
+ * only the name. `content_hash` is the hash of the content given ($5), which keeps an unchanged
+ * document from being embedded and rejected again on every ingestion.
+ */
+const upsertNonIndexableDocument = `
+INSERT INTO documents (project_id, type, src, name, content, content_hash, embedding, metadata, non_indexable_reason)
+VALUES ($1, $2, $3, $4, '', encode(digest($5, 'sha1'), 'hex'), NULL, $6::jsonb, $7)
+ON CONFLICT (project_id, src)
+DO UPDATE SET
+  type = EXCLUDED.type,
+  name = EXCLUDED.name,
+  content = '',
+  content_hash = EXCLUDED.content_hash,
+  embedding = NULL,
+  metadata = EXCLUDED.metadata,
+  non_indexable_reason = EXCLUDED.non_indexable_reason,
+  updated_at = now()
+WHERE documents.content_hash IS DISTINCT FROM EXCLUDED.content_hash
+   OR documents.non_indexable_reason IS DISTINCT FROM EXCLUDED.non_indexable_reason
+RETURNING
+  id,
+  project_id AS "projectId",
+  type,
+  src,
+  name,
+  content,
+  content_hash AS "contentHash",
+  non_indexable_reason AS "nonIndexableReason",
   to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS "createdAt",
   to_char(updated_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS "updatedAt",
   to_jsonb(metadata) AS metadata;
@@ -188,7 +227,8 @@ UPDATE documents SET
   name = COALESCE($4, name),
   content = COALESCE($5, content),
   embedding = COALESCE($6::vector, embedding),
-  metadata = COALESCE($7::jsonb, metadata)
+  metadata = COALESCE($7::jsonb, metadata),
+  non_indexable_reason = CASE WHEN $5::text IS NULL THEN non_indexable_reason ELSE NULL END
 WHERE id = $1
 RETURNING 
   id,
@@ -198,6 +238,7 @@ RETURNING
   name,
   content,
   content_hash AS "contentHash",
+  non_indexable_reason AS "nonIndexableReason",
   to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS "createdAt",
   to_char(updated_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS "updatedAt",
   to_jsonb(metadata) AS metadata;
@@ -506,6 +547,20 @@ ORDER BY score DESC, src ASC
 LIMIT COALESCE($6::int, 20);
 `
 
+/**
+ * Hashes a document's content on write. A non-indexable row keeps the hash it was written with (that
+ * of content it does not store); migration 006 installs this same definition on existing databases.
+ */
+export const DOCUMENT_CONTENT_HASH_FUNCTION = `CREATE OR REPLACE FUNCTION set_document_content_hash()
+RETURNS trigger AS $$
+BEGIN
+  IF NEW.content IS NOT NULL AND NEW.non_indexable_reason IS NULL THEN
+    NEW.content_hash = encode(digest(NEW.content, 'sha1'), 'hex');
+  END IF;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;`
+
 // ----------------------------------------------------------
 const schema = `
 -- Enable required extensions
@@ -534,6 +589,7 @@ CREATE TABLE IF NOT EXISTS documents (
   name text NOT NULL,
   content text,
   content_hash text,
+  non_indexable_reason text,
   fts tsvector GENERATED ALWAYS AS (
     to_tsvector('english', tokenize_code(name)) || to_tsvector('english', coalesce(tokenize_code(content), ''))
   ) STORED,
@@ -573,16 +629,7 @@ CREATE TRIGGER documents_set_updated_at
 BEFORE UPDATE ON documents
 FOR EACH ROW EXECUTE FUNCTION set_updated_at();
 
-CREATE OR REPLACE FUNCTION set_document_content_hash()
-RETURNS trigger AS $$
-BEGIN
-  -- Check if the content is new or has changed to avoid unnecessary computation
-  IF NEW.content IS NOT NULL THEN
-    NEW.content_hash = encode(digest(NEW.content, 'sha1'), 'hex');
-  END IF;
-  RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
+${DOCUMENT_CONTENT_HASH_FUNCTION}
 
 DROP TRIGGER IF EXISTS documents_set_content_hash ON documents;
 CREATE TRIGGER documents_set_content_hash
@@ -1248,6 +1295,7 @@ export const SQL = {
   getDocumentBySrc,
   getChangingDocuments,
   upsertDocument,
+  upsertNonIndexableDocument,
   insertDocument,
   keywordSearchDocumentsForPaths,
   literalSearchDocumentsForPaths,

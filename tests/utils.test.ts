@@ -8,6 +8,7 @@ import {
   toTokens,
   buildEmbeddingTextForDoc,
   toVectorLiteral,
+  nonIndexableReasonFor,
 } from '../src/utils'
 
 describe('utils.prepareQuery', () => {
@@ -115,5 +116,22 @@ describe('utils.SQL registry', () => {
       expect(typeof sql).toBe('string')
       expect(sql.length).toBeGreaterThan(0)
     }
+  })
+})
+
+describe('utils.nonIndexableReasonFor', () => {
+  it('reads a Postgres program_limit_exceeded error as too-large', () => {
+    const err = Object.assign(new Error('string is too long for tsvector'), { code: '54000' })
+    expect(nonIndexableReasonFor(err)).toBe('too-large')
+  })
+
+  it('returns undefined for any other Postgres error', () => {
+    expect(nonIndexableReasonFor(Object.assign(new Error('x'), { code: '22021' }))).toBeUndefined()
+  })
+
+  it('returns undefined for errors without a code and for non-objects', () => {
+    expect(nonIndexableReasonFor(new Error('x'))).toBeUndefined()
+    expect(nonIndexableReasonFor('54000')).toBeUndefined()
+    expect(nonIndexableReasonFor(null)).toBeUndefined()
   })
 })

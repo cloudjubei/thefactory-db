@@ -4,6 +4,7 @@ import { migration002 } from './002-entities-project-updated-at-index.js'
 import { migration003 } from './003-entities-external-key.js'
 import { migration004 } from './004-entities-should-embed-repair.js'
 import { migration005 } from './005-hybrid-search-candidate-limit.js'
+import { migration006 } from './006-documents-non-indexable.js'
 
 export const migrations: Migration[] = [
   migration001,
@@ -11,4 +12,5 @@ export const migrations: Migration[] = [
   migration003,
   migration004,
   migration005,
+  migration006,
 ]

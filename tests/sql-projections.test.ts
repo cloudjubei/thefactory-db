@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { resolveCandidateLimit, SQL } from '../src/sql'
+import { DOCUMENT_CONTENT_HASH_FUNCTION, resolveCandidateLimit, SQL } from '../src/sql'
 
 /**
  * Pure-string assertions on the SQL constants. These don't need a DB —
@@ -141,5 +141,60 @@ describe('resolveCandidateLimit', () => {
   })
   it('truncates a fractional value to an integer', () => {
     expect(resolveCandidateLimit(120.9)).toBe(120)
+  })
+})
+
+const DOCUMENT_PROJECTIONS: { name: string; sql: string }[] = [
+  { name: 'getDocumentById', sql: SQL.getDocumentById },
+  { name: 'getDocumentBySrc', sql: SQL.getDocumentBySrc },
+  { name: 'insertDocument', sql: SQL.insertDocument },
+  { name: 'upsertDocument', sql: SQL.upsertDocument },
+  { name: 'upsertNonIndexableDocument', sql: SQL.upsertNonIndexableDocument },
+  { name: 'updateDocument', sql: SQL.updateDocument },
+]
+
+describe('SQL — documents that cannot be indexed', () => {
+  it.each(DOCUMENT_PROJECTIONS)('$name projects nonIndexableReason', ({ sql }) => {
+    expect(sql).toContain('non_indexable_reason AS "nonIndexableReason"')
+  })
+
+  it('schema declares the non_indexable_reason column on documents', () => {
+    expect(SQL.schema).toMatch(
+      /CREATE TABLE IF NOT EXISTS documents \([^;]*\bnon_indexable_reason text,/,
+    )
+  })
+
+  it('the content-hash trigger keeps the hash a non-indexable row was written with', () => {
+    // A flagged row stores no content but the hash of the content it was given, so an unchanged
+    // file is recognised and not embedded and rejected again on every ingestion.
+    expect(DOCUMENT_CONTENT_HASH_FUNCTION).toMatch(
+      /IF NEW\.content IS NOT NULL AND NEW\.non_indexable_reason IS NULL THEN/,
+    )
+    expect(SQL.schema).toContain(DOCUMENT_CONTENT_HASH_FUNCTION)
+  })
+
+  it('upsertNonIndexableDocument stores no content or embedding but the hash of the content given', () => {
+    expect(SQL.upsertNonIndexableDocument).toMatch(
+      /VALUES \(\$1, \$2, \$3, \$4, '', encode\(digest\(\$5, 'sha1'\), 'hex'\), NULL, \$6::jsonb, \$7\)/,
+    )
+    expect(SQL.upsertNonIndexableDocument).toMatch(
+      /content = '',\s*content_hash = EXCLUDED\.content_hash,\s*embedding = NULL,/,
+    )
+  })
+
+  it('upsertNonIndexableDocument skips a row already flagged for the same content and reason', () => {
+    expect(SQL.upsertNonIndexableDocument).toMatch(
+      /WHERE documents\.content_hash IS DISTINCT FROM EXCLUDED\.content_hash\s+OR documents\.non_indexable_reason IS DISTINCT FROM EXCLUDED\.non_indexable_reason/,
+    )
+  })
+
+  it('upsertDocument clears the flag when a document is stored with its content', () => {
+    expect(SQL.upsertDocument).toMatch(/non_indexable_reason = NULL,/)
+  })
+
+  it('updateDocument clears the flag only when it patches the content', () => {
+    expect(SQL.updateDocument).toMatch(
+      /non_indexable_reason = CASE WHEN \$5::text IS NULL THEN non_indexable_reason ELSE NULL END/,
+    )
   })
 })
