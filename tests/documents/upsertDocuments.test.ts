@@ -1,6 +1,14 @@
-import { describe, it, expect, vi } from 'vitest'
+import { createHash } from 'node:crypto'
 
-import { setupUnitTestMocks } from '../utils/unitTestMocks'
+import { beforeEach, describe, it, expect } from 'vitest'
+
+import { CHUNKER_VERSION } from '../../src/chunking/chunkingConstants'
+import {
+  embeddedTexts,
+  setupUnitTestMocks,
+  statements,
+  useTransactionClient,
+} from '../utils/unitTestMocks'
 import { openDatabase } from '../../src/index'
 
 // Migrations legitimately log at info during openDatabase, so the level guards below are scoped to
@@ -11,21 +19,7 @@ function messagesStartingWith(spy: any, prefix: string): string[] {
     .filter((m: unknown): m is string => typeof m === 'string' && m.startsWith(prefix))
 }
 
-type TransactionResponder = (sql: string, params?: unknown[]) => { rows: unknown[] }
-
-/** Checks out a stand-in connection from the mocked pool; the batch transaction runs on it. */
-function useTransactionClient(mockDbClient: any, respond: TransactionResponder) {
-  const tx = {
-    query: vi.fn(async (sql: string, params?: unknown[]) => respond(sql, params)),
-    release: vi.fn(),
-  }
-  mockDbClient.connect = vi.fn().mockResolvedValue(tx)
-  return tx
-}
-
-function statements(tx: { query: { mock: { calls: any[][] } } }): string[] {
-  return tx.query.mock.calls.map((c) => c[0])
-}
+const sha1 = (text: string) => createHash('sha1').update(text).digest('hex')
 
 /** The error Postgres raises when a document's lexemes exceed the 1 MB tsvector ceiling. */
 function tooLargeForTsvector(): Error {
@@ -37,8 +31,17 @@ function tooLargeForTsvector(): Error {
   )
 }
 
+/** A document row write: `upsertDocument` takes 9 parameters, the chunk statements 1 or 10. */
+const isDocumentWrite = (params: unknown) => Array.isArray(params) && params.length === 9
+
+type PoolCall = [sql: string, params?: unknown[]]
+
 describe('Documents.upsertDocuments', () => {
   const { mockDbClient, mockLogger, mockEmbeddingProvider } = setupUnitTestMocks()
+  const poolCalls = (): PoolCall[] => mockDbClient.query.mock.calls
+
+  // Anything not scripted with a `...Once` — the chunk-embedding lookup — finds nothing stored.
+  beforeEach(() => mockDbClient.query.mockResolvedValue({ rows: [] }))
 
   it('returns [] for an empty inputs array without touching the db', async () => {
     const db = await openDatabase({ connectionString: 'test' })
@@ -51,16 +54,94 @@ describe('Documents.upsertDocuments', () => {
     expect(mockDbClient.query.mock.calls.length).toBe(callsBefore)
   })
 
-  it('treats undefined content as empty string in the change-detection query', async () => {
+  it('detects changes from content hashes computed here, never sending the content itself', async () => {
     const db = await openDatabase({ connectionString: 'test' })
     mockDbClient.query.mockResolvedValueOnce({ rows: [] }) // getChangingDocuments
 
-    const inputs = [{ projectId: 'p1', type: 't', src: 's1', name: 'n1' }] as any
+    const inputs = [
+      { projectId: 'p1', type: 't', src: 's1', name: 'n1' },
+      { projectId: 'p1', type: 't', src: 's2', name: 'n2', content: 'héllo' },
+    ] as any
     await db.upsertDocuments(inputs)
 
-    // 3rd positional arg is the parallel `contents` array.
-    const contentsArg = mockDbClient.query.mock.calls.at(-1)[1][2]
-    expect(contentsArg).toEqual([''])
+    // Shipping every file's content to Postgres to hash it cost 244 MB per sync of eight projects.
+    expect(mockDbClient.query.mock.calls.at(-1)[1]).toEqual([
+      'p1',
+      ['s1', 's2'],
+      [sha1(''), sha1('héllo')],
+      CHUNKER_VERSION,
+    ])
+  })
+
+  it('ignores chunk versions in change detection when told to leave out outdated chunks', async () => {
+    const db = await openDatabase({ connectionString: 'test' })
+    mockDbClient.query.mockResolvedValueOnce({ rows: [] }) // getChangingDocuments
+
+    await db.upsertDocuments(
+      [{ projectId: 'p1', type: 't', src: 's1', name: 'n1', content: 'a' }],
+      {
+        includeOutdatedChunks: false,
+      },
+    )
+
+    const changeCheck = poolCalls().find(
+      (c) => Array.isArray(c[1]) && c[1].length === 4 && Array.isArray(c[1][2]),
+    )
+    expect(changeCheck?.[1][3]).toBeNull()
+  })
+
+  it('refreshes the fingerprints of unchanged documents without embedding them', async () => {
+    const db = await openDatabase({ connectionString: 'test' })
+    mockDbClient.query
+      .mockResolvedValueOnce({ rows: [] }) // getChangingDocuments: nothing changed
+      .mockResolvedValueOnce({ rows: [] }) // refreshDocumentFingerprints
+
+    await db.upsertDocuments([
+      { projectId: 'p1', type: 't', src: 's1', name: 'n1', content: 'a', fingerprint: 'f1' },
+      { projectId: 'p1', type: 't', src: 's2', name: 'n2', content: 'b' },
+    ])
+
+    expect(mockDbClient.query.mock.calls.at(-1)[1]).toEqual(['p1', ['s1'], [sha1('a')], ['f1']])
+    expect(mockEmbeddingProvider.embed).not.toHaveBeenCalled()
+  })
+
+  it('refreshes no fingerprint for a document it is about to rewrite', async () => {
+    const db = await openDatabase({ connectionString: 'test' })
+    mockDbClient.query.mockResolvedValueOnce({ rows: [{ src: 's1' }] }) // s1 changed
+    useTransactionClient(mockDbClient, (_sql, params) =>
+      params ? { rows: [{ id: '1', src: 's1' }] } : { rows: [] },
+    )
+    const before = mockDbClient.query.mock.calls.length
+
+    await db.upsertDocuments([
+      { projectId: 'p1', type: 't', src: 's1', name: 'n1', content: 'a', fingerprint: 'f1' },
+    ])
+
+    // A refresh sends [projectId, srcs, hashes, fingerprints]; only the change check and the
+    // chunk-embedding lookup may reach the pool.
+    const poolParams = poolCalls()
+      .slice(before)
+      .map((c) => c[1])
+    expect(poolParams).toHaveLength(2)
+    expect(poolParams.some((p) => Array.isArray(p?.[3]) && p[3][0] === 'f1')).toBe(false)
+  })
+
+  it('stores each rewritten document with its fingerprint', async () => {
+    const db = await openDatabase({ connectionString: 'test' })
+    mockDbClient.query.mockResolvedValueOnce({ rows: [{ src: 's1' }, { src: 's2' }] })
+    const tx = useTransactionClient(mockDbClient, (_sql, params) =>
+      params ? { rows: [{ id: params[2], src: params[2] }] } : { rows: [] },
+    )
+
+    await db.upsertDocuments([
+      { projectId: 'p1', type: 't', src: 's1', name: 'n1', content: 'a', fingerprint: 'f1' },
+      { projectId: 'p1', type: 't', src: 's2', name: 'n2', content: 'b' },
+    ])
+
+    const fingerprints = tx.query.mock.calls
+      .filter((c) => isDocumentWrite(c[1]))
+      .map((c) => c[1]?.[7])
+    expect(fingerprints).toEqual(['f1', null])
   })
 
   it('treats undefined content as empty string in the embedding text', async () => {
@@ -74,11 +155,10 @@ describe('Documents.upsertDocuments', () => {
 
     await db.upsertDocuments(inputs)
 
-    expect(mockEmbeddingProvider.embed).toHaveBeenCalledWith(expect.any(String))
     // The embedded text is a join of [type, name, src, content] with falsy parts dropped.
     // With content === '' (falsy), the embedded string should not contain duplicate newlines.
-    const embeddedText = (mockEmbeddingProvider.embed.mock.calls.at(-1) as any[])[0]
-    expect(embeddedText).toBe('t\nn1\ns1')
+    const embeddedText = embeddedTexts(mockEmbeddingProvider).at(-1)
+    expect(embeddedText).toBe('s1\n')
   })
 
   it('strips NUL characters before change detection, embedding and storage', async () => {
@@ -94,9 +174,12 @@ describe('Documents.upsertDocuments', () => {
 
     await db.upsertDocuments(inputs)
 
-    expect(mockDbClient.query.mock.calls.at(-1)[1][2]).toEqual(['ab'])
-    expect((mockEmbeddingProvider.embed.mock.calls.at(-1) as any[])[0]).toBe('t\nn1\ns1\nab')
-    const upsertParams = tx.query.mock.calls.find((c: any[]) => c[1])?.[1]
+    const changeCheck = poolCalls().find(
+      (c) => Array.isArray(c[1]) && c[1].length === 4 && c[1][3] === CHUNKER_VERSION,
+    )
+    expect(changeCheck?.[1][2]).toEqual([sha1('ab')])
+    expect(embeddedTexts(mockEmbeddingProvider).at(-1)).toBe('s1\nab')
+    const upsertParams = tx.query.mock.calls.find((c) => c[1])?.[1]
     expect(upsertParams?.[4]).toBe('ab')
   })
 
@@ -141,15 +224,19 @@ describe('Documents.upsertDocuments', () => {
     const result = await db.upsertDocuments(inputs)
 
     expect(result).toEqual([upserted1, upserted2])
-    expect(mockEmbeddingProvider.embed).toHaveBeenCalledTimes(2)
+    expect(embeddedTexts(mockEmbeddingProvider)).toHaveLength(2)
     // A pool hands each query to whichever connection is free, so BEGIN/COMMIT on the pool did not
     // bracket the upserts; the whole transaction must run on the one connection it checked out.
     expect(statements(tx)).toEqual([
       'BEGIN',
       'SAVEPOINT document_upsert',
       'FAKE_SQL',
+      'FAKE_SQL',
+      'FAKE_SQL',
       'RELEASE SAVEPOINT document_upsert',
       'SAVEPOINT document_upsert',
+      'FAKE_SQL',
+      'FAKE_SQL',
       'FAKE_SQL',
       'RELEASE SAVEPOINT document_upsert',
       'COMMIT',
@@ -230,14 +317,22 @@ describe('Documents.upsertDocuments', () => {
     const result = await db.upsertDocuments(inputs)
 
     expect(result).toEqual([{ id: '2', src: 's2' }])
-    expect(mockEmbeddingProvider.embed).toHaveBeenCalledTimes(1)
+    expect(embeddedTexts(mockEmbeddingProvider)).toHaveLength(1)
   })
 
   it('stores a document Postgres cannot index flagged non-indexable and commits its batchmates', async () => {
     const db = await openDatabase({ connectionString: 'test' })
     const metadata = { ext: 'json' }
     const inputs = [
-      { projectId: 'p1', type: 't', src: 'big.json', name: 'big.json', content: 'xyz', metadata },
+      {
+        projectId: 'p1',
+        type: 't',
+        src: 'big.json',
+        name: 'big.json',
+        content: 'xyz',
+        metadata,
+        fingerprint: 'fp',
+      },
       { projectId: 'p1', type: 't', src: 's2', name: 'n2', content: 'b' },
     ]
     const flagged = { id: '1', src: 'big.json', nonIndexableReason: 'too-large' }
@@ -260,8 +355,11 @@ describe('Documents.upsertDocuments', () => {
       'ROLLBACK TO SAVEPOINT document_upsert',
       'SAVEPOINT document_upsert',
       'FAKE_SQL',
+      'FAKE_SQL',
       'RELEASE SAVEPOINT document_upsert',
       'SAVEPOINT document_upsert',
+      'FAKE_SQL',
+      'FAKE_SQL',
       'FAKE_SQL',
       'RELEASE SAVEPOINT document_upsert',
       'COMMIT',
@@ -271,8 +369,36 @@ describe('Documents.upsertDocuments', () => {
       .find((p: any) => p?.[6] === 'too-large')
     // The content travels only so Postgres can hash it: an unchanged file then matches its stored hash
     // and is not embedded and rejected again on every ingestion.
-    expect(flaggedParams).toEqual(['p1', 't', 'big.json', 'big.json', 'xyz', metadata, 'too-large'])
+    expect(flaggedParams).toEqual([
+      'p1',
+      't',
+      'big.json',
+      'big.json',
+      'xyz',
+      metadata,
+      'too-large',
+      'fp',
+      CHUNKER_VERSION,
+    ])
     expect(mockLogger.error).not.toHaveBeenCalled()
+  })
+
+  it('removes the chunks of a document stored as non-indexable and stores none for it', async () => {
+    const db = await openDatabase({ connectionString: 'test' })
+    mockDbClient.query.mockResolvedValueOnce({ rows: [{ src: 'big.json' }] })
+    const tx = useTransactionClient(mockDbClient, (_sql, params) => {
+      if (!params) return { rows: [] }
+      if (params[6] === 'too-large') return { rows: [{ id: '1', src: 'big.json' }] }
+      if (params[2] === 'big.json') throw tooLargeForTsvector()
+      return { rows: [] }
+    })
+
+    await db.upsertDocuments([
+      { projectId: 'p1', type: 't', src: 'big.json', name: 'big.json', content: 'xyz' },
+    ])
+
+    const chunkWrites = tx.query.mock.calls.map((c) => c[1]).filter((p) => p?.[0] === '1')
+    expect(chunkWrites).toEqual([['1']])
   })
 
   it('warns with the path, reason and size of a document stored as non-indexable', async () => {
@@ -321,7 +447,7 @@ describe('Documents.upsertDocuments', () => {
     expect(result).toEqual([{ id: '2', src: 's2' }])
     expect(statements(tx)).toContain('ROLLBACK TO SAVEPOINT document_upsert')
     expect(statements(tx).at(-1)).toBe('COMMIT')
-    expect(tx.query.mock.calls.map((c: any[]) => c[1]).filter(Boolean)).toHaveLength(2)
+    expect(tx.query.mock.calls.filter((c) => isDocumentWrite(c[1]))).toHaveLength(2)
     expect(mockLogger.error).toHaveBeenCalledWith(
       'upsertDocuments: could not store s1, skipped it',
       boom,
@@ -394,7 +520,7 @@ describe('Documents.upsertDocuments', () => {
     await expect(db.upsertDocuments(inputs)).rejects.toBe(boom)
 
     expect(tx.release).toHaveBeenCalledWith(rollbackBoom)
-    expect(mockLogger.error).toHaveBeenCalledWith('upsertDocuments: ROLLBACK failed', rollbackBoom)
+    expect(mockLogger.error).toHaveBeenCalledWith('documents: ROLLBACK failed', rollbackBoom)
   })
 
   it('rethrows embedding failures without opening a transaction', async () => {
@@ -433,6 +559,8 @@ describe('Documents.upsertDocuments', () => {
 
 describe('Documents.upsertDocument', () => {
   const { mockDbClient, mockLogger } = setupUnitTestMocks()
+
+  beforeEach(() => mockDbClient.query.mockResolvedValue({ rows: [] }))
 
   it('delegates to upsertDocuments and returns the first row', async () => {
     const db = await openDatabase({ connectionString: 'test' })

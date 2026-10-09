@@ -114,7 +114,7 @@ describe('Migrations', () => {
 
   it('is idempotent (does nothing if already at latest schema)', async () => {
     // Latest version tracks the migrations list; bump this when adding one.
-    const mockDb = createDbMock(6)
+    const mockDb = createDbMock(8)
     vi.mocked(openPostgres).mockResolvedValue(mockDb as any)
 
     await openDatabase({ connectionString: 'postgres://x' })
@@ -245,14 +245,14 @@ describe('Migrations', () => {
     // installs from the single definition in src/sql.ts rather than another copy.
     const m = migrations.find((x) => x.version === 5)
     expect(m?.id).toBe('005-hybrid-search-candidate-limit')
-    expect(migrations.map((x) => x.version)).toEqual([1, 2, 3, 4, 5, 6])
+    expect(migrations.map((x) => x.version)).toEqual([1, 2, 3, 4, 5, 6, 7, 8])
   })
 
   it('applies 006 on a database at version 5: the non-indexable column and the hash trigger', async () => {
     const mockDb = createDbMock(5)
     vi.mocked(openPostgres).mockResolvedValue(mockDb as any)
 
-    await openDatabase({ connectionString: 'postgres://x' })
+    await openDatabase({ connectionString: 'postgres://x', migrations: { toVersion: 6 } })
 
     const allQueries = queries.join('\n').toLowerCase()
     expect(migrations.find((x) => x.version === 6)?.id).toBe('006-documents-non-indexable')
@@ -262,5 +262,34 @@ describe('Migrations', () => {
     expect(allQueries).toContain('and new.non_indexable_reason is null then')
     expect(allQueries).not.toContain('drop index')
     expect(allQueries).not.toContain('fts')
+  })
+
+  it('applies 007 on a database at version 6: the fingerprint column', async () => {
+    const mockDb = createDbMock(6)
+    vi.mocked(openPostgres).mockResolvedValue(mockDb as any)
+
+    await openDatabase({ connectionString: 'postgres://x' })
+
+    const allQueries = queries.join('\n').toLowerCase()
+    expect(migrations.find((x) => x.version === 7)?.id).toBe('007-documents-fingerprint')
+    expect(allQueries).toContain('alter table documents add column if not exists fingerprint text')
+    expect(allQueries).not.toContain('non_indexable_reason text')
+  })
+
+  it('applies 008 on a database at version 7: chunks table, chunk version, chunk-aware search', async () => {
+    const mockDb = createDbMock(7)
+    vi.mocked(openPostgres).mockResolvedValue(mockDb as any)
+
+    await openDatabase({ connectionString: 'postgres://x' })
+
+    const allQueries = queries.join('\n').toLowerCase()
+    expect(migrations.find((x) => x.version === 8)?.id).toBe('008-document-chunks')
+    expect(allQueries).toContain(
+      'alter table documents add column if not exists chunk_version integer',
+    )
+    expect(allQueries).toContain('create table if not exists document_chunks')
+    expect(allQueries).toContain(
+      'drop function if exists hybrid_search_documents(text, vector, integer, jsonb, float, float, float, float, integer, integer)',
+    )
   })
 })

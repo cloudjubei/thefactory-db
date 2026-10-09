@@ -66,6 +66,8 @@ export function assertDocumentInput(input: any): void {
     throw new TypeError('DocumentInput.content must be a string if provided')
   if (input.metadata !== undefined && !isPlainObject(input.metadata))
     throw new TypeError('DocumentInput.metadata must be an object if provided')
+  if (input.fingerprint !== undefined && typeof input.fingerprint !== 'string')
+    throw new TypeError('DocumentInput.fingerprint must be a string if provided')
 }
 
 export function assertDocumentPatch(patch: any): void {

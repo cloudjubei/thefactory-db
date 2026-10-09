@@ -40,15 +40,6 @@ export function toTokens(input: string | string[]): string[] {
 // Embeddings helpers
 // ----------------------------
 
-export function buildEmbeddingTextForDoc(
-  type: string,
-  content: string,
-  name?: string,
-  src?: string,
-): string {
-  return [type, name, src, content].filter(Boolean).join('\n')
-}
-
 export function toVectorLiteral(vec: ArrayLike<number>): string {
   const arr = Array.from(vec as any)
   return `[${arr.join(',')}]`

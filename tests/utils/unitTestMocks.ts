@@ -92,6 +92,7 @@ export function setupUnitTestMocks(): UnitTestMocks {
 
   const mockEmbeddingProvider: any = {
     embed: vi.fn().mockResolvedValue([0.1, 0.2, 0.3]),
+    embedBatch: vi.fn(async (texts: string[]) => texts.map(() => [0.1, 0.2, 0.3])),
     close: vi.fn(),
   }
 
@@ -112,10 +113,40 @@ export function setupUnitTestMocks(): UnitTestMocks {
 
     // Restore default embedding return value
     mockEmbeddingProvider.embed.mockResolvedValue([0.1, 0.2, 0.3])
+    mockEmbeddingProvider.embedBatch.mockImplementation(async (texts: string[]) =>
+      texts.map(() => [0.1, 0.2, 0.3]),
+    )
 
     // Restore lock client mock
     attachMigrationSupport(mockDbClient)
   })
 
   return { mockDbClient, mockLogger, mockEmbeddingProvider }
+}
+
+export type TransactionResponder = (sql: string, params?: unknown[]) => { rows: unknown[] }
+
+type CallsOf<Args extends unknown[]> = { mock: { calls: Args[] } }
+
+/** Checks out a stand-in connection from the mocked pool; the batch transaction runs on it. */
+export function useTransactionClient(
+  mockDbClient: { connect: unknown },
+  respond: TransactionResponder,
+) {
+  const tx = {
+    query: vi.fn(async (sql: string, params?: unknown[]) => respond(sql, params)),
+    release: vi.fn(),
+  }
+  mockDbClient.connect = vi.fn().mockResolvedValue(tx)
+  return tx
+}
+
+/** The SQL of every statement a stand-in connection ran, in order. */
+export function statements(tx: { query: CallsOf<[sql: string, ...rest: unknown[]]> }): string[] {
+  return tx.query.mock.calls.map(([sql]) => sql)
+}
+
+/** Every text a document write embedded, one call per chunk. */
+export function embeddedTexts(provider: { embed: CallsOf<[text: string]> }): string[] {
+  return provider.embed.mock.calls.map(([text]) => text)
 }

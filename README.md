@@ -154,6 +154,25 @@ The `openDatabase` function will:
 
 The returned `db` object provides an API for adding/searching documents and entities, as well as a `raw()` method for direct `pg.Client` access.
 
+### How documents are indexed
+
+- **Whole files are embedded, in chunks.** Each document is cut into pieces of about 800 characters: code with a tree-sitter grammar (TS/TSX/JS/Python) along its syntax, markdown by headings, other text in overlapping line windows, and large or mostly numeric data files (JSON/CSV/TSV) into one structure summary. Each chunk is embedded with `all-MiniLM-L6-v2`; a chunk whose text was already embedded (an unchanged function, a copied file) reuses its stored vector.
+- **Embedding runs off the event loop.** The model runs in a worker thread that starts on first use; call `db.close()` to release it.
+- **Search results point at the matching chunk.** `searchDocuments` ranks a document by its best chunk and returns that chunk's span as `matchedChunk` (`startLine`, `endLine`, `startChar`, `endChar`), or `null` when only the full-text lane matched.
+- **Re-syncing a source tree reads only what changed.** Pass a `fingerprint` (e.g. size and modification time) with each document, then ask which sources need reading:
+
+  ```typescript
+  const stale = await db.findStaleDocumentSrcs('my-project', [
+    { src: 'src/a.ts', fingerprint: '1024:1717171717' },
+  ])
+  // read only the files in `stale` into DocumentUpsertInputs, then:
+  await db.upsertDocuments(staleInputs) // rewrites only documents whose content changed
+  ```
+
+  `upsertDocuments` and `findStaleDocumentSrcs` take `{ includeOutdatedChunks: false }` for a quick pass that leaves documents chunked by an older chunker version for a later full one.
+
+- **Documents too large to index are kept, flagged.** A document whose words exceed Postgres's 1 MB full-text limit is stored without content or chunks and with `nonIndexableReason: 'too-large'`, so it stays findable by name and path; its batchmates are unaffected.
+
 ## Migrations
 
 `thefactory-db` ships with a first-class, deterministic database migration system using Postgres advisory locks. By default, calling `openDatabase` will automatically apply all pending schema changes.

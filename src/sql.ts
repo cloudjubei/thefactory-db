@@ -133,18 +133,40 @@ WHERE project_id = $1 AND src = $2;
 `
 
 const getChangingDocuments = `
-WITH input_docs(src, content) AS (
+WITH input_docs(src, content_hash) AS (
   SELECT * FROM unnest($2::text[], $3::text[])
 )
 SELECT i.src
 FROM input_docs i
 LEFT JOIN documents d ON d.project_id = $1 AND d.src = i.src
-WHERE d.id IS NULL OR d.content_hash IS DISTINCT FROM encode(digest(i.content, 'sha1'), 'hex');
+WHERE d.id IS NULL
+   OR d.content_hash IS DISTINCT FROM i.content_hash
+   OR ($4::int IS NOT NULL AND d.chunk_version IS DISTINCT FROM $4::int);
+`
+
+/** Records the new fingerprint of a source whose content did not change, so it is not read again. */
+const refreshDocumentFingerprints = `
+UPDATE documents d
+SET fingerprint = i.fingerprint
+FROM unnest($2::text[], $3::text[], $4::text[]) AS i(src, content_hash, fingerprint)
+WHERE d.project_id = $1
+  AND d.src = i.src
+  AND d.content_hash = i.content_hash
+  AND d.fingerprint IS DISTINCT FROM i.fingerprint;
+`
+
+const findStaleDocumentSrcs = `
+SELECT i.src
+FROM unnest($2::text[], $3::text[]) AS i(src, fingerprint)
+LEFT JOIN documents d ON d.project_id = $1 AND d.src = i.src
+WHERE d.id IS NULL
+   OR d.fingerprint IS DISTINCT FROM i.fingerprint
+   OR ($4::int IS NOT NULL AND d.chunk_version IS DISTINCT FROM $4::int);
 `
 
 const upsertDocument = `
-INSERT INTO documents (project_id, type, src, name, content, embedding, metadata)
-VALUES ($1, $2, $3, $4, $5, $6::vector, $7::jsonb)
+INSERT INTO documents (project_id, type, src, name, content, embedding, metadata, fingerprint, chunk_version)
+VALUES ($1, $2, $3, $4, $5, $6::vector, $7::jsonb, $8, $9)
 ON CONFLICT (project_id, src)
 DO UPDATE SET
   type = EXCLUDED.type,
@@ -152,9 +174,12 @@ DO UPDATE SET
   content = EXCLUDED.content,
   embedding = EXCLUDED.embedding,
   metadata = EXCLUDED.metadata,
+  fingerprint = EXCLUDED.fingerprint,
+  chunk_version = EXCLUDED.chunk_version,
   non_indexable_reason = NULL,
   updated_at = now()
 WHERE documents.content_hash IS DISTINCT FROM encode(digest(EXCLUDED.content, 'sha1'), 'hex')
+   OR documents.chunk_version IS DISTINCT FROM EXCLUDED.chunk_version
 RETURNING
   id,
   project_id AS "projectId",
@@ -170,8 +195,8 @@ RETURNING
 `
 
 const insertDocument = `
-INSERT INTO documents (project_id, type, src, name, content, embedding, metadata)
-VALUES ($1, $2, $3, $4, $5, $6::vector, $7::jsonb)
+INSERT INTO documents (project_id, type, src, name, content, embedding, metadata, fingerprint, chunk_version)
+VALUES ($1, $2, $3, $4, $5, $6::vector, $7::jsonb, $8, $9)
 RETURNING 
   id,
   project_id AS "projectId",
@@ -192,8 +217,8 @@ RETURNING
  * document from being embedded and rejected again on every ingestion.
  */
 const upsertNonIndexableDocument = `
-INSERT INTO documents (project_id, type, src, name, content, content_hash, embedding, metadata, non_indexable_reason)
-VALUES ($1, $2, $3, $4, '', encode(digest($5, 'sha1'), 'hex'), NULL, $6::jsonb, $7)
+INSERT INTO documents (project_id, type, src, name, content, content_hash, embedding, metadata, non_indexable_reason, fingerprint, chunk_version)
+VALUES ($1, $2, $3, $4, '', encode(digest($5, 'sha1'), 'hex'), NULL, $6::jsonb, $7, $8, $9)
 ON CONFLICT (project_id, src)
 DO UPDATE SET
   type = EXCLUDED.type,
@@ -203,9 +228,12 @@ DO UPDATE SET
   embedding = NULL,
   metadata = EXCLUDED.metadata,
   non_indexable_reason = EXCLUDED.non_indexable_reason,
+  fingerprint = EXCLUDED.fingerprint,
+  chunk_version = EXCLUDED.chunk_version,
   updated_at = now()
 WHERE documents.content_hash IS DISTINCT FROM EXCLUDED.content_hash
    OR documents.non_indexable_reason IS DISTINCT FROM EXCLUDED.non_indexable_reason
+   OR documents.chunk_version IS DISTINCT FROM EXCLUDED.chunk_version
 RETURNING
   id,
   project_id AS "projectId",
@@ -220,6 +248,24 @@ RETURNING
   to_jsonb(metadata) AS metadata;
 `
 
+const deleteDocumentChunks = `DELETE FROM document_chunks WHERE document_id = $1;`
+
+/** One row per chunk from parallel arrays; `$9` holds each embedding as vector text (`[0.1,…]`). */
+const insertDocumentChunks = `
+INSERT INTO document_chunks
+  (document_id, project_id, ord, kind, start_line, end_line, start_char, end_char, content_hash, embedding)
+SELECT $1, $2, ord, kind, start_line, end_line, start_char, end_char, content_hash, e::vector
+FROM unnest($3::int[], $4::text[], $5::int[], $6::int[], $7::int[], $8::int[], $10::text[], $9::text[])
+  AS t(ord, kind, start_line, end_line, start_char, end_char, content_hash, e);
+`
+
+/** A stored embedding for each chunk hash already embedded anywhere, so identical chunks are not embedded twice. */
+const findChunkEmbeddings = `
+SELECT DISTINCT ON (content_hash) content_hash, embedding::text AS embedding
+FROM document_chunks
+WHERE content_hash = ANY($1::text[]);
+`
+
 const updateDocument = `
 UPDATE documents SET
   type = COALESCE($2, type),
@@ -228,7 +274,8 @@ UPDATE documents SET
   content = COALESCE($5, content),
   embedding = COALESCE($6::vector, embedding),
   metadata = COALESCE($7::jsonb, metadata),
-  non_indexable_reason = CASE WHEN $5::text IS NULL THEN non_indexable_reason ELSE NULL END
+  non_indexable_reason = CASE WHEN $5::text IS NULL THEN non_indexable_reason ELSE NULL END,
+  chunk_version = CASE WHEN $5::text IS NULL THEN chunk_version ELSE $8::int END
 WHERE id = $1
 RETURNING 
   id,
@@ -561,6 +608,31 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;`
 
+/**
+ * One row per embedded piece of a document (see `src/chunking`): its span in the document's content
+ * (JS string offsets), the hash of the text embedded, and the vector. Deleting a document deletes
+ * its chunks; the semantic search lane ranks documents by their best chunk.
+ *
+ * There is deliberately no ANN index on `embedding`. Search always narrows to a few projects first,
+ * and an approximate index searched globally then filtered can leave a small project's chunks out
+ * of the candidates altogether; an HNSW index also made every chunk insert slower as the table grew.
+ */
+export const DOCUMENT_CHUNKS_TABLE = `CREATE TABLE IF NOT EXISTS document_chunks (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  document_id uuid NOT NULL REFERENCES documents(id) ON DELETE CASCADE,
+  project_id text NOT NULL,
+  ord integer NOT NULL,
+  kind text NOT NULL,
+  start_line integer NOT NULL,
+  end_line integer NOT NULL,
+  start_char integer NOT NULL,
+  end_char integer NOT NULL,
+  content_hash text NOT NULL,
+  embedding vector(384) NOT NULL
+);
+CREATE INDEX IF NOT EXISTS document_chunks_document_idx ON document_chunks (document_id);
+CREATE INDEX IF NOT EXISTS document_chunks_content_hash_idx ON document_chunks (content_hash);`
+
 // ----------------------------------------------------------
 const schema = `
 -- Enable required extensions
@@ -590,6 +662,8 @@ CREATE TABLE IF NOT EXISTS documents (
   content text,
   content_hash text,
   non_indexable_reason text,
+  fingerprint text,
+  chunk_version integer,
   fts tsvector GENERATED ALWAYS AS (
     to_tsvector('english', tokenize_code(name)) || to_tsvector('english', coalesce(tokenize_code(content), ''))
   ) STORED,
@@ -635,6 +709,8 @@ DROP TRIGGER IF EXISTS documents_set_content_hash ON documents;
 CREATE TRIGGER documents_set_content_hash
 BEFORE INSERT OR UPDATE ON documents
 FOR EACH ROW EXECUTE FUNCTION set_document_content_hash();
+
+${DOCUMENT_CHUNKS_TABLE}
 
 -- Entities table
 -- NOTE: Schema changes in this project are applied via 'CREATE TABLE IF NOT EXISTS'.
@@ -710,6 +786,12 @@ export const HYBRID_CANDIDATE_LIMIT_DEFAULT = 100
 export const HYBRID_CANDIDATE_LIMIT_MAX = 1000
 
 /**
+ * How many nearest chunks per document candidate the semantic lane reads before keeping each
+ * document's best: a document with several close chunks would otherwise crowd out the rest.
+ */
+const CHUNK_CANDIDATE_FACTOR = 4
+
+/**
  * Clamp a caller's per-lane candidate limit into the same bound the SQL enforces. Mirrored in TS so the
  * value bound into the query is the value that will be used — a caller reading the parameter back gets the
  * truth, rather than a number the database silently overrode.
@@ -728,6 +810,11 @@ export const HYBRID_SEARCH_DOCUMENTS_FUNCTION = `
 -- candidate_limit would create a SECOND overload and, both having defaults, an 8-arg call would then
 -- fail as ambiguous rather than resolving.
 DROP FUNCTION IF EXISTS hybrid_search_documents(text, vector, integer, jsonb, float, float, float, float, integer);
+-- A RETURNS TABLE change (the best chunk's span) cannot go through CREATE OR REPLACE either.
+DROP FUNCTION IF EXISTS hybrid_search_documents(text, vector, integer, jsonb, float, float, float, float, integer, integer);
+-- Migration 005 installs this same definition before 008 creates document_chunks; the body is
+-- checked when it runs, not when an older migration installs it.
+SET LOCAL check_function_bodies = off;
 
 CREATE OR REPLACE FUNCTION hybrid_search_documents(
   query_text        text,
@@ -755,9 +842,14 @@ RETURNS TABLE (
   similarity float,
   cosine_similarity float,
   keyword_score float,
-  literal_score float
+  literal_score float,
+  chunk_start_line integer,
+  chunk_end_line integer,
+  chunk_start_char integer,
+  chunk_end_char integer
 )
-LANGUAGE sql AS
+LANGUAGE sql
+AS
 $$
 WITH base_documents AS (
   SELECT *
@@ -826,14 +918,33 @@ full_text as (
   FROM token_scores ts
   limit ${CANDIDATE_LIMIT_SQL}
 ),
--- Rank documents based on semantic similarity
+-- The filtered documents' chunks, materialised so they are ranked exactly, never through an index
+filtered_chunks AS MATERIALIZED (
+  SELECT c.document_id, c.start_line, c.end_line, c.start_char, c.end_char, c.embedding
+  FROM document_chunks c
+  JOIN base_documents bd ON bd.id = c.document_id
+  WHERE query_embedding IS NOT NULL
+),
+-- The chunks nearest the query
+chunk_hits AS (
+  SELECT fc.document_id, fc.start_line, fc.end_line, fc.start_char, fc.end_char,
+         fc.embedding <=> query_embedding AS distance
+  FROM filtered_chunks fc
+  ORDER BY distance
+  LIMIT ${CANDIDATE_LIMIT_SQL} * ${CHUNK_CANDIDATE_FACTOR}
+),
+-- Each document's best chunk (MaxP: a document matches as well as its best passage)
+best_chunks AS (
+  SELECT DISTINCT ON (ch.document_id) ch.*
+  FROM chunk_hits ch
+  ORDER BY ch.document_id, ch.distance
+),
+-- Rank documents by their best chunk
 semantic AS (
-  SELECT id,
-         row_number() OVER (
-           ORDER BY embedding <#> query_embedding
-         ) AS rank_ix
-  FROM base_documents
-  WHERE embedding IS NOT NULL
+  SELECT document_id AS id,
+         row_number() OVER (ORDER BY distance) AS rank_ix
+  FROM best_chunks
+  ORDER BY distance
   LIMIT ${CANDIDATE_LIMIT_SQL}
 ),
 -- Combine ranks using RRF
@@ -866,13 +977,18 @@ SELECT d.id,
          WHERE t.ts_query IS NOT NULL AND to_tsvector('english', tokenize_code(d.name)) @@ t.ts_query
        ) THEN name_weight ELSE 0 END)
        / ((full_text_weight + semantic_weight + literal_weight) / (rrf_k + 1)::float) AS similarity,
-       COALESCE(1 - (embedding <=> query_embedding) / 2, 0) AS cosine_similarity,
+       COALESCE(1 - bc.distance / 2, 0) AS cosine_similarity,
        COALESCE(ts.token_score, 0.0) AS keyword_score,
-       COALESCE(ls.literal_count, 0) AS literal_score
+       COALESCE(ls.literal_count, 0) AS literal_score,
+       bc.start_line AS chunk_start_line,
+       bc.end_line AS chunk_end_line,
+       bc.start_char AS chunk_start_char,
+       bc.end_char AS chunk_end_char
 FROM scored
 JOIN base_documents d ON d.id = scored.id
 LEFT JOIN token_scores ts ON ts.id = d.id
 LEFT JOIN literal_search ls ON ls.id = d.id
+LEFT JOIN best_chunks bc ON bc.document_id = d.id
 ORDER BY rrf_score DESC, cosine_similarity DESC, keyword_score DESC, literal_score DESC, d.name ASC, d.updated_at DESC
 LIMIT match_count;
 $$;
@@ -1063,7 +1179,11 @@ SELECT
   literal_score as "textScore",
   keyword_score as "keywordScore",
   cosine_similarity as "vecScore",
-  similarity as "totalScore"
+  similarity as "totalScore",
+  chunk_start_line AS "chunkStartLine",
+  chunk_end_line AS "chunkEndLine",
+  chunk_start_char AS "chunkStartChar",
+  chunk_end_char AS "chunkEndChar"
 FROM hybrid_search_documents($1, $2::vector, $3::int, $4::jsonb, $5::float, $6::float, $7::float, $8::float, $9::int, $10::int);
 `
 
@@ -1242,7 +1362,7 @@ LIMIT COALESCE($2::int, 100);
 `
 
 // Clear helpers
-const clearDocuments = `TRUNCATE TABLE documents RESTART IDENTITY;`
+const clearDocuments = `TRUNCATE TABLE document_chunks, documents RESTART IDENTITY;`
 const clearDocumentsByProject = `DELETE FROM documents WHERE project_id = ANY($1::text[]);`
 const clearEntitiesByProject = `DELETE FROM entities WHERE project_id = ANY($1::text[]);`
 const clearEntitiesByProjectAndType = `DELETE FROM entities WHERE project_id = ANY($1::text[]) AND type = ANY($2::text[]);`
@@ -1294,6 +1414,11 @@ export const SQL = {
   getDocumentById,
   getDocumentBySrc,
   getChangingDocuments,
+  refreshDocumentFingerprints,
+  deleteDocumentChunks,
+  insertDocumentChunks,
+  findChunkEmbeddings,
+  findStaleDocumentSrcs,
   upsertDocument,
   upsertNonIndexableDocument,
   insertDocument,

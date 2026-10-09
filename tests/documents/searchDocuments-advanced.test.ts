@@ -64,7 +64,7 @@ function createMockDb() {
     createdAt: string
     updatedAt: string
     metadata: any
-    embedding: Float32Array
+    chunkEmbeddings: Float32Array[]
   }
 
   const docs: Doc[] = []
@@ -85,20 +85,32 @@ function createMockDb() {
     release: vi.fn(),
   }
 
-  const client = {
-    connect: vi.fn(async () => lockClient),
+  // A checked-out connection answers the migration runner's lock and version queries itself and
+  // hands every other statement (a document write's transaction) to the same fake as the pool.
+  const connect = vi.fn(async () => ({
+    query: async (sql: string, args?: unknown[]) => {
+      const s = (sql || '').toLowerCase()
+      if (s.includes('advisory') || s.includes('schema_version') || s.includes('thefactory.')) {
+        return lockClient.query(sql)
+      }
+      return client.query(sql, args)
+    },
+    release: vi.fn(),
+  }))
+  const client: any = {
+    connect,
     query: vi.fn(async (sql: string, args?: any[]) => {
       const normalized = (sql || '').trim()
 
       switch (normalized) {
         case 'insertDocument': {
-          const [projectId, type, src, name, content, embeddingLit, metadata] = args as [
+          const [projectId, type, src, name, content, , metadata] = args as [
             string,
             string,
             string,
             string,
             string,
-            string,
+            null,
             any,
           ]
           const id = String(seq++)
@@ -114,7 +126,7 @@ function createMockDb() {
             createdAt,
             updatedAt,
             metadata,
-            embedding: parseVectorLiteral(embeddingLit),
+            chunkEmbeddings: [],
           })
           return {
             rows: [
@@ -156,8 +168,9 @@ function createMockDb() {
           }
 
           function semanticScore(doc: Doc): number {
-            if (qvec.length === 0 || doc.embedding.length === 0) return 0
-            return cosine(qvec, doc.embedding)
+            // A document scores as its best chunk (MaxP), as hybrid_search_documents ranks it.
+            if (qvec.length === 0) return 0
+            return Math.max(0, ...doc.chunkEmbeddings.map((e) => cosine(qvec, e)))
           }
 
           const scored = docs.map((d) => {
@@ -183,6 +196,13 @@ function createMockDb() {
 
           scored.sort((a, b) => b.totalScore - a.totalScore)
           return { rows: scored.filter((r) => r.totalScore > 0).slice(0, limit) }
+        }
+
+        case 'insertDocumentChunks': {
+          const [documentId, , , , , , , , embeddings] = args as [string, ...unknown[]]
+          const doc = docs.find((d) => d.id === documentId)
+          if (doc) doc.chunkEmbeddings = (embeddings as string[]).map(parseVectorLiteral)
+          return { rows: [] }
         }
 
         case 'searchDocumentsByName': {
@@ -214,6 +234,9 @@ vi.mock('../../src/sql', async (importOriginal) => ({
   ...(await importOriginal<typeof import('../../src/sql')>()),
   SQL: {
     insertDocument: 'insertDocument',
+    insertDocumentChunks: 'insertDocumentChunks',
+    deleteDocumentChunks: 'deleteDocumentChunks',
+    findChunkEmbeddings: 'findChunkEmbeddings',
     searchDocumentsQuery: 'searchDocumentsQuery',
     searchDocumentsByName: 'searchDocumentsByName',
   },
@@ -251,6 +274,7 @@ describe('Documents.searchDocuments (advanced)', () => {
 
     mockEmbeddingProvider = {
       embed: vi.fn((t: string) => testProvider.embed(t)),
+      embedBatch: vi.fn(async (texts: string[]) => texts.map((t) => testProvider.embed(t))),
       close: vi.fn(),
     }
   })

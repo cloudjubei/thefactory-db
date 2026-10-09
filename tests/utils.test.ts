@@ -6,7 +6,6 @@ import {
   normalizePathPrefix,
   escapeLikePattern,
   toTokens,
-  buildEmbeddingTextForDoc,
   toVectorLiteral,
   nonIndexableReasonFor,
 } from '../src/utils'
@@ -62,13 +61,6 @@ describe('utils.toTokens', () => {
 
   it('splits on commas/semicolons and drops empties', () => {
     expect(toTokens('a, b ; ;c,')).toEqual(['a', 'b', 'c'])
-  })
-})
-
-describe('utils.buildEmbeddingTextForDoc', () => {
-  it('joins type/name/src/content with newlines and skips falsy parts', () => {
-    expect(buildEmbeddingTextForDoc('t', 'body', undefined, undefined)).toBe('t\nbody')
-    expect(buildEmbeddingTextForDoc('t', 'body', 'name', 'src')).toBe('t\nname\nsrc\nbody')
   })
 })
 

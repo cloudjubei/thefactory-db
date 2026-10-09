@@ -100,12 +100,12 @@ function collectProjectFiles(root: string): string[] {
       'src/migrations/005-hybrid-search-candidate-limit.ts',
       'src/sql.ts',
       'src/client/documents.ts',
+      'docs/FILE_ORGANISATION.md',
       'src/validation.ts',
       'src/client/entities.ts',
-      'docs/FILE_ORGANISATION.md',
       'src/types.ts',
       'src/migrations/001-init.ts',
-      'README.md',
+      'src/utils/embeddings.ts',
     ])
   })
 
@@ -115,14 +115,14 @@ function collectProjectFiles(root: string): string[] {
     expect(srcs).toEqual([
       'docs/SEARCH_IMPROVED.md',
       'src/migrations/005-hybrid-search-candidate-limit.ts',
-      'src/migrations/003-entities-external-key.ts',
+      'src/client/documents.ts',
+      'src/sql.ts',
+      'docs/FILE_ORGANISATION.md',
       'src/migrations/001-init.ts',
+      'src/types.ts',
+      'src/client/entities.ts',
       'scripts/example.ts',
-      'scripts/test.ts',
-      'src/utils.ts',
-      'src/validation.ts',
-      'src/client/types.ts',
-      'docs/CODE_STANDARD.md',
+      'src/migrations/003-entities-external-key.ts',
     ])
   })
 
@@ -132,14 +132,14 @@ function collectProjectFiles(root: string): string[] {
     expect(srcs).toEqual([
       'docs/SEARCH_IMPROVED.md',
       'src/migrations/005-hybrid-search-candidate-limit.ts',
-      'src/validation.ts',
-      'src/migrations/001-init.ts',
-      'src/migrations/003-entities-external-key.ts',
-      'scripts/example.ts',
-      'src/types.ts',
-      'src/client/types.ts',
+      'src/client/documents.ts',
       'src/sql.ts',
       'docs/FILE_ORGANISATION.md',
+      'src/client/entities.ts',
+      'src/migrations/001-init.ts',
+      'src/types.ts',
+      'src/validation.ts',
+      'scripts/example.ts',
     ])
   })
 
@@ -156,7 +156,7 @@ function collectProjectFiles(root: string): string[] {
       'docker-compose.yml',
       'docker-compose.e2e.yml',
       'src/migrations/001-init.ts',
-      'src/connection.ts',
+      'docs/TESTING.md',
     ])
   })
   it('w=0 (semantic-only): "pgvector" should find files related to vector databases', async () => {
@@ -165,14 +165,14 @@ function collectProjectFiles(root: string): string[] {
     expect(srcs).toEqual([
       'README.md',
       'docker-compose.yml',
-      'src/migrations/001-init.ts',
-      'docker-compose.e2e.yml',
-      'src/connection.ts',
+      'src/runtime.ts',
       'docs/FILE_ORGANISATION.md',
-      'scripts/example.ts',
-      '.prettierignore',
-      'docs/TESTING_E2E.md',
+      'docker-compose.e2e.yml',
       'docs/CODE_STANDARD.md',
+      'docs/TESTING_E2E.md',
+      'src/migrations/001-init.ts',
+      'docs/TESTING.md',
+      'src/sql.ts',
     ])
   })
 })

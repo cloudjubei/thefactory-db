@@ -70,14 +70,37 @@ function createMockDb() {
     _docs: docs,
   }
 
-  attachMigrationSupport(client)
+  return withDocumentTransactions(attachMigrationSupport(client))
+}
+
+/**
+ * A connection that answers the migration runner's lock and version queries from the migration
+ * client and hands every other statement (a document write's transaction) to the pool fake.
+ */
+function withDocumentTransactions(client: any) {
+  const migrationConnect = client.connect
+  client.connect = vi.fn(async () => {
+    const lock = await migrationConnect()
+    return {
+      query: (sql: string, args?: unknown[]) =>
+        /advisory|schema_version|thefactory\./i.test(sql)
+          ? lock.query(sql)
+          : client.query(sql, args),
+      release: vi.fn(),
+    }
+  })
   return client
 }
 
 describe('Direct name/src search (contract + interleaving)', () => {
   const mockDb = createMockDb()
   const mockLogger = { debug: vi.fn(), info: vi.fn(), warn: vi.fn(), error: vi.fn() }
-  const mockEmb = { embed: vi.fn().mockResolvedValue(new Float32Array([0.1, 0.2, 0.3])) }
+  const mockEmb = {
+    embed: vi.fn().mockResolvedValue(new Float32Array([0.1, 0.2, 0.3])),
+    embedBatch: vi.fn(async (texts: string[]) =>
+      texts.map(() => new Float32Array([0.1, 0.2, 0.3])),
+    ),
+  }
 
   beforeEach(() => {
     vi.clearAllMocks()

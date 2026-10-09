@@ -1,5 +1,8 @@
 import { createHash } from 'node:crypto'
+
+import pg from 'pg'
 import { describe, it, expect, beforeAll, afterAll } from 'vitest'
+
 import { openDatabase } from '../../src/index'
 
 const RUN = process.env.RUN_E2E === '1'
@@ -14,13 +17,38 @@ function oversizedContent(): string {
 
 ;(RUN && DATABASE_URL ? describe : describe.skip)('E2E: Documents that cannot be indexed', () => {
   let db: Awaited<ReturnType<typeof openDatabase>>
+  let raw: pg.Pool
 
   beforeAll(async () => {
     db = await openDatabase({ connectionString: DATABASE_URL, logLevel: 'error' })
+    raw = new pg.Pool({ connectionString: DATABASE_URL })
   })
 
   afterAll(async () => {
     await db.close()
+    await raw.end()
+  })
+
+  it('keeps no chunks for an oversized document, so no search matches its content', async () => {
+    const projectId = `e2e-nonidx-chunks-${Date.now()}`
+    await db.upsertDocuments([
+      {
+        projectId,
+        type: 'json',
+        src: 'data/BTC.json',
+        name: 'BTC.json',
+        content: oversizedContent(),
+      },
+    ])
+    const flagged = await db.getDocumentBySrc(projectId, 'data/BTC.json')
+
+    const { rows } = await raw.query(
+      'SELECT count(*)::int AS n FROM document_chunks WHERE document_id = $1',
+      [flagged!.id],
+    )
+    expect(rows[0].n).toBe(0)
+
+    await db.clearDocuments([projectId])
   })
 
   it('stores an oversized document flagged as non-indexable and still commits its batchmates', async () => {

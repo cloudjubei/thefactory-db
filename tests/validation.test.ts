@@ -46,6 +46,13 @@ describe('validation', () => {
         assertDocumentInput({ projectId: 'p', type: 't', src: 's', metadata: 'x' as any }),
       ).toThrow()
     })
+    it('accepts a string fingerprint and rejects any other', () => {
+      const base = { projectId: 'p', type: 't', src: 's', name: 'n', content: 'c' }
+      expect(() => assertDocumentInput({ ...base, fingerprint: '12:34' })).not.toThrow()
+      expect(() => assertDocumentInput({ ...base, fingerprint: 12 as any })).toThrow(
+        'DocumentInput.fingerprint must be a string if provided',
+      )
+    })
   })
 
   describe('assertDocumentPatch', () => {

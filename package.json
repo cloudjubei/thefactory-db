@@ -44,7 +44,11 @@
     "js-tiktoken": "^1.0.21",
     "pg": "^8.16.3",
     "testcontainers": "^11.8.0",
-    "uuid": "^13.0.0"
+    "tree-sitter-javascript": "^0.25.0",
+    "tree-sitter-python": "^0.25.0",
+    "tree-sitter-typescript": "^0.23.2",
+    "uuid": "^13.0.0",
+    "web-tree-sitter": "^0.25.10"
   },
   "devDependencies": {
     "@types/dockerode": "^3.3.45",

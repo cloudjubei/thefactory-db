@@ -175,7 +175,7 @@ describe('SQL — documents that cannot be indexed', () => {
 
   it('upsertNonIndexableDocument stores no content or embedding but the hash of the content given', () => {
     expect(SQL.upsertNonIndexableDocument).toMatch(
-      /VALUES \(\$1, \$2, \$3, \$4, '', encode\(digest\(\$5, 'sha1'\), 'hex'\), NULL, \$6::jsonb, \$7\)/,
+      /VALUES \(\$1, \$2, \$3, \$4, '', encode\(digest\(\$5, 'sha1'\), 'hex'\), NULL, \$6::jsonb, \$7, \$8, \$9\)/,
     )
     expect(SQL.upsertNonIndexableDocument).toMatch(
       /content = '',\s*content_hash = EXCLUDED\.content_hash,\s*embedding = NULL,/,
@@ -196,5 +196,109 @@ describe('SQL — documents that cannot be indexed', () => {
     expect(SQL.updateDocument).toMatch(
       /non_indexable_reason = CASE WHEN \$5::text IS NULL THEN non_indexable_reason ELSE NULL END/,
     )
+  })
+})
+
+describe('SQL — change detection and fingerprints', () => {
+  it('getChangingDocuments compares stored hashes with hashes it is given, not content', () => {
+    expect(SQL.getChangingDocuments).toMatch(/unnest\(\$2::text\[\], \$3::text\[\]\)/)
+    expect(SQL.getChangingDocuments).toMatch(/d\.content_hash IS DISTINCT FROM i\.content_hash/)
+    expect(SQL.getChangingDocuments).not.toContain('digest(')
+  })
+
+  it('findStaleDocumentSrcs returns sources missing or stored under another fingerprint', () => {
+    expect(SQL.findStaleDocumentSrcs).toMatch(
+      /LEFT JOIN documents d ON d\.project_id = \$1 AND d\.src = i\.src/,
+    )
+    expect(SQL.findStaleDocumentSrcs).toMatch(
+      /WHERE d\.id IS NULL\s+OR d\.fingerprint IS DISTINCT FROM i\.fingerprint/,
+    )
+  })
+
+  it('refreshDocumentFingerprints only touches rows whose content is unchanged', () => {
+    expect(SQL.refreshDocumentFingerprints).toMatch(/d\.content_hash = i\.content_hash/)
+    expect(SQL.refreshDocumentFingerprints).toMatch(
+      /d\.fingerprint IS DISTINCT FROM i\.fingerprint/,
+    )
+  })
+
+  it.each([
+    ['upsertDocument', SQL.upsertDocument],
+    ['upsertNonIndexableDocument', SQL.upsertNonIndexableDocument],
+  ])('%s stores the fingerprint it is given', (_name, sql) => {
+    expect(sql).toMatch(/fingerprint = EXCLUDED\.fingerprint/)
+  })
+
+  it('schema declares the fingerprint column on documents', () => {
+    expect(SQL.schema).toMatch(/CREATE TABLE IF NOT EXISTS documents \([^;]*\bfingerprint text,/)
+  })
+})
+
+describe('SQL — document chunks', () => {
+  it('schema declares the chunks table, cascading from its document, and the chunk version', () => {
+    expect(SQL.schema).toMatch(
+      /CREATE TABLE IF NOT EXISTS document_chunks \([^;]*document_id uuid NOT NULL REFERENCES documents\(id\) ON DELETE CASCADE/,
+    )
+    expect(SQL.schema).toMatch(
+      /CREATE TABLE IF NOT EXISTS documents \([^;]*\bchunk_version integer,/,
+    )
+    // No ANN index: the semantic lane ranks a filtered set of chunks exactly (see below).
+    expect(SQL.schema).not.toMatch(/document_chunks USING hnsw/)
+  })
+
+  it('getChangingDocuments treats another chunk version as a change only when given a version', () => {
+    expect(SQL.getChangingDocuments).toMatch(
+      /OR \(\$4::int IS NOT NULL AND d\.chunk_version IS DISTINCT FROM \$4::int\)/,
+    )
+  })
+
+  it('findStaleDocumentSrcs counts another chunk version as stale only when given a version', () => {
+    expect(SQL.findStaleDocumentSrcs).toMatch(
+      /OR \(\$4::int IS NOT NULL AND d\.chunk_version IS DISTINCT FROM \$4::int\)/,
+    )
+  })
+
+  it.each([
+    ['upsertDocument', SQL.upsertDocument],
+    ['upsertNonIndexableDocument', SQL.upsertNonIndexableDocument],
+  ])(
+    '%s rewrites a document chunked by another version even when its content is unchanged',
+    (_name, sql) => {
+      expect(sql).toMatch(/OR documents\.chunk_version IS DISTINCT FROM EXCLUDED\.chunk_version/)
+      expect(sql).toMatch(/chunk_version = EXCLUDED\.chunk_version/)
+    },
+  )
+
+  it("replaces a document's chunks from parallel arrays, embeddings as vector text", () => {
+    expect(SQL.deleteDocumentChunks).toBe('DELETE FROM document_chunks WHERE document_id = $1;')
+    expect(SQL.insertDocumentChunks).toMatch(/INSERT INTO document_chunks/)
+    expect(SQL.insertDocumentChunks).toMatch(/e::vector/)
+  })
+
+  it('looks up stored embeddings by chunk hash, one per hash', () => {
+    expect(SQL.findChunkEmbeddings).toMatch(
+      /SELECT DISTINCT ON \(content_hash\) content_hash, embedding::text/,
+    )
+  })
+
+  it('clears documents together with their chunks', () => {
+    expect(SQL.clearDocuments).toBe('TRUNCATE TABLE document_chunks, documents RESTART IDENTITY;')
+  })
+
+  it("ranks the semantic lane by each document's best chunk and returns that chunk's span", () => {
+    const fn = SQL.hybridSearch
+    expect(fn).toMatch(/FROM document_chunks c/)
+    // Exact: the filtered chunks are materialised first, so no approximate index can drop a small
+    // project's chunks from the candidates.
+    expect(fn).toMatch(/filtered_chunks AS MATERIALIZED \(/)
+    expect(fn).not.toMatch(/hnsw\.iterative_scan/)
+    expect(fn).toMatch(/DISTINCT ON \(ch\.document_id\)/)
+    expect(fn).toMatch(
+      /RETURNS TABLE \([^)]*chunk_start_line integer,\s*chunk_end_line integer,\s*chunk_start_char integer,\s*chunk_end_char integer/,
+    )
+    expect(fn).not.toMatch(
+      /ORDER BY embedding <#> query_embedding\s*\)\s*AS rank_ix\s*FROM base_documents/,
+    )
+    expect(SQL.searchDocumentsQuery).toContain('chunk_start_line AS "chunkStartLine"')
   })
 })

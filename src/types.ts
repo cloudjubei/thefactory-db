@@ -55,6 +55,27 @@ export type DocumentInput = {
   name: string
   content: string
   metadata?: Record<string, any>
+  /**
+   * A cheap identity of the document's source, chosen by the caller (a file's size and modification
+   * time, say). Stored with the document; {@link DocumentSourceFingerprint}s passed to
+   * `findStaleDocumentSrcs` are compared with it so unchanged sources need not be read at all.
+   */
+  fingerprint?: string
+}
+
+/** Options for `findStaleDocumentSrcs`. */
+export type FindStaleDocumentsOptions = {
+  /**
+   * Also report sources whose stored document was chunked by another chunker version (default
+   * true). False finds only sources that changed, e.g. for a quick pass that leaves re-chunking for later.
+   */
+  includeOutdatedChunks?: boolean
+}
+
+/** A source's current fingerprint, compared by `findStaleDocumentSrcs` with the stored one. */
+export type DocumentSourceFingerprint = {
+  src: string
+  fingerprint: string
 }
 export type DocumentUpsertInput = DocumentInput & Pick<DocumentInput, 'content' | 'src'>
 
@@ -72,6 +93,19 @@ export type DocumentWithScore = Document & {
   vecScore: number | null
   /** The combined total relevance score. */
   totalScore: number
+  /**
+   * The span of the document's chunk nearest the query (lines 1-based; characters index `content`
+   * as a JS string), when the semantic lane ranked it; null otherwise.
+   */
+  matchedChunk?: DocumentChunkMatch | null
+}
+
+/** Where in a document the chunk that matched a search lies. */
+export type DocumentChunkMatch = {
+  startLine: number
+  endLine: number
+  startChar: number
+  endChar: number
 }
 
 // Entities (json)

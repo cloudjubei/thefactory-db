@@ -13,7 +13,12 @@ vi.mock('../../src/utils/embeddings')
 describe('db.searchDocumentsForKeywords', () => {
   let mockDb: any
   const mockLogger = { debug: vi.fn(), info: vi.fn(), warn: vi.fn(), error: vi.fn() }
-  const mockEmb = { embed: vi.fn().mockResolvedValue(new Float32Array([0.1, 0.2, 0.3])) }
+  const mockEmb = {
+    embed: vi.fn().mockResolvedValue(new Float32Array([0.1, 0.2, 0.3])),
+    embedBatch: vi.fn(async (texts: string[]) =>
+      texts.map(() => new Float32Array([0.1, 0.2, 0.3])),
+    ),
+  }
 
   beforeEach(() => {
     vi.clearAllMocks()

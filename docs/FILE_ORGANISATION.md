@@ -15,7 +15,9 @@
   - `src/index.ts`: Public entry point. Exports `openDatabase(options)` which returns a `Database` API instance. Also re-exports runtime lifecycle helpers: `createDatabase`, `destroyDatabase`, and `createReusableDatabase`.
     - Documents API (text content)
       - `addDocument`, `getDocumentById`, `getDocumentBySrc`, `updateDocument`, `deleteDocument`, `listDocumentSrcs`, `deleteDocumentsBySrc`
-      - `searchDocuments`, `matchDocuments`, `clearDocuments`
+      - `upsertDocuments(inputs, options?)`, `upsertDocument(input)` — write only documents whose content (or chunk version) changed, each in its own savepoint; `options.includeOutdatedChunks: false` leaves re-chunking for an older `CHUNKER_VERSION` to a later pass.
+      - `findStaleDocumentSrcs(projectId, sources, options?)` — of `{ src, fingerprint }` pairs, the srcs not stored or stored under another fingerprint (or, unless `includeOutdatedChunks: false`, chunked by an older version): the only sources a re-sync needs to read.
+      - `searchDocuments`, `matchDocuments`, `clearDocuments`, `searchDocumentsForPaths`, `searchDocumentsForKeywords`, `searchDocumentsForExact`
     - Entities API (json content)
       - `addEntity`, `upsertEntity`, `getEntityById`, `getEntityByExternalKey`, `updateEntity`, `deleteEntity`
       - `searchEntities`, `matchEntities`, `countEntities`, `clearEntities`
@@ -34,8 +36,18 @@
   - `src/logger.ts`: Small logger abstraction with log level filtering.
   - `src/validation.ts`: Runtime input validation for public API methods. Ensures inbound parameters conform to expected shapes and types (documents, entities, search and match params). Tests verify malformed inputs are rejected.
   - `src/utils.ts`: Embedded SQL strings and small helpers (e.g., base64 decoding).
-  - `src/utils/embeddings.ts`: Local embedding provider wrapper around Transformers.js.
+  - `src/utils/embeddings.ts`: Local embedding provider wrapper around Transformers.js. `createLocalEmbeddingProvider` (the default) runs the model in a worker thread started from this same module on first use, so inference never blocks the caller's event loop: `createWorkerEmbeddingProvider` is the caller's side (request ids, ref/unref, crash recovery, a graceful `close` that terminates only after `EMBEDDING_WORKER_CLOSE_GRACE_MS`) and `runEmbeddingWorker` the worker's loop. `createInProcessEmbeddingProvider` runs the model on the calling thread.
   - `src/utils/json.ts`: JSON value stringifier used for entity embeddings/FTS.
+  - `src/chunking/`: cuts a document into the pieces that get embedded. Every chunk's text starts with a header line naming the path and the enclosing scope or heading path. `CHUNKER_VERSION` is bumped whenever chunking changes.
+    - `chunkDocument.ts`: `chunkDocument(src, content)` — picks the chunker by extension, numbers chunk lines, and yields one empty chunk for a file with no text so its path stays findable.
+    - `codeChunker.ts`: code with a tree-sitter grammar (TS/TSX/JS/Python, wasm grammars from the `tree-sitter-*` packages), chunked along syntax (cAST: siblings packed up to `CHUNK_MAX_CHARS`, oversized nodes entered, a declaration's opening kept with its first member, an oversized leaf cut into line windows).
+    - `markdownChunker.ts`: markdown by headings, then paragraphs, then windows; fenced blocks never start a section.
+    - `textChunker.ts`: any other text, by overlapping line-aligned windows.
+    - `dataSummary.ts`: bulk data files (`DATA_FILE_EXTS`, large or mostly digits) become one structure summary — JSON key paths with types, a CSV/TSV header and row count, and a sample record.
+    - `spans.ts`: span helpers the chunkers share (`trimSpan`, `windowSpans`, `packSpans`).
+    - `chunkingConstants.ts`, `chunkingTypes.ts`: limits, grammars and extension sets; chunk and span types.
+  - `src/client/documentChunks.ts`: `createChunkWriter` — chunks documents, embeds each chunk (reusing the stored vector of any chunk hash this model already embedded), and replaces a document's chunk rows inside the caller's transaction.
+  - `src/client/documents.ts`: the Documents API; batch writes run in one transaction on a dedicated connection, one savepoint per document.
   - `src/utils/tokenizer.ts`: Tokenizer helpers and FTS normalization utilities.
   - `src/utils/hash.ts`: Hashing utility for content checks.
   - `src/migrations/`: Version-keyed schema migrations, applied on connect. `index.ts` is the ordered registry; the runtime path is these migrations (not `SQL.schema`/`SQL.hybridSearch`, which are reference copies). Migration `005` makes the hybrid-search per-lane candidate ceiling a parameter and installs both functions from the single definitions in `src/sql.ts` (`HYBRID_SEARCH_DOCUMENTS_FUNCTION` / `HYBRID_SEARCH_ENTITIES_FUNCTION`) so a migration copy can never drift from the runtime one — the failure `004` exists to repair.
@@ -54,7 +66,7 @@
 
 ## Database Schema
 
-Two tables are maintained:
+Three tables are maintained:
 
 - `documents` (text content)
   - `id` (uuid primary key, default `gen_random_uuid()`)
@@ -62,13 +74,21 @@ Two tables are maintained:
   - `type` (text not null)
   - `name` (text not null) — human-friendly title used for keyword ranking
   - `content` (text)
-  - `content_hash` (text) — SHA1 hash of content, used to avoid re-embedding unchanged documents.
-  - `non_indexable_reason` (text, nullable) — set when Postgres cannot index the document (`too-large`: its lexemes exceed the 1 MB tsvector limit). Such a row is stored with empty `content` and no embedding, so it is findable by name and path only; `content_hash` stays the hash of the content it was given, so an unchanged document is not retried. `upsertDocuments` writes each document in its own savepoint: a non-indexable one is stored this way and logged at warn, and one that fails for any other reason is skipped and logged without failing its batch.
+  - `content_hash` (text) — SHA1 hash of content, used to avoid re-embedding unchanged documents. `upsertDocuments` hashes in Node and sends only hashes for change detection.
+  - `non_indexable_reason` (text, nullable) — set when Postgres cannot index the document (`too-large`: its lexemes exceed the 1 MB tsvector limit). Such a row is stored with empty `content`, no embedding and no chunks, so it is findable by name and path only; `content_hash` stays the hash of the content it was given, so an unchanged document is not retried. `upsertDocuments` writes each document in its own savepoint: a non-indexable one is stored this way and logged at warn, and one that fails for any other reason is skipped and logged without failing its batch.
+  - `fingerprint` (text, nullable) — a cheap, caller-defined identity of the source (thefactory-tools uses a file's size and mtime). `findStaleDocumentSrcs` returns the sources missing or stored under another fingerprint, so a re-sync reads only those; `upsertDocuments` refreshes the fingerprint of a document whose content did not change, without rewriting it.
+  - `chunk_version` (integer, nullable) — the `CHUNKER_VERSION` the document's chunks were cut with; a document chunked by another version counts as changed and stale, so a version bump re-chunks everything on the next sync.
   - `fts` (tsvector, generated from `name` and `content`)
-  - `embedding` (vector(384))
+  - `embedding` (vector(384)) — no longer written for documents; semantic search uses `document_chunks`.
   - `src` (text not null)
   - `created_at`, `updated_at` (timestamptz, `updated_at` maintained via trigger)
   - `metadata` (jsonb)
+
+- `document_chunks` (one row per embedded piece of a document)
+  - `document_id` (uuid, references `documents` on delete cascade), `project_id`, `ord`, `kind` (`code` | `markdown` | `text` | `summary`)
+  - `start_line`, `end_line` (1-based), `start_char`, `end_char` (JS string offsets into the document's content)
+  - `content_hash` — SHA-1 of the embedding model's name and the chunk text, the key under which an identical chunk's vector is reused
+  - `embedding` (vector(384)). No ANN index: the semantic lane ranks the filtered projects' chunks exactly.
 
 - `entities` (jsonb content)
   - `id` (uuid primary key, default `gen_random_uuid()`)
@@ -88,6 +108,7 @@ Embedding dimension is 384 and requires the `pgvector` extension.
 
 ## Hybrid Search
 
+- Documents' semantic lane ranks each document by its best chunk (MaxP) and returns that chunk's span (`startLine`/`endLine`, `startChar`/`endChar`) as `matchedChunk`; a name match the hybrid search also found carries the same.
 - `searchDocuments` and `searchEntities` combine text rank (`ts_rank_cd` over `tsvector` using `websearch_to_tsquery`) and vector similarity (cosine similarity) with a weight factor (`textWeight` in [0,1]). Filters (`ids`/`types`/`projectIds`) are passed through as JSON parameters.
 - `candidateLimit` (default `HYBRID_CANDIDATE_LIMIT_DEFAULT` = 100, clamped to `[1, HYBRID_CANDIDATE_LIMIT_MAX]` = 1000) bounds how many rows EACH ranked lane (full-text, semantic) contributes before the reciprocal-rank join. It was previously hardcoded at 60 while the literal-substring lane stayed uncapped, so past 60 rows per signal the ordering came from raw substring count alone. The clamp is applied both in TypeScript (`resolveCandidateLimit`) and inside the SQL, so a `raw()` caller is bounded identically. Raise it for large collections at the cost of more work per query.
 - Documents keyword ranking considers token matches in content, the document name, and the `src` basename with higher weight given to name/src.

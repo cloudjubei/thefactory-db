@@ -64,7 +64,11 @@ describe('Documents.searchDocuments', () => {
 
     // Merge alternates name/hybrid, starting with name.
     // Name: [2,3], Hybrid: [1,2] => [2(name), 1(hybrid), 3(name)]
-    expect(res).toEqual([{ id: '2' }, { id: '1' }, { id: '3' }])
+    expect(res).toEqual([
+      { id: '2', matchedChunk: null },
+      { id: '1', matchedChunk: null },
+      { id: '3' },
+    ])
   })
 
   it('searchDocuments should return rows unchanged (including vecScore=0)', async () => {
@@ -75,7 +79,7 @@ describe('Documents.searchDocuments', () => {
       .mockResolvedValueOnce({ rows: [] })
 
     const res = await db.searchDocuments({ query: 'test', projectIds: ['p1'] })
-    expect(res).toEqual([{ id: '1', vecScore: 0, totalScore: 0.1 }])
+    expect(res).toEqual([{ id: '1', vecScore: 0, totalScore: 0.1, matchedChunk: null }])
   })
 
   it('returns [] for whitespace-only query without hitting the embedder or db', async () => {
@@ -117,7 +121,7 @@ describe('Documents.searchDocuments', () => {
     //   take n1 (name), h1 (hybrid), n2 (name), then !pickName but hybrid empty → fallback to name → n3, name → n4, !pickName but empty → name → n5.
     expect(res).toEqual([
       { id: 'n1' },
-      { id: 'h1' },
+      { id: 'h1', matchedChunk: null },
       { id: 'n2' },
       { id: 'n3' },
       { id: 'n4' },
@@ -163,5 +167,61 @@ describe('Documents.searchDocuments', () => {
     expect(hybridArgs()[9]).toBe(100)
     await db.searchDocuments({ query: 'q', candidateLimit: 5000 })
     expect(hybridArgs()[9]).toBe(1000)
+  })
+
+  it("folds a hybrid row's best-chunk span into matchedChunk", async () => {
+    const db = await openDatabase({ connectionString: 'test' })
+    mockDbClient.query
+      .mockResolvedValueOnce({
+        rows: [
+          {
+            id: 'h1',
+            chunkStartLine: 40,
+            chunkEndLine: 58,
+            chunkStartChar: 1200,
+            chunkEndChar: 1990,
+          },
+          {
+            id: 'h2',
+            chunkStartLine: null,
+            chunkEndLine: null,
+            chunkStartChar: null,
+            chunkEndChar: null,
+          },
+        ],
+      })
+      .mockResolvedValueOnce({ rows: [] })
+
+    const res = await db.searchDocuments({ query: 'q' })
+
+    expect(res).toEqual([
+      { id: 'h1', matchedChunk: { startLine: 40, endLine: 58, startChar: 1200, endChar: 1990 } },
+      { id: 'h2', matchedChunk: null },
+    ])
+  })
+
+  it('gives a name match that the hybrid search also found its scores and matched chunk', async () => {
+    const db = await openDatabase({ connectionString: 'test' })
+    const span = { chunkStartLine: 3, chunkEndLine: 9, chunkStartChar: 40, chunkEndChar: 300 }
+    mockDbClient.query
+      .mockResolvedValueOnce({ rows: [{ id: 'both', src: 'a.md', vecScore: 0.7, ...span }] })
+      .mockResolvedValueOnce({
+        rows: [
+          { id: 'both', src: 'a.md' },
+          { id: 'name-only', src: 'b.md' },
+        ],
+      })
+
+    const res = await db.searchDocuments({ query: 'q' })
+
+    expect(res).toEqual([
+      {
+        id: 'both',
+        src: 'a.md',
+        vecScore: 0.7,
+        matchedChunk: { startLine: 3, endLine: 9, startChar: 40, endChar: 300 },
+      },
+      { id: 'name-only', src: 'b.md' },
+    ])
   })
 })

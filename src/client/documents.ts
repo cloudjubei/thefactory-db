@@ -1,11 +1,28 @@
+import { createHash } from 'node:crypto'
+
 import type { PoolClient } from 'pg'
+
+import { CHUNKER_VERSION } from '../chunking/chunkingConstants.js'
 import type { DB } from '../connection.js'
-import type { Logger } from '../types.js'
-import type { EmbeddingProvider } from '../utils/embeddings.js'
 import { resolveCandidateLimit, SQL } from '../sql.js'
+import type {
+  Logger,
+  Document,
+  DocumentInput,
+  DocumentPatch,
+  DocumentSourceFingerprint,
+  FindStaleDocumentsOptions,
+  DocumentUpsertInput,
+  DocumentWithScore,
+  MatchParams,
+  SearchDocumentsForExactArgs,
+  SearchDocumentsForKeywordsArgs,
+  SearchDocumentsForPathsArgs,
+  SearchParams,
+} from '../types.js'
+import type { EmbeddingProvider } from '../utils/embeddings.js'
 import { stripNullChars } from '../utils/json.js'
 import {
-  buildEmbeddingTextForDoc,
   escapeLikePattern,
   nonIndexableReasonFor,
   normalizeDocPath,
@@ -23,21 +40,41 @@ import {
   assertSearchDocumentsForPathsArgs,
   assertSearchParams,
 } from '../validation.js'
-import type {
-  Document,
-  DocumentInput,
-  DocumentPatch,
-  DocumentUpsertInput,
-  DocumentWithScore,
-  MatchParams,
-  SearchDocumentsForExactArgs,
-  SearchDocumentsForKeywordsArgs,
-  SearchDocumentsForPathsArgs,
-  SearchParams,
-} from '../types.js'
+
+import { createChunkWriter, type PreparedChunk } from './documentChunks.js'
 
 /** One per batch connection, re-used for each document: a failed write rolls back to it and is undone alone. */
 const DOCUMENT_UPSERT_SAVEPOINT = 'document_upsert'
+
+/** An upsert input with its NUL-free content and that content's SHA-1, as Postgres would compute it. */
+type HashedDocument = DocumentUpsertInput & { content: string; contentHash: string }
+
+type HybridRow = DocumentWithScore & {
+  chunkStartLine: number | null
+  chunkEndLine: number | null
+  chunkStartChar: number | null
+  chunkEndChar: number | null
+}
+
+/** Folds the best chunk's span columns of a hybrid-search row into `matchedChunk`. */
+function withMatchedChunk(row: HybridRow): DocumentWithScore {
+  const { chunkStartLine, chunkEndLine, chunkStartChar, chunkEndChar, ...doc } = row
+  return {
+    ...doc,
+    matchedChunk:
+      chunkStartLine == null ||
+      chunkEndLine == null ||
+      chunkStartChar == null ||
+      chunkEndChar == null
+        ? null
+        : {
+            startLine: chunkStartLine,
+            endLine: chunkEndLine,
+            startChar: chunkStartChar,
+            endChar: chunkEndChar,
+          },
+  }
+}
 
 export function createDocumentApi({
   db,
@@ -48,22 +85,55 @@ export function createDocumentApi({
   logger: Logger
   embeddingProvider: EmbeddingProvider
 }) {
+  const chunkWriter = createChunkWriter({ db, embeddingProvider, logger })
+
+  /** Runs `work` in one transaction on a connection of its own, rolling back if it throws. */
+  async function inTransaction<T>(
+    errorMessage: string,
+    work: (client: PoolClient) => Promise<T>,
+  ): Promise<T> {
+    const client = await db.connect()
+    let releaseError: Error | undefined
+    try {
+      await client.query('BEGIN')
+      const result = await work(client)
+      await client.query('COMMIT')
+      return result
+    } catch (e) {
+      logger.error(errorMessage, e)
+      try {
+        await client.query('ROLLBACK')
+      } catch (rollbackErr) {
+        logger.error('documents: ROLLBACK failed', rollbackErr)
+        releaseError = rollbackErr as Error
+      }
+      throw e
+    } finally {
+      client.release(releaseError)
+    }
+  }
+
   async function addDocument(d: DocumentInput): Promise<Document> {
     assertDocumentInput(d)
     logger.debug('addDocument', { projectId: d.projectId, type: d.type, name: d.name, src: d.src })
-    const content = d.content ?? ''
-    const embInput = buildEmbeddingTextForDoc(d.type, content, d.name, d.src)
-    const embedding = await embeddingProvider.embed(embInput)
-    const out = await db.query(SQL.insertDocument, [
-      d.projectId,
-      d.type,
-      d.src,
-      d.name,
-      content,
-      toVectorLiteral(embedding),
-      d.metadata ?? null,
-    ])
-    return out.rows[0]
+    const content = stripNullChars(d.content ?? '')
+    const [chunks] = await chunkWriter.prepare([{ src: d.src, content }])
+    return inTransaction('addDocument failed, rolling back', async (client) => {
+      const out = await client.query(SQL.insertDocument, [
+        d.projectId,
+        d.type,
+        d.src,
+        d.name,
+        content,
+        null,
+        d.metadata ?? null,
+        d.fingerprint ?? null,
+        CHUNKER_VERSION,
+      ])
+      const row = out.rows[0]
+      await chunkWriter.write(client, row.id, d.projectId, chunks)
+      return row
+    })
   }
 
   async function getDocumentById(id: string): Promise<Document | undefined> {
@@ -80,19 +150,63 @@ export function createDocumentApi({
     return row
   }
 
-  async function getChangingDocuments(projectId: string, inputs: DocumentUpsertInput[]) {
-    const srcs = inputs.map((doc) => doc.src)
-    const contents = inputs.map((doc) => doc.content ?? '')
-    const result = await db.query(SQL.getChangingDocuments, [projectId, srcs, contents])
-    return new Set(result.rows.map((row) => row.src))
+  async function getChangingDocuments(
+    projectId: string,
+    docs: HashedDocument[],
+    options: FindStaleDocumentsOptions,
+  ) {
+    const srcs = docs.map((doc) => doc.src)
+    const hashes = docs.map((doc) => doc.contentHash)
+    const result = await db.query(SQL.getChangingDocuments, [
+      projectId,
+      srcs,
+      hashes,
+      options.includeOutdatedChunks === false ? null : CHUNKER_VERSION,
+    ])
+    return new Set<string>(result.rows.map((row) => row.src))
   }
 
-  async function inSavepoint(client: PoolClient, sql: string, params: unknown[]) {
+  async function refreshDocumentFingerprints(projectId: string, docs: HashedDocument[]) {
+    const touched = docs.filter((doc) => doc.fingerprint !== undefined)
+    if (touched.length === 0) return
+    await db.query(SQL.refreshDocumentFingerprints, [
+      projectId,
+      touched.map((doc) => doc.src),
+      touched.map((doc) => doc.contentHash),
+      touched.map((doc) => doc.fingerprint),
+    ])
+  }
+
+  async function findStaleDocumentSrcs(
+    projectId: string,
+    sources: DocumentSourceFingerprint[],
+    options: FindStaleDocumentsOptions = {},
+  ): Promise<string[]> {
+    if (sources.length === 0) return []
+    const r = await db.query(SQL.findStaleDocumentSrcs, [
+      projectId,
+      sources.map((s) => s.src),
+      sources.map((s) => s.fingerprint),
+      options.includeOutdatedChunks === false ? null : CHUNKER_VERSION,
+    ])
+    return r.rows.map((row) => row.src)
+  }
+
+  /** Writes the document row and, when one was written, its chunks — both undone together on failure. */
+  async function inSavepoint(
+    client: PoolClient,
+    sql: string,
+    params: unknown[],
+    projectId: string,
+    chunks: PreparedChunk[],
+  ) {
     await client.query(`SAVEPOINT ${DOCUMENT_UPSERT_SAVEPOINT}`)
     try {
       const result = await client.query(sql, params)
+      const row = result.rows[0] as Document | undefined
+      if (row) await chunkWriter.write(client, row.id, projectId, chunks)
       await client.query(`RELEASE SAVEPOINT ${DOCUMENT_UPSERT_SAVEPOINT}`)
-      return result.rows[0] as Document | undefined
+      return row
     } catch (e) {
       await client.query(`ROLLBACK TO SAVEPOINT ${DOCUMENT_UPSERT_SAVEPOINT}`)
       throw e
@@ -101,24 +215,32 @@ export function createDocumentApi({
 
   /**
    * Writes one document inside the batch transaction. A document Postgres cannot index is stored
-   * flagged, without its content; any other failure skips just this document.
+   * flagged, without its content or chunks; any other failure skips just this document.
    */
   async function storeDocument(
     client: PoolClient,
-    doc: DocumentUpsertInput,
-    embedding: ArrayLike<number>,
+    doc: HashedDocument,
+    chunks: PreparedChunk[],
   ): Promise<Document | undefined> {
-    const content = doc.content ?? ''
+    const { content } = doc
     try {
-      return await inSavepoint(client, SQL.upsertDocument, [
+      return await inSavepoint(
+        client,
+        SQL.upsertDocument,
+        [
+          doc.projectId,
+          doc.type,
+          doc.src,
+          doc.name,
+          content,
+          null,
+          doc.metadata ?? null,
+          doc.fingerprint ?? null,
+          CHUNKER_VERSION,
+        ],
         doc.projectId,
-        doc.type,
-        doc.src,
-        doc.name,
-        content,
-        toVectorLiteral(embedding),
-        doc.metadata ?? null,
-      ])
+        chunks,
+      )
     } catch (e) {
       const reason = nonIndexableReasonFor(e)
       if (!reason) {
@@ -129,15 +251,23 @@ export function createDocumentApi({
         `upsertDocuments: ${doc.src} cannot be indexed (${reason}, ${Buffer.byteLength(content)} bytes); stored as non-indexable without its content`,
       )
       try {
-        return await inSavepoint(client, SQL.upsertNonIndexableDocument, [
+        return await inSavepoint(
+          client,
+          SQL.upsertNonIndexableDocument,
+          [
+            doc.projectId,
+            doc.type,
+            doc.src,
+            doc.name,
+            content,
+            doc.metadata ?? null,
+            reason,
+            doc.fingerprint ?? null,
+            CHUNKER_VERSION,
+          ],
           doc.projectId,
-          doc.type,
-          doc.src,
-          doc.name,
-          content,
-          doc.metadata ?? null,
-          reason,
-        ])
+          [],
+        )
       } catch (flagErr) {
         logger.error(`upsertDocuments: could not store ${doc.src}, skipped it`, flagErr)
         return undefined
@@ -149,15 +279,25 @@ export function createDocumentApi({
    * Upserts a batch in one transaction on a connection of its own. Each document is written in a
    * savepoint, so one that fails is skipped (or stored as non-indexable) without its batchmates.
    */
-  async function upsertDocuments(inputs: DocumentUpsertInput[]): Promise<Document[]> {
+  async function upsertDocuments(
+    inputs: DocumentUpsertInput[],
+    options: FindStaleDocumentsOptions = {},
+  ): Promise<Document[]> {
     if (!inputs || inputs.length === 0) {
       return []
     }
 
     logger.debug(`upsertDocuments: received a batch of ${inputs.length} documents`)
-    const docs = inputs.map((doc) => ({ ...doc, content: stripNullChars(doc.content ?? '') }))
+    const docs: HashedDocument[] = inputs.map((doc) => {
+      const content = stripNullChars(doc.content ?? '')
+      return { ...doc, content, contentHash: createHash('sha1').update(content).digest('hex') }
+    })
     const projectId = docs[0].projectId
-    const changingSrcs = await getChangingDocuments(projectId, docs)
+    const changingSrcs = await getChangingDocuments(projectId, docs, options)
+    await refreshDocumentFingerprints(
+      projectId,
+      docs.filter((doc) => !changingSrcs.has(doc.src)),
+    )
     if (changingSrcs.size === 0) {
       logger.debug('upsertDocuments: no documents needed updating.')
       return []
@@ -166,44 +306,25 @@ export function createDocumentApi({
     const docsToUpsert = docs.filter((doc) => changingSrcs.has(doc.src))
     logger.debug(`upsertDocuments: ${docsToUpsert.length} of ${docs.length} need updating.`)
 
-    let embeddings: ArrayLike<number>[]
+    let chunks: PreparedChunk[][]
     try {
-      embeddings = await Promise.all(
-        docsToUpsert.map((d) =>
-          embeddingProvider.embed(buildEmbeddingTextForDoc(d.type, d.content, d.name, d.src)),
-        ),
-      )
+      chunks = await chunkWriter.prepare(docsToUpsert)
     } catch (e) {
       logger.error('upsertDocuments: embedding failed', e)
       throw e
     }
 
-    const client = await db.connect()
-    let releaseError: Error | undefined
-    try {
-      await client.query('BEGIN')
+    return inTransaction('Error in batch upsert, rolling back transaction', async (client) => {
       const upsertedDocs: Document[] = []
       for (let i = 0; i < docsToUpsert.length; i++) {
-        const stored = await storeDocument(client, docsToUpsert[i], embeddings[i])
+        const stored = await storeDocument(client, docsToUpsert[i], chunks[i])
         if (stored) upsertedDocs.push(stored)
       }
-      await client.query('COMMIT')
       // Count only: dumping every `src` printed 100 file paths per batch, which
       // buried the rest of the log during a large project's initial ingestion.
       logger.debug(`upsertDocuments: upserted ${upsertedDocs.length} documents.`)
       return upsertedDocs
-    } catch (e) {
-      logger.error('Error in batch upsert, rolling back transaction', e)
-      try {
-        await client.query('ROLLBACK')
-      } catch (rollbackErr) {
-        logger.error('upsertDocuments: ROLLBACK failed', rollbackErr)
-        releaseError = rollbackErr as Error
-      }
-      throw e
-    } finally {
-      client.release(releaseError)
-    }
+    })
   }
 
   async function upsertDocument(input: DocumentUpsertInput): Promise<Document | undefined> {
@@ -212,30 +333,44 @@ export function createDocumentApi({
     return results[0]
   }
 
+  /**
+   * Patches a document. New content or a new path re-chunks it (a chunk's header names the path);
+   * the row and its chunks are written in one transaction.
+   */
   async function updateDocument(id: string, patch: DocumentPatch): Promise<Document | undefined> {
     assertDocumentPatch(patch)
     logger.debug('updateDocument', { id, name: patch.name })
     const exists = await getDocumentById(id)
     if (!exists) return
 
-    let embeddingLiteral = null
-    let newContent = null
-    if (patch.content !== undefined) {
-      newContent = patch.content ?? ''
-      const emb = await embeddingProvider.embed(newContent)
-      embeddingLiteral = toVectorLiteral(emb)
-    }
-
-    const r = await db.query(SQL.updateDocument, [
+    const newContent = patch.content !== undefined ? stripNullChars(patch.content ?? '') : null
+    const src = patch.src ?? exists.src
+    const rechunk = newContent !== null || src !== exists.src
+    const params = [
       id,
       patch.type ?? null,
       patch.src ?? null,
       patch.name ?? null,
       newContent,
-      embeddingLiteral,
+      null,
       patch.metadata ?? null,
-    ])
-    const updatedDocument = r.rows[0]
+      CHUNKER_VERSION,
+    ]
+
+    let updatedDocument: Document | undefined
+    if (!rechunk) {
+      updatedDocument = (await db.query(SQL.updateDocument, params)).rows[0]
+    } else {
+      const [chunks] = await chunkWriter.prepare([{ src, content: newContent ?? exists.content }])
+      updatedDocument = await inTransaction(
+        'updateDocument failed, rolling back',
+        async (client) => {
+          const row = (await client.query(SQL.updateDocument, params)).rows[0]
+          if (row) await chunkWriter.write(client, row.id, row.projectId, chunks)
+          return row
+        },
+      )
+    }
     if (!updatedDocument) {
       logger.warn('updateDocument failed: document not found', { id })
       return
@@ -315,8 +450,9 @@ export function createDocumentApi({
     ])
 
     const [hybridRes, nameRes] = await Promise.all([hybridPromise, namePromise])
-    const hybrid = hybridRes.rows
-    const nameMatches = nameRes.rows
+    const hybrid = hybridRes.rows.map(withMatchedChunk)
+    const hybridById = new Map(hybrid.map((row) => [row.id, row]))
+    const nameMatches = nameRes.rows.map((row) => hybridById.get(row.id) ?? row)
     const seen = new Set()
     const out = []
     let i = 0
@@ -430,6 +566,7 @@ export function createDocumentApi({
     updateDocument,
     deleteDocument,
     listDocumentSrcs,
+    findStaleDocumentSrcs,
     deleteDocumentsBySrc,
     searchDocuments,
     matchDocuments,
