@@ -1,5 +1,6 @@
-import { describe, it, expect, vi } from 'vitest'
 import { Pool } from 'pg'
+import { describe, it, expect, vi } from 'vitest'
+
 import { createDatabase } from '../../../src/index'
 
 // Stub embeddings to avoid heavy model downloads during e2e tests

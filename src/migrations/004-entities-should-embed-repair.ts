@@ -1,5 +1,5 @@
-import type { Migration } from './types.js'
 import { ENTITIES_SEARCH_FUNCTION } from './003-entities-external-key.js'
+import type { Migration } from './types.js'
 
 /**
  * Repairs databases that predate the `should_embed` column on `entities` /

@@ -1,6 +1,8 @@
-import { describe, it, expect, beforeAll, afterAll } from 'vitest'
 import fs from 'fs'
 import path from 'path'
+
+import { describe, it, expect, beforeAll, afterAll } from 'vitest'
+
 import { openDatabase } from '../../src/index'
 
 const RUN = process.env.RUN_E2E === '1'
@@ -115,14 +117,14 @@ function collectProjectFiles(root: string): string[] {
     expect(srcs).toEqual([
       'docs/SEARCH_IMPROVED.md',
       'src/migrations/005-hybrid-search-candidate-limit.ts',
-      'src/client/documents.ts',
       'src/sql.ts',
+      'src/client/documents.ts',
       'docs/FILE_ORGANISATION.md',
       'src/migrations/001-init.ts',
       'src/types.ts',
-      'src/client/entities.ts',
       'scripts/example.ts',
       'src/migrations/003-entities-external-key.ts',
+      'src/client/entities.ts',
     ])
   })
 
@@ -132,14 +134,14 @@ function collectProjectFiles(root: string): string[] {
     expect(srcs).toEqual([
       'docs/SEARCH_IMPROVED.md',
       'src/migrations/005-hybrid-search-candidate-limit.ts',
-      'src/client/documents.ts',
       'src/sql.ts',
+      'src/client/documents.ts',
       'docs/FILE_ORGANISATION.md',
-      'src/client/entities.ts',
       'src/migrations/001-init.ts',
       'src/types.ts',
-      'src/validation.ts',
+      'src/client/entities.ts',
       'scripts/example.ts',
+      'src/migrations/003-entities-external-key.ts',
     ])
   })
 

@@ -35,7 +35,7 @@ export type Document = {
   contentHash: string
   createdAt: string
   updatedAt: string
-  metadata?: Record<string, any>
+  metadata?: Record<string, unknown>
   /**
    * Set when the document could not be indexed: it is then stored with empty `content` and no
    * embedding, findable by name and path only. `contentHash` is still the hash of the content it
@@ -54,7 +54,7 @@ export type DocumentInput = {
   src: string
   name: string
   content: string
-  metadata?: Record<string, any>
+  metadata?: Record<string, unknown>
   /**
    * A cheap identity of the document's source, chosen by the caller (a file's size and modification
    * time, say). Stored with the document; {@link DocumentSourceFingerprint}s passed to
@@ -121,7 +121,7 @@ export type Entity = {
   externalKey?: string | null
   createdAt: string
   updatedAt: string
-  metadata?: Record<string, any>
+  metadata?: Record<string, unknown>
 }
 
 /**
@@ -130,10 +130,10 @@ export type Entity = {
 export type EntityInput = {
   projectId: string
   type: string
-  content: Record<string, any> | any[]
+  content: Record<string, unknown> | unknown[]
   shouldEmbed?: boolean
   externalKey?: string | null
-  metadata?: Record<string, any>
+  metadata?: Record<string, unknown>
 }
 
 /**
@@ -274,10 +274,10 @@ export type LogLevel = 'debug' | 'info' | 'warn' | 'error' | 'silent'
  * A simple logger interface.
  */
 export type Logger = {
-  debug: (...args: any[]) => void
-  info: (...args: any[]) => void
-  warn: (...args: any[]) => void
-  error: (...args: any[]) => void
+  debug: (...args: unknown[]) => void
+  info: (...args: unknown[]) => void
+  warn: (...args: unknown[]) => void
+  error: (...args: unknown[]) => void
 }
 
 // ------------------------------

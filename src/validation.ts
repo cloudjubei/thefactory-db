@@ -22,37 +22,37 @@ function isStringArray(v: unknown): v is string[] {
   return Array.isArray(v) && v.every((x) => typeof x === 'string')
 }
 
-function assertString(v: any, name: string): void {
+function assertString(v: unknown, name: string): void {
   if (typeof v !== 'string') {
     throw new TypeError(`${name} must be a string`)
   }
 }
 
-function assertOptionalString(v: any, name: string): void {
+function assertOptionalString(v: unknown, name: string): void {
   if (v !== undefined && typeof v !== 'string') {
     throw new TypeError(`${name} must be a string if provided`)
   }
 }
 
-function assertOptionalInt(v: any, name: string): void {
+function assertOptionalInt(v: unknown, name: string): void {
   if (v !== undefined && !Number.isInteger(v)) {
     throw new TypeError(`${name} must be an integer if provided`)
   }
 }
 
-function assertStringOrStringArray(v: any, name: string): void {
+function assertStringOrStringArray(v: unknown, name: string): void {
   const ok = typeof v === 'string' || isStringArray(v)
   if (!ok) throw new TypeError(`${name} must be a string or an array of strings`)
 }
 
-function assertMatchMode(v: any, name: string): void {
+function assertMatchMode(v: unknown, name: string): void {
   if (v === undefined) return
   if (v !== 'any' && v !== 'all') {
     throw new TypeError(`${name} must be 'any' or 'all' if provided`)
   }
 }
 
-export function assertDocumentInput(input: any): void {
+export function assertDocumentInput(input: unknown): void {
   if (!isRecord(input)) throw new TypeError('DocumentInput must be an object')
   if (typeof input.projectId !== 'string' || input.projectId.length === 0)
     throw new TypeError('DocumentInput.projectId must be a non-empty string')
@@ -70,7 +70,7 @@ export function assertDocumentInput(input: any): void {
     throw new TypeError('DocumentInput.fingerprint must be a string if provided')
 }
 
-export function assertDocumentPatch(patch: any): void {
+export function assertDocumentPatch(patch: unknown): void {
   if (!isRecord(patch)) throw new TypeError('Document patch must be an object')
   if (patch.projectId !== undefined) throw new TypeError('Document.projectId cannot be changed')
   if (patch.type !== undefined && typeof patch.type !== 'string')
@@ -85,7 +85,7 @@ export function assertDocumentPatch(patch: any): void {
     throw new TypeError('DocumentPatch.metadata must be an object or null if provided')
 }
 
-export function assertEntityInput(input: any): void {
+export function assertEntityInput(input: unknown): void {
   if (!isRecord(input)) throw new TypeError('EntityInput must be an object')
   if (typeof input.projectId !== 'string' || input.projectId.length === 0)
     throw new TypeError('EntityInput.projectId must be a non-empty string')
@@ -104,7 +104,7 @@ export function assertEntityInput(input: any): void {
     throw new TypeError('EntityInput.metadata must be an object if provided')
 }
 
-export function assertEntityPatch(patch: any): void {
+export function assertEntityPatch(patch: unknown): void {
   if (!isRecord(patch)) throw new TypeError('Entity patch must be an object')
   if (patch.projectId !== undefined) throw new TypeError('Entity.projectId cannot be changed')
   if (patch.type !== undefined && typeof patch.type !== 'string' && patch.type !== null)
@@ -204,7 +204,7 @@ export function assertSearchEntitiesForKeywordsArgs(args: SearchEntitiesForKeywo
   if (!isStringArray(args.projectIds) || args.projectIds.length === 0)
     throw new TypeError('Args.projectIds must be a non-empty array of strings')
   assertStringOrStringArray(args.keywords, 'Args.keywords')
-  assertMatchMode(args.matchMode as any, 'Args.matchMode')
+  assertMatchMode(args.matchMode, 'Args.matchMode')
   assertOptionalInt(args.limit, 'Args.limit')
   if (args.types !== undefined && !isStringArray(args.types)) {
     throw new TypeError('Args.types must be an array of strings if provided')
@@ -216,7 +216,7 @@ export function assertSearchEntitiesForExactArgs(args: SearchEntitiesForExactArg
   if (!isStringArray(args.projectIds) || args.projectIds.length === 0)
     throw new TypeError('Args.projectIds must be a non-empty array of strings')
   assertStringOrStringArray(args.needles, 'Args.needles')
-  assertMatchMode(args.matchMode as any, 'Args.matchMode')
+  assertMatchMode(args.matchMode, 'Args.matchMode')
   if (args.caseSensitive !== undefined && typeof args.caseSensitive !== 'boolean') {
     throw new TypeError('Args.caseSensitive must be a boolean if provided')
   }

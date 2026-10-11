@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest'
+
 import { DOCUMENT_CONTENT_HASH_FUNCTION, resolveCandidateLimit, SQL } from '../src/sql'
 
 /**

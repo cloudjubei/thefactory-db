@@ -1,4 +1,5 @@
 import { describe, it, expect, beforeAll, afterAll } from 'vitest'
+
 import { openDatabase } from '../../src/index'
 
 const RUN = process.env.RUN_E2E === '1'
@@ -177,7 +178,7 @@ const DATABASE_URL = process.env.DATABASE_URL || ''
         limit: 1,
       })
 
-      const results0Ids = results1.map((r) => r.id)
+      const results0Ids = results0.map((r) => r.id)
       expect(results0Ids).toContain(contentMatch.id)
       expect(results0Ids).not.toContain(metadataMatch.id)
     })

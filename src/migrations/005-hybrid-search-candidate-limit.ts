@@ -1,5 +1,6 @@
-import type { Migration } from './types.js'
 import { HYBRID_SEARCH_DOCUMENTS_FUNCTION, HYBRID_SEARCH_ENTITIES_FUNCTION } from '../sql.js'
+
+import type { Migration } from './types.js'
 
 /**
  * Makes the hybrid-search per-lane candidate ceiling a PARAMETER.

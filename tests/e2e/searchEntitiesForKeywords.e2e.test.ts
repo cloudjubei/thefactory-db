@@ -1,4 +1,5 @@
 import { describe, it, expect, beforeAll, afterAll } from 'vitest'
+
 import { openDatabase } from '../../src/index'
 
 const RUN = process.env.RUN_E2E === '1'

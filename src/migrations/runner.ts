@@ -1,6 +1,8 @@
 import { Pool, PoolClient } from 'pg'
-import type { OpenDbOptions } from '../types.js'
+
 import { createLogger } from '../logger.js'
+import type { OpenDbOptions } from '../types.js'
+
 import { migrations } from './index.js'
 
 // Hash string for pg_advisory_lock
@@ -19,12 +21,13 @@ export type DatabaseInfo = {
   pending: Array<{ id: string; version: number }>
 }
 
-function isPool(obj: any): obj is Pool {
+function isPool(obj: unknown): obj is Pool {
+  if (typeof obj !== 'object' || obj === null) return false
+  const candidate = obj as Partial<Record<'connect' | 'query' | 'end', unknown>>
   return (
-    obj &&
-    typeof obj.connect === 'function' &&
-    typeof obj.query === 'function' &&
-    typeof obj.end === 'function'
+    typeof candidate.connect === 'function' &&
+    typeof candidate.query === 'function' &&
+    typeof candidate.end === 'function'
   )
 }
 

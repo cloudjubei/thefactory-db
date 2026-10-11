@@ -521,7 +521,7 @@ export function createDocumentApi({
       limit,
     ])
 
-    return (r.rows || []).map((row: any) => normalizeDocPath(row.src))
+    return ((r.rows ?? []) as Array<{ src: string }>).map((row) => normalizeDocPath(row.src))
   }
 
   async function searchDocumentsForExact(args: SearchDocumentsForExactArgs): Promise<string[]> {
@@ -545,7 +545,7 @@ export function createDocumentApi({
       limit,
     ])
 
-    return (r.rows || []).map((row: any) => normalizeDocPath(row.src))
+    return ((r.rows ?? []) as Array<{ src: string }>).map((row) => normalizeDocPath(row.src))
   }
 
   async function clearDocuments(projectIds?: string[]): Promise<void> {

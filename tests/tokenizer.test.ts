@@ -1,8 +1,11 @@
+import * as jsTiktoken from 'js-tiktoken'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
+
+import { tokenize, toFtsText } from '../src/utils/tokenizer'
 
 vi.mock('js-tiktoken', () => {
   return {
-    getEncoding: vi.fn((encoding: string) => {
+    getEncoding: vi.fn(() => {
       // return an encoder object with encode method
       return {
         encode: (text: string) => {
@@ -14,9 +17,6 @@ vi.mock('js-tiktoken', () => {
     }),
   }
 })
-
-import { tokenize, toFtsText } from '../src/utils/tokenizer'
-import * as jsTiktoken from 'js-tiktoken'
 
 describe('tokenizer', () => {
   beforeEach(() => {

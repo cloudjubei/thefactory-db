@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest'
+
 import { stringifyJsonValues, stripNullChars } from '../../src/utils/json'
 
 const NUL = String.fromCharCode(0)

@@ -1,4 +1,5 @@
 import { Pool, PoolClient } from 'pg'
+
 import { createLogger } from './logger.js'
 import type { LogLevel } from './types.js'
 

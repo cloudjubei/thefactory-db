@@ -1,6 +1,7 @@
 import { describe, it, expect, vi } from 'vitest'
 
 import { setupUnitTestMocks } from './utils/unitTestMocks'
+
 import { openDatabase } from '../src/index'
 
 describe('openDatabase()', () => {

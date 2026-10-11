@@ -2,13 +2,14 @@ import { createHash } from 'node:crypto'
 
 import { beforeEach, describe, it, expect } from 'vitest'
 
-import { CHUNKER_VERSION } from '../../src/chunking/chunkingConstants'
 import {
   embeddedTexts,
   setupUnitTestMocks,
   statements,
   useTransactionClient,
 } from '../utils/unitTestMocks'
+
+import { CHUNKER_VERSION } from '../../src/chunking/chunkingConstants'
 import { openDatabase } from '../../src/index'
 
 // Migrations legitimately log at info during openDatabase, so the level guards below are scoped to

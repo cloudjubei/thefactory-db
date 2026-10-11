@@ -7,8 +7,8 @@ vi.mock('../src/logger.js', () => ({
   createLogger: () => ({ debug: vi.fn(), info: vi.fn(), warn: vi.fn(), error: vi.fn() }),
 }))
 
-import { getDatabaseInfo, migrateDatabase } from '../src/migrations/runner.js'
 import { migrations } from '../src/migrations/index.js'
+import { getDatabaseInfo, migrateDatabase } from '../src/migrations/runner.js'
 
 const LATEST_VERSION = migrations[migrations.length - 1].version
 

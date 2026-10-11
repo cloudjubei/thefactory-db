@@ -1,4 +1,13 @@
+import getPort from 'get-port'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+
+import {
+  createDatabase,
+  createReusableDatabase,
+  destroyDatabase,
+  destroyReusableDatabase,
+  destroyDatabaseByContainerName,
+} from '../src/runtime'
 
 // ---- Shared hoisted state for mocks ----
 const dockerHoisted = vi.hoisted(() => ({
@@ -83,7 +92,6 @@ vi.mock('dockerode', () => {
   return { default: ctor }
 })
 
-import getPort from 'get-port'
 vi.mock('get-port', () => ({ default: vi.fn(async ({ port }: any) => port) }))
 
 vi.mock('testcontainers', () => ({
@@ -128,15 +136,6 @@ const openDbHoisted = vi.hoisted(() => {
 vi.mock('../src/index.js', () => ({
   openDatabase: openDbHoisted.openDatabase,
 }))
-
-// Import after mocks
-import {
-  createDatabase,
-  createReusableDatabase,
-  destroyDatabase,
-  destroyReusableDatabase,
-  destroyDatabaseByContainerName,
-} from '../src/runtime'
 
 function makeInspect(hostPort: number, running = true) {
   return async () => ({

@@ -258,15 +258,17 @@ export async function createInProcessEmbeddingProvider(
     }
   }
 
-  // Lazy pipeline init shared across calls
-  let ready: ReturnType<typeof pipeline<'feature-extraction'>> | null = null
-  let extractorInstance: any | null = null
+  type Extractor = Awaited<ReturnType<typeof pipeline<'feature-extraction'>>>
+  type TensorLike = { data?: unknown; dims?: unknown; length?: unknown; to?: unknown; 0?: unknown }
 
-  async function getExtractor() {
+  // Lazy pipeline init shared across calls
+  let ready: Promise<Extractor> | null = null
+  let extractorInstance: Extractor | null = null
+
+  async function getExtractor(): Promise<Extractor> {
     if (!ready) {
       // Only pass options if revision is explicitly provided to preserve test expectations
-      const pipelineOptions: any = revision ? { revision } : undefined
-      ready = pipeline('feature-extraction', model, pipelineOptions)
+      ready = pipeline('feature-extraction', model, revision ? { revision } : undefined)
       extractorInstance = await ready
     }
     return extractorInstance ?? (await ready)
@@ -284,18 +286,15 @@ export async function createInProcessEmbeddingProvider(
 
   // Some backends (and tests) may return functions which, when called, yield the real value.
   // This helper unwraps such layers.
-  function unwrapOutput(output: any, textsForBatch?: string[]): any {
+  function unwrapOutput(output: unknown, textsForBatch?: string[]): unknown {
     let out = output
     // Limit unwrapping depth to avoid infinite recursion in case of pathological outputs
     let depth = 0
     while (typeof out === 'function' && depth < 5) {
+      const fn = out as (...args: unknown[]) => unknown
       try {
         // Prefer passing texts for batch if the function expects parameters
-        if (textsForBatch && out.length > 0) {
-          out = out(textsForBatch)
-        } else {
-          out = out()
-        }
+        out = textsForBatch && fn.length > 0 ? fn(textsForBatch) : fn()
       } catch {
         // If calling fails, break to avoid throwing here; the caller will handle type checks
         break
@@ -305,42 +304,44 @@ export async function createInProcessEmbeddingProvider(
     return out
   }
 
+  const asTensor = (value: unknown): TensorLike | undefined =>
+    typeof value === 'object' && value !== null ? (value as TensorLike) : undefined
+
   async function embedAsync(text: string): Promise<Float32Array> {
     const extractor = await getExtractor()
-    const raw: any = await extractor(text, { pooling: 'mean', normalize: false })
-    const output: any = unwrapOutput(raw)
+    const output = unwrapOutput(await extractor(text, { pooling: 'mean', normalize: false }))
+    const tensor = asTensor(output)
 
     // output is either a TypedArray or nested array depending on backend; use .data if available
     let data: Float32Array
-    if (output?.data instanceof Float32Array) {
-      data = output.data as Float32Array
+    if (tensor?.data instanceof Float32Array) {
+      data = tensor.data
     } else if (Array.isArray(output)) {
       // Flatten any nested structure to a 1D vector
-      const arr = (output as any[]).flat(Infinity) as number[]
-      data = new Float32Array(arr)
-    } else if (Array.isArray(output?.[0])) {
-      const arr = (output[0] as number[]).flat(Infinity as any) as number[]
-      data = new Float32Array(arr)
-    } else if (output && (output.data instanceof Float32Array || Array.isArray(output.data))) {
-      const arr: Iterable<number> = Array.isArray(output.data)
-        ? (output.data as number[])
-        : Array.from(output.data)
-      data = new Float32Array(arr)
+      data = new Float32Array(output.flat(Infinity) as number[])
+    } else if (Array.isArray(tensor?.[0])) {
+      data = new Float32Array((tensor[0] as unknown[]).flat(Infinity) as number[])
+    } else if (Array.isArray(tensor?.data)) {
+      data = new Float32Array(tensor.data as number[])
     } else {
       // Try to access tensor-like shape
-      const maybe = output?.to && typeof output.to === 'function' ? output.to('cpu') : output
-      const arr: number[] = Array.isArray(maybe)
-        ? (maybe as number[])
-        : Array.from(maybe?.data ?? [])
-      data = new Float32Array(arr)
+      const maybe =
+        typeof tensor?.to === 'function'
+          ? (tensor.to as (device: string) => unknown)('cpu')
+          : output
+      const values = Array.isArray(maybe) ? maybe : (asTensor(maybe)?.data ?? [])
+      data = new Float32Array(Array.from(values as ArrayLike<number>))
     }
     return normalize ? l2norm(data) : data
   }
 
   async function embedBatchAsync(texts: string[]): Promise<Float32Array[]> {
     const extractor = await getExtractor()
-    const raw: any = await extractor(texts, { pooling: 'mean', normalize: false })
-    const output: any = unwrapOutput(raw, texts)
+    const output = unwrapOutput(
+      await extractor(texts, { pooling: 'mean', normalize: false }),
+      texts,
+    )
+    const tensor = asTensor(output)
 
     if (!output) {
       throw new Error('Embedding failed: received null or undefined output from model.')
@@ -348,40 +349,32 @@ export async function createInProcessEmbeddingProvider(
 
     // Handle Tensor-like output (e.g. from transformers.js node backend)
     // It has dims=[batch_size, model_dim] and a flat data array
-    if (output.dims && output.data && output.dims.length === 2) {
-      const batchSize = output.dims[0]
-      const embeddingDim = output.dims[1]
+    const dims = Array.isArray(tensor?.dims) ? (tensor.dims as number[]) : undefined
+    if (dims && tensor?.data && dims.length === 2) {
+      const [batchSize, embeddingDim] = dims
+      const flat = tensor.data as Float32Array | number[]
       const embeddings: Float32Array[] = []
 
       for (let i = 0; i < batchSize; i++) {
         const start = i * embeddingDim
-        const end = start + embeddingDim
-        let embedding: Float32Array = new Float32Array(
-          (output.data as Float32Array | number[]).slice(start, end),
-        )
-        if (normalize) {
-          embedding = l2norm(embedding)
-        }
-        embeddings.push(embedding)
+        const embedding = new Float32Array(flat.slice(start, start + embeddingDim))
+        embeddings.push(normalize ? l2norm(embedding) : embedding)
       }
       return embeddings
     }
 
     // Handle nested array output (e.g. from mock or some backends)
     if (Array.isArray(output) && output.length > 0 && Array.isArray(output[0])) {
-      return (output as number[][]).map((row: number[]) => {
-        let embedding: Float32Array = new Float32Array(row)
-        if (normalize) {
-          embedding = l2norm(embedding)
-        }
-        return embedding
+      return (output as number[][]).map((row) => {
+        const embedding = new Float32Array(row)
+        return normalize ? l2norm(embedding) : embedding
       })
     }
 
     const outputType = Array.isArray(output) ? 'array' : typeof output
-    const outputShape = output?.dims
-      ? `dims=${JSON.stringify(output.dims)}`
-      : `length=${output?.length ?? 'n/a'}`
+    const outputShape = tensor?.dims
+      ? `dims=${JSON.stringify(tensor.dims)}`
+      : `length=${tensor?.length ?? 'n/a'}`
     const message = `Unsupported embedding output format for batch. Expected a 2D Tensor or a nested array. Got ${outputType} with ${outputShape}.`
     throw new Error(message)
   }

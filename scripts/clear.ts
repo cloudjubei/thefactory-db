@@ -1,4 +1,3 @@
-import path from 'node:path'
 import { openDatabase } from '../dist/index.js'
 
 function parseArgs(argv: string[]) {

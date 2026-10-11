@@ -17,7 +17,7 @@ const LOG_LEVELS: Record<LogLevel, number> = {
 export function createLogger(level: LogLevel = 'info'): Logger {
   const logLevel = LOG_LEVELS[level]
 
-  const log = (messageLevel: LogLevel, ...args: any[]) => {
+  const log = (messageLevel: LogLevel, ...args: unknown[]) => {
     if (logLevel <= LOG_LEVELS[messageLevel]) {
       switch (messageLevel) {
         case 'debug':
@@ -37,9 +37,9 @@ export function createLogger(level: LogLevel = 'info'): Logger {
   }
 
   return {
-    debug: (...args: any[]) => log('debug', ...args),
-    info: (...args: any[]) => log('info', ...args),
-    warn: (...args: any[]) => log('warn', ...args),
-    error: (...args: any[]) => log('error', ...args),
+    debug: (...args: unknown[]) => log('debug', ...args),
+    info: (...args: unknown[]) => log('info', ...args),
+    warn: (...args: unknown[]) => log('warn', ...args),
+    error: (...args: unknown[]) => log('error', ...args),
   }
 }

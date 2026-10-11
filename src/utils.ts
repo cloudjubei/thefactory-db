@@ -41,7 +41,7 @@ export function toTokens(input: string | string[]): string[] {
 // ----------------------------
 
 export function toVectorLiteral(vec: ArrayLike<number>): string {
-  const arr = Array.from(vec as any)
+  const arr = Array.from(vec)
   return `[${arr.join(',')}]`
 }
 

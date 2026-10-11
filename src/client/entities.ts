@@ -1,19 +1,7 @@
 import type { DB } from '../connection.js'
-import type { Logger } from '../types.js'
-import type { EmbeddingProvider } from '../utils/embeddings.js'
 import { resolveCandidateLimit, SQL } from '../sql.js'
-import { buildEntityCountQuery, buildEntityMatchQuery } from './entityQuery.js'
-import { stringifyJsonValues, stripNullChars } from '../utils/json.js'
-import {
-  assertEntityInput,
-  assertEntityPatch,
-  assertMatchParams,
-  assertSearchEntitiesForExactArgs,
-  assertSearchEntitiesForKeywordsArgs,
-  assertSearchParams,
-} from '../validation.js'
-import { prepareQuery, toTokens, toVectorLiteral } from '../utils.js'
 import type {
+  Logger,
   Entity,
   EntityInput,
   EntityPatch,
@@ -23,6 +11,19 @@ import type {
   SearchEntitiesForKeywordsArgs,
   SearchParams,
 } from '../types.js'
+import type { EmbeddingProvider } from '../utils/embeddings.js'
+import { stringifyJsonValues, stripNullChars } from '../utils/json.js'
+import { prepareQuery, toTokens, toVectorLiteral } from '../utils.js'
+import {
+  assertEntityInput,
+  assertEntityPatch,
+  assertMatchParams,
+  assertSearchEntitiesForExactArgs,
+  assertSearchEntitiesForKeywordsArgs,
+  assertSearchParams,
+} from '../validation.js'
+
+import { buildEntityCountQuery, buildEntityMatchQuery } from './entityQuery.js'
 
 export function createEntityApi({
   db,
@@ -110,7 +111,7 @@ export function createEntityApi({
     let embeddingLiteral = null
     let newContent = null
     let newContentString = null
-    let shouldEmbed = patch.shouldEmbed
+    const shouldEmbed = patch.shouldEmbed
 
     if (patch.content !== undefined) {
       // Postgres jsonb/text reject U+0000; strip it before the content hits the columns.
@@ -127,7 +128,7 @@ export function createEntityApi({
       // If shouldEmbed changed to true, we need to embed the EXISTING content.
       if (shouldEmbed === true && exists.shouldEmbed === false) {
         // We need to re-embed existing content
-        const contentStr = stringifyJsonValues(exists.content as any)
+        const contentStr = stringifyJsonValues(exists.content)
         const emb = await embeddingProvider.embed(contentStr)
         embeddingLiteral = toVectorLiteral(emb)
       }
@@ -188,7 +189,7 @@ export function createEntityApi({
   }
 
   async function matchEntities(
-    criteria: any | undefined,
+    criteria: Record<string, unknown> | undefined,
     options?: MatchParams,
   ): Promise<Entity[]> {
     assertMatchParams(options)
@@ -231,7 +232,10 @@ export function createEntityApi({
     return r.rows
   }
 
-  async function countEntities(criteria: any | undefined, options?: MatchParams): Promise<number> {
+  async function countEntities(
+    criteria: Record<string, unknown> | undefined,
+    options?: MatchParams,
+  ): Promise<number> {
     assertMatchParams(options)
     logger.debug('countEntities', { criteria, options })
     const built = buildEntityCountQuery(criteria, options)
@@ -273,7 +277,7 @@ export function createEntityApi({
       args.types && args.types.length > 0 ? args.types : null,
       limit,
     ])
-    return (r.rows || []).map((x: any) => x.id as string)
+    return ((r.rows ?? []) as Array<{ id: string }>).map((x) => x.id)
   }
 
   async function searchEntitiesForExact(args: SearchEntitiesForExactArgs): Promise<string[]> {
@@ -299,7 +303,7 @@ export function createEntityApi({
       args.types && args.types.length > 0 ? args.types : null,
       limit,
     ])
-    return (r.rows || []).map((x: any) => x.id as string)
+    return ((r.rows ?? []) as Array<{ id: string }>).map((x) => x.id)
   }
 
   return {

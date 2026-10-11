@@ -1,13 +1,16 @@
-import { Pool } from 'pg'
 import { randomBytes } from 'crypto'
+
+import Docker from 'dockerode'
+import getPort from 'get-port'
+import { Pool } from 'pg'
+import { GenericContainer, Wait, StartedTestContainer } from 'testcontainers'
+
 import type { LogLevel } from './types.js'
+
 import type { TheFactoryDb } from './index.js'
 
 // Testcontainers core for ephemeral managed DBs
-import { GenericContainer, Wait, StartedTestContainer } from 'testcontainers'
 // Dockerode for reusable managed DB provisioning
-import Docker from 'dockerode'
-import getPort from 'get-port'
 
 export type CreateDatabaseOptions = {
   connectionString?: string
@@ -61,7 +64,7 @@ async function waitForSelect1(
   attempts = 30,
   delayMs = 500,
 ): Promise<void> {
-  let lastErr: any
+  let lastErr: unknown
   for (let i = 0; i < attempts; i++) {
     const pool = new Pool({ connectionString })
     try {
@@ -289,10 +292,8 @@ export async function createReusableDatabase(
   const db = 'thefactorydb'
 
   // Helper to derive connection string from container inspect
-  const getConnFromInspect = (info: any): string => {
-    const portBindings = info?.NetworkSettings?.Ports?.['5432/tcp'] as
-      | Array<{ HostIp: string; HostPort: string }>
-      | undefined
+  const getConnFromInspect = (info: Docker.ContainerInspectInfo): string => {
+    const portBindings = info.NetworkSettings?.Ports?.['5432/tcp']
     // dockerode sometimes returns an empty array briefly after start, or when a container
     // exists without a published host port (shouldn't happen for our created container,
     // but can happen if the container was created externally).
@@ -307,7 +308,7 @@ export async function createReusableDatabase(
   }
 
   // Find container by name (includes leading '/name' in Names array)
-  const existingList = await docker.listContainers({ all: true, filters: { name: [name] } as any })
+  const existingList = await docker.listContainers({ all: true, filters: { name: [name] } })
   const existingInfo = existingList.find((c) => (c.Names || []).some((n) => n === `/${name}`))
   let container = existingInfo ? docker.getContainer(existingInfo.Id) : undefined
 
@@ -328,17 +329,17 @@ export async function createReusableDatabase(
   }
 
   // Pull image if not present
-  const images = await docker.listImages({ filters: { reference: [image] } as any })
+  const images = await docker.listImages({ filters: { reference: [image] } })
   if (!images || images.length === 0) {
     await new Promise<void>((resolve, reject) => {
-      docker.pull(image, (err: any, stream: any) => {
+      docker.pull(image, (err: unknown, stream: NodeJS.ReadableStream) => {
         if (err) return reject(err)
         try {
           stream.on('end', () => resolve())
-          stream.on('error', (e: any) => reject(e))
+          stream.on('error', (e: Error) => reject(e))
           // drain stream to ensure events fire
           stream.resume?.()
-        } catch (e) {
+        } catch {
           resolve() // best-effort
         }
       })
@@ -400,7 +401,7 @@ export async function destroyReusableDatabase(): Promise<{ removed: boolean }> {
  */
 export async function destroyDatabaseByContainerName(name: string): Promise<{ removed: boolean }> {
   const docker = new Docker()
-  const list = await docker.listContainers({ all: true, filters: { name: [name] } as any })
+  const list = await docker.listContainers({ all: true, filters: { name: [name] } })
   const info = list.find((c) => (c.Names || []).some((n) => n === `/${name}`))
   if (!info) return { removed: false }
 

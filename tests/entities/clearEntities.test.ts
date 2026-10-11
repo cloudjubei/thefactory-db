@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest'
 
 import { setupUnitTestMocks } from '../utils/unitTestMocks'
+
 import { openDatabase } from '../../src/index'
 
 describe('Entities.clearEntities', () => {

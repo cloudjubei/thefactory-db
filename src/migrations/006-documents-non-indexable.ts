@@ -1,5 +1,6 @@
-import type { Migration } from './types.js'
 import { DOCUMENT_CONTENT_HASH_FUNCTION } from '../sql.js'
+
+import type { Migration } from './types.js'
 
 /**
  * Lets a document Postgres cannot index be stored flagged rather than failing its whole batch.

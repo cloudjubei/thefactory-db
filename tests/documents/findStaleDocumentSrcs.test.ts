@@ -1,7 +1,8 @@
 import { describe, it, expect } from 'vitest'
 
-import { CHUNKER_VERSION } from '../../src/chunking/chunkingConstants'
 import { setupUnitTestMocks } from '../utils/unitTestMocks'
+
+import { CHUNKER_VERSION } from '../../src/chunking/chunkingConstants'
 import { openDatabase } from '../../src/index'
 
 describe('Documents.findStaleDocumentSrcs', () => {

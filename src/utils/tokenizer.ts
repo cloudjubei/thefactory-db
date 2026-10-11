@@ -2,10 +2,6 @@
 //
 // - tokenize: keeps the original behavior returning token ids (for future use)
 // - toFtsText: produces a normalized lexical string suitable for FTS5 indexing
-//
-// We intentionally type js-tiktoken loosely to avoid hard type coupling
-// and keep this package buildable even if types are not available.
-// Consumers must install the runtime dependency.
 import * as jsTiktoken from 'js-tiktoken'
 
 export type TokenizerEncodeResult = {
@@ -20,12 +16,10 @@ export type TokenizerOptions = {
 }
 
 // Cache encoders per model to avoid re-instantiating the WASM encoder
-const encoderCache: Record<string, any> = {}
+const encoderCache: Partial<Record<jsTiktoken.TiktokenEncoding, jsTiktoken.Tiktoken>> = {}
 
 function getEncoder(encoding: jsTiktoken.TiktokenEncoding): jsTiktoken.Tiktoken {
-  if (!encoderCache[encoding]) {
-    encoderCache[encoding] = jsTiktoken.getEncoding(encoding)
-  }
+  encoderCache[encoding] ??= jsTiktoken.getEncoding(encoding)
   return encoderCache[encoding]
 }
 

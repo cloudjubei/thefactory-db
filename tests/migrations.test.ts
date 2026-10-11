@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
+
 import { openDatabase } from '../src/client/openDatabase.js'
 import { openPostgres } from '../src/connection.js'
 import { migrations } from '../src/migrations/index.js'

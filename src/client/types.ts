@@ -32,8 +32,14 @@ export interface TheFactoryDb {
   updateEntity(id: string, patch: EntityPatch): Promise<Entity | undefined>
   deleteEntity(id: string): Promise<boolean>
   searchEntities(params: SearchParams): Promise<EntityWithScore[]>
-  matchEntities(criteria: any | undefined, options?: MatchParams): Promise<Entity[]>
-  countEntities(criteria: any | undefined, options?: MatchParams): Promise<number>
+  matchEntities(
+    criteria: Record<string, unknown> | undefined,
+    options?: MatchParams,
+  ): Promise<Entity[]>
+  countEntities(
+    criteria: Record<string, unknown> | undefined,
+    options?: MatchParams,
+  ): Promise<number>
   clearEntities(filter: { projectIds: string[]; types?: string[] }): Promise<void>
 
   searchEntitiesForKeywords(args: SearchEntitiesForKeywordsArgs): Promise<string[]>

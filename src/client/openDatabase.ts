@@ -1,11 +1,12 @@
 import { openPostgres } from '../connection.js'
 import { createLogger } from '../logger.js'
+import { migrateDatabase } from '../migrations/runner.js'
 import type { OpenDbOptions } from '../types.js'
 import { createLocalEmbeddingProvider } from '../utils/embeddings.js'
-import { createEntityApi } from './entities.js'
+
 import { createDocumentApi } from './documents.js'
+import { createEntityApi } from './entities.js'
 import type { TheFactoryDb } from './types.js'
-import { migrateDatabase } from '../migrations/runner.js'
 
 export async function openDatabase(options: OpenDbOptions): Promise<TheFactoryDb> {
   const { connectionString, logLevel, migrations } = options

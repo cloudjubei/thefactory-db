@@ -11,6 +11,7 @@
 
 - `README.md`: Quick-start usage and utility scripts.
 - `package.json`, `tsconfig.json`: Build and TypeScript configuration.
+- `eslint.config.js`, `.prettierrc.json`: Lint and formatting rules (`npm run lint`, `npm run format:check`).
 - `src/`: Source code for the database wrapper and types.
   - `src/index.ts`: Public entry point. Exports `openDatabase(options)` which returns a `Database` API instance. Also re-exports runtime lifecycle helpers: `createDatabase`, `destroyDatabase`, and `createReusableDatabase`.
     - Documents API (text content)

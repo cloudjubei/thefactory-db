@@ -1,5 +1,6 @@
-import { describe, it, expect, vi } from 'vitest'
 import Docker from 'dockerode'
+import { describe, it, expect, vi } from 'vitest'
+
 import { createReusableDatabase, openDatabase } from '../../../src/index'
 
 // Stub embeddings to avoid heavy model downloads during e2e tests

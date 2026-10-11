@@ -1,9 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { openDatabase } from '../src/index'
+
 import { openPostgres } from '../src/connection'
+import { openDatabase } from '../src/index'
 import { createLogger } from '../src/logger'
 import { createLocalEmbeddingProvider } from '../src/utils/embeddings'
-import { attachMigrationSupport } from './utils/unitTestMocks'
+
+import { attachMigrationSupport } from './utils/migrationSupport'
 
 vi.mock('../src/connection')
 vi.mock('../src/logger')

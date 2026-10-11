@@ -16,8 +16,11 @@ Language & Modules
 - Prefer named exports for public API.
 
 Style
-- Prettier for formatting (see .prettierrc.json).
-- ESLint for correctness/consistency (.eslintrc.cjs).
+- Prettier for formatting (see .prettierrc.json). `npm run format:check` must pass.
+- ESLint for correctness and consistency (`eslint.config.js`). `npm run lint` must pass with no warnings; `npm run lint:fix` applies the automatic fixes. Both run on staged files before each commit and are declared as `factory.verification` checks.
+  - No explicit `any` in `src/`; tests may cast fakes and invalid inputs with it.
+  - Imports are grouped (built-in and external, then internal) and alphabetised. In unit tests, `tests/utils/unitTestMocks` is imported before any `src/` module: it registers module mocks the source must load under. Helpers a test needs without those mocks live in modules of their own (`tests/utils/migrationSupport`).
+  - An empty `catch {}` is allowed for best-effort work; a name prefixed `_` may go unused.
 - Naming: camelCase (vars/functions), PascalCase (types/classes), UPPER_SNAKE (constants), kebab-case for filenames when applicable.
 
 APIs & Types
