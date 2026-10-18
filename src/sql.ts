@@ -108,6 +108,7 @@ SELECT
   name,
   content,
   src,
+  content_hash AS "contentHash",
   non_indexable_reason AS "nonIndexableReason",
   to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS "createdAt",
   to_char(updated_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS "updatedAt",
@@ -124,6 +125,7 @@ SELECT
   name,
   content,
   src,
+  content_hash AS "contentHash",
   non_indexable_reason AS "nonIndexableReason",
   to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS "createdAt",
   to_char(updated_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS "updatedAt",
@@ -1167,24 +1169,28 @@ FROM hybrid_search_entities($1, $2::vector, $3::int, $4::jsonb, $5::float, $6::f
 
 const searchDocumentsQuery = `
 SELECT
-  id,
-  project_id AS "projectId",
-  type,
-  name,
-  content,
-  src,
-  to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS "createdAt",
-  to_char(updated_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS "updatedAt",
-  to_jsonb(metadata) AS metadata,
-  literal_score as "textScore",
-  keyword_score as "keywordScore",
-  cosine_similarity as "vecScore",
-  similarity as "totalScore",
-  chunk_start_line AS "chunkStartLine",
-  chunk_end_line AS "chunkEndLine",
-  chunk_start_char AS "chunkStartChar",
-  chunk_end_char AS "chunkEndChar"
-FROM hybrid_search_documents($1, $2::vector, $3::int, $4::jsonb, $5::float, $6::float, $7::float, $8::float, $9::int, $10::int);
+  h.id,
+  h.project_id AS "projectId",
+  h.type,
+  h.name,
+  h.content,
+  h.src,
+  d.content_hash AS "contentHash",
+  d.non_indexable_reason AS "nonIndexableReason",
+  to_char(h.created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS "createdAt",
+  to_char(h.updated_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS "updatedAt",
+  to_jsonb(h.metadata) AS metadata,
+  h.literal_score as "textScore",
+  h.keyword_score as "keywordScore",
+  h.cosine_similarity as "vecScore",
+  h.similarity as "totalScore",
+  h.chunk_start_line AS "chunkStartLine",
+  h.chunk_end_line AS "chunkEndLine",
+  h.chunk_start_char AS "chunkStartChar",
+  h.chunk_end_char AS "chunkEndChar"
+FROM hybrid_search_documents($1, $2::vector, $3::int, $4::jsonb, $5::float, $6::float, $7::float, $8::float, $9::int, $10::int) WITH ORDINALITY AS h
+JOIN documents d ON d.id = h.id
+ORDER BY h.ordinality;
 `
 
 // ----------------------------------------------------------
@@ -1237,6 +1243,8 @@ scored AS (
     d.name,
     d.content,
     d.src,
+    d.content_hash,
+    d.non_indexable_reason,
     d.created_at,
     d.updated_at,
     d.metadata,
@@ -1271,7 +1279,7 @@ scored AS (
   LEFT JOIN query_tokens qt ON TRUE
   LEFT JOIN full_raw fr ON TRUE
   LEFT JOIN base_raw br ON TRUE
-  GROUP BY d.id, d.project_id, d.type, d.name, d.content, d.src, d.created_at, d.updated_at, d.metadata
+  GROUP BY d.id, d.project_id, d.type, d.name, d.content, d.src, d.content_hash, d.non_indexable_reason, d.created_at, d.updated_at, d.metadata
 )
 SELECT
   id,
@@ -1280,6 +1288,8 @@ SELECT
   name,
   content,
   src,
+  content_hash AS "contentHash",
+  non_indexable_reason AS "nonIndexableReason",
   to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS "createdAt",
   to_char(updated_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS "updatedAt",
   to_jsonb(metadata) AS metadata,
@@ -1345,6 +1355,8 @@ SELECT
   src,
   name,
   content,
+  content_hash AS "contentHash",
+  non_indexable_reason AS "nonIndexableReason",
   to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS "createdAt",
   to_char(updated_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS "updatedAt",
   to_jsonb(metadata) AS metadata

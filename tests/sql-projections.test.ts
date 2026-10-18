@@ -66,6 +66,41 @@ describe('SQL projections — entity-shaped queries match the published Entity t
   })
 })
 
+/**
+ * Every document-shaped result row is answered against the published
+ * `Document` type, which requires `contentHash`; `matchDocuments` once
+ * hand-projected its columns without it and every `GET /documents` failed
+ * response validation with a 500.
+ */
+const DOCUMENT_ROW_PROJECTIONS: { name: string; sql: string }[] = [
+  { name: 'getDocumentById', sql: SQL.getDocumentById },
+  { name: 'getDocumentBySrc', sql: SQL.getDocumentBySrc },
+  { name: 'upsertDocument', sql: SQL.upsertDocument },
+  { name: 'insertDocument', sql: SQL.insertDocument },
+  { name: 'upsertNonIndexableDocument', sql: SQL.upsertNonIndexableDocument },
+  { name: 'updateDocument', sql: SQL.updateDocument },
+  { name: 'matchDocuments', sql: SQL.matchDocuments },
+  { name: 'searchDocumentsQuery', sql: SQL.searchDocumentsQuery },
+  { name: 'searchDocumentsByName', sql: SQL.searchDocumentsByName },
+]
+
+describe('SQL projections — document-shaped queries match the published Document type', () => {
+  it.each(DOCUMENT_ROW_PROJECTIONS)('$name projects contentHash', ({ sql }) => {
+    expect(sql).toMatch(/content_hash\s+AS\s+"contentHash"/i)
+  })
+
+  it.each(DOCUMENT_ROW_PROJECTIONS)('$name projects nonIndexableReason', ({ sql }) => {
+    expect(sql).toMatch(/non_indexable_reason\s+AS\s+"nonIndexableReason"/i)
+  })
+})
+
+describe('SQL.searchDocumentsQuery — joined for the content hash', () => {
+  it('keeps the order the hybrid search ranked its rows in', () => {
+    expect(SQL.searchDocumentsQuery).toMatch(/WITH ORDINALITY AS h/)
+    expect(SQL.searchDocumentsQuery).toMatch(/ORDER BY h\.ordinality;/)
+  })
+})
+
 describe('SQL.matchEntities — null-criteria short-circuit', () => {
   // Why: when the caller has no criteria (the common "list this project's
   // entities" path), the SQL must NOT apply `content @> $1::jsonb`. That
