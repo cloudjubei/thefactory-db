@@ -3,13 +3,14 @@ import { randomBytes } from 'crypto'
 import Docker from 'dockerode'
 import getPort from 'get-port'
 import { Pool } from 'pg'
-import { GenericContainer, Wait, StartedTestContainer } from 'testcontainers'
+import type { StartedTestContainer } from 'testcontainers'
 
 import type { LogLevel } from './types.js'
 
 import type { TheFactoryDb } from './index.js'
 
-// Testcontainers core for ephemeral managed DBs
+// Testcontainers core for ephemeral managed DBs, imported only when one is created: it installs signal-exit's
+// SIGTERM listener, which leaves an importing process unkillable by SIGTERM while its event loop is busy.
 // Dockerode for reusable managed DB provisioning
 
 export type CreateDatabaseOptions = {
@@ -191,6 +192,7 @@ export async function createDatabase(opts?: CreateDatabaseOptions): Promise<Data
     const user = `u_${randHex(4)}`
     const password = randHex(12)
 
+    const { GenericContainer, Wait } = await import('testcontainers')
     let builder = new GenericContainer('pgvector/pgvector:pg16')
       .withEnvironment({
         POSTGRES_USER: user,
